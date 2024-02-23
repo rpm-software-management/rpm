@@ -1218,6 +1218,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %__scm_apply_hg(qp:m:)\
 %{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}"
 
+%__scm_source_timestamp @${SOURCE_DATE_EPOCH:-${RPM_BUILD_TIME:?}}
+
 # Git
 %__scm_setup_git(q)\
 %{__git} init %{-q}\
@@ -1225,20 +1227,23 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} config gc.auto 0\
 %{__git} add --force .\
-%{__git} commit %{-q} --allow-empty -a\\\
+GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_timestamp}\\\
+	%{__git} commit %{-q} --allow-empty -a\\\
 	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\
 %{__git} checkout --track -b rpm-build
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index --reject %{-p:-p%{-p*}} -\
-%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
+GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_timestamp}\\\
+	%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
 
 # Git, using "git am" (-m is unused)
 %__scm_setup_git_am(q)\
 %{expand:%__scm_setup_git %{-q}}
 
 %__scm_apply_git_am(qp:m:)\
-%{__git} am --reject %{-q} %{-p:-p%{-p*}}
+GIT_COMMITTER_DATE=%{__scm_source_timestamp}\\\
+	%{__git} am --reject %{-q} %{-p:-p%{-p*}}
 
 # Quilt
 %__scm_setup_quilt(q) %{nil}
