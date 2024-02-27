@@ -27,8 +27,6 @@ with a \".tgz\" suffix, gzip compressed by default.
 
 In opposite to **rpm2cpio** **rpm2archive** also works with RPM packages
 containing files greater than 4GB which are not supported by cpio.
-Unless **rpm2cpio** **rpm2archive** needs a working rpm installation
-which limits its usefulness for some disaster recovery scenarios.
 
 OPTIONS
 =======
