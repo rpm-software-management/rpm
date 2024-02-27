@@ -989,7 +989,8 @@ static int sysusersTag(Header h, rpmtd td, headerGetFlags hgflags)
 	char *line = NULL;
 	const char *name = rpmdsN(provides);
 
-	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)))
+	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)
+	      || rstreqn(name, "groupmember(", 12)))
 	    continue;
 	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
 	    continue;

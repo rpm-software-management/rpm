@@ -1310,8 +1310,8 @@ end
 
 # Add a sysuser user/group to a package. Takes a sysusers.d(5) line as
 # arguments, eg `%add_sysuser g mygroup 515`.
-# -b option omits the "Provides: " to support formatting the entry outside
-# spec context.
+# -b option omits the "Provides: " and the "Requires:" lines for group
+# membership to support formatting the entry outside spec context.
 %add_sysuser(-) %{lua:
     if arg[1] == '-b' then
         prefix = ''
@@ -1322,17 +1322,19 @@ end
     if #arg < 2 then
         macros.error({'not enough arguments'})
     end
+    name = arg[2]
     if arg[1] == 'g' then
         type = 'group'
     elseif arg[1] == 'u' then
         type = 'user'
-    elseif arg[1] == 'r' or arg[1] == 'm' then
+    elseif arg[1] == 'm' and #arg >=3 then
+        type = 'groupmember'
+    elseif arg[1] == 'r' then
         macros.warn({'ignoring unsupported sysuser type: '..arg[1]})
         return
     else
         macros.error({'invalid sysuser type: '..arg[1]})
     end
-    name = arg[2]
     line = table.concat(arg, ' ')
     -- \0-pad source string to avoid '=' in the output
     llen = line:len()
@@ -1341,7 +1343,16 @@ end
     pad = string.rep('\\0', plen-ulen)
     enc = rpm.b64encode(line..pad, 0);
 
-    print(string.format('%s%s(%s) = %s\\n', prefix, type, name, enc))
+    if type == 'groupmember' then
+        print(string.format('%s%s(%s/%s) = %s\\n', prefix, type, name, arg[3], enc))
+	if (prefix ~= '') then
+	   prefix2 = rpm.expand('%[%{?_use_weak_usergroup_deps} > 0 : "Recommends" : "Requires"]')
+	   print(string.format('%s: user(%s)\\n', prefix2, name))
+	   print(string.format('%s: group(%s)\\n', prefix2, arg[3]))
+	end
+    else
+        print(string.format('%s%s(%s) = %s\\n', prefix, type, name, enc))
+    end
     if type == 'user' then
         print(string.format('%s%s(%s)\\n', prefix, 'group', name))
     end

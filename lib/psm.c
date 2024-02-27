@@ -379,7 +379,8 @@ static rpmRC runSysusers(rpmpsm psm)
 	size_t llen = 0;
 	int px = -1;
 
-	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)))
+	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)
+	      || rstreqn(name, "groupmember(", 12)))
 	    continue;
 	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
 	    continue;
