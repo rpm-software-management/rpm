@@ -476,6 +476,24 @@ If the main section exists, it must come first to avoid ambiguity.
 Otherwise, append and prepend can be used in any order and multiple
 times, even if the corresponding main section does not exist.
 
+During the execution of build scriptlets, (at least) the following
+rpm-specific environment variables are set:
+
+Variable            | Description
+---------------------------------------------------
+RPM_ARCH            | Architecture of the package
+RPM_BUILD_DIR       | The build directory of the package
+RPM_BUILD_NCPUS     | The number of CPUs available for the build
+RPM_BUILD_ROOT      | The buildroot directory of the package
+RPM_DOC_DIR         | The special documentation directory of the package
+RPM_LD_FLAGS        | Linker flags
+RPM_OPT_FLAGS       | Compiler flags
+RPM_OS              | OS of the package
+RPM_PACKAGE_NAME    | Rpm name of the source package
+RPM_PACKAGE_VERSION | Rpm version of the source package
+RPM_PACKAGE_RELEASE | Rpm release of the source package
+RPM_SOURCE_DIR      | The source directory of the package
+
 ### %prep
 
 %prep prepares the sources for building. This is where sources are
