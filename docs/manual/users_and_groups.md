@@ -25,6 +25,9 @@ user/group allocation altogether by using
 
 ## Dependencies
 
+Explict group membership (m) will create a dependency on both the user
+and the group name.
+
 Any non-root ownership in `%files` section (through `%attr()` or `%defattr()`)
 generates an automatic dependency on the named user and/or group. Similarly,
 packaged sysusers.d files create provides for the users and/or groups they
@@ -38,9 +41,10 @@ to weaken these into recommends-dependencies by setting
 
 ## Limitations
 
-At this time, rpm only supports the `u` and `g` directives of sysusers.d
-format and ignores others. If other directives are needed, the package
-will need to call systemd-sysusers with the correct arguments manually.
+At this time, rpm only supports the `u`, `g` and (since RPM 4.20) `m`
+directives of sysusers.d format and ignores others. If other
+directives are needed, the package will need to call systemd-sysusers
+with the correct arguments manually.
 
 ## Technical details
 
