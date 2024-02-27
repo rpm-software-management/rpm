@@ -485,6 +485,7 @@ RPM_ARCH            | Architecture of the package
 RPM_BUILD_DIR       | The build directory of the package
 RPM_BUILD_NCPUS     | The number of CPUs available for the build
 RPM_BUILD_ROOT      | The buildroot directory of the package
+RPM_BUILD_TIME      | The build time of the package (seconds since the epoch)
 RPM_DOC_DIR         | The special documentation directory of the package
 RPM_LD_FLAGS        | Linker flags
 RPM_OPT_FLAGS       | Compiler flags
