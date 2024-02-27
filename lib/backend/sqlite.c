@@ -165,7 +165,6 @@ static int sqlite_init(rpmdb rdb, const char * dbhome)
 	sqlite3_busy_timeout(sdb, 10000);
 
 	sqlexec(sdb, "PRAGMA secure_delete = OFF");
-	sqlexec(sdb, "PRAGMA case_sensitive_like = ON");
 
 	if (sqlite3_db_readonly(sdb, NULL) == 0) {
 	    if (sqlexec(sdb, "PRAGMA journal_mode = WAL") == 0) {
