@@ -52,7 +52,7 @@ u plong - "Plong fu" /var/lib/plong /sbin/nologin
 
 # and comments comments
 g klong -
-m ding dong
+m klangd klong
 r - 123-321
 EOF
 

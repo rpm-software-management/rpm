@@ -103,13 +103,15 @@ group() {
 	fi
 }
 
-usermod() {
+
+addtogroup() {
 	local user="$1"
 	local group="$2"
+	
+	group "${group}" "-"
+	user "${user}" "-" "" "${group}" "" ""
 
-	if hasgroup "${group}" ; then
-		usermod -R "$ROOT" -a -G "${group}" "$user" || :
-	fi
+	usermod -R "$ROOT" -a -G "${group}" "$user" || :
 }
 
 parse() {
@@ -134,9 +136,7 @@ parse() {
 				group "${arr[1]}" "${arr[2]}"
 				;;
 			('m')
-				group "${arr[2]}" "-"
-				user "${arr[1]}" "-" "" "${arr[1]}" "" ""
-				usermod "${arr[1]}" "${arr[2]}"
+				addtogroup "${arr[1]}" "${arr[2]}"
 				;;
 		esac
 	done

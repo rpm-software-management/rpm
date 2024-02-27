@@ -31,6 +31,9 @@ packaged sysusers.d files create provides for the users and/or groups they
 create. This ensures correct installation when a package relies
 on user/group from another package.
 
+Explict group membership (m) will also create a dependency on both the user
+and the group name.
+
 By default the dependencies are hard requirements, but as this can be
 problematic when upgrading an existing distribution to rpm 4.19, it's possible
 to weaken these into recommends-dependencies by setting 
@@ -38,9 +41,10 @@ to weaken these into recommends-dependencies by setting
 
 ## Limitations
 
-At this time, rpm only supports the `u` and `g` directives of sysusers.d
-format and ignores others. If other directives are needed, the package
-will need to call systemd-sysusers with the correct arguments manually.
+At this time, rpm only supports the `u`, `g` and (since RPM 4.20) `m`
+directives of sysusers.d format and ignores others. If other
+directives are needed, the package will need to call systemd-sysusers
+with the correct arguments manually.
 
 ## Technical details
 
@@ -68,6 +72,25 @@ group(dnsmasq)
 As systemd-sysusers implicitly creates a matching group for any created
 users, the group provide does not have an EVR here, only explicitly
 created groups will have the encoded sysusers.d line as EVR.
+
+Lines adding users to groups like
+
+```
+m klangd klong
+```
+
+will create a provide:
+```
+groupmember(klangd/klong) = bSBrbGFuZ2Qga2xvbmcA
+```
+but also create two requires (or recommends if the `_use_weak_usergroup_deps` is set to 1):
+
+```
+group(klong)
+user(klangd)
+```
+
+to make sure the packages creating the user and the group are install first.
 
 # Implementation
 
