@@ -426,6 +426,27 @@ runroot rpm \
 0
 0
 ])
+
+RPMTEST_CHECK([
+runroot rpm \
+    --define 'zzz xxx' \
+    --eval '%zzz' \
+    --eval '%{zzz}' \
+    --eval '%{zzz:}' \
+    --eval '%{zzz }' \
+    --eval '%{zzz aa}'
+],
+[0],
+[xxx
+xxx
+xxx
+xxx
+xxx
+],
+[warning: unexpected argument to non-parametric macro %zzz
+warning: unexpected argument to non-parametric macro %zzz
+warning: unexpected argument to non-parametric macro %zzz
+])
 RPMTEST_CLEANUP
 
 AT_SETUP([string functions])

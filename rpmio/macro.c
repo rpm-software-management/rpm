@@ -1720,6 +1720,12 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 	}
 
 	if (me->opts == NULL && !(me->flags & ME_FUNC)) {
+	    if (g || (lastc && *lastc == '}')) {
+		/* XXX TODO: Make this an error in a few years */
+		rpmMacroBufErr(mb, 0,
+			_("unexpected argument to non-parametric macro %%%s\n"),
+			me->name);
+	    }
 	    /* Simple non-parametric macro */
 	    doMacro(mb, me, NULL, NULL);
 	    s = se;
