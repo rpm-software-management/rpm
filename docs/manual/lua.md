@@ -475,7 +475,7 @@ end
 Get current directory.
 
 ```
-if posix.getcwd() != '/' then
+if posix.getcwd() ~= '/' then
     ...
 endif
 ```
@@ -485,7 +485,7 @@ endif
 Get environment variable
 
 ```
-if posix.getenv('HOME') != posix.getcwd() then
+if posix.getenv('HOME') ~= posix.getcwd() then
     print('not at home')
 end
 ```
