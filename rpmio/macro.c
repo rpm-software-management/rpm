@@ -1353,7 +1353,8 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
     } else if (rstreq("getconfdir", me->name)) {
 	b = (char *)rpmConfigDir();
     } else if (rstreq("exists", me->name)) {
-	b = (access(argv[1], F_OK) == 0) ? "1" : "0";
+	buf = xstrdup((access(argv[1], F_OK) == 0) ? "1" : "0");
+	b = buf;
     }
 
     if (b) {
