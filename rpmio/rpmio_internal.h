@@ -47,6 +47,29 @@ int rpmioSlurp(const char * fn,
  */
 void rpmSetCloseOnExec(void);
 
+typedef const struct FDIO_s * FDIO_t;
+
+RPM_GNUC_INTERNAL
+extern const FDIO_t fdio;
+RPM_GNUC_INTERNAL
+extern const FDIO_t ufdio;
+RPM_GNUC_INTERNAL
+extern const FDIO_t gzdio;
+#ifdef HAVE_BZLIB_H
+RPM_GNUC_INTERNAL
+extern const FDIO_t bzdio;
+#endif
+#ifdef HAVE_LZMA_H
+RPM_GNUC_INTERNAL
+extern const FDIO_t xzdio;
+RPM_GNUC_INTERNAL
+extern const FDIO_t lzdio;
+#endif
+#ifdef HAVE_ZSTD
+RPM_GNUC_INTERNAL
+extern const FDIO_t zstdio;
+#endif
+
 #ifdef __cplusplus
 }
 #endif
