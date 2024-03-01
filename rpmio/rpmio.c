@@ -1003,7 +1003,10 @@ typedef struct rpmzstd_s {
     int fdno;
     int level;			/*!< compression level */
     FILE * fp;
-    void * _stream;             /*!< ZSTD_{C,D}Stream */
+    union {
+	ZSTD_DStream *d;
+	ZSTD_CStream *c;
+    } stream;
     size_t nb;
     void * b;
     ZSTD_inBuffer zib;          /*!< ZSTD_inBuffer */
@@ -1012,6 +1015,7 @@ typedef struct rpmzstd_s {
 
 static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 {
+    rpmzstd zstd = NULL;
     int flags = 0;
     int level = 3;
     const char * s = fmode;
@@ -1092,42 +1096,40 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     if (fp == NULL)
 	return NULL;
 
-    void * _stream = NULL;
+    zstd = (rpmzstd) xcalloc(1, sizeof(*zstd));
     size_t nb = 0;
 
     if ((flags & O_ACCMODE) == O_RDONLY) {	/* decompressing */
-	if ((_stream = (void *) ZSTD_createDStream()) == NULL
-	 || ZSTD_isError(ZSTD_initDStream(_stream))) {
+	if ((zstd->stream.d = ZSTD_createDStream()) == NULL
+	 || ZSTD_isError(ZSTD_initDStream(zstd->stream.d))) {
 	    goto err;
 	}
 	nb = ZSTD_DStreamInSize();
     } else {					/* compressing */
-	if ((_stream = (void *) ZSTD_createCCtx()) == NULL
-	 || ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_compressionLevel, level))) {
+	if ((zstd->stream.c = ZSTD_createCCtx()) == NULL
+	 || ZSTD_isError(ZSTD_CCtx_setParameter(zstd->stream.c, ZSTD_c_compressionLevel, level))) {
 	    goto err;
 	}
 
 	if (longdist) {
-	    if (ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_enableLongDistanceMatching, longdist))
-	     || ZSTD_isError(ZSTD_CCtx_setParameter(_stream, ZSTD_c_windowLog, windowlog))) {
+	    if (ZSTD_isError(ZSTD_CCtx_setParameter(zstd->stream.c, ZSTD_c_enableLongDistanceMatching, longdist))
+	     || ZSTD_isError(ZSTD_CCtx_setParameter(zstd->stream.c, ZSTD_c_windowLog, windowlog))) {
 	        goto err;
 	    }
 	}
 
 	if (threads > 0) {
-	    if (ZSTD_isError (ZSTD_CCtx_setParameter(_stream, ZSTD_c_nbWorkers, threads)))
+	    if (ZSTD_isError (ZSTD_CCtx_setParameter(zstd->stream.c, ZSTD_c_nbWorkers, threads)))
 		rpmlog(RPMLOG_DEBUG, "zstd library does not support multi-threading\n");
 	}
 
 	nb = ZSTD_CStreamOutSize();
     }
 
-    rpmzstd zstd = (rpmzstd) xcalloc(1, sizeof(*zstd));
     zstd->flags = flags;
     zstd->fdno = fdno;
     zstd->level = level;
     zstd->fp = fp;
-    zstd->_stream = _stream;
     zstd->nb = nb;
     zstd->b = xmalloc(nb);
 
@@ -1136,9 +1138,9 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
 err:
     fclose(fp);
     if ((flags & O_ACCMODE) == O_RDONLY)
-	ZSTD_freeDStream(_stream);
+	ZSTD_freeDStream(zstd->stream.d);
     else
-	ZSTD_freeCCtx(_stream);
+	ZSTD_freeCCtx(zstd->stream.c);
     return NULL;
 }
 
@@ -1175,7 +1177,7 @@ assert(zstd);
 	  zstd->zob.dst  = zstd->b;
 	  zstd->zob.size = zstd->nb;
 	  zstd->zob.pos  = 0;
-	  xx = ZSTD_compressStream2(zstd->_stream, &zstd->zob, &zib, ZSTD_e_flush);
+	  xx = ZSTD_compressStream2(zstd->stream.c, &zstd->zob, &zib, ZSTD_e_flush);
 	  if (ZSTD_isError(xx)) {
 	      fps->errcookie = ZSTD_getErrorName(xx);
 	      break;
@@ -1208,7 +1210,7 @@ assert(zstd);
 	}
 
 	/* Decompress next chunk. */
-	int xx = ZSTD_decompressStream(zstd->_stream, &zob, &zstd->zib);
+	int xx = ZSTD_decompressStream(zstd->stream.d, &zob, &zstd->zib);
 	if (ZSTD_isError(xx)) {
 	    fps->errcookie = ZSTD_getErrorName(xx);
 	    return -1;
@@ -1231,7 +1233,7 @@ assert(zstd);
 	zstd->zob.pos  = 0;
 
 	/* Compress next chunk. */
-	int xx = ZSTD_compressStream2(zstd->_stream, &zstd->zob, &zib, ZSTD_e_continue);
+	int xx = ZSTD_compressStream2(zstd->stream.c, &zstd->zob, &zib, ZSTD_e_continue);
 	if (ZSTD_isError(xx)) {
 	    fps->errcookie = ZSTD_getErrorName(xx);
 	    return -1;
@@ -1257,7 +1259,7 @@ assert(zstd);
 
     if ((zstd->flags & O_ACCMODE) == O_RDONLY) { /* decompressing */
 	rc = 0;
-	ZSTD_freeDStream(zstd->_stream);
+	ZSTD_freeDStream(zstd->stream.d);
     } else {					/* compressing */
 	/* close frame */
 	int xx;
@@ -1266,7 +1268,7 @@ assert(zstd);
 	  zstd->zob.dst  = zstd->b;
 	  zstd->zob.size = zstd->nb;
 	  zstd->zob.pos  = 0;
-	  xx = ZSTD_compressStream2(zstd->_stream, &zstd->zob, &zib, ZSTD_e_end);
+	  xx = ZSTD_compressStream2(zstd->stream.c, &zstd->zob, &zib, ZSTD_e_end);
 	  if (ZSTD_isError(xx)) {
 	      fps->errcookie = ZSTD_getErrorName(xx);
 	      break;
@@ -1278,7 +1280,7 @@ assert(zstd);
 	  else
 	      rc = 0;
 	} while (xx != 0);
-	ZSTD_freeCCtx(zstd->_stream);
+	ZSTD_freeCCtx(zstd->stream.c);
     }
 
     if (zstd->fp && fileno(zstd->fp) > 2)
