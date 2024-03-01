@@ -1,6 +1,9 @@
 #ifndef _H_MACRO_INTERNAL
 #define	_H_MACRO_INTERNAL
 
+#include <rpm/rpmutil.h>
+#include <rpm/argv.h>
+
 /** \ingroup rpmio
  * \file rpmmacro_internal.h
  *
