@@ -21,7 +21,6 @@
 #include "debug.h"
 
 typedef struct FDSTACK_s * FDSTACK_t;
-typedef const struct FDIO_s * FDIO_t;
 
 struct FDSTACK_s {
     FDIO_t		io;
@@ -143,21 +142,6 @@ struct FDIO_s {
   fdio_ferror_function_t	_ferror;
   fdio_fstrerr_function_t	_fstrerr;
 };
-
-/* forward refs */
-static const FDIO_t fdio;
-static const FDIO_t ufdio;
-static const FDIO_t gzdio;
-#ifdef HAVE_BZLIB_H
-static const FDIO_t bzdio;
-#endif
-#ifdef HAVE_LZMA_H
-static const FDIO_t xzdio;
-static const FDIO_t lzdio;
-#endif
-#ifdef HAVE_ZSTD
-static const FDIO_t zstdio;
-#endif
 
 /** \ingroup rpmio
  * Update digest(s) attached to fd.
@@ -420,7 +404,7 @@ static const struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose,
   fdOpen, NULL, fdFlush, fdTell, fdError, fdStrerr,
 };
-static const FDIO_t fdio = &fdio_s ;
+const FDIO_t fdio = &fdio_s ;
 
 off_t ufdCopy(FD_t sfd, FD_t tfd)
 {
@@ -542,7 +526,7 @@ static const struct FDIO_s ufdio_s = {
   fdRead, fdWrite, fdSeek, fdClose,
   ufdOpen, NULL, fdFlush, fdTell, fdError, fdStrerr
 };
-static const FDIO_t ufdio = &ufdio_s ;
+const FDIO_t ufdio = &ufdio_s ;
 
 /* =============================================================== */
 /* Support for GZIP library.  */
@@ -652,7 +636,7 @@ static const struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose,
   NULL, gzdFdopen, gzdFlush, gzdTell, zfdError, zfdStrerr
 };
-static const FDIO_t gzdio = &gzdio_s ;
+const FDIO_t gzdio = &gzdio_s ;
 
 /* =============================================================== */
 /* Support for BZIP2 library.  */
@@ -723,7 +707,7 @@ static const struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, NULL, bzdClose,
   NULL, bzdFdopen, bzdFlush, NULL, zfdError, zfdStrerr
 };
-static const FDIO_t bzdio = &bzdio_s ;
+const FDIO_t bzdio = &bzdio_s ;
 
 #endif	/* HAVE_BZLIB_H */
 
@@ -983,14 +967,14 @@ static struct FDIO_s xzdio_s = {
   lzdRead, lzdWrite, NULL, lzdClose,
   NULL, xzdFdopen, lzdFlush, NULL, zfdError, zfdStrerr
 };
-static const FDIO_t xzdio = &xzdio_s;
+const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
   NULL, lzdFdopen, lzdFlush, NULL, zfdError, zfdStrerr
 };
-static const FDIO_t lzdio = &lzdio_s;
+const FDIO_t lzdio = &lzdio_s;
 
 #endif	/* HAVE_LZMA_H */
 
@@ -1292,7 +1276,7 @@ static const struct FDIO_s zstdio_s = {
   zstdRead, zstdWrite, NULL, zstdClose,
   NULL, zstdFdopen, zstdFlush, NULL, zfdError, zfdStrerr
 };
-static const FDIO_t zstdio = &zstdio_s ;
+const FDIO_t zstdio = &zstdio_s ;
 
 #endif	/* HAVE_ZSTD */
 
