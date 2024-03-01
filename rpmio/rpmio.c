@@ -531,6 +531,10 @@ const FDIO_t ufdio = &ufdio_s ;
 /* =============================================================== */
 /* Support for GZIP library.  */
 #include <zlib.h>
+static gzFile gzdFp(FDSTACK_t fps)
+{
+    return (gzFile)fps->fp;
+}
 
 static FD_t gzdFdopen(FD_t fd, int fdno, const char *fmode)
 {
@@ -546,14 +550,14 @@ static FD_t gzdFdopen(FD_t fd, int fdno, const char *fmode)
 
 static int gzdFlush(FDSTACK_t fps)
 {
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
     if (gzfile == NULL) return -2;
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
 
 static void gzdSetError(FDSTACK_t fps)
 {
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
     int zerror = 0;
     fps->errcookie = gzerror(gzfile, &zerror);
     if (zerror == Z_ERRNO) {
@@ -564,7 +568,7 @@ static void gzdSetError(FDSTACK_t fps)
 
 static ssize_t gzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
     ssize_t rc;
 
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -580,7 +584,7 @@ static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     gzFile gzfile;
     ssize_t rc;
 
-    gzfile = fps->fp;
+    gzfile = gzdFp(fps);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzwrite(gzfile, (void *)buf, count);
@@ -593,7 +597,7 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
     off_t p = pos;
     int rc;
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
 
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
@@ -605,7 +609,7 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 
 static int gzdClose(FDSTACK_t fps)
 {
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
     int rc;
 
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -618,7 +622,7 @@ static int gzdClose(FDSTACK_t fps)
 static off_t gzdTell(FDSTACK_t fps)
 {
     off_t pos = -1;
-    gzFile gzfile = fps->fp;
+    gzFile gzfile = gzdFp(fps);
 
     if (gzfile != NULL) {
 #ifdef HAVE_GZSEEK
@@ -644,6 +648,11 @@ const FDIO_t gzdio = &gzdio_s ;
 
 #include <bzlib.h>
 
+static BZFILE *bzdFp(FDSTACK_t fps)
+{
+    return (BZFILE *)fps->fp;
+}
+
 static FD_t bzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
     BZFILE *bzfile = BZ2_bzdopen(fdno, fmode);
@@ -658,12 +667,12 @@ static FD_t bzdFdopen(FD_t fd, int fdno, const char * fmode)
 
 static int bzdFlush(FDSTACK_t fps)
 {
-    return BZ2_bzflush(fps->fp);
+    return BZ2_bzflush(bzdFp(fps));
 }
 
 static ssize_t bzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    BZFILE *bzfile = fps->fp;
+    BZFILE *bzfile = bzdFp(fps);
     ssize_t rc = 0;
 
     if (bzfile)
@@ -679,7 +688,7 @@ static ssize_t bzdRead(FDSTACK_t fps, void * buf, size_t count)
 
 static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
-    BZFILE *bzfile = fps->fp;
+    BZFILE *bzfile = bzdFp(fps);
     ssize_t rc;
 
     rc = BZ2_bzwrite(bzfile, (void *)buf, count);
@@ -692,7 +701,7 @@ static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
 static int bzdClose(FDSTACK_t fps)
 {
-    BZFILE *bzfile = fps->fp;
+    BZFILE *bzfile = bzdFp(fps);
 
     if (bzfile == NULL) return -2;
 
@@ -908,6 +917,11 @@ static FD_t xzdFdopen(FD_t fd, int fdno, const char * fmode)
     return fd;
 }
 
+static LZFILE *lzdFp(FDSTACK_t fps)
+{
+    return (LZFILE*)fps->fp;
+}
+
 static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
     LZFILE *lzfile = lzopen_internal(fmode, fdno, 0);
@@ -922,13 +936,13 @@ static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 
 static int lzdFlush(FDSTACK_t fps)
 {
-    LZFILE *lzfile = fps->fp;
+    LZFILE *lzfile = lzdFp(fps);
     return fflush(lzfile->file);
 }
 
 static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    LZFILE *lzfile = fps->fp;
+    LZFILE *lzfile = lzdFp(fps);
     ssize_t rc = 0;
 
     if (lzfile)
@@ -941,7 +955,7 @@ static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
 
 static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
-    LZFILE *lzfile = fps->fp;
+    LZFILE *lzfile = lzdFp(fps);
     ssize_t rc = 0;
 
     rc = lzwrite(lzfile, (void *)buf, count);
@@ -953,7 +967,7 @@ static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
 static int lzdClose(FDSTACK_t fps)
 {
-    LZFILE *lzfile = fps->fp;
+    LZFILE *lzfile = lzdFp(fps);
     int rc;
 
     if (lzfile == NULL) return -2;
@@ -1128,6 +1142,11 @@ err:
     return NULL;
 }
 
+static rpmzstd zstdFp(FDSTACK_t fps)
+{
+    return (rpmzstd)fps->fp;
+}
+
 static FD_t zstdFdopen(FD_t fd, int fdno, const char * fmode)
 {
     rpmzstd zstd = rpmzstdNew(fdno, fmode);
@@ -1142,7 +1161,7 @@ static FD_t zstdFdopen(FD_t fd, int fdno, const char * fmode)
 
 static int zstdFlush(FDSTACK_t fps)
 {
-    rpmzstd zstd = (rpmzstd) fps->fp;
+    rpmzstd zstd = zstdFp(fps);
 assert(zstd);
     int rc = -1;
 
@@ -1174,7 +1193,7 @@ assert(zstd);
 
 static ssize_t zstdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    rpmzstd zstd = (rpmzstd) fps->fp;
+    rpmzstd zstd = zstdFp(fps);
 assert(zstd);
     ZSTD_outBuffer zob = { buf, count, 0 };
 
@@ -1200,7 +1219,7 @@ assert(zstd);
 
 static ssize_t zstdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
-    rpmzstd zstd = (rpmzstd) fps->fp;
+    rpmzstd zstd = zstdFp(fps);
 assert(zstd);
     ZSTD_inBuffer zib = { buf, count, 0 };
 
@@ -1232,7 +1251,7 @@ assert(zstd);
 
 static int zstdClose(FDSTACK_t fps)
 {
-    rpmzstd zstd = (rpmzstd) fps->fp;
+    rpmzstd zstd = zstdFp(fps);
 assert(zstd);
     int rc = -2;
 
