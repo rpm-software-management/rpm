@@ -717,7 +717,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %__os_install_post	%{___build_post}
 
 # Macro to fix broken permissions in sources
-%_fixperms      %{__chmod} -Rf a+rX,u+w,g-w,o-w
+%_fixperms		%{__chmod} -Rf a+rX,u+w,g-w,o-w
 
 %__smp_use_ncpus() %([ -z "$RPM_BUILD_NCPUS" ] \\\
 	&& RPM_BUILD_NCPUS="%{getncpus %{?1}}"; \\\
@@ -1180,6 +1180,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
+
+# Allow post-setup customization when setup is finished
+%_setup_post %{nil}
 
 # default to plain patch
 %__scm patch

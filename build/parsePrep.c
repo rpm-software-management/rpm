@@ -297,6 +297,14 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	free(fix);
     }
 
+    /* Allow custom action after setup */
+    {	char *post = rpmExpand("%{_setup_post}", NULL);
+	if (post && *post != '%') {
+	    appendMb(mb, post, 1);
+	}
+	free(post);
+    }
+
 exit:
     freeStringBuf(before);
     freeStringBuf(after);
