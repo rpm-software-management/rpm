@@ -560,7 +560,7 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
     /* parse up the build operators */
 
-    printf(_("Building target platforms: %s\n"), targets);
+    fprintf(stderr, _("Building target platforms: %s\n"), targets);
 
     ba->buildAmount &= ~buildCleanMask;
     for (ARGV_const_t target = build_targets; target && *target; target++) {
@@ -568,7 +568,7 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	if (*(target + 1) == NULL)
 	    ba->buildAmount |= cleanFlags;
 
-	printf(_("Building for target %s\n"), *target);
+	fprintf(stderr, _("Building for target %s\n"), *target);
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
