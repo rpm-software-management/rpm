@@ -494,6 +494,7 @@ RPM_PACKAGE_NAME    | Rpm name of the source package
 RPM_PACKAGE_VERSION | Rpm version of the source package
 RPM_PACKAGE_RELEASE | Rpm release of the source package
 RPM_SOURCE_DIR      | The source directory of the package
+RPM_SPECPARTS_DIR   | The directory of dynamically generated spec parts
 
 ### %prep
 
