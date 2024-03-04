@@ -25,13 +25,22 @@
 static rpm_time_t getBuildTime(void)
 {
     rpm_time_t buildTime = 0;
+    char *btMacro;
     char *srcdate;
     time_t epoch;
     char *endptr;
     char *timestr = NULL;
 
-    srcdate = getenv("SOURCE_DATE_EPOCH");
-    if (srcdate && rpmExpandNumeric("%{?use_source_date_epoch_as_buildtime}")) {
+    btMacro = rpmExpand("%{?_buildtime}", NULL);
+    if (*btMacro) {
+        errno = 0;
+        epoch = strtol(btMacro, &endptr, 10);
+        if (btMacro == endptr || *endptr || errno != 0)
+            rpmlog(RPMLOG_ERR, _("unable to parse _buildtime macro\n"));
+	else
+            buildTime = (uint32_t) epoch;
+    } else if ((srcdate = getenv("SOURCE_DATE_EPOCH")) != NULL &&
+	    rpmExpandNumeric("%{?use_source_date_epoch_as_buildtime}")) {
         errno = 0;
         epoch = strtol(srcdate, &endptr, 10);
         if (srcdate == endptr || *endptr || errno != 0)
@@ -40,6 +49,7 @@ static rpm_time_t getBuildTime(void)
             buildTime = (uint32_t) epoch;
     } else
         buildTime = (uint32_t) time(NULL);
+    free(btMacro);
 
     rasprintf(&timestr, "%u", buildTime);
     setenv("RPM_BUILD_TIME", timestr, 1);
