@@ -496,6 +496,13 @@ RPM_PACKAGE_RELEASE | Rpm release of the source package
 RPM_SOURCE_DIR      | The source directory of the package
 RPM_SPECPARTS_DIR   | The directory of dynamically generated spec parts
 
+Note: many of these have macro counterparts which may seem more convenient
+and consistent with the rest of the spec, but one should always use
+the environment variables inside the scripts. The reason for this is
+that macros are evaluated during spec parse and may not be up-to-date,
+whereas environment variables are evaluated at the time of their execution
+in the script.
+
 ### %prep
 
 %prep prepares the sources for building. This is where sources are
