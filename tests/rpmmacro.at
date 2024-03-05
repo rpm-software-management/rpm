@@ -373,6 +373,11 @@ runroot rpm --eval "%dirname /foo"
 runroot rpm --eval "%dirname /foo/"
 runroot rpm --eval "%dirname /foo/foobar"
 runroot rpm --eval "%dirname /foo/foobar/"
+runroot rpm --eval "%basename /foo/foobar"
+runroot rpm --eval "%basename /foo/foobar/"
+runroot rpm --eval "%basename /"
+runroot rpm --eval "%basename foobar/"
+runroot rpm --eval "%basename foobar"
 runroot rpm --define '%xxx /hello/%%%%/world' --eval '%{dirname:%xxx}'
 runroot rpm --eval "%{uncompress}"
 runroot rpm --eval "%{uncompress:}"
@@ -403,6 +408,11 @@ runroot rpm --eval "%verbose foo"
 /
 /foo
 /foo
+foobar
+foobar
+/
+foobar
+foobar
 /hello/%%
 
 bar
