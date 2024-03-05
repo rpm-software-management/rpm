@@ -1301,10 +1301,7 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 
     if (rstreq("basename", me->name)) {
 	buf = xstrdup(argv[1]);
-	if ((b = strrchr(buf, '/')) == NULL)
-	    b = buf;
-	else
-	    b++;
+	b = basename(buf);
     } else if (rstreq("dirname", me->name)) {
 	buf = xstrdup(argv[1]);
 	b = dirname(buf);
