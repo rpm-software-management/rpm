@@ -45,6 +45,10 @@
 
 extern int _rpmlua_have_forked;
 
+#define check_deprecated() \
+    fprintf(stderr, \
+	"warning: posix.%s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead\n", __func__+1)
+
 static const char *filetype(mode_t m)
 {
 	if (S_ISREG(m))		return "regular";
@@ -333,6 +337,8 @@ static int Pmkfifo(lua_State *L)		/** mkfifo(path) */
 
 static int Pexec(lua_State *L)			/** exec(path,[args]) */
 {
+	check_deprecated();
+
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
 	char **argv;
@@ -355,6 +361,8 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 
 static int Pfork(lua_State *L)			/** fork() */
 {
+	check_deprecated();
+
 	pid_t pid = fork();
 	if (pid == 0) {
 	    _rpmlua_have_forked = 1;
@@ -365,6 +373,8 @@ static int Pfork(lua_State *L)			/** fork() */
 
 static int Pwait(lua_State *L)			/** wait([pid]) */
 {
+	check_deprecated();
+
 	pid_t pid = luaL_optinteger(L, 1, -1);
 	return pushresult(L, waitpid(pid, NULL, 0), NULL);
 }

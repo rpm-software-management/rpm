@@ -292,7 +292,7 @@ f = f:reopen('r.gzdio')
 print(f:read())}
 ```
 
-#### redirect2null(fdno)
+#### redirect2null(fdno) (DEPRECATED)
 
 Redirect file descriptor fdno to /dev/null (rpm >= 4.16, in rpm 4.13-4.15
 this was known as posix.redirect2null())
@@ -306,6 +306,9 @@ elseif pid > 0 then
     posix.wait(pid)
 end
 ```
+
+This function is deprecated and scheduled for removal in 6.0,
+use `rpm.execute()` instead.
 
 #### undefine(name)
 
@@ -440,10 +443,12 @@ if not posix.chmod(f, 100) then
 end
 ```
 
-#### exec(path [, args...])
+#### exec(path [, args...]) (DEPRECATED)
 
 Execute a program. This may only be performed after posix.fork().
-For executing external commands it's recommended to use `rpm.execute()` instead.
+
+This function is deprecated and scheduled for removal in 6.0,
+use `rpm.execute()` instead.
 
 #### files([path])
 
@@ -456,10 +461,12 @@ for f in posix.files('/') do
 end
 ```
 
-#### fork()
+#### fork() (DEPRECATED)
 
 Fork a new process. 
-For executing external commands it's recommended to use `rpm.execute()` instead.
+
+This function is deprecated and scheduled for removal in 6.0,
+use `rpm.execute()` instead.
 
 ```
 pid = posix.fork()
@@ -724,7 +731,7 @@ posix.mkdir('aaa')
 posix.utime('aaa', 0, 0)
 ```
 
-#### wait([pid])
+#### wait([pid]) (DEPRECATED)
 
 Wait for a child process. If pid is specified wait for that particular child.
 
@@ -736,6 +743,9 @@ elseif pid > 0 then
     posix.wait(pid)
 end
 ```
+
+This function is deprecated and scheduled for removal in 6.0,
+use `rpm.execute()` instead.
 
 #### setenv(name, value [, overwrite])
 

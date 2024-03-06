@@ -1377,6 +1377,8 @@ runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect
 [0],
 [nil	Bad file descriptor	9.0
 ],
-[warning: runaway fork() in Lua script]
+[warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead
+warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead
+warning: runaway fork() in Lua script]
 )
 RPMTEST_CLEANUP
