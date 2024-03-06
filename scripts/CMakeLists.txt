@@ -5,7 +5,6 @@ install(PROGRAMS
 	check-files check-prereqs
 	check-buildroot check-rpaths check-rpaths-worker
 	find-lang.sh find-requires find-provides
-	perl.prov perl.req
 	pkgconfigdeps.sh
 	ocamldeps.sh
 	fontconfig.prov script.req
