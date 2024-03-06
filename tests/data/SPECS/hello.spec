@@ -5,16 +5,16 @@
 # package which can be built under runroot in the test-suite.
 
 Summary: hello -- hello, world rpm
-Name: hello
+ Name: hello
 Version: 1.0
-Release: 1
-Group: Utilities
+	Release: 1
+ Group: Utilities
 License: GPL
 SourceLicense: GPL, ASL 1.0
 Distribution: RPM test suite.
 URL: http://rpm.org
-Source0: hello-1.0.tar.gz
-Patch0: hello-1.0-modernize.patch
+	Source0: hello-1.0.tar.gz
+ Patch0: hello-1.0-modernize.patch
 Prefix: /usr
 
 %description

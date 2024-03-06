@@ -293,7 +293,9 @@ int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag)
     }
 
     if (specline) {
-	nonum = parseTagNumber(spec->line + strlen(name), &num);
+	char * s = spec->line;
+	SKIPSPACE(s);
+	nonum = parseTagNumber(s + strlen(name), &num);
 	if (nonum < 0) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
 		     spec->lineNum, name, spec->line);
@@ -1133,10 +1135,11 @@ static struct PreambleRec_s const preambleList[] = {
 static int findPreambleTag(rpmSpec spec, PreambleRec * pr, const char ** macro, char * lang)
 {
     PreambleRec p;
-    char *s;
+    char *s = spec->line;
+    SKIPSPACE(s);
 
     for (p = preambleList; p->token != NULL; p++) {
-	if (!(p->token && !rstrncasecmp(spec->line, p->token, p->len)))
+	if (!(p->token && !rstrncasecmp(s, p->token, p->len)))
 	    continue;
 	if (p->deprecated) {
 	    rpmlog(RPMLOG_WARNING, _("line %d: %s is deprecated: %s\n"),
@@ -1147,7 +1150,7 @@ static int findPreambleTag(rpmSpec spec, PreambleRec * pr, const char ** macro, 
     if (p == NULL || p->token == NULL)
 	return 1;
 
-    s = spec->line + p->len;
+    s = s + p->len;
     SKIPSPACE(s);
 
     switch (p->type) {

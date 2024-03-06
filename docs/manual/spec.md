@@ -75,6 +75,10 @@ if used in them.
 
 ### Preamble tags
 
+Since RPM 4.20 preamble tags can be indented with white space. Older
+versions require the Tags to be at the beginning of a line. Comments
+and empty lines are allowed.
+
 #### Name
 
 The Name tag contains the proper name of the package. Names must not
