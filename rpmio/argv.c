@@ -248,4 +248,29 @@ char *argvJoin(ARGV_const_t argv, const char *sep)
 
     return dest;
 }
-    
+
+ARGV_t argvFromVaList(const char *fmt, va_list ap)
+{
+    ARGV_t argv = argvNew();
+    int i = 0;
+    const char *s = NULL;
+    const char *p = fmt;
+
+    while (*p != '\0') {
+	switch (*p) {
+	    case 'i':
+		i = va_arg(ap, int);
+		argvAddNum(&argv, i);
+		break;
+	    case 's':
+		s = va_arg(ap, const char *);
+		argvAdd(&argv, s);
+		break;
+	    default:
+		break;
+	}
+	p++;
+    }
+
+    return argv;
+}

@@ -252,7 +252,8 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 
     if (script) {
 	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
-	rc = runScript(psm->ts, psm->te, h, pfx.data, script, psm->scriptArg, -1);
+	rpmScriptSetArgs(script, "i", psm->scriptArg);
+	rc = runScript(psm->ts, psm->te, h, pfx.data, script);
 	rpmtdFreeData(&pfx);
     }
 
@@ -313,8 +314,8 @@ static rpmRC execSysusers(rpmpsm psm, Header h, const char *cmd,
 	    rpmScriptSetNextFileFunc(script, nextarg, &avi);
 	    headerGet(h, RPMTAG_INSTPREFIXES, &pfx,
 			HEADERGET_ALLOC|HEADERGET_ARGV);
-	    rc = runScript(psm->ts, psm->te, h, pfx.data, script,
-			psm->scriptArg, -1);
+	    rpmScriptSetArgs(script, "i", psm->scriptArg);
+	    rc = runScript(psm->ts, psm->te, h, pfx.data, script);
 	    rpmtdFreeData(&pfx);
 	}
 	rpmScriptFree(script);
@@ -482,7 +483,8 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
 		arg1 += countCorrection;
-		rc = runScript(ts, te, trigH, pfx.data, script, arg1, arg2);
+		rpmScriptSetArgs(script, "ii", arg1, arg2);
+		rc = runScript(ts, te, trigH, pfx.data, script);
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;
 

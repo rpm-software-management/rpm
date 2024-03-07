@@ -183,6 +183,15 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
  */
 char *argvJoin(ARGV_const_t argv, const char *sep);
 
+/** \ingroup rpmargv
+ * Create an argv array from a va_list.
+ * @param *fmt		printf(3)-like format string
+ *			(supported specifiers: 'i' for int and 's' for string)
+ * @param ap		va_list to use
+ * @return		pointer to new argv
+ */
+ARGV_t argvFromVaList(const char *fmt, va_list ap);
+
 #ifdef __cplusplus
 }
 #endif

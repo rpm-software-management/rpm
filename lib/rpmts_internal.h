@@ -132,7 +132,7 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
 
 RPM_GNUC_INTERNAL
 rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
-		       rpmScript script, int arg1, int arg2);
+		rpmScript script);
 
 
 RPM_GNUC_INTERNAL

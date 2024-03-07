@@ -34,6 +34,7 @@ struct rpmScript_s {
     rpmscriptTypes type;	/* script type */
     rpmTagVal tag;		/* script tag */
     ARGV_t prog;		/* scriptlet program and its arguments */
+    ARGV_t args;		/* scriptlet call arguments */
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
@@ -134,7 +135,7 @@ int rpmScriptChrootOut(rpmScript script)
  */
 static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2,
+		   ARGV_t * argvp, ARGV_t args, const char *script,
 		   scriptNextFileFunc nextFileFunc)
 {
     char *scriptbuf = NULL;
@@ -162,16 +163,13 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	lua_setglobal(L, "RPM_INSTALL_PREFIX");
     }
 
-    if (arg1 >= 0)
-	argvAddNum(argvp, arg1);
-    if (arg2 >= 0)
-	argvAddNum(argvp, arg2);
-
-    if (arg1 >= 0 || arg2 >= 0) {
-	/* Hack to convert arguments to numbers for backwards compat. Ugh. */
+    if (args) {
+	argvAppend(argvp, args);
+	/* Hack to convert user arguments to numbers for backwards compat. Ugh.
+	 * FIXME: These args are all numbers at the moment but if that ever
+	 * changes, make sure to update this code! */
 	rstrscat(&scriptbuf,
-		arg1 >= 0 ? "arg[2] = tonumber(arg[2]);" : "",
-		arg2 >= 0 ? "arg[3] = tonumber(arg[3]);" : "",
+		"for i=2,#arg do; arg[i] = tonumber(arg[i]); end;",
 		script, NULL);
         script = scriptbuf;
     }
@@ -310,7 +308,7 @@ exit:
  */
 static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2,
+		   ARGV_t * argvp, ARGV_t args, const char *script,
 		   scriptNextFileFunc nextFileFunc)
 {
     FD_t out = NULL;
@@ -335,12 +333,8 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	}
 
 	argvAdd(argvp, fn);
-	if (arg1 >= 0) {
-	    argvAddNum(argvp, arg1);
-	}
-	if (arg2 >= 0) {
-	    argvAddNum(argvp, arg2);
-	}
+	if (args)
+	    argvAppend(argvp, args);
     }
 
     if (pipe(inpipe) < 0) {
@@ -457,8 +451,8 @@ exit:
     return rc;
 }
 
-rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-		   ARGV_const_t prefixes, rpmPlugins plugins)
+rpmRC rpmScriptRun(rpmScript script, FD_t scriptFd, ARGV_const_t prefixes,
+		   rpmPlugins plugins)
 {
     if (script == NULL) return RPMRC_OK;
 
@@ -483,9 +477,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
-	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
+	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->args, script->body, script->nextFileFunc);
 	} else {
-	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
+	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->args, script->body, script->nextFileFunc);
 	}
     }
 
@@ -557,6 +551,15 @@ void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
     script->nextFileFunc = xmalloc(sizeof(*script->nextFileFunc));
     script->nextFileFunc->func = func;
     script->nextFileFunc->param = param;
+}
+
+void rpmScriptSetArgs(rpmScript script, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    argvFree(script->args);
+    script->args = argvFromVaList(fmt, ap);
+    va_end(ap);
 }
 
 rpmTagVal triggerDsTag(rpmscriptTriggerModes tm)
@@ -702,6 +705,7 @@ rpmScript rpmScriptFree(rpmScript script)
 {
     if (script) {
 	argvFree(script->prog);
+	argvFree(script->args);
 	free(script->body);
 	free(script->descr);
 	free(script->nextFileFunc);

@@ -1692,7 +1692,7 @@ rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
  * @return		0 on success
  */
 rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
-		       rpmScript script, int arg1, int arg2)
+		rpmScript script)
 {
     rpmte xte = te;
     rpmRC stoprc, rc = RPMRC_OK;
@@ -1714,8 +1714,7 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 	sfd = rpmtsScriptFd(ts);
 
     rpmswEnter(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
-    rc = rpmScriptRun(script, arg1, arg2, sfd,
-		      prefixes, rpmtsPlugins(ts));
+    rc = rpmScriptRun(script, sfd, prefixes, rpmtsPlugins(ts));
     rpmswExit(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* Map warn-only errors to "notfound" for script stop callback */

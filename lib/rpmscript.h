@@ -74,8 +74,8 @@ RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-                   ARGV_const_t prefixes, rpmPlugins plugins);
+rpmRC rpmScriptRun(rpmScript script, FD_t scriptFd, ARGV_const_t prefixes,
+		   rpmPlugins plugins);
 
 RPM_GNUC_INTERNAL
 rpmTagVal rpmScriptTag(rpmScript script);
@@ -95,6 +95,9 @@ int rpmScriptChrootIn(rpmScript script);
 
 RPM_GNUC_INTERNAL
 int rpmScriptChrootOut(rpmScript script);
+
+RPM_GNUC_INTERNAL
+void rpmScriptSetArgs(rpmScript script, const char *fmt, ...);
 
 #ifdef __cplusplus
 }
