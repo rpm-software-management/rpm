@@ -352,17 +352,6 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 #%_netsharedpath
 
-#	(experimental)
-#	The type of pattern match used on rpmdb iterator selectors:
-#	"default"	simple glob-like regex, periods will be escaped,
-#			splats will have period prepended, full "^...$" match
-#			required. Also, file path tags will use glob(7).
-#	"strcmp"	compare strings
-#	"regex"		regex(7) patterns using regcomp(3)/regexec(3)
-#	"glob"		glob(7) patterns using fnmatch(3)
-#
-%_query_selector_match	default
-
 #	Configurable packager information, same as Packager: in a specfile.
 #
 #%packager
