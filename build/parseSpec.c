@@ -975,7 +975,7 @@ static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,
 		argvAdd(&av, "--");
 		argvAppend(&av, spec->buildopts[sc->section]);
 		args = argvJoin(av, " ");
-		free(av);
+		argvFree(av);
 	    }
 	    char *buf = rstrscat(NULL, "%", sc->name, "\n",
 				       "%", mn, " ",
