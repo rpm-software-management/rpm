@@ -83,6 +83,17 @@ runroot rpm -qpl --noartifact /build/RPMS/*/amhello-1.0-1alt.*.rpm
 /usr/share/doc/amhello/README.distro
 ],
 [ignore])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bb \
+	--define "buildsys bogons" \
+	--quiet /data/SPECS/amhello.spec
+],
+[1],
+[],
+[error: line 10: Unknown buildsystem: bogons
+])
+
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -b steps])
