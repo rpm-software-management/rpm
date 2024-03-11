@@ -50,15 +50,6 @@ BuildOption(conf): --enable-fu
 Passing these per-section options to the actual buildsystem of the
 package is the responsibility of the buildsystem specific macros.
 
-3) Complex packages can have things like multiple build systems, in
-which case you might want to invoke the macros manually, eg.
-
-```
-%buildsystem_autotools_build
-cd python
-%buildsystem_python_build
-```
-
 ## Supporting new build systems
 
 Supporting new build system types is just a matter of declaring a few
