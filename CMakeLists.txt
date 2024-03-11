@@ -140,7 +140,6 @@ function(makemacros)
 	findutil(__OBJDUMP objdump)
 	findutil(__STRIP strip)
 	findutil(__SYSTEMD_SYSUSERS systemd-sysusers)
-	findutil(__AWK awk)
 	findutil(__AR ar)
 	findutil(__AS as)
 	findutil(__CPP cpp)
@@ -302,6 +301,9 @@ if (WITH_IMAEVM)
 	target_include_directories(IMA::IMA INTERFACE "${IMA_INCLUDE_DIR}")
 endif()
 
+find_program(__AWK awk REQUIRED)
+mark_as_advanced(__AWK)
+
 find_program(__FIND_DEBUGINFO find-debuginfo)
 mark_as_advanced(__FIND_DEBUGINFO)
 
@@ -341,7 +343,7 @@ foreach(f ${OPTINCS})
 endforeach()
 
 function(id0name var file)
-	execute_process(COMMAND awk -F: "$3==0 {print $1;exit}" ${file}
+	execute_process(COMMAND ${__AWK} -F: "$3==0 {print $1;exit}" ${file}
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 			OUTPUT_VARIABLE name)
 	if ("${name}" STREQUAL "")

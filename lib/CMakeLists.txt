@@ -70,7 +70,7 @@ if(WITH_CAP)
 endif()
 
 add_custom_command(OUTPUT tagtbl.C
-	COMMAND AWK=gawk ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.C
+	COMMAND AWK=${__AWK} ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.C
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh
 )
 
