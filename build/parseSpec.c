@@ -1001,6 +1001,7 @@ static rpmRC parseBuildsystem(rpmSpec spec)
 	if (!rc)
 	    unlink(path);
 	Fclose(fd);
+	free(path);
     }
 
 exit:
