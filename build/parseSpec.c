@@ -952,6 +952,10 @@ int checkBuildsystem(rpmSpec spec, const char *name)
 	    continue;
 	char *mn = rstrscat(NULL, "buildsystem_", name, "_", sc->name, NULL);
 	if (!rpmMacroIsParametric(NULL, mn)) {
+	    rpmlog(RPMLOG_DEBUG,
+		"required parametric macro %%%s not defined buildsystem %s\n",
+		mn, name);
+
 	    rpmlog(RPMLOG_ERR, _("line %d: Unknown buildsystem: %s\n"),
 		    spec->lineNum, name);
 	    rc = -1;
