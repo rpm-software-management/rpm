@@ -914,16 +914,17 @@ exit:
 struct sectname_s {
     const char *name;
     int section;
+    int required;
 };
 
 struct sectname_s sectList[] = {
-    { "prep", SECT_PREP },
-    { "conf", SECT_CONF },
-    { "generate_buildrequires", SECT_BUILDREQUIRES },
-    { "build", SECT_BUILD },
-    { "install", SECT_INSTALL },
-    { "check", SECT_CHECK },
-    { "clean", SECT_CLEAN },
+    { "prep", SECT_PREP, 0 },
+    { "conf", SECT_CONF, 1 },
+    { "generate_buildrequires", SECT_BUILDREQUIRES, 0 },
+    { "build", SECT_BUILD, 1 },
+    { "install", SECT_INSTALL, 1 },
+    { "check", SECT_CHECK, 0 },
+    { "clean", SECT_CLEAN, 0 },
     { NULL, -1 }
 };
 
@@ -937,6 +938,27 @@ int getSection(const char *name)
 	}
     }
     return sn;
+}
+
+int checkBuildsystem(rpmSpec spec, const char *name)
+{
+    if (rpmCharCheck(spec, name,
+			ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME))
+	return -1;
+
+    int rc = 0;
+    for (struct sectname_s *sc = sectList; rc == 0 && sc->name; sc++) {
+	if (!sc->required)
+	    continue;
+	char *mn = rstrscat(NULL, "buildsystem_", name, "_", sc->name, NULL);
+	if (!rpmMacroIsParametric(NULL, mn)) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Unknown buildsystem: %s\n"),
+		    spec->lineNum, name);
+	    rc = -1;
+	}
+	free(mn);
+    }
+    return rc;
 }
 
 static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,

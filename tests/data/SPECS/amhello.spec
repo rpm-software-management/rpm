@@ -1,11 +1,13 @@
 %bcond_with alt
 
+%{!?buildsys:%global buildsys autotools}
+
 Name: amhello
 Version: 1.0
 Source: amhello-%{version}.tar.gz
 License: GPLv2
 Summary: Autotools example
-BuildSystem: autotools
+BuildSystem: %{buildsys}
 
 %if %{with alt}
 BuildOption: --program-prefix=alt-

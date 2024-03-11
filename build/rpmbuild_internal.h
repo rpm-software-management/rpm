@@ -638,6 +638,9 @@ RPM_GNUC_INTERNAL
 int checkForDuplicates(Header h);
 
 RPM_GNUC_INTERNAL
+int checkBuildsystem(rpmSpec spec, const char *buildsys);
+
+RPM_GNUC_INTERNAL
 void fillOutMainPackage(Header h);
 
 RPM_GNUC_INTERNAL

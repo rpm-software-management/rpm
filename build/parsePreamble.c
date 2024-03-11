@@ -837,11 +837,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, enum parseStages stage,
     switch (tag) {
     case RPMTAG_BUILDSYSTEM:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field,
-			ALLOWED_CHARS_NAME, ALLOWED_FIRSTCHARS_NAME))
-	{
+	if (checkBuildsystem(spec, field))
 	    goto exit;
-	}
 	break;
     case RPMTAG_BUILDOPTION:
 	if (addBuildOption(spec, lang, field))
