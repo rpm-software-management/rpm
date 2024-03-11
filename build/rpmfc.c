@@ -295,6 +295,8 @@ static int getOutputFrom(ARGV_t argv,
 	return -1;
     }
     
+    void *oldhandler = signal(SIGPIPE, SIG_IGN);
+
     child = fork();
     if (child < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
@@ -305,9 +307,12 @@ static int getOutputFrom(ARGV_t argv,
 	    close(fromProg[0]);
 	    close(fromProg[1]);
 	}
-	return -1;
+	ret = -1;
+	goto exit;
     }
     if (child == 0) {
+	signal(SIGPIPE, SIG_DFL);
+
 	close(toProg[1]);
 	close(fromProg[0]);
 
@@ -441,6 +446,7 @@ reap:
     ret = 0;
 
 exit:
+    signal(SIGPIPE, oldhandler);
     return ret;
 }
 
