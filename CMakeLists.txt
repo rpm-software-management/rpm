@@ -306,7 +306,7 @@ if (WITH_IMAEVM)
 	target_include_directories(IMA::IMA INTERFACE "${IMA_INCLUDE_DIR}")
 endif()
 
-find_program(AWK awk REQUIRED)
+find_program(AWK gawk mawk nawk awk REQUIRED)
 mark_as_advanced(AWK)
 
 find_program(FIND_DEBUGINFO find-debuginfo)
