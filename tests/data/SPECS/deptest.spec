@@ -6,15 +6,15 @@ Summary:	Testing dependency behavior
 Group:		Testing
 License:	GPL
 BuildArch:	noarch
-%{?reqs:Requires: %{reqs}}
+%{?reqs:Requires%{?reqflags:(%{reqflags})}: %{reqs}}
 %{?provs:Provides: %{provs}}
 %{?cfls:Conflicts: %{cfls}}
 %{?obs:Obsoletes: %{obs}}
-%{?recs:Recommends: %{recs}}
-%{?sugs:Suggests: %{sugs}}
-%{?sups:Supplements: %{sups}}
-%{?ens:Enhances: %{ens}}
-%{?ord:OrderWithRequires: %{ord}}
+%{?recs:Recommends%{?recflags:(%{recflags})}: %{recs}}
+%{?sugs:Suggests%{?sugflags:(%{sugflags})}: %{sugs}}
+%{?sups:Supplements%{?supflags:(%{supflags})}: %{sups}}
+%{?ens:Enhances%{?ensflags:(%{ensflags})}: %{ens}}
+%{?ord:OrderWithRequires%{?ordflags:(%{ordflags})}: %{ord}}
 %{?buildreqs:BuildRequires: %{buildreqs}}
 %{?buildcfls:BuildConflicts: %{buildcfls}}
 
