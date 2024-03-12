@@ -25,7 +25,7 @@ export TZ
 unset SOURCE_DATE_EPOCH
 
 RPM_XFAIL=${RPM_XFAIL-1}
-if test -x "@__FIND_DEBUGINFO@"; then
+if test -x "@FIND_DEBUGINFO@"; then
     DEBUGINFO_DISABLED=false;
 else
     DEBUGINFO_DISABLED=true;

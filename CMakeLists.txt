@@ -64,6 +64,9 @@ include(CheckSymbolExists)
 add_compile_definitions(_GNU_SOURCE)
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
+# Find a (system) utility in canonical FHS paths, excluding $PATH.  Useful for
+# when the path is to be used at RPM runtime, such as in the macro files.  The
+# MYPATH environment variable can be used to augment these paths.
 function(findutil UTIL TRY)
 	list(GET TRY 0 util)
 	find_program(${UTIL}
@@ -140,6 +143,8 @@ function(makemacros)
 	findutil(__OBJDUMP objdump)
 	findutil(__STRIP strip)
 	findutil(__SYSTEMD_SYSUSERS systemd-sysusers)
+	findutil(__FIND_DEBUGINFO find-debuginfo)
+	findutil(__AWK awk)
 	findutil(__AR ar)
 	findutil(__AS as)
 	findutil(__CPP cpp)
@@ -301,11 +306,11 @@ if (WITH_IMAEVM)
 	target_include_directories(IMA::IMA INTERFACE "${IMA_INCLUDE_DIR}")
 endif()
 
-find_program(__AWK awk REQUIRED)
-mark_as_advanced(__AWK)
+find_program(AWK awk REQUIRED)
+mark_as_advanced(AWK)
 
-find_program(__FIND_DEBUGINFO find-debuginfo)
-mark_as_advanced(__FIND_DEBUGINFO)
+find_program(FIND_DEBUGINFO find-debuginfo)
+mark_as_advanced(FIND_DEBUGINFO)
 
 function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
@@ -343,7 +348,7 @@ foreach(f ${OPTINCS})
 endforeach()
 
 function(id0name var file)
-	execute_process(COMMAND ${__AWK} -F: "$3==0 {print $1;exit}" ${file}
+	execute_process(COMMAND ${AWK} -F: "$3==0 {print $1;exit}" ${file}
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 			OUTPUT_VARIABLE name)
 	if ("${name}" STREQUAL "")
