@@ -835,21 +835,23 @@ RPMDB_INIT
 runroot rpmbuild -bb --quiet \
 	--define "pkg weakdeps" \
 	--define "recs foo > 1.2.3" \
+	--define "recflags post" \
 	--define "sugs bar >= 0.1.2" \
 	--define "sups baz" \
+	--define "supflags preun" \
 	--define "ens zap = 3" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -qp --recommends /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
-runroot rpm -qp --suggests /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
-runroot rpm -qp --supplements /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
-runroot rpm -qp --enhances /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qpv --recommends /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qpv --suggests /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qpv --supplements /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
+runroot rpm -qpv --enhances /build/RPMS/noarch/deptest-weakdeps-1.0-1.noarch.rpm
 ],
 [0],
-[foo > 1.2.3
-bar >= 0.1.2
-baz
-zap = 3
+[post: foo > 1.2.3
+manual: bar >= 0.1.2
+preun: baz
+manual: zap = 3
 ],
 [ignore])
 RPMTEST_CLEANUP
