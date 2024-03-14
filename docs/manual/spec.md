@@ -71,6 +71,22 @@ other conditionals.
 %if-conditionals are not macros, and are unlikely to yield expected results
 if used in them.
 
+### Sections ###
+
+The spec file is divided in several sections. Except of the preamble
+of the main package right at the start spec file (and spec parts)
+sections begin with a percent sign and the name of the section. They
+need to be at the start of a new line. Most section types allow
+passing options in this first line. These section markers looks like
+macros (with parameters) but are not.
+
+Each section type has its own rules and syntax. Conditionals are
+evaluated first and then macros expanded. Only then are the sections
+parsed by the rules of the section types. The content of build and
+runtime scripts is then passed on the the interpreter - possible being
+stored in a header tag inbetween. The syntax of the other sections is
+described below.
+
 ## Preamble
 
 ### Preamble tags
