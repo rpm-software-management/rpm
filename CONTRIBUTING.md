@@ -54,7 +54,9 @@ in another branch and only push to the branch of the pull request when
 you are ready for further feedback.
 
 This is a project with limited resources, please do not flood us.
-A pull request with failing CI tests will generally not be looked at.
+Please ensure "make ci" passes locally before submitting a PR.
+A pull request with failing CI tests will generally not be looked at,
+so keep on eye on the checks until you get all green.
 
 ## Coding Style
 
