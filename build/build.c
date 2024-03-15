@@ -78,7 +78,7 @@ static char * buildHost(void)
 
 /**
  */
-static rpmRC doRmSource(rpmSpec spec)
+static int doRmSource(rpmSpec spec)
 {
     struct Source *p;
     Package pkg;
@@ -100,7 +100,7 @@ static rpmRC doRmSource(rpmSpec spec)
 	}
     }
 exit:
-    return !rc ? 0 : 1;
+    return rc;
 }
 
 /*
@@ -290,9 +290,9 @@ static int doBuildRequires(rpmSpec spec, int test)
     return rc;
 }
 
-static rpmRC doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
+static int doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
 {
-    rpmRC rc = RPMRC_OK;
+    int rc = RPMRC_OK;
     rpmps ps = rpmSpecCheckDeps(ts, spec);
 
     if (ps) {
@@ -323,9 +323,9 @@ static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
     return rc;
 }
 
-static rpmRC buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
+static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 {
-    rpmRC rc = RPMRC_OK;
+    int rc = RPMRC_OK;
     int missing_buildreqs = 0;
     int test = (what & RPMBUILD_NOBUILD);
     char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
