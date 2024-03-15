@@ -1262,7 +1262,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     spec->recursing = recursing;
     spec->flags = flags;
 
-    if (parseSpecSection(&spec, 0) != RPMRC_OK)
+    if (parseSpecSection(&spec, PARSE_SPECFILE) != RPMRC_OK)
 	goto errxit;
 
     if (spec->sections[SECT_CLEAN] == NULL) {
