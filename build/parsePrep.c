@@ -30,7 +30,7 @@ static void appendMb(rpmMacroBuf mb, const char *s, int nl)
  */
 static int notCompressed(const char * fn)
 {
-    rpmCompressedMagic compressed = -1;
+    rpmCompressedMagic compressed = COMPRESSED_OTHER; /* arbitrary non-zero */
     struct stat sb;
 
     if (lstat(fn, &sb) == 0)
