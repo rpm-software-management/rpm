@@ -62,10 +62,11 @@ extern const char * macrofiles;
 #define RPMEXPAND_KEEP_QUOTED	(1 << 1)	/*!< do not remove quotes from expanded macros */
 #define RPMEXPAND_HAVE_QUOTED	(1 << 2)	/*!< expanded macros contain quote characters */
 
-typedef enum rpmMacroFlags_e {
+enum rpmMacroFlags_e {
     RPMMACRO_DEFAULT	= 0,
     RPMMACRO_LITERAL	= (1 << 0),		/*!< do not expand body of macro */
-} rpmMacroFlags;
+};
+typedef rpmFlags rpmMacroFlags;
 
 /** \ingroup rpmmacro
  * Print macros to file stream.

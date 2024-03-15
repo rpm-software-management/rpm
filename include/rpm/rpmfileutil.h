@@ -34,10 +34,12 @@ typedef enum rpmCompressedMagic_e {
 /** \ingroup rpmfileutil
  * RPM glob flags, largely modelled after glob(3) flags.
  */
-typedef enum rpmglobFlags_e {
+enum rpmglobFlags_e {
     RPMGLOB_NONE		= 0,
     RPMGLOB_NOCHECK		= (1 << 0), /*!< same as GLOB_NOCHECK */
-} rpmglobFlags;
+};
+
+typedef rpmFlags rpmglobFlags;
 
 /** \ingroup rpmfileutil
  * Calculate a file digest and size.
