@@ -244,7 +244,7 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
 struct rpmPluginHooks_s fapolicyd_hooks = {
     .init = fapolicyd_init,
     .cleanup = fapolicyd_cleanup,
-    .scriptlet_pre = fapolicyd_scriptlet_pre,
     .tsm_post = fapolicyd_tsm_post,
+    .scriptlet_pre = fapolicyd_scriptlet_pre,
     .fsm_file_prepare = fapolicyd_fsm_file_prepare,
 };
