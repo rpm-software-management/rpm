@@ -171,7 +171,7 @@ rpmTagType rpmTagGetType(rpmTagVal tag)
 rpmTagVal rpmTagGetValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
-    rpmTagType tagval = RPMTAG_NOT_FOUND;
+    rpmTagVal tagval = RPMTAG_NOT_FOUND;
 
     pthread_once(&tagsLoaded, loadTags);
 
