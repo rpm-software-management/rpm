@@ -1288,7 +1288,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 	    .vfylevel = vfylevel,
 	};
 	int verified = 0;
-	rpmRC prc = RPMRC_FAIL;
+	int prc = RPMRC_FAIL;
 
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
 	FD_t fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
