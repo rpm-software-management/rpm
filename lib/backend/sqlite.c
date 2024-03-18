@@ -53,7 +53,7 @@ static int dbiCursorReset(dbiCursor dbc)
     return 0;
 }
 
-static int dbiCursorResult(dbiCursor dbc)
+static rpmRC dbiCursorResult(dbiCursor dbc)
 {
     int rc = sqlite3_errcode(dbc->sdb);
     int err = (rc != SQLITE_OK && rc != SQLITE_DONE && rc != SQLITE_ROW);
@@ -64,7 +64,7 @@ static int dbiCursorResult(dbiCursor dbc)
     return err ? RPMRC_FAIL : RPMRC_OK;
 }
 
-static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
+static rpmRC dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
 {
     if (dbc->stmt == NULL) {
 	char *cmd = NULL;
@@ -83,7 +83,7 @@ static int dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
     return dbiCursorResult(dbc);
 }
 
-static int dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
+static rpmRC dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
 				void *blob, unsigned int bloblen)
 {
     int rc = 0;
@@ -100,7 +100,7 @@ static int dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
     return dbiCursorResult(dbc);
 }
 
-static int dbiCursorBindIdx(dbiCursor dbc, const void *key, int keylen,
+static rpmRC dbiCursorBindIdx(dbiCursor dbc, const void *key, int keylen,
 				dbiIndexItem rec)
 {
     int rc;
@@ -530,7 +530,7 @@ static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor dbc,
 
 static rpmRC sqlite_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    int rc;
+    rpmRC rc;
 
     if (hdrNum) {
 	rc = sqlite_pkgdbByKey(dbi, dbc, hdrNum, hdrBlob, hdrLen);
@@ -623,7 +623,7 @@ static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
 
 static rpmRC sqlite_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int searchType)
 {
-    int rc;
+    rpmRC rc;
     if (keyp) {
 	rc = sqlite_idxdbByKey(dbi, dbc, keyp, keylen, searchType, set);
     } else {
