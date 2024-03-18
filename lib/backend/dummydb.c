@@ -100,9 +100,9 @@ struct rpmdbOps_s dummydb_dbops = {
     .cursorInit	= dummydb_CursorInit,
     .cursorFree	= dummydb_CursorFree,
 
+    .pkgdbGet	= dummydb_pkgdbGet,
     .pkgdbPut	= dummydb_pkgdbPut,
     .pkgdbDel	= dummydb_pkgdbDel,
-    .pkgdbGet	= dummydb_pkgdbGet,
     .pkgdbKey	= dummydb_pkgdbKey,
 
     .idxdbGet	= dummydb_idxdbGet,

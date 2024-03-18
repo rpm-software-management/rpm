@@ -694,9 +694,9 @@ struct rpmdbOps_s sqlite_dbops = {
     .cursorInit	= sqlite_CursorInit,
     .cursorFree	= sqlite_CursorFree,
 
+    .pkgdbGet	= sqlite_pkgdbGet,
     .pkgdbPut	= sqlite_pkgdbPut,
     .pkgdbDel	= sqlite_pkgdbDel,
-    .pkgdbGet	= sqlite_pkgdbGet,
     .pkgdbKey	= sqlite_pkgdbKey,
 
     .idxdbGet	= sqlite_idxdbGet,
