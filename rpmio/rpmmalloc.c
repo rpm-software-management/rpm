@@ -40,7 +40,7 @@ rpmMemFailFunc rpmSetMemFail(rpmMemFailFunc func, void *data)
 
 void * rmalloc (size_t size)
 {
-    register void *value;
+    void *value;
     if (size == 0) size++;
     value = malloc (size);
     if (value == NULL)
@@ -50,7 +50,7 @@ void * rmalloc (size_t size)
 
 void * rcalloc (size_t nmemb, size_t size)
 {
-    register void *value;
+    void *value;
     if (size == 0) size++;
     if (nmemb == 0) nmemb++;
     value = calloc (nmemb, size);
@@ -61,7 +61,7 @@ void * rcalloc (size_t nmemb, size_t size)
 
 void * rreallocn (void *ptr, size_t nmemb, size_t size)
 {
-    register void *value = NULL;
+    void *value = NULL;
     if (size == 0) size++;
     if (nmemb == 0) nmemb++;
     if (nmemb < SIZE_MAX / size)
@@ -73,7 +73,7 @@ void * rreallocn (void *ptr, size_t nmemb, size_t size)
 
 void * rrealloc (void *ptr, size_t size)
 {
-    register void *value;
+    void *value;
     if (size == 0) size++;
     value = realloc (ptr, size);
     if (value == NULL)
