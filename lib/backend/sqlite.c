@@ -491,12 +491,13 @@ static rpmRC sqlite_stepPkg(dbiCursor dbc, unsigned char **hdrBlob, unsigned int
 	if (hdrBlob)
 	    *hdrBlob = (void *) sqlite3_column_blob(dbc->stmt, 1);
     }
-    return rc;
+
+    return (rc == SQLITE_DONE) ? RPMRC_NOTFOUND : dbiCursorResult(dbc);
 }
 
 static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    int rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q' WHERE hnum=?",
+    rpmRC rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q' WHERE hnum=?",
 				dbi->dbi_file);
 
     if (!rc)
@@ -511,19 +512,13 @@ static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor dbc,
 				unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     if (dbc->stmt == NULL) {
 	rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q'", dbi->dbi_file);
     }
 
     if (!rc)
 	rc = sqlite_stepPkg(dbc, hdrBlob, hdrLen);
-
-    if (rc == SQLITE_DONE) {
-	rc = RPMRC_NOTFOUND;
-    } else {
-	rc = dbiCursorResult(dbc);
-    }
 
     return rc;
 }
