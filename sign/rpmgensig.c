@@ -522,16 +522,19 @@ static int msgCb(struct rpmsinfo_s *sinfo, void *cbdata)
 }
 
 /* Require valid digests on entire package for signing. */
-static int checkPkg(FD_t fd, char **msg)
+static rpmRC checkPkg(FD_t fd, char **msg)
 {
-    int rc;
+    rpmRC rc;
     struct rpmvs_s *vs = rpmvsCreate(RPMSIG_DIGEST_TYPE, 0, NULL);
     off_t offset = Ftell(fd);
 
     Fseek(fd, 0, SEEK_SET);
     rc = rpmpkgRead(vs, fd, NULL, NULL, msg);
-    if (!rc)
-	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, msgCb, msg);
+    if (!rc) {
+	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, msgCb, msg) ?
+			RPMRC_FAIL : RPMRC_OK;
+    }
+    Fseek(fd, offset, SEEK_SET);
     Fseek(fd, offset, SEEK_SET);
 
     rpmvsFree(vs);
