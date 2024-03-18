@@ -500,7 +500,7 @@ During the execution of build scriptlets, (at least) the following
 rpm-specific environment variables are set:
 
 Variable            | Description
----------------------------------------------------
+--------------------|------------------------------
 RPM_ARCH            | Architecture of the package
 RPM_BUILD_DIR       | The build directory of the package
 RPM_BUILD_NCPUS     | The number of CPUs available for the build
