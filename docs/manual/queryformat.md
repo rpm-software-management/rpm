@@ -17,7 +17,7 @@ RPM to to tell the difference between the name and description of a
 package.
 
 To get a list of all of the tags your version of RPM knows about, run the
-command 'rpm --querytags'. It will print out a list like (but much longer
+command `rpm --querytags`. It will print out a list like (but much longer
 then) this:
 
 ```
@@ -34,7 +34,7 @@ then) this:
 ```
 
 Each of these tags also has a version with a RPMTAG_ prefix, such as
-RPMTAG_NAME. You can use this tags with or without the RPMTAG_ prefix.
+`RPMTAG_NAME`. You can use this tags with or without the RPMTAG_ prefix.
 More detailed documentation about the tags can be found in the
 [tag documentation](tags.md).
 
@@ -43,15 +43,15 @@ be a string or number only.
 
 ## Query Formats
 
-A query format is passed to RPM after the --queryformat argument, and normally
+A query format is passed to RPM after the `--queryformat` argument, and normally
 should be enclosed in quotes. This query format is then used to print
 the information section of a query.
 
-The query format is similar to a C style printf string, which the printf(2)
+The query format is similar to a C style printf string, which the `printf(2)`
 man page provides a good introduction to. However, as RPM already knows the
 type of data that is being printed, you must omit the type specifier. In
 its place put the tag name you wish to print enclosed in curly braces
-({}). For example, the following RPM command prints the names and sizes
+(`{}`). For example, the following RPM command prints the names and sizes
 of all of the packages installed on a system:
 
 ```
@@ -74,7 +74,7 @@ respectively, with the first element in the size array corresponding
 to the first element in the name array. 
 
 To iterate over a set of parallel arrays, enclose the format to be used
-to print each item in the array within square brackets ([]). For example,
+to print each item in the array within square brackets (`[]`). For example,
 to print all of the files and their sizes in the slang-devel package
 followed by their sizes, with one file per line, use this command:
 
@@ -89,7 +89,7 @@ A popular query format to try to construct is one that prints the
 name of a package and the name of a file it contains on one line, 
 repeated for every file in the package. This query can be very useful
 for passing information to any program that's line oriented (such as
-grep or awk). If you try the obvious,
+`grep` or `awk`). If you try the obvious,
 
 ```
     rpm -q --queryformat "[%{NAME} %{FILENAMES}\n]" cdp
@@ -97,12 +97,12 @@ grep or awk). If you try the obvious,
 
 you'll see RPM complain about an "array iterator used with different
 sized arrays". Internally, all items in RPM are actually arrays, so the
-NAME is a string array containing one element. When you tell RPM to iterate
-over the NAME and FILENAMES elements, RPM notices the two tags have
+`NAME` is a string array containing one element. When you tell RPM to iterate
+over the `NAME` and `FILENAMES` elements, RPM notices the two tags have
 different numbers of elements and complains.
 
 To make this work properly, you need to tell RPM to always print the first
-item in the NAME element. You do this by placing a '=' before the tag
+item in the NAME element. You do this by placing a `=` before the tag
 name, like this:
 
 ```
@@ -120,7 +120,7 @@ which will give you the expected output.
 ## Formatting Tags
 
 One of the weaknesses with query formats is that it doesn't recognize
-that the INSTALLTIME tag (for example) should be printed as a date instead
+that the `INSTALLTIME` tag (for example) should be printed as a date instead
 of as a number. To compensate, you can specify one of a few different
 formats to use when printing tags by placing a colon followed the formatting 
 name after the tag name. Here are some examples:
@@ -133,13 +133,13 @@ name after the tag name. Here are some examples:
 	vlock
 ```
 
-The :shescape may be used on plain strings to get a string which can pass
-through a single level of shell and give the original string.
+The `shescape` format can be used on plain strings to get a string which
+can pass through a single level of shell and give the original string.
 
-Formatting names "humansi" and "humaniec" display a number in a human
+Formats `humansi` and `humaniec` display a number in a human
 readable format in SI resp IEC 80000 standard.
-humansi uses 1K = 1000, 1M = 1000000, ...
-humaniec uses 1K = 1024, 1M = 1048576, ...
+`humansi` uses 1K = 1000, 1M = 1000000, ...
+`humaniec` uses 1K = 1024, 1M = 1048576, ...
 
 The formatting tags are documented in rpm (8) manual in the QUERY OPTIONS
 section.
@@ -147,7 +147,7 @@ section.
 ## Query Expressions
 
 Simple conditionals may be evaluated through query expressions. Expressions
-are delimited by %|...|. The only type of expression currently supported
+are delimited by `%|...|`. The only type of expression currently supported
 is a C-like ternary conditional, which provides simple if/then/else
 conditions. For example, the following query format display "present" if
 the SOMETAG tag is present, and "missing" otherwise:
