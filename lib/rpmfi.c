@@ -2384,7 +2384,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 
     rpm_loff_t left = rpmfiFSize(fi);
     const unsigned char * fidigest = NULL;
-    rpmHashAlgo digestalgo = 0;
+    int digestalgo = 0;
     int rc = 0;
     char buf[BUFSIZ*4];
 
