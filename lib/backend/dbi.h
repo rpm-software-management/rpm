@@ -16,6 +16,7 @@ enum rpmdbFlags {
 };
 
 typedef enum dbCtrlOp_e {
+    DB_CTRL_NONE		= 0,
     DB_CTRL_LOCK_RO		= 1,
     DB_CTRL_UNLOCK_RO		= 2,
     DB_CTRL_LOCK_RW		= 3,
