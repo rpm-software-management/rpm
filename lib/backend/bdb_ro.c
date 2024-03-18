@@ -803,9 +803,9 @@ struct rpmdbOps_s bdbro_dbops = {
     .cursorInit = bdbro_CursorInit,
     .cursorFree = bdbro_CursorFree,
 
+    .pkgdbGet   = bdbro_pkgdbGet,
     .pkgdbPut   = bdbro_pkgdbPut,
     .pkgdbDel   = bdbro_pkgdbDel,
-    .pkgdbGet   = bdbro_pkgdbGet,
     .pkgdbKey   = bdbro_pkgdbKey,
 
     .idxdbGet   = bdbro_idxdbGet,

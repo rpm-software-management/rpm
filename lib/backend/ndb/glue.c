@@ -548,9 +548,9 @@ struct rpmdbOps_s ndb_dbops = {
     .cursorInit	= ndb_CursorInit,
     .cursorFree	= ndb_CursorFree,
 
+    .pkgdbGet	= ndb_pkgdbGet,
     .pkgdbPut	= ndb_pkgdbPut,
     .pkgdbDel	= ndb_pkgdbDel,
-    .pkgdbGet	= ndb_pkgdbGet,
     .pkgdbKey	= ndb_pkgdbKey,
 
     .idxdbGet	= ndb_idxdbGet,
