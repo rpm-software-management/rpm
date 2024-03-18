@@ -69,11 +69,13 @@ static rpmRC sehandle_init(int open_status)
 	return RPMRC_FAIL;
 
     if (open_status) {
+	union selinux_callback cb;
 	selinux_status_close();
 	if (selinux_status_open(0) < 0) {
 	    return RPMRC_FAIL;
 	}
-	selinux_set_callback(SELINUX_CB_LOG, (union selinux_callback) &logcb);
+	cb.func_log = logcb;
+	selinux_set_callback(SELINUX_CB_LOG, cb);
     } else if (!selinux_status_updated() && sehandle) {
 	return RPMRC_OK;
     }
