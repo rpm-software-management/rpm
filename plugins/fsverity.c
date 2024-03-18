@@ -38,7 +38,7 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
     const unsigned char * signature = NULL;
     size_t len;
     uint16_t algo = 0;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     rpmFileAction action = XFO_ACTION(op);
     char *buffer;
 

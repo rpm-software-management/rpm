@@ -127,7 +127,7 @@ static rpmRC send_ts_message(rpmPlugin plugin,
 
 static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
-    int rc;
+    rpmRC rc;
 
     rc = open_dbus(plugin, ts);
     if (rc != RPMRC_OK)
