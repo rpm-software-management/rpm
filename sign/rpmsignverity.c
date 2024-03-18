@@ -99,7 +99,7 @@ static char *rpmVeritySignFile(rpmfi fi, size_t *sig_size, char *key,
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 		    char *keypass, char *cert, uint16_t algo)
 {
-    int rc;
+    rpmRC rc;
     FD_t gzdi;
     rpmfiles files = NULL;
     rpmfi fi = NULL;
