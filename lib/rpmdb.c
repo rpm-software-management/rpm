@@ -2517,7 +2517,7 @@ exit:
 
 int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl)
 {
-    dbCtrlOp dbctrl = 0;
+    dbCtrlOp dbctrl = DB_CTRL_NONE;
     switch (ctrl) {
     case RPMDB_CTRL_LOCK_RO:
 	dbctrl = DB_CTRL_LOCK_RO;
