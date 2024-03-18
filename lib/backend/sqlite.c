@@ -547,7 +547,7 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
 			    const char *keyp, size_t keylen, int searchType,
 			    dbiIndexSet *set)
 {
-    int rc = RPMRC_NOTFOUND;
+    rpmRC rc = RPMRC_NOTFOUND;
 
     if (searchType == DBC_PREFIX_SEARCH) {
 	rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' "
@@ -563,7 +563,8 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
 
 
     if (!rc) {
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {
+	int sqrc;
+	while ((sqrc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {
 	    unsigned int hnum = sqlite3_column_int(dbc->stmt, 0);
 	    unsigned int tnum = sqlite3_column_int(dbc->stmt, 1);
 
@@ -571,12 +572,12 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
 		*set = dbiIndexSetNew(5);
 	    dbiIndexSetAppendOne(*set, hnum, tnum, 0);
 	}
-    }
 
-    if (rc == SQLITE_DONE) {
-	rc = (*set) ? RPMRC_OK : RPMRC_NOTFOUND;
-    } else {
-	rc = dbiCursorResult(dbc);
+	if (sqrc == SQLITE_DONE) {
+	    rc = (*set) ? RPMRC_OK : RPMRC_NOTFOUND;
+	} else {
+	    rc = dbiCursorResult(dbc);
+	}
     }
 
     return rc;
