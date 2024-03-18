@@ -69,7 +69,7 @@ static int buildIndexes(rpmdb db)
 
     dbSetFSync(db, 0);
 
-    dbCtrl(db, RPMDB_CTRL_LOCK_RW);
+    dbCtrl(db, DB_CTRL_LOCK_RW);
 
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi))) {
