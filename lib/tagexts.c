@@ -16,7 +16,7 @@
 #include "debug.h"
 
 struct headerTagFunc_s {
-    rpmTag tag;		/*!< Tag of extension. */
+    rpmTagVal tag;		/*!< Tag of extension. */
     headerTagTagFunction func;	/*!< Pointer to formatter function. */	
 };
 
