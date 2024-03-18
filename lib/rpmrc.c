@@ -162,7 +162,6 @@ static void rpmRebuildTargetVars(rpmrcCtx ctx, const char **target, const char *
 static rpmrcCtx rpmrcCtxAcquire(int write)
 {
     static struct rpmrcCtx_s _globalCtx = {
-	.lock = PTHREAD_RWLOCK_INITIALIZER,
 	.currTables = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH },
 	.tables = {
 	    { "arch", 1, 0 },
@@ -170,6 +169,7 @@ static rpmrcCtx rpmrcCtxAcquire(int write)
 	    { "buildarch", 0, 1 },
 	    { "buildos", 0, 1 }
 	},
+	.lock = PTHREAD_RWLOCK_INITIALIZER,
     };
     rpmrcCtx ctx = &_globalCtx;
 
