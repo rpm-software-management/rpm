@@ -46,7 +46,7 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 {
 	const unsigned char * fsig = NULL;
 	size_t len;
-	int rc = RPMRC_OK;
+	rpmRC rc = RPMRC_OK;
 	rpmFileAction action = XFO_ACTION(op);
 
 	/* Ignore skipped files and unowned directories */
