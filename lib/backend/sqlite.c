@@ -435,7 +435,7 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 
 static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
     dbiCursor dbwc = NULL;
 
     /* Avoid trashing existing query cursor on header rewrite */
@@ -452,12 +452,14 @@ static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
     if (!rc)
 	rc = dbiCursorBindPkg(dbc, *hdrNum, hdrBlob, hdrLen);
 
-    if (!rc)
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
+    if (!rc) {
+	int sqrc = 0;
+	while ((sqrc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
 
-    /* XXX rowid is a 64bit integer and could overflow hdrnum */
-    if (rc == SQLITE_DONE && *hdrNum == 0)
-	*hdrNum = sqlite3_last_insert_rowid(dbc->sdb);
+	/* XXX rowid is a 64bit integer and could overflow hdrnum */
+	if (sqrc == SQLITE_DONE && *hdrNum == 0)
+	    *hdrNum = sqlite3_last_insert_rowid(dbc->sdb);
+    }
 
     rc = dbiCursorResult(dbc);
 
