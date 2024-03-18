@@ -88,13 +88,6 @@ void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state)
     fs->states[ix] = state;
 }
 
-rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
-{
-    assert(ix < fs->fc);
-    if (fs->states) return fs->states[ix];
-    return RPMFILE_STATE_MISSING;
-}
-
 rpm_fstate_t * rpmfsGetStates(rpmfs fs)
 {
     return (fs != NULL) ? fs->states : NULL;

@@ -44,9 +44,6 @@ sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced);
 RPM_GNUC_INTERNAL
 void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state);
 
-RPM_GNUC_INTERNAL
-rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
-
 /* May return NULL */
 RPM_GNUC_INTERNAL
 rpm_fstate_t * rpmfsGetStates(rpmfs fs);
