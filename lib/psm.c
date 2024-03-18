@@ -862,7 +862,8 @@ static rpmRC rpmPackageInstall(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	if ((rc = rpmChrootIn()) == 0) {
+	rc = rpmChrootIn() ? RPMRC_FAIL : RPMRC_OK;
+	if (rc == RPMRC_OK) {
 	    rc = rpmpsmUnpack(psm);
 	    rpmChrootOut();
 	}
@@ -974,7 +975,8 @@ static rpmRC rpmPackageErase(rpmts ts, rpmpsm psm)
 	    if (rc) break;
 	}
 
-	if ((rc = rpmChrootIn()) == 0) {
+	rc = rpmChrootIn() ? RPMRC_FAIL : RPMRC_OK;
+	if (rc == RPMRC_OK) {
 	    rc = rpmpsmRemove(psm);
 	    rpmChrootOut();
 	}
@@ -1021,7 +1023,8 @@ static rpmRC rpmPackageRestore(rpmts ts, rpmpsm psm)
     rpmRC rc = RPMRC_OK;
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_INSTALL), 0);
-    if ((rc = rpmChrootIn()) == 0) {
+    rc = rpmChrootIn() ? RPMRC_FAIL : RPMRC_OK;
+    if (rc == RPMRC_OK) {
 	char *failedFile = NULL;
 	rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
 	/* make sure first progress call gets made */
