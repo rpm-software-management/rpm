@@ -138,7 +138,6 @@ static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable)
 
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
-    pthread_rwlock_t lock;
     ARGV_t platpat;
     char *current[2];
     int currTables[2];
@@ -146,6 +145,7 @@ struct rpmrcCtx_s {
     struct tableType_s tables[RPM_MACHTABLE_COUNT];
     int machDefaults;
     int pathDefaults;
+    pthread_rwlock_t lock;
 };
 
 /* prototypes */
