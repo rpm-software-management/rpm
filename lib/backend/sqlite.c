@@ -471,14 +471,14 @@ static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
 
 static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
-    int rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?;",
+    rpmRC rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?;",
 			    dbi->dbi_file);
 
     if (!rc)
 	rc = dbiCursorBindPkg(dbc, hdrNum, NULL, 0);
 
     if (!rc)
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
+	while (sqlite3_step(dbc->stmt) == SQLITE_ROW) {};
 
     return dbiCursorResult(dbc);
 }
@@ -632,14 +632,14 @@ static rpmRC sqlite_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size
 
 static rpmRC sqlite_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
-    int rc = dbiCursorPrep(dbc, "INSERT INTO '%q' VALUES(?, ?, ?)",
+    rpmRC rc = dbiCursorPrep(dbc, "INSERT INTO '%q' VALUES(?, ?, ?)",
 			dbi->dbi_file);
 
     if (!rc)
 	rc = dbiCursorBindIdx(dbc, keyp, keylen, rec);
 
     if (!rc)
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
+	while (sqlite3_step(dbc->stmt) == SQLITE_ROW) {};
 
     return dbiCursorResult(dbc);
 }
@@ -652,13 +652,13 @@ static rpmRC sqlite_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum
 static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     dbiCursor dbc = dbiCursorInit(dbi, DBC_WRITE);
-    int rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?", dbi->dbi_file);
+    rpmRC rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?", dbi->dbi_file);
 
     if (!rc)
 	rc = dbiCursorBindPkg(dbc, hdrNum, NULL, 0);
 
     if (!rc)
-	while ((rc = sqlite3_step(dbc->stmt)) == SQLITE_ROW) {};
+	while (sqlite3_step(dbc->stmt) == SQLITE_ROW) {};
 
     rc = dbiCursorResult(dbc);
     dbiCursorFree(dbi, dbc);
