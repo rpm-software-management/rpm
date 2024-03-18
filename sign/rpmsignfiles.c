@@ -83,7 +83,7 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     }
 
     algo = rpmfiDigestAlgo(fi);
-    if (algo >= ARRAY_SIZE(hash_algo_name)) {
+    if (algo < 1 || algo >= ARRAY_SIZE(hash_algo_name)) {
 	rpmlog(RPMLOG_ERR, _("File digest algorithm id is invalid"));
 	goto exit;
     }
