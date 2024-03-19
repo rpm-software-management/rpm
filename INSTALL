@@ -26,21 +26,29 @@ The libmagic (aka file) library for file type detection (used by rpmbuild).
 The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
-You will need a cryptographic library to support digests and
-signatures. This depends on the OpenPGP parser used: the default is
-rpm-sequoia library (>= 1.3.0 required), which is available from
+You will need a cryptographic library to support digests and an OpenPGP
+implementation to support signatures. rpm-sequoia (>= 1.3.0 required) is
+the most complete option, covering both, and also the default:
     https://github.com/rpm-software-management/rpm-sequoia
 
-Use of rpm-sequoia is strongly recommended. Most importantly, the internal
-parser is considered insecure. It simply ignores various critical aspects of
-OpenPGP (such as sub-packet binding signatures) that are properly implemented
-in Sequoia. Some other Sequoia advantages include being implemented in a
-memory-safe language, configurable policy and user-relevant error messages.
-For more information, see https://sequoia-pgp.org/
+Use of rpm-sequoia is strongly recommended. It is built on a full OpenPGP
+implementation in a memory-safe language, configurable policy and
+user-relevant error messages.  For more information, see
+    https://sequoia-pgp.org/
 
-If using the deprecated internal parser (-DWITH_INTERNAL_OPENPGP=ON),
-the default is libgcrypt, but alternatively OpenSSL can be used by
-additionally specifying -DWITH_OPENSSL=ON.
+However, for bootstrapping purposes it may be desireable to avoid the
+Rust dependency from rpm-sequoia. When building with -DWITH_SEQUOIA=OFF,
+rpm is built with OpenPGP support disabled. That means, you cannot
+sign packages, verify signatures or import keys, but otherwise
+you can build (and install) packages normally. In this mode, libgcrypt
+is used for crypthographic hash calculations by default, but alternatively
+OpenSSL can be selected by specifying -DWITH_OPENSSL=ON.
+
+Finally, the deprecated internal OpenPGP parser can be enabled with
+-DWITH_SEQUOIA=OFF -DWITH_INTERNAL_OPENPGP=ON. It uses libgcrypt/OpenSSL,
+depending on the WITH_OPENSSL option.
+The internal parser is considered insecure and it's use is strongly
+discouraged.
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 
