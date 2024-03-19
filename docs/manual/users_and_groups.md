@@ -75,7 +75,7 @@ RPM by default does not actually use `systemd-sysusers`, but has its
 own shell script (`sysusers.sh`) that calls `useradd` and `groupadd`.
 The program to call can be configured with the `%__systemd_sysusers`
 macro. It is possible to point it to the `systemd-sysusers` utility,
-but that may be undesired as it introduces a dependency to the RPM.
+but it may be undesired to add this as a dependency to RPM.
 `systemd-sysusers` is normally installed as part of the main `systemd`
 package, but in installations (for example containers) where `systemd`
 is not needed, the smaller `systemd-standalone-sysusers` package which
@@ -83,9 +83,8 @@ does not pull in the rest of systemd may be used.
 
 On systems that do neither have `useradd` and `groupadd` nor one of
 the systemd packages, a custom script or program can be used. Such a
-script needs to read sysusers.d lines from the standard input and
-interpret these into calls native user and group creation tools as
-appropriate. The script needs to handle `--root <path>` argument for
-chroot installations - the script runs *from outside* of any possible
-chroot, and care must be taken to avoid changing the host in such a
-case.
+script needs to read sysusers.d lines from the standard input and then
+call the native user and group creation tools as appropriate. The
+script needs to handle `--root <path>` argument for chroot
+installations - the script runs *from outside* of any possible chroot,
+and care must be taken to avoid changing the host in such a case.
