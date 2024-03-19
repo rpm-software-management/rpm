@@ -283,6 +283,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <signed nokey 1>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -297,6 +298,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <signed nokey 2>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -313,6 +315,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <signed 1>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -327,6 +330,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <signed 2>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -342,6 +346,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <corrupted signed 1>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK_UNQUOTED([
 RPMDB_INIT
 
@@ -368,6 +373,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <corrupted signed 2>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -390,6 +396,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -U <corrupted signed 3>])
 AT_KEYWORDS([install])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 

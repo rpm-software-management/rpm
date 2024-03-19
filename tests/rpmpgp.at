@@ -5,6 +5,7 @@ AT_BANNER([RPM OpenPGP parsing])
 # Test OpenPGP parsing
 AT_SETUP([[Running tests for malformed OpenPGP packages]])
 AT_KEYWORDS([[rpmkeys digest OpenPGP]])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([[
 rpmpgpcheck
 ]],0,)
@@ -13,6 +14,7 @@ RPMTEST_CLEANUP
 # Test pgpPubkeyFingerprint
 AT_SETUP([[Running tests for computing OpenPGP fingerprints]])
 AT_KEYWORDS([[rpmkeys digest OpenPGP]])
+AT_SKIP_IF([test x$PGP = xdummy])
 # Note: the internal OpenPGP parser produces a warning when fed
 # bad data.  Don't force Sequoia to generate the same warning.
 RPMTEST_CHECK([[

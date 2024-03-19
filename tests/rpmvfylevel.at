@@ -218,6 +218,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <signed 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -291,6 +292,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -K <signed 3> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
+AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
