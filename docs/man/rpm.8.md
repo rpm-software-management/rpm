@@ -171,12 +171,13 @@ These options can be used in all the different modes.
 
 **\--macros ***FILELIST*
 
-:   Replace the list of macro files to be loaded. Each of the files in
-    the colon separated *FILELIST* is read sequentially by **rpm** for
-    macro definitions. Only the first file in the list must exist, and
-    tildes will be expanded to the value of **\$HOME**. The default
-    *FILELIST* is
-    */usr/lib/rpm/macros*:*/usr/lib/rpm/macros.d/macros.\**:*/usr/lib/rpm/platform/%{\_target}/macros*:*/usr/lib/rpm/fileattrs/\*.attr*:*/usr/lib/rpm/redhat/macros*:*/etc/rpm/macros.\**:*/etc/rpm/macros*:*/etc/rpm/%{\_target}/macros*:*\~/.rpmmacros*
+:   Replace the list of macro files to be loaded with *FILELIST*. Each
+    file or **glob(7)** pattern in the colon-separated *FILELIST* is
+    read sequentially by **rpm** for macro definitions. Only the first
+    file in *FILELIST* must exist. Tildes will be expanded to the
+    value of the environment variable *HOME*. The default *FILELIST*
+    is
+    */usr/lib/rpm/macros*:*/usr/lib/rpm/macros.d/macros.\**:*/usr/lib/rpm/platform/%{\_target}/macros*:*/usr/lib/rpm/fileattrs/\*.attr*:*/usr/lib/rpm/redhat/macros*:*/etc/rpm/macros.\**:*/etc/rpm/macros*:*/etc/rpm/%{\_target}/macros*:*\~/.rpmmacros*.
 
 ```{=html}
 <!-- -->
