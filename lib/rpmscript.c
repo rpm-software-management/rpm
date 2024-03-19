@@ -33,7 +33,7 @@ typedef struct scriptNextFileFunc_s *scriptNextFileFunc;
 struct rpmScript_s {
     rpmscriptTypes type;	/* script type */
     rpmTagVal tag;		/* script tag */
-    char **args;		/* scriptlet call arguments */
+    char **prog;		/* scriptlet program and its arguments */
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
@@ -469,8 +469,8 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     int script_type = RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC;
 
     /* construct a new argv as we can't modify the one from header */
-    if (script->args) {
-	argvAppend(&args, script->args);
+    if (script->prog) {
+	argvAppend(&args, script->prog);
     } else {
 	argvAdd(&args, "/bin/sh");
     }
@@ -656,10 +656,10 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 				rpmtdGetString(&tscripts), sflags, prefix);
 
 	/* hack up a hge-style NULL-terminated array */
-	script->args = xmalloc(2 * sizeof(*script->args) + strlen(prog) + 1);
-	script->args[0] = (char *)(script->args + 2);
-	script->args[1] = NULL;
-	strcpy(script->args[0], prog);
+	script->prog = xmalloc(2 * sizeof(*script->prog) + strlen(prog) + 1);
+	script->prog[0] = (char *)(script->prog + 2);
+	script->prog[1] = NULL;
+	strcpy(script->prog[0], prog);
     }
 
     rpmtdFreeData(&tscripts);
@@ -695,7 +695,7 @@ rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 			      headerGetNumber(h, getFlagTag(scriptTag)), "");
 
 	if (headerGet(h, progTag, &prog, (HEADERGET_ALLOC|HEADERGET_ARGV))) {
-	    script->args = prog.data;
+	    script->prog = prog.data;
 	}
     }
     return script;
@@ -704,7 +704,7 @@ rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 rpmScript rpmScriptFree(rpmScript script)
 {
     if (script) {
-	free(script->args);
+	free(script->prog);
 	free(script->body);
 	free(script->descr);
 	free(script->nextFileFunc);
