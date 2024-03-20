@@ -44,11 +44,9 @@ you can build (and install) packages normally. In this mode, libgcrypt
 is used for crypthographic hash calculations by default, but alternatively
 OpenSSL can be selected by specifying -DWITH_OPENSSL=ON.
 
-Finally, the deprecated internal OpenPGP parser can be enabled with
--DWITH_SEQUOIA=OFF -DWITH_INTERNAL_OPENPGP=ON. It uses libgcrypt/OpenSSL,
-depending on the WITH_OPENSSL option.
-The internal parser is considered insecure and it's use is strongly
-discouraged.
+Finally, it's still possible to use rpm's own legacy OpenPGP parser,
+but it is considered insecure and it's use is strongly discouraged:
+    https://github.com/rpm-software-management/rpmpgp_legacy
 
 libgcrypt library is available from https://www.gnupg.org/software/libgcrypt/
 

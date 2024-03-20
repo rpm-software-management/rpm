@@ -1,0 +1,15 @@
+
+This is the former internal RPM OpenPGP parser, decommissioned
+after twenty years of service.
+
+This parser is considered insecure: it simply ignores various critical
+aspects of OpenPGP, such as sub-packet binding signatures and takes
+various other questionable shortcuts.
+
+This is not a standalone project, it can only be built as a part of RPM.
+To build, check this repository into the rpmio/ directory of RPM's
+sources and re-run cmake with `-DWITH_SEQUOIA=OFF -DWITH_LEGACY_OPENPGP=ON`
+
+Use entirely at your own risk, the RPM project does not provide support
+for this parser.
+
