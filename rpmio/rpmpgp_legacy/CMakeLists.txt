@@ -2,6 +2,8 @@
 # it can only be built as a part of rpm build tree.
 add_library(rpmpgp_legacy OBJECT)
 
+option(WITH_LEGACY_OPENPGP "Use legacy OpenPGP parser (DEPRECATED)" OFF)
+
 target_sources(rpmpgp_legacy PRIVATE
 	rpmpgp_internal.h rpmpgp_internal.c
 )

@@ -13,13 +13,16 @@ target_include_directories(librpmio PRIVATE
 	${Intl_INCLUDE_DIRS}
 )
 
+if (EXISTS ${CMAKE_SOURCE_DIR}/rpmio/rpmpgp_legacy/CMakeLists.txt)
+	add_subdirectory(rpmpgp_legacy)
+endif()
+
 if (WITH_SEQUOIA)
 	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia>=1.4.0)
 	target_sources(librpmio PRIVATE rpmpgp_sequoia.c)
 	target_link_libraries(librpmio PRIVATE PkgConfig::RPMSEQUOIA)
 else()
-	if (WITH_INTERNAL_OPENPGP)
-		add_subdirectory(rpmpgp_legacy)
+	if (WITH_LEGACY_OPENPGP)
 		target_link_libraries(librpmio PRIVATE rpmpgp_legacy)
 	else()
 		target_sources(librpmio PRIVATE rpmpgp_dummy.c)
