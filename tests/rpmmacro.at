@@ -2,6 +2,42 @@
 #
 AT_BANNER([RPM macros])
 
+AT_SETUP([macro path])
+AT_KEYWORDS([macros])
+RPMDB_INIT
+
+# .rpmmacros exists, new directory not
+RPMTEST_CHECK([[
+rm -f ~/.config/rpm
+touch ~/.rpmmacros
+runroot rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
+]],
+[0],
+[~/.rpmmacros
+],
+[])
+
+# prefer new style if it exists
+RPMTEST_CHECK([[
+mkdir -p ~/.config/rpm
+runroot rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
+]],
+[0],
+[~/.config/rpm/macros
+],
+[])
+
+# prefer new style if no config exists
+RPMTEST_CHECK([[
+rm -f ~/.config/rpm/macros ~/.rpmmacros
+runroot --setenv  XDG_CONFIG_HOME "~/.zzz" rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
+]],
+[0],
+[~/.zzz/rpm/macros
+],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 AT_SETUP([simple rpm --eval])
 AT_KEYWORDS([macros])
