@@ -226,7 +226,7 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:4344591e1964c5fc-58e63918
 gpg(1964c5fc) = 4:4344591e1964c5fc-58e63918
 gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918\
-`if test x$PGP != xinternal; then
+`if test x$PGP != xlegacy; then
   echo
   echo 'gpg(f00650f8) = 4:185e6146f00650f8-58e63918'
   echo 'gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918'
@@ -290,7 +290,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmkeys --import, signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xinternal])
+AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -356,7 +356,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmkeys --import, signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xinternal])
+AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -432,7 +432,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmkeys --import, signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xinternal])
+AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -516,7 +516,7 @@ echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xinternal;
+[`if test x$PGP = xlegacy;
 then
     echo 'error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.'
     echo exit code: 1
@@ -531,7 +531,7 @@ echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xinternal;
+[`if test x$PGP = xlegacy;
 then
     echo 'error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.'
     echo exit code: 1
@@ -546,7 +546,7 @@ echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xinternal;
+[`if test x$PGP = xlegacy;
 then
     echo 'error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.'
     echo exit code: 1
@@ -621,7 +621,7 @@ RPMTEST_CLEANUP
 # just ignores the invalid components and imports the rest.  This test
 # checks the behavior of the internal parser.
 AT_SETUP([rpmkeys type confusion])
-AT_SKIP_IF([test x$PGP != xinternal])
+AT_SKIP_IF([test x$PGP != xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -747,7 +747,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
-`if test x$PGP = xinternal; then
+`if test x$PGP = xlegacy; then
     echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
 else
     echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
@@ -761,7 +761,7 @@ fi`
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-`if test x$PGP = xinternal; then
+`if test x$PGP = xlegacy; then
     echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
 else
     echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
