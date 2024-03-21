@@ -369,8 +369,12 @@ you wish to see the expansion of a macro defined in a spec file.
 Most rpm configuration is done via macros. There are numerous places from
 which macros are read, in recent rpm versions the macro path can be seen
 with `rpm --showrc|grep "^Macro path"`. If there are multiple definitions
-of the same macro, the last one wins. User-level configuration goes
-to ~/.rpmmacros which is always the last one in the path.
+of the same macro, the last one wins.
+
+Per-user macros are always the last in the path. As of rpm >= 4.20, rpm
+primarily looks for per-user configuration inside `~/.config/rpm` directory
+(as per `XDG_CONFIG_HOME` specification), but falls back to the traditional
+`~/.rpmmacros` location if necessary.
 
 The macro file syntax is simply:
 

@@ -455,25 +455,56 @@ const char * lookupInDefaultTable(const char * name,
 
 static void setDefaults(void)
 {
+    /* If either is missing, we need to go through this whole dance */
+    if (defrcfiles && macrofiles)
+	return;
+
     const char *confdir = rpmConfigDir();
+    const char *xdgconf = getenv("XDG_CONFIG_HOME");
+    if (!(xdgconf && *xdgconf))
+	xdgconf = "~/.config";
+    char *userdir = rpmGetPath(xdgconf, "/rpm", NULL);
+    char *usermacros = rpmGetPath(userdir, "/macros", NULL);
+    char *userrc = rpmGetPath(userdir, "/rpmrc", NULL);
+
+    /*
+     * Prefer XDG_CONFIG_HOME/rpm/{macros,rpmrc} but fall back to ~/.rpmmacros
+     * and ~/.rpmrc iff either exists and the XDG rpm directory doesn't.
+     */
+    if (rpmGlob(userdir, NULL, NULL)) {
+	const char *oldmacros = "~/.rpmmacros";
+	const char *oldrc = "~/.rpmrc";
+	if (rpmGlob(oldmacros, NULL, NULL) == 0 || rpmGlob(oldrc, NULL, NULL) == 0) {
+	    free(usermacros);
+	    free(userrc);
+	    usermacros = xstrdup(oldmacros);
+	    userrc = xstrdup(oldrc);
+	}
+    }
+
     if (!defrcfiles) {
 	defrcfiles = rstrscat(NULL, confdir, "/rpmrc", ":",
 				confdir, "/" RPM_VENDOR "/rpmrc", ":",
 				SYSCONFDIR "/rpmrc", ":",
-			  	"~/.rpmrc", NULL);
+				userrc, NULL);
     }
 
+    /* macrofiles may be pre-set from --macros */
     if (!macrofiles) {
 	macrofiles = rstrscat(NULL, confdir, "/macros", ":",
 				confdir, "/macros.d/macros.*", ":",
 				confdir, "/platform/%{_target}/macros", ":",
 				confdir, "/fileattrs/*.attr", ":",
-  				confdir, "/" RPM_VENDOR "/macros", ":",
+				confdir, "/" RPM_VENDOR "/macros", ":",
 				SYSCONFDIR "/rpm/macros.*", ":",
 				SYSCONFDIR "/rpm/macros", ":",
 				SYSCONFDIR "/rpm/%{_target}/macros", ":",
-				"~/.rpmmacros", NULL);
+				usermacros, NULL);
     }
+
+    free(usermacros);
+    free(userrc);
+    free(userdir);
 }
 
 /* FIX: se usage inconsistent, W2DO? */
