@@ -1479,37 +1479,37 @@ static struct DepMsg_s depMsgs[] = {
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_INTERP, 0 },
   { "Requires(rpmlib)",	{ NULL, "rpmlib", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_RPMLIB, 0 },
   { "Requires(verify)",	{ NULL, "verify", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_VERIFY, 0 },
   { "Requires(pre)",	{ NULL, "pre", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_PRE, 0 },
   { "Requires(post)",	{ NULL, "post", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_POST, 0 },
   { "Requires(preun)",	{ NULL, "preun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_PREUN, 0 },
   { "Requires(postun)",	{ NULL, "postun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_SCRIPT_POSTUN, 0 },
   { "Requires(pretrans)",	{ NULL, "pretrans", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_PRETRANS, 0 },
   { "Requires(posttrans)",	{ NULL, "posttrans", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_POSTTRANS, 0 },
   { "Requires(preuntrans)",	{ NULL, "preuntrans", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_PREUNTRANS, 0 },
   { "Requires(postuntrans)",	{ NULL, "postuntrans", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
+	0, 0, RPMTAG_REQUIREFLAGS,
 	RPMSENSE_POSTUNTRANS, 0 },
   { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
+	0, 0, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
 	RPMSENSE_FIND_REQUIRES|RPMSENSE_TRIGGERIN|RPMSENSE_TRIGGERUN|RPMSENSE_TRIGGERPOSTUN|RPMSENSE_TRIGGERPREIN, 0 },
   { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
 	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
@@ -1546,7 +1546,7 @@ static void printDeps(rpmfc fc)
     int bingo = 0;
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	if (dm->ntag != -1) {
+	if (dm->ntag) {
 	    ds = rpmfcDependencies(fc, dm->ntag);
 	}
 	if (dm->ftag == 0)
@@ -1630,7 +1630,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	}
 
 	/* Parse dependencies into header */
-	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag != -1 ? dm->ntag : RPMTAG_REQUIRENAME, 0, tagflags, addReqProvPkg, NULL);
+	rc = parseRCPOT(NULL, fc->pkg, getStringBuf(sb_stdout), dm->ntag ? dm->ntag : RPMTAG_REQUIRENAME, 0, tagflags, addReqProvPkg, NULL);
 	freeStringBuf(sb_stdout);
 
 	if (rc) {
