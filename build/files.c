@@ -2809,7 +2809,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
  */
 static int checkFiles(const char *buildRoot, StringBuf fileList)
 {
-    static char * const av_ckfile[] = { "%{?__check_files}", NULL };
+    static const char * av_ckfile[] = { "%{?__check_files}", NULL };
     StringBuf sb_stdout = NULL;
     int rc = -1;
     char * s = rpmExpand(av_ckfile[0], NULL);
@@ -2819,7 +2819,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
-    rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0, buildRoot);
+    rc = rpmfcExec((ARGV_const_t)av_ckfile, fileList, &sb_stdout, 0, buildRoot);
     if (rc < 0)
 	goto exit;
     
