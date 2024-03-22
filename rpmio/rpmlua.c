@@ -229,7 +229,7 @@ int rpmluaCheckScript(rpmlua lua, const char *script, const char *name)
 static int luaopt(int c, const char *oarg, int oint, void *data)
 {
     lua_State *L = data;
-    char key[2] = { c, '\0' };
+    char key[2] = { (char)c, '\0' };
 
     lua_pushstring(L, oarg ? oarg : "");
     lua_setfield(L, -2, key);
