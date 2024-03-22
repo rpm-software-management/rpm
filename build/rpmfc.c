@@ -1463,7 +1463,7 @@ typedef struct DepMsg_s * DepMsg_t;
 
 struct DepMsg_s {
     const char * msg;
-    char * const argv[4];
+    const char * argv[4];
     rpmTagVal ntag;
     rpmTagVal vtag;
     rpmTagVal ftag;
@@ -1619,7 +1619,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
 	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg, s);
 	free(s);
 
-	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
+	if (rpmfcExec((ARGV_const_t)dm->argv, sb_stdin, &sb_stdout,
 			failnonzero, fc->buildRoot) == -1)
 	    continue;
 
