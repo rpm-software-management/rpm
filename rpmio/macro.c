@@ -1294,10 +1294,32 @@ static void doGetncpus(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pa
     rpmMacroBufAppendStr(mb, buf);
 }
 
+/*
+ * shrink body by removing all leading and trailing whitespaces and
+ * reducing intermediate whitespaces to a single space character.
+ */
+static char *doShrink(const char *arg)
+{
+    char *b, *p, c, last_c = ' ';
+    char *buf = b = p = xstrdup(arg);
+    while ((c = *p++) != 0) {
+	if (risspace(c)) {
+	    if (last_c == ' ')
+		continue;
+	    c = ' ';
+	}
+	*b++ = last_c = c;
+    }
+    if (b != buf && b[-1] == ' ')
+	b--;
+    *b = 0;
+    return buf;
+}
+
 static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     char *buf = NULL;
-    char *b = NULL;
+    const char *b = NULL;
 
     if (rstreq("basename", me->name)) {
 	buf = xstrdup(argv[1]);
@@ -1306,24 +1328,7 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	buf = xstrdup(argv[1]);
 	b = dirname(buf);
     } else if (rstreq("shrink", me->name)) {
-	/*
-	 * shrink body by removing all leading and trailing whitespaces and
-	 * reducing intermediate whitespaces to a single space character.
-	 */
-	char *p, c, last_c = ' ';
-	buf = b = p = xstrdup(argv[1]);
-	while ((c = *p++) != 0) {
-	    if (risspace(c)) {
-		if (last_c == ' ')
-		    continue;
-		c = ' ';
-	    }
-	    *b++ = last_c = c;
-	}
-	if (b != buf && b[-1] == ' ')
-	    b--;
-	*b = 0;
-	b = buf;
+	b = buf = doShrink(argv[1]);
     } else if (rstreq("quote", me->name)) {
 	if (mb->flags & RPMEXPAND_KEEP_QUOTED) {
 	    b = buf = unsplitQuoted(argv + 1, " ");
