@@ -746,14 +746,14 @@ typedef struct lzfile {
 
 static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 {
-    int level = LZMA_PRESET_DEFAULT;
+    unsigned int level = LZMA_PRESET_DEFAULT;
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
     lzma_ret ret;
     lzma_stream init_strm = LZMA_STREAM_INIT;
     uint64_t mem_limit = rpmExpandNumeric("%{_xz_memlimit}");
-    int threads = 0;
+    unsigned int threads = 0;
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
