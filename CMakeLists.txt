@@ -162,13 +162,6 @@ function(makemacros)
 	set(RPMCANONOS ${host_os})
 	set(RPMCANONGNU -gnu)
 
-	if (ENABLE_CUTF8)
-		set(C_LOCALE "C.UTF-8")
-	else()
-		set(C_LOCALE "C")
-	endif()
-	message(INFO " using ${C_LOCALE} as default locale")
-
 	configure_file(platform.in platform @ONLY)
 	configure_file(rpmrc.in rpmrc @ONLY)
 	configure_file(macros.in macros @ONLY)
@@ -389,6 +382,13 @@ check_symbol_exists(major "sys/sysmacros.h" MAJOR_IN_SYSMACROS)
 if (NOT MAJOR_IN_SYSMACROS)
 	check_symbol_exists(major "sys/mkdev.h" MAJOR_IN_MKDEV)
 endif()
+
+if (ENABLE_CUTF8)
+	set(C_LOCALE "C.UTF-8")
+else()
+	set(C_LOCALE "C")
+endif()
+message(INFO " using ${C_LOCALE} as default locale")
 
 configure_file(config.h.in config.h)
 
