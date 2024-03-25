@@ -94,6 +94,24 @@ static int write_file_content(struct archive * a, char * buf, rpmfi fi)
     return (left > 0);
 }
 
+/* This code sets the charset of the open archive. Messing with the
+   locale is currently the only way to do it, see:
+   https://github.com/libarchive/libarchive/pull/1966
+ */
+static void set_archive_utf8(struct archive * a)
+{
+#ifdef ENABLE_NLS
+    const char * t = setlocale(LC_CTYPE, NULL);
+    char * old_ctype = t ? xstrdup(t) : NULL;
+    (void) setlocale(LC_CTYPE, C_LOCALE);
+    (void) archive_write_set_options(a, "hdrcharset=UTF-8");
+    if (old_ctype) {
+	(void) setlocale(LC_CTYPE, old_ctype);
+	free(old_ctype);
+    }
+#endif
+}
+
 static int process_package(rpmts ts, const char * filename)
 {
     FD_t fdi;
@@ -174,6 +192,8 @@ static int process_package(rpmts ts, const char * filename)
 	fprintf(stderr, "Error: Format %s is not supported\n", format);
 	exit(EXIT_FAILURE);
     }
+    if (format_code == ARCHIVE_FORMAT_TAR_PAX_RESTRICTED)
+	set_archive_utf8(a);
 
     if (!isatty(STDOUT_FILENO)) {
 	archive_write_open_fd(a, STDOUT_FILENO);
