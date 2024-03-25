@@ -118,6 +118,7 @@ static int process_package(rpmts ts, const char * filename)
     FD_t gzdi;
     Header h;
     int rc = 0;
+    int e;	/* libarchive return code */
     int format_code = 0;
     char * rpmio_flags = NULL;
     struct archive *a;
@@ -185,7 +186,8 @@ static int process_package(rpmts ts, const char * filename)
     } else if (rstreq(format, "cpio")) {
 	format_code = ARCHIVE_FORMAT_CPIO_SVR4_NOCRC;
     } else {
-	rc = ARCHIVE_FAILED;
+	fprintf(stderr, "Error: Format %s is not supported\n", format);
+	exit(EXIT_FAILURE);
     }
 
     if (archive_write_set_format(a, format_code) != ARCHIVE_OK) {
@@ -234,47 +236,44 @@ static int process_package(rpmts ts, const char * filename)
     rpmfiles files = rpmfilesNew(NULL, h, 0, RPMFI_KEEPHEADER);
     rpmfi fi = rpmfiNewArchiveReader(gzdi, files, format_code == ARCHIVE_FORMAT_CPIO_SVR4_NOCRC ? RPMFI_ITER_READ_ARCHIVE : RPMFI_ITER_READ_ARCHIVE_CONTENT_FIRST);
 
-    rc = 0;
-    while (rc >= 0) {
-	rc = rpmfiNext(fi);
-	if (rc == RPMERR_ITER_END) {
-	    break;
-	}
-
+    while ((rc = rpmfiNext(fi)) >= 0) {
 	fill_archive_entry(entry, fi, &hardlink);
 
-	if (archive_write_header(a, entry) != ARCHIVE_OK) {
-	    if (archive_errno(a) == ERANGE) {
-		fprintf(stderr,
-			"Warning: file too large for format, skipping: %s\n",
-			rpmfiFN(fi));
-		continue;
-	    } else {
-		fprintf(stderr, "Error writing archive: %s (%d)\n",
-				archive_error_string(a), archive_errno(a));
-		break;
-	    }
+	e = archive_write_header(a, entry);
+	if (e == ARCHIVE_FAILED && archive_errno(a) == ERANGE) {
+	    fprintf(stderr, "Warning: file too large for format, skipping: %s\n",
+			    rpmfiFN(fi));
+	    continue;
 	}
-
+	if (e == ARCHIVE_WARN) {
+	    fprintf(stderr, "Warning writing archive: %s (%d)\n",
+			    archive_error_string(a), archive_errno(a));
+	} else if (e != ARCHIVE_OK) {
+	    fprintf(stderr, "Error writing archive: %s (%d)\n",
+			    archive_error_string(a), archive_errno(a));
+	    break;
+	}
 	if (S_ISREG(archive_entry_mode(entry)) && rpmfiArchiveHasContent(fi)) {
 	    if (write_file_content(a, buf, fi)) {
-		rc = ARCHIVE_FAILED;
 		break;
 	    }
 	}
     }
-    /* End of iteration is not an error */
+    /* End of iteration is not an error, everything else is */
     if (rc == RPMERR_ITER_END) {
 	rc = 0;
+    } else {
+	rc = 1;
     }
 
     _free(hardlink);
 
     Fclose(gzdi);	/* XXX gzdi == fdi */
     archive_entry_free(entry);
-    rc = archive_write_close(a);
-    if (rc != ARCHIVE_OK)
+    if (archive_write_close(a) != ARCHIVE_OK) {
 	fprintf(stderr, "Error writing archive: %s\n", archive_error_string(a));
+	rc = 1;
+    }
     archive_write_free(a);
     buf = _free(buf);
     rpmfilesFree(files);
