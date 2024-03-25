@@ -1731,7 +1731,7 @@ static rpmRC rpmReadRC(rpmrcCtx ctx, const char * rcfiles)
     argvSplit(&globs, rcfiles, ":");
     for (p = globs; *p; p++) {
 	ARGV_t av = NULL;
-	if (rpmGlob(*p, NULL, &av) == 0) {
+	if (rpmGlobPath(*p, RPMGLOB_NOCHECK, NULL, &av) == 0) {
 	    argvAppend(&files, av);
 	    argvFree(av);
 	}
