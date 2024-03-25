@@ -139,7 +139,12 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
 * Use `RPMTEST_SETUP` or `RPMDB_INIT` to create a mutable snapshot (optional)
     * The absolute path to the snapshot's root is stored in the `$RPMTEST`
       environment variable, modify the directory tree as you wish
-    * To run RPM inside the snapshot, use the `runroot` prefix
+    * To run RPM inside the snapshot, use the `runroot` prefix, e.g. `runroot
+      rpm ...`
     * To run any other binary inside the snapshot, use `runroot_other` instead
+    * By default, `runroot` and `runroot_other` will operate in a clean
+      environment with only a handful of variables preset.  To pass your own
+      variable(s), use `--setenv` (once for each variable), e.g. `runroot
+      --setenv FOO "foo" rpm ...`
 * If no snapshot was used, just call the RPM binaries normally
 * Store any working files in the current directory (it's always writable)
