@@ -76,7 +76,7 @@ int rpmGlobPath(const char * pattern, rpmglobFlags flags,
 	/* We still want to count matches so use a scratch list */
 	argvPtr = &argv;
 
-    if (!local || !ismagic(pattern)) {
+    if ((flags & RPMGLOB_NOCHECK) && (!local || !ismagic(pattern))) {
 	argvAdd(argvPtr, pattern);
 	goto exit;
     }

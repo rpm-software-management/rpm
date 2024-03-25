@@ -120,7 +120,8 @@ char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmfileutil
  * Expand a glob pattern into matching paths.
- * A pattern that is not a glob is returned as is.
+ * When RPMGLOB_NOCHECK is specified, non-matching and non-glob patterns
+ * are returned as is.
  * @param pattern	glob pattern
  * @param flags		bit(s) to control glob operation
  * @param[out] *argcPtr	no. of paths
@@ -132,7 +133,6 @@ int rpmGlobPath(const char * pattern, rpmglobFlags flags,
 
 /** \ingroup rpmfileutil
  * Expand a glob pattern into matching paths, fail if nothing matches.
- * A pattern that is not a glob is returned as is.
  * @param pattern	glob pattern
  * @param[out] *argcPtr	no. of paths
  * @param[out] *argvPtr	ARGV_t array of paths
