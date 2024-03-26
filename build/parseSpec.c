@@ -246,7 +246,7 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if ((condition) && (!condition->withArgs)) {
 	const char *s = lbuf + condition->textLen;
 	SKIPSPACE(s);
-	if (s[0])
+	if (s[0] && s[0] != '#')
 	    rpmlog(RPMLOG_WARNING,
 		_("extra tokens at the end of %s directive in line %d:  %s\n"),
 		condition->text, spec->lineNum, lbuf);

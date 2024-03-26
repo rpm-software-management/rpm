@@ -7,13 +7,13 @@ Group: Testing
 BuildArch: noarch
 
 %if  0%{?testif} == 2
-    %if 0%{?rhel} == 6
+    %if 0%{?rhel} == 6 # check for RHEL version
 Requires: pkg1
-    %elif 0%{?rhel} == 7
+    %elif 0%{?rhel} == 7 # RHEL 7 is complicated
 Requires: pkg2
-    %else
+    %else # others
 Requires: pkg3
-    %endif
+    %endif # rhel
 %endif
 
 %description
