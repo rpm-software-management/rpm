@@ -1064,19 +1064,7 @@ Macro Configuration
 Database
 --------
 
-    /var/lib/rpm/Basenames
-    /var/lib/rpm/Conflictname
-    /var/lib/rpm/Dirnames
-    /var/lib/rpm/Group
-    /var/lib/rpm/Installtid
-    /var/lib/rpm/Name
-    /var/lib/rpm/Obsoletename
-    /var/lib/rpm/Packages
-    /var/lib/rpm/Providename
-    /var/lib/rpm/Requirename
-    /var/lib/rpm/Sha1header
-    /var/lib/rpm/Sigmd5
-    /var/lib/rpm/Triggername
+    /var/lib/rpm/
 
 Temporary
 ---------
