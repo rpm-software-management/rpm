@@ -89,11 +89,17 @@ These options can be used in all the different modes.
 
 **\--rcfile ***FILELIST*
 
-:   Each of the files in the colon separated *FILELIST* is read
-    sequentially by **rpm** for configuration information. Only the
-    first file in the list must exist, and tildes will be expanded to
-    the value of **\$HOME**. The default *FILELIST* is
-    */usr/lib/rpm/rpmrc*:*/usr/lib/rpm/\<vendor\>/rpmrc*:*/etc/rpmrc*:*\~/.rpmrc*.
+:   Replace default list of configuration files to be read with *FILELIST*.
+    See **rpmrc Configuration** in **rpm**(8) for details.
+
+**\--load ***FILE*
+
+:   Load an individual macro file.
+
+**\--macros ***FILELIST*
+
+:   Replace the list of macro files to be loaded with *FILELIST*.
+    See **Macro Configuration** in **rpm**(8) for details.
 
 **\--pipe ***CMD*
 
@@ -327,26 +333,7 @@ currently set in *rpmrc* and *macros* configuration file(s).
 FILES
 =====
 
-rpmrc Configuration
--------------------
-
-    /usr/lib/rpm/rpmrc
-    /usr/lib/rpm/<vendor>/rpmrc
-    /etc/rpmrc
-    ~/.rpmrc
-
-Macro Configuration
--------------------
-
-    /usr/lib/rpm/macros
-    /usr/lib/rpm/<vendor>/macros
-    /etc/rpm/macros
-    ~/.rpmmacros
-
-Temporary
----------
-
-*/var/tmp/rpm\**
+See **rpm**(8)
 
 SEE ALSO
 ========
