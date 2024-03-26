@@ -14,6 +14,10 @@ Comments in spec file have # at the start of the line.
     # this is a comment
 ```
 
+Comments are also allowed after conditionals (see below). Some older
+versions of RPM (4.14 to 4.19) did issue a warning on those, but they
+are fully legal from RPM 4.20 onward.
+
 Macros are expanded even in comment lines. If this is undesireable, escape
 the macro with an extra percent sign (%):
 
