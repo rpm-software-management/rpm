@@ -463,7 +463,6 @@ static void setDefaults(void)
 			  	"~/.rpmrc", NULL);
     }
 
-#ifndef MACROFILES
     if (!macrofiles) {
 	macrofiles = rstrscat(NULL, confdir, "/macros", ":",
 				confdir, "/macros.d/macros.*", ":",
@@ -475,9 +474,6 @@ static void setDefaults(void)
 				SYSCONFDIR "/rpm/%{_target}/macros", ":",
 				"~/.rpmmacros", NULL);
     }
-#else
-    macrofiles = MACROFILES;
-#endif
 }
 
 /* FIX: se usage inconsistent, W2DO? */
