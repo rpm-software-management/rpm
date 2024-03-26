@@ -655,6 +655,9 @@ void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 RPM_GNUC_INTERNAL
 int getSection(const char *name);
 
+RPM_GNUC_INTERNAL
+void genSourceRpmName(rpmSpec spec);
+
 #ifdef __cplusplus
 }
 #endif
