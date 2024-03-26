@@ -50,11 +50,13 @@ The above is a silly example and doesn't even begin to show how powerful a featu
 %sources %{lua: for i, s in ipairs(sources) do print(s..' ') end}
 ```
 
+## Macro integration (rpm >= 4.17)
+
 Parametric Lua macros receive their options and arguments as two local
 tables `opt` and `arg`, where `opt` holds processed option values keyed by
 the option character, and `arg` contains arguments numerically indexed.
 These tables are always present regardless of whether options or arguments
-were actually passed to simplify use. (rpm >= 4.17)
+were actually passed to simplify use.
 
 ```
 %foo(a:b) %{lua:
@@ -80,14 +82,41 @@ Macros can be accessed via a global `macros` table in the Lua environment.
 Lua makes no difference between index and field name syntax so
 `macros.foo` and `macros['foo']` are equivalent, use what better suits the
 purpose. Like any real Lua table, non-existent items are returned as `nil`,
-and assignment can be used to define or undefine macros. (rpm >= 4.17)
+and assignment can be used to define or undefine macros.
+
+```
+if not macros.yours then
+    macros.my = 'my macro'
+end
+
+local v = { '_libdir', '_bindir', '_xbindir' }
+for _, v in ipairs(v) do
+    if not macros[v] then
+        macros[v] = 'default'
+    end
+end
+```
 
 Parametric macros (including all built-in macros) can be called in a Lua
-native manner via the `macros` table. The argument can be either a
-single string (`macros.with('thing')`), in which case it's expanded
-and split with the macro-native rules, or it can be a table
-`macros.dostuff({'one', 'two', 'three'})` in which case the table contents
-are used as literal arguments that are not expanded in any way. (rpm >= 4.17)
+native manner via the `macros` table, with either macros.name or macros[name]
+syntax. The argument can be either a single string (`macros.with('thing')`),
+in which case it's expanded and split with the macro-native rules,
+or it can be a table `macros.dostuff({'one', 'two', 'three'})` in which
+case the table contents are used as literal arguments that are not expanded
+in any way.
+
+Lua macros can also also `return` their output, which makes programming
+helper macros look more natural. For example:
+
+```
+%sum() %{lua:
+   local v = 0
+   for _, a in ipairs(arg) do
+       v = v + tonumber(a)
+   end
+   return v
+}
+```
 
 ## Available Lua extensions in RPM
 
