@@ -93,35 +93,38 @@ SIGN OPTIONS
     can be configured on the command line with **\--certpath** or the
     macro %\_file\_signing\_cert.
 
-USING GPG TO SIGN PACKAGES
---------------------------
 
-In order to sign packages using GPG, **rpm** must be configured to run
-GPG and be able to find a key ring with the appropriate keys. By
-default, **rpm** uses the same conventions as GPG to find key rings,
-namely the **\$GNUPGHOME** environment variable. If your key rings are
-not located where GPG expects them to be, you will need to configure the
-macro **%\_gpg\_path** to be the location of the GPG key rings to use.
-If you want to be able to sign packages you create yourself, you also
-need to create your own public and secret key pair (see the GPG manual).
-You will also need to configure the **rpm** macros
+CONFIGURING SIGNING KEYS
+------------------------
+
+In order to sign packages, you need to create your own public and secret
+key pair (see the GnuPG manual). In addition, **rpm** must be configured to
+find GnuPG and the appropriate keys with the following macros:
 
 **%\_gpg\_name**
 
 :   The name of the \"user\" whose key you wish to use to sign your
-    packages.
+    packages. Typically this is the only configuration needed.
 
-For example, to be able to use GPG to sign packages as the user *\"John
+**%\_gpg\_path**
+
+:   The location of your GnuPG keyring if not the default **\$GNUPGHOME**.
+
+
+**%\_\_gpg**
+
+:   The path of the GnuPG executable. Normally pre-configured.
+
+For example, to be able to use GnuPG to sign packages as the user *\"John
 Doe \<jdoe\@foo.com\>\"* from the key rings located in */etc/rpm/.gpg*
-using the executable */usr/bin/gpg* you would include
+using the executable */opt/bin/gpg* you would include
 
     %_gpg_path /etc/rpm/.gpg
     %_gpg_name John Doe <jdoe@foo.com>
-    %__gpg /usr/bin/gpg
+    %__gpg /opt/bin/gpg
 
-in a macro configuration file. Use */etc/rpm/macros* for per-system
-configuration and *\~/.rpmmacros* for per-user configuration. Typically
-it\'s sufficient to set just %\_gpg\_name.
+in a macro configuration file, typically ~/.config/rpm/macros.
+See **Macro Configuration** in **rpm**(8) for more details.
 
 SEE ALSO
 ========
