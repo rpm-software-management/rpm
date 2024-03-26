@@ -180,6 +180,34 @@ runroot rpmspec \
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmspec -q --rpms])
+AT_KEYWORDS([query])
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot rpmspec --rpms \
+  -q  /data/SPECS/hello.spec | grep src
+runroot rpmspec --rpms \
+  -q  /data/SPECS/hello.spec | cut -d. -f-2
+],
+[0],
+[hello-1.0-1
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmspec -q --srpm])
+AT_KEYWORDS([query])
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot rpmspec --srpm \
+  -q  /data/SPECS/hello.spec
+],
+[0],
+[hello-1.0-1.src
+],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 AT_SETUP([rpm -ql -p *.i386.rpm])
 AT_KEYWORDS([query])
