@@ -2917,6 +2917,13 @@ runroot rpmbuild --quiet -bb /data/SPECS/interact.spec
 [1],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bp /data/SPECS/stdin.spec
+],
+[0],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild bpf file])
