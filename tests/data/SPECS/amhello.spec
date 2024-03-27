@@ -1,10 +1,11 @@
 %bcond_with alt
 
 %{!?buildsys:%global buildsys autotools}
+%{!?srcname:%global srcname amhello-1.0.tar.gz}
 
 Name: amhello
 Version: 1.0
-Source: amhello-%{version}.tar.gz
+Source: %{srcname}
 License: GPLv2
 Summary: Autotools example
 BuildSystem: %{buildsys}
