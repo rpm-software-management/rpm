@@ -2661,7 +2661,7 @@ exit:
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
-static void genSourceRpmName(rpmSpec spec)
+void genSourceRpmName(rpmSpec spec)
 {
     if (spec->sourceRpmName == NULL) {
 	char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);

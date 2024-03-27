@@ -474,6 +474,9 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	    if (qva->qva_source == RPMQV_SPECBUILTRPMS && pkg->fileList == NULL)
 		continue;
 
+	    genSourceRpmName(spec);
+	    headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
+
 	    res += qva->qva_showPackage(qva, ts, pkg->header);
 	}
     } else {
