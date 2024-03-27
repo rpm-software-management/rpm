@@ -1023,7 +1023,7 @@ static int seenHardLink(FileRecords files, FileListRec flp, rpm_ino_t *fileid)
  * @param pkg		(sub) package
  * @param isSrc		pass 1 for source packages 0 otherwise
  */
-static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
+static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isSrc)
 {
     FileListRec flp;
     char buf[BUFSIZ];
@@ -1033,23 +1033,41 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
     int override_date = 0;
-    time_t source_date_epoch = 0;
+    time_t mtime_clamp = 0;
     char *srcdate = getenv("SOURCE_DATE_EPOCH");
+    char *mtime_policy_str = rpmExpand("%{?build_mtime_policy}", NULL);
 
-    /* Limit the maximum date to SOURCE_DATE_EPOCH if defined
-     * similar to the tar --clamp-mtime option
-     * https://reproducible-builds.org/specs/source-date-epoch/
-     */
-    if (srcdate && rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")) {
-	char *endptr;
-	errno = 0;
-	source_date_epoch = strtol(srcdate, &endptr, 10);
-	if (srcdate == endptr || *endptr || errno != 0) {
-	    rpmlog(RPMLOG_ERR, _("unable to parse %s=%s\n"), "SOURCE_DATE_EPOCH", srcdate);
-	    fl->processingFailed = 1;
+    /* backward compatibility */
+    if (!*mtime_policy_str) {
+        if (srcdate && rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")) {
+	    free(mtime_policy_str);
+	    mtime_policy_str = xstrdup("clamp_to_source_date_epoch");
 	}
-	override_date = 1;
     }
+
+    if (!strcmp(mtime_policy_str, "clamp_to_buildtime")) {
+	mtime_clamp = spec->buildTime;
+	override_date = 1;
+    } else if (!strcmp(mtime_policy_str, "clamp_to_source_date_epoch")) {
+	/* Limit the maximum date to SOURCE_DATE_EPOCH if defined
+	 * similar to the tar --clamp-mtime option
+	 * https://reproducible-builds.org/specs/source-date-epoch/
+	 */
+	if (srcdate) {
+	    char *endptr;
+	    errno = 0;
+	    mtime_clamp = strtol(srcdate, &endptr, 10);
+	    if (srcdate == endptr || *endptr || errno != 0) {
+		rpmlog(RPMLOG_ERR, _("unable to parse %s=%s\n"), "SOURCE_DATE_EPOCH", srcdate);
+		fl->processingFailed = 1;
+	    }
+	    override_date = 1;
+	}
+    } else if (*mtime_policy_str) {
+	rpmlog(RPMLOG_WARNING,
+		_("Unknown mtime policy '%s'\n"), mtime_policy_str);
+    }
+    free(mtime_policy_str);
 
     /*
      * See if non-md5 file digest algorithm is requested. If not
@@ -1192,8 +1210,8 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    }
 	}
 	
-	if (override_date && flp->fl_mtime > source_date_epoch) {
-	    flp->fl_mtime = source_date_epoch;
+	if (override_date && flp->fl_mtime > mtime_clamp) {
+	    flp->fl_mtime = mtime_clamp;
 	}
 	/*
  	 * For items whose size varies between systems, always explicitly 
@@ -2653,7 +2671,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     if (checkHardLinks(&fl.files))
 	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets", "4.0.4-1");
 
-    genCpioListAndHeader(&fl, pkg, 0);
+    genCpioListAndHeader(&fl, spec, pkg, 0);
 
 exit:
     FileListFree(&fl);
@@ -2772,7 +2790,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
     if (! fl.processingFailed) {
 	if (sourcePkg->header != NULL) {
-	    genCpioListAndHeader(&fl, sourcePkg, 1);
+	    genCpioListAndHeader(&fl, spec, sourcePkg, 1);
 	}
     }
 
