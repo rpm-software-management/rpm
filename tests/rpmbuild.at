@@ -1174,6 +1174,103 @@ rtld(GNU_HASH)
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([elf dependencies with fallback])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/libhello.so
+runroot_other chmod a+x /data/misc/libhello.so
+runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/libhello.so
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_CHECK([
+runroot_other chmod a-x /data/misc/libhello.so.1.0.0
+runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -P --full-name-version-fallback /data/misc/libhello.so
+runroot_other chmod a+x /data/misc/libhello.so.1.0.0
+runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -P --full-name-version-fallback /data/misc/libhello.so
+],
+[0],
+[libhello.so()(64bit) = 1.0.0
+libhello.so()(64bit) = 1.0.0
+],
+[])
+
+AT_SKIP_IF([! $HAVE_GNU_DLFCN])
+AT_CHECK([
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${RPMTEST}/data/misc
+runroot_other chmod a-x /data/misc/helloexe
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/helloexe
+runroot_other chmod a+x /data/misc/helloexe
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/helloexe
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit) >= 1.0.0
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_SKIP_IF([! $HAVE_GNU_DLFCN])
+AT_CHECK([
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${RPMTEST}/data/misc
+runroot_other chmod a-x /data/misc/hellopie
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/hellopie
+runroot_other chmod a+x /data/misc/hellopie
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/hellopie
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit) >= 1.0.0
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_SKIP_IF([$HAVE_GNU_DLFCN])
+AT_CHECK([
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${RPMTEST}/data/misc
+runroot_other chmod a-x /data/misc/helloexe
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/helloexe
+runroot_other chmod a+x /data/misc/helloexe
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/helloexe
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+
+AT_SKIP_IF([$HAVE_GNU_DLFCN])
+AT_CHECK([
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${RPMTEST}/data/misc
+runroot_other chmod a-x /data/misc/hellopie
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/hellopie
+runroot_other chmod a+x /data/misc/hellopie
+${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback ${RPMTEST}/data/misc/hellopie
+],
+[0],
+[libc.so.6(GLIBC_2.2.5)(64bit)
+libhello.so()(64bit)
+libc.so.6()(64bit)
+rtld(GNU_HASH)
+],
+[])
+AT_CLEANUP
+
 # ------------------------------
 # Test spec query functionality
 AT_SETUP([rpmspec query 1])

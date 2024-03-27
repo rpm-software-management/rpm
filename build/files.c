@@ -1713,6 +1713,105 @@ static void argvAddAttr(ARGV_t *filesp, rpmfileAttrs attrs, const char *path)
     free(line);
 }
 
+static int generateElfSoVers(FileList fl, ARGV_t *files)
+{
+    int rc = 0;
+    int i;
+    FileListRec flp;
+    const char *errdir = _("failed to create directory");
+
+    /* How are we supposed to create the build-id links?  */
+    char *elf_so_version_macro = rpmExpand("%{?_elf_so_version}\n", NULL);
+    if (*elf_so_version_macro == '\n') {
+	rc = 1;
+	rpmlog(RPMLOG_WARNING,
+	       _("_elf_so_version macro not set, skipping elf-version generation\n"));
+    }
+
+    if (rc != 0) {
+	free(elf_so_version_macro);
+	return rc;
+    }
+
+    /* Save _elf_so_version for ELF shared objects in this package.  */
+    for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
+	struct stat sbuf;
+	if (lstat(flp->diskPath, &sbuf) == 0 && S_ISREG (sbuf.st_mode)) {
+	    /* We determine whether this is a main or
+	       debug ELF based on path.  */
+	    int isDbg = strncmp (flp->cpioPath,
+				 DEBUG_LIB_PREFIX, strlen (DEBUG_LIB_PREFIX)) == 0;
+
+	    /* Only save elf_so_version executable files in the main package. */
+	    if (isDbg
+		|| (sbuf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) == 0)
+	      continue;
+
+	    int fd = open (flp->diskPath, O_RDONLY);
+	    if (fd >= 0) {
+		/* Only real ELF files, that are ET_DYN should have _elf_so_version. */
+		GElf_Ehdr ehdr;
+#ifdef HAVE_DWELF_ELF_BEGIN
+		Elf *elf = dwelf_elf_begin (fd);
+#else
+		Elf *elf = elf_begin (fd, ELF_C_READ, NULL);
+#endif
+		if (elf != NULL && elf_kind (elf) == ELF_K_ELF
+		    && gelf_getehdr (elf, &ehdr) != NULL
+		    && (ehdr.e_type == ET_DYN)) {
+
+		    int versionFd = 0;
+		    char *pathCopy, *base, *versionPath, *versionDirPath;
+		    rasprintf (&pathCopy, "%s", flp->diskPath);
+		    /* TODO: ".elf-version" should be added to the "filesystem"
+		       package so that it's not owned by every package with SOs. */
+		    base = strrchr (pathCopy, '/');
+		    if (base) {
+			base[0] = 0;
+			base++;
+			rasprintf (&versionPath, "%s/.elf-version/%s",
+				   pathCopy, base);
+			rasprintf (&versionDirPath, "%s/.elf-version",
+				   pathCopy);
+		    } else {
+			rasprintf (&versionPath, ".elf-version/%s",
+				   pathCopy);
+			rasprintf (&versionDirPath, ".elf-version");
+		    }
+
+		    if (*files == NULL) {
+			/* Make sure to reset all file flags to defaults.  */
+			char *attrstr = mkattr();
+			argvAdd(files, attrstr);
+			free (attrstr);
+		    }
+
+		    /* We only need to create and add the subdir once. */
+		    if (access (versionDirPath, F_OK) == -1) {
+			if ((rc = rpmioMkpath(versionDirPath, 0755, -1, -1)) != 0)
+			    rpmlog(RPMLOG_ERR, "%s %s: %m\n", errdir, versionDirPath);
+			else
+			    argvAddAttr(files, RPMFILE_DIR|RPMFILE_ARTIFACT, versionDirPath);
+		    }
+
+		    versionFd = open(versionPath, O_WRONLY);
+		    if (versionFd >= 0 &&
+			write(versionFd, elf_so_version_macro, strlen(elf_so_version_macro)))
+			argvAddAttr(files, RPMFILE_ARTIFACT, versionPath);
+		    else
+			rpmlog(RPMLOG_ERR, "Error writing %s\n", versionDirPath);
+		    free(versionPath);
+		    free(versionDirPath);
+		}
+		elf_end (elf);
+		close (fd);
+	    }
+	}
+    }
+    free(elf_so_version_macro);
+    return rc;
+}
+
 #ifdef HAVE_LIBDW
 /* How build id links are generated.  See macros.in for description.  */
 #define BUILD_IDS_NONE     0
@@ -2624,12 +2723,30 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     if (fl.processingFailed)
 	goto exit;
 
-#ifdef HAVE_LIBDW
-    /* Check build-ids and add build-ids links for files to package list. */
     const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
     if (!rstreq(arch, "noarch")) {
-	/* Go through the current package list and generate a files list. */
 	ARGV_t idFiles = NULL;
+	/* Go through the current package list and generate a files list. */
+	if (generateElfSoVers (&fl, &idFiles) != 0) {
+	    rpmlog(RPMLOG_ERR, _("Generating elf-so-version failed\n"));
+	    fl.processingFailed = 1;
+	    argvFree(idFiles);
+	    goto exit;
+	}
+
+	if (idFiles != NULL) {
+	    resetPackageFilesDefaults (&fl, pkgFlags);
+	    addPackageFileList (&fl, pkg, &idFiles, NULL, NULL, 0);
+	}
+	argvFree(idFiles);
+	idFiles = NULL;
+
+	if (fl.processingFailed)
+	    goto exit;
+
+#ifdef HAVE_LIBDW
+	/* Check build-ids and add build-ids links for files to package list. */
+	/* Go through the current package list and generate a files list. */
 	if (generateBuildIDs (&fl, &idFiles) != 0) {
 	    rpmlog(RPMLOG_ERR, _("Generating build-id links failed\n"));
 	    fl.processingFailed = 1;
@@ -2645,8 +2762,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (fl.processingFailed)
 	    goto exit;
-    }
 #endif
+    }
 
     /* Verify that file attributes scope over hardlinks correctly. */
     if (checkHardLinks(&fl.files))
