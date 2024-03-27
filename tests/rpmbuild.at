@@ -67,6 +67,28 @@ runroot rpm -qpl --noartifact /build/RPMS/*/amhello-1.0-1.*.rpm
 [ignore])
 
 RPMTEST_CHECK([
+# re-tar the source to a different name
+tar xf /data/SOURCES/amhello-1.0.tar.gz
+mv amhello-1.0 amhello-1.0-prerelease
+tar czf "${RPMTEST}"/tmp/amhello-pre.tgz amhello-1.0-prerelease/
+runroot rpmbuild -bb \
+	--define "_prefix /usr" \
+	--define "_docdir_fmt %%{NAME}" \
+	--define "_sourcedir /tmp" \
+	--define "srcname amhello-pre.tgz" \
+	--quiet /data/SPECS/amhello.spec
+
+runroot rpm -qpl --noartifact /build/RPMS/*/amhello-1.0-1.*.rpm
+],
+[0],
+[/usr/bin/hello
+/usr/share/doc/amhello
+/usr/share/doc/amhello/README
+/usr/share/doc/amhello/README.distro
+],
+[ignore])
+
+RPMTEST_CHECK([
 runroot rpmbuild -bb \
 	--define "_prefix /usr" \
 	--define "_docdir_fmt %%{NAME}" \
@@ -91,7 +113,7 @@ runroot rpmbuild -bb \
 ],
 [1],
 [],
-[error: line 10: Unknown buildsystem: bogons
+[error: line 11: Unknown buildsystem: bogons
 ])
 
 RPMTEST_CLEANUP
