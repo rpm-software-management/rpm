@@ -1,15 +1,13 @@
 #    rpmvercmp.at: rpm version comparison tests
 
 m4_define([RPMVERCMP],[
-AT_SETUP([rpmvercmp($1, $2) = $3])
-AT_KEYWORDS([vercmp])
 RPMTEST_CHECK([
 runroot rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
 ], [])
-RPMTEST_CLEANUP
 ])
 
-AT_BANNER([RPM version comparison])
+AT_SETUP([rpm version comparison])
+AT_KEYWORDS([vercmp])
 
 RPMVERCMP(1.0, 1.0, 0)
 RPMVERCMP(1.0, 2.0, -1)
@@ -147,3 +145,5 @@ dnl RPMVERCMP(1.1.β, 1.1.α, 0)
 dnl RPMVERCMP(1.1.αα, 1.1.α, 0)
 dnl RPMVERCMP(1.1.α, 1.1.ββ, 0)
 dnl RPMVERCMP(1.1.ββ, 1.1.αα, 0)
+
+RPMTEST_CLEANUP
