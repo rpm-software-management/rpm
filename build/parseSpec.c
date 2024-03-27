@@ -246,10 +246,12 @@ static int expandMacrosInSpecBuf(rpmSpec spec, int strip)
     if ((condition) && (!condition->withArgs)) {
 	const char *s = lbuf + condition->textLen;
 	SKIPSPACE(s);
-	if (s[0] && s[0] != '#')
-	    rpmlog(RPMLOG_WARNING,
+	if (s[0] && s[0] != '#') {
+	    rpmlog(RPMLOG_ERR,
 		_("extra tokens at the end of %s directive in line %d:  %s\n"),
 		condition->text, spec->lineNum, lbuf);
+	    return 1;
+	}
     }
 
     /* Don't expand macros after %elif (resp. %elifarch, %elifos) in a false branch */
