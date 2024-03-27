@@ -316,12 +316,16 @@ static int getOutputFrom(ARGV_t argv,
 	close(toProg[1]);
 	close(fromProg[0]);
 
+	/*
+	 * When expecting input, make stdin the in pipe as you'd normally do.
+	 * Otherwise pass stdout(!) as the in pipe to cause reads to error
+	 * out. Just closing the fd breaks some software (eg libtool).
+	 */
 	if (writePtr) {
-	    /* Make stdin the in pipe */
 	    dup2(toProg[0], STDIN_FILENO);
 	    close(toProg[0]);
 	} else {
-	    close(STDIN_FILENO);
+	    dup2(fromProg[1], STDIN_FILENO);
 	}
 
 	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
