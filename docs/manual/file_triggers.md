@@ -32,7 +32,7 @@ directories, symlinks etc.
 
 The file triggers are defined in spec files of packages. E.g. file trigger executing `ldconfig` could be defined in glibc package.
 
-Similarly to regular triggers, file trigger scripts (except the `%transfiletrigger*` variants) are passed the number of instances of the triggered and triggering package (as the `$1` and `$2` arguments, respectively) that will remain when the file trigger has completed.  This can be useful in order to perform a certain operation when either of the packages is updated or removed.
+Similarly to regular triggers, file trigger scripts are passed the number of instances of the triggered and triggering package (as the `$1` and `$2` arguments, respectively) that will remain when the file trigger has completed.  This can be useful in order to perform a certain operation when either of the packages is updated or removed.  As an exception, the `%transfiletrigger*` variants are always passed the value of -1 as the `$2` argument.
 
 As was mentioned above there are more types of file triggers. We have two main types. File triggers execute once for package and file triggers executed once for whole transaction a.k.a transaction file triggers. Further file triggers are dived according to time of execution: before/after installation or erasure of a package or before/after a transaction.
 
