@@ -94,9 +94,21 @@ static inline int addSingleRelation(rpmte p,
 	    RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
-    /* Avoid loop-breaker inflation from weak dependencies for now */
-    if (rpmdsIsWeak(dep))
-	flags = 0;
+    /*
+     * Avoid dependency loop tangles from weak dependencies: demote scriptlet
+     * dependencies to regular ones to avoid loop-breaker inflation, and
+     * and ignore non-scriptlet ones entirely (like "meta" would do).
+     */
+    if (rpmdsIsWeak(dep)) {
+	/* ...but demoting ordering hints would be tragicomic */
+	if (rpmdsTagN(dep) != RPMTAG_ORDERNAME) {
+	    if (flags) {
+		flags = 0;
+	    } else {
+		return 0;
+	    }
+	}
+    }
 
     if (reversed) {
 	rpmte r = p;
