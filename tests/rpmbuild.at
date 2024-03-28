@@ -2957,3 +2957,19 @@ runroot rpmbuild --quiet -bb /data/SPECS/bpf.spec
 [],
 [])
 RPMTEST_CLEANUP
+
+# XXX this always succeeds when rpmbuild is run as root so the test is
+# kinda meaningless until #3005 is done, but works as a manual reproducer.
+AT_SETUP([rpmbuild non-removable file in builddir])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+# -bi doesn't run cleanup, test that we manage that situation too
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bi /data/SPECS/noperms.spec
+runroot rpmbuild --quiet -bb /data/SPECS/noperms.spec
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
