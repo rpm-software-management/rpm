@@ -1276,13 +1276,6 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     if (parseSpecSection(&spec, PARSE_SPECFILE) != RPMRC_OK)
 	goto errxit;
 
-    if (spec->sections[SECT_CLEAN] == NULL) {
-	char *body = rpmExpand("%{buildsystem_default_clean}", NULL);
-	spec->sections[SECT_CLEAN] = newStringBuf();
-	appendLineStringBuf(spec->sections[SECT_CLEAN], body);
-	free(body);
-    }
-
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
     return spec;
