@@ -46,14 +46,14 @@ deptest-three-1.0-1.noarch
 [])
 RPMTEST_CLEANUP
 
-# same as above but with weak dependencies
+# same as above but with mixed weak dependencies
 AT_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
-	--define "recs deptest-two" \
+	--define "reqs deptest-two" \
 	/data/SPECS/deptest.spec
 runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
@@ -72,17 +72,17 @@ runroot rpm -Uv --justdb \
 [0],
 [Verifying packages...
 Preparing packages...
-deptest-three-1.0-1.noarch
 deptest-two-1.0-1.noarch
 deptest-one-1.0-1.noarch
+deptest-three-1.0-1.noarch
 ],
 [])
 
 RPMTEST_CHECK([
 runroot rpm -ev --justdb \
+	deptest-two \
         deptest-three \
-	deptest-one \
-	deptest-two
+	deptest-one
 ],
 [0],
 [Preparing packages...
@@ -93,7 +93,9 @@ deptest-three-1.0-1.noarch
 [])
 RPMTEST_CLEANUP
 
-# same as above but with weak reverse dependencies
+# same as above but with all weak reverse dependencies
+# these are all considered meta by ordering, so order is simply reverse
+# of the cli
 AT_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
 RPMDB_INIT
@@ -119,9 +121,9 @@ runroot rpm -Uv --justdb \
 [0],
 [Verifying packages...
 Preparing packages...
+deptest-one-1.0-1.noarch
 deptest-three-1.0-1.noarch
 deptest-two-1.0-1.noarch
-deptest-one-1.0-1.noarch
 ],
 [])
 
@@ -133,8 +135,8 @@ runroot rpm -ev --justdb \
 ],
 [0],
 [Preparing packages...
-deptest-one-1.0-1.noarch
 deptest-two-1.0-1.noarch
+deptest-one-1.0-1.noarch
 deptest-three-1.0-1.noarch
 ],
 [])
