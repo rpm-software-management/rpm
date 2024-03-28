@@ -240,10 +240,12 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Is ignored when SOURCE_DATE_EPOCH is not set.
 %use_source_date_epoch_as_buildtime 0
 
-#	If true, make sure that timestamps in built rpms
-#	are not later than the value of SOURCE_DATE_EPOCH.
-#	Is ignored when SOURCE_DATE_EPOCH is not set.
-%clamp_mtime_to_source_date_epoch 0
+#	Defines file timestamp handling in built rpms. Possible values
+#	are "clamp_to_buildtime" and "clamp_to_source_date_epoch", 
+#	which makes sure the the file timestamps are not later than
+#	the build time of the package or the value of
+#	SOURCE_DATE_EPOCH, respectively.
+#%build_mtime_policy
 
 #	If enabled, dilute user() and group() requires into recommends
 #%_use_weak_usergroup_deps 1
