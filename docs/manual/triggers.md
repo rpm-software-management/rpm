@@ -104,6 +104,15 @@ this case, if any of the targets will remain after the uninstall, the
 trigger doesn't do anything (as it's probably being triggered by an
 upgrade).
 
+Unlike a regular scriptlet, the trigger is not only run when the source changes
+its installation status (given that a target is already installed) but, more
+importantly, also when a target does.  Thus, $1 and $2 alone cannot be used to
+determine whether the source or a target is being installed as both would be 1
+in both cases.  To allow triggers to always distinguish these two cases, a
+third argument ($3) is passed that is either 0 or greater than 0, depending on
+whether it's the source or a target that has activated the trigger,
+respectively.
+
 ## Trigger Syntax
 
 Trigger specifications are of the form:

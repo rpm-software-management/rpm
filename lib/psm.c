@@ -475,6 +475,7 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 	tix = rpmdsTi(trigger);
 	if (triggersAlreadyRun == NULL || triggersAlreadyRun[tix] == 0) {
 	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
+	    int arg3 = (te == NULL);
 
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
@@ -483,7 +484,7 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
 		arg1 += countCorrection;
-		rpmScriptSetArgs(script, "ii", arg1, arg2);
+		rpmScriptSetArgs(script, "iii", arg1, arg2, arg3);
 		rc = runScript(ts, te, trigH, pfx.data, script);
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;

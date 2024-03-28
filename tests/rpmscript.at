@@ -317,10 +317,10 @@ runroot rpm -U /build/RPMS/noarch/scripts-1.0-1.noarch.rpm
 ],
 [0],
 [scripts-1.0-1 PRETRANS 1
-triggers-1.0-1 TRIGGERPREIN 1 0
+triggers-1.0-1 TRIGGERPREIN 1 0 1
 scripts-1.0-1 PRE 1
 scripts-1.0-1 POST 1
-triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERIN 1 1 1
 scripts-1.0-1 POSTTRANS 1
 ],
 [])
@@ -331,14 +331,14 @@ runroot rpm -U /build/RPMS/noarch/scripts-1.0-2.noarch.rpm
 [0],
 [scripts-1.0-2 PRETRANS 2
 scripts-1.0-1 PREUNTRANS 1
-triggers-1.0-1 TRIGGERPREIN 1 1
+triggers-1.0-1 TRIGGERPREIN 1 1 1
 scripts-1.0-2 PRE 2
 scripts-1.0-2 POST 2
-triggers-1.0-1 TRIGGERIN 1 2
-triggers-1.0-1 TRIGGERUN 1 1
+triggers-1.0-1 TRIGGERIN 1 2 1
+triggers-1.0-1 TRIGGERUN 1 1 1
 scripts-1.0-1 PREUN 1
 scripts-1.0-1 POSTUN 1
-triggers-1.0-1 TRIGGERPOSTUN 1 1
+triggers-1.0-1 TRIGGERPOSTUN 1 1 1
 scripts-1.0-2 POSTTRANS 2
 scripts-1.0-1 POSTUNTRANS 1
 ],
@@ -348,9 +348,9 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/triggers-1.0-2.noarch.rpm
 ],
 [0],
-[triggers-1.0-2 TRIGGERPREIN 1 1
-triggers-1.0-2 TRIGGERIN 2 1
-triggers-1.0-1 TRIGGERUN 1 1
+[triggers-1.0-2 TRIGGERPREIN 1 1 0
+triggers-1.0-2 TRIGGERIN 2 1 0
+triggers-1.0-1 TRIGGERUN 1 1 0
 ],
 [])
 
@@ -359,10 +359,10 @@ runroot rpm -e scripts
 ],
 [0],
 [scripts-1.0-2 PREUNTRANS 0
-triggers-1.0-2 TRIGGERUN 1 0
+triggers-1.0-2 TRIGGERUN 1 0 1
 scripts-1.0-2 PREUN 0
 scripts-1.0-2 POSTUN 0
-triggers-1.0-2 TRIGGERPOSTUN 1 0
+triggers-1.0-2 TRIGGERPOSTUN 1 0 1
 scripts-1.0-2 POSTUNTRANS 0
 ],
 [])
@@ -403,13 +403,13 @@ filetriggerin(/foo*)<lua>:
 /foo/hello-world
 /foo/zzzz
 
-filetriggerin(/usr/bin*): 1 1
+filetriggerin(/usr/bin*): 1 1 1
 /usr/bin/hello
 
-filetriggerin(/usr/bin*)<lua>: 1 1
+filetriggerin(/usr/bin*)<lua>: 1 1 1
 /usr/bin/hello
 
-transfiletriggerin(/usr/bin*): 1 -1
+transfiletriggerin(/usr/bin*): 1 -1 1
 /usr/bin/hello
 
 transfiletriggerin(/foo*):
@@ -428,7 +428,7 @@ RPMTEST_CHECK([
 runroot rpm -e hello-script hlinktest
 ],
 [0],
-[transfiletriggerun(/usr/bin*): 1 -1
+[transfiletriggerun(/usr/bin*): 1 -1 1
 /usr/bin/hello
 
 transfiletriggerun(/foo*):
@@ -458,13 +458,13 @@ filetriggerpostun(/foo*):
 /foo/hello-world
 /foo/zzzz
 
-filetriggerun(/usr/bin*): 1 0
+filetriggerun(/usr/bin*): 1 0 1
 /usr/bin/hello
 
-filetriggerpostun(/usr/bin*): 1 0
+filetriggerpostun(/usr/bin*): 1 0 1
 /usr/bin/hello
 
-transfiletriggerpostun(/usr/bin*): 1 -1
+transfiletriggerpostun(/usr/bin*): 1 -1 1
 
 transfiletriggerpostun(/foo*):
 
@@ -488,8 +488,8 @@ RPMTEST_CHECK([
 runroot rpm -i /build/RPMS/noarch/parallel-1.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 FILETRIGGERIN 1 1 | 12
-parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 | 12
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 1 1 | 12
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 1 | 12
 ],
 [])
 
@@ -497,11 +497,11 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-2.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 | 12
-parallel-trigger-1.0-1 FILETRIGGERIN 1 2 | 12
-parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 1 | 11
-parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 | 12
-parallel-trigger-1.0-1 TRANSFILETRIGGERPOSTUN 1 -1 | 0
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 1 | 12
+parallel-trigger-1.0-1 FILETRIGGERIN 1 2 1 | 12
+parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 1 1 | 11
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 1 | 12
+parallel-trigger-1.0-1 TRANSFILETRIGGERPOSTUN 1 -1 1 | 0
 ],
 [])
 
@@ -509,9 +509,9 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 | 12
-parallel-trigger-2.0-1 FILETRIGGERIN 2 1 | 12
-parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 -1 | 12
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 0 | 12
+parallel-trigger-2.0-1 FILETRIGGERIN 2 1 0 | 12
+parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 -1 0 | 12
 ],
 [])
 
@@ -519,9 +519,9 @@ RPMTEST_CHECK([
 runroot rpm -e parallel
 ],
 [0],
-[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 -1 | 12
-parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 0 | 12
-parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 -1 | 0
+[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 -1 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 0 1 | 12
+parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 -1 1 | 0
 ],
 [])
 
@@ -540,8 +540,8 @@ runroot rpm -i \
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 FILETRIGGERIN 1 3 | 36
-parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 | 36
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 3 0 | 36
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 -1 0 | 36
 ],
 [])
 
@@ -549,9 +549,9 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 ],
 [0],
-[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 | 36
-parallel-trigger-2.0-1 FILETRIGGERIN 2 3 | 36
-parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 -1 | 36
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 -1 0 | 36
+parallel-trigger-2.0-1 FILETRIGGERIN 2 3 0 | 36
+parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 -1 0 | 36
 ],
 [])
 
@@ -559,7 +559,7 @@ RPMTEST_CHECK([
 runroot rpm -e parallel-trigger
 ],
 [0],
-[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 0 -1 | 36
+[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 0 -1 0 | 36
 ],
 [])
 RPMTEST_CLEANUP
