@@ -664,6 +664,12 @@ places. For many simple packages this is just:
 If the packaged software has accomppanying tests, this is where they
 should be executed.
 
+### %clean (OBSOLETE)
+
+Packages should place all their temporaries inside their designated
+`%builddir`, which rpm will automatically clean up. Needing a package
+specific `%clean` section generally suggests flaws in the spec.
+
 ## Runtime scriptlets
 
 Runtime scriptlets are executed at the time of install and erase of the
