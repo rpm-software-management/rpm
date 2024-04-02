@@ -14,7 +14,14 @@
 
 int headerIsSource(Header h)
 {
-    return (!headerIsEntry(h, RPMTAG_SOURCERPM));
+    /* Positive identification of a source package */
+    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
+	return 1;
+    /* Positive identification of a binary package */
+    if (headerIsEntry(h, RPMTAG_SOURCERPM))
+	return 0;
+    /* Dunno, guess so (as per traditional behavior) */
+    return 1;
 }
 
 Header headerCopy(Header h)
