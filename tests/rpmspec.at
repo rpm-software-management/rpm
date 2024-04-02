@@ -361,3 +361,23 @@ make DESTDIR=$RPM_BUILD_ROOT install
 ]],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmspec --patches and --sources])
+AT_KEYWORDS([rpmspec])
+RPMTEST_CHECK([
+rpmspec -q --patches /data/SPECS/hello-autopatch.spec
+],
+[0],
+[hello-1.0-install.patch
+hello-1.0-modernize.patch
+],
+[])
+RPMTEST_CHECK([
+rpmspec -q --sources /data/SPECS/poltest.spec
+],
+[0],
+[poltest-policy-1.0.tar.bz2
+poltest-1.0.tar.bz2
+],
+[])
+RPMTEST_CLEANUP

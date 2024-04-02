@@ -247,6 +247,10 @@ rpmspec	alias --buildconflicts	--srpm --conflicts \
 	--POPTdesc=$"list capabilities conflicting with build of this package"
 rpmspec	alias --buildrequires	--srpm --requires \
 	--POPTdesc=$"list capabilities required to build this package"
+rpmspec alias --patches		--srpm --qf "[%{PATCH}\n]" \
+	--POPTdesc=$"list patches in this spec"
+rpmspec alias --sources		--srpm --qf "[%{SOURCE}\n]" \
+	--POPTdesc=$"list sources in this spec"
 rpmspec alias --httpport	--define '_httpport !#:+'
 rpmspec alias --httpproxy	--define '_httpproxy !#:+'
 rpmspec alias --with		--define "_with_!#:+     --with-!#:+" \

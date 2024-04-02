@@ -32,7 +32,6 @@ make DESTDIR=%{buildroot} prefix=%{_prefix} install
 %package policy
 Summary: Policy for the poltest package
 Group: System/Policy
-Collections: sepolicy
 %description policy
 Policy for the poltest package
 
