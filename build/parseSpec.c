@@ -731,6 +731,12 @@ static void initSourceHeader(rpmSpec spec)
 	    }
 	}
     }
+    if (spec->sourceRpmName == NULL) {
+	char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);
+	rasprintf(&spec->sourceRpmName, "%s.%ssrc.rpm", nvr,
+		spec->noSource ? "no" : "");
+	free(nvr);
+    }
 }
 
 static void finalizeSourceHeader(rpmSpec spec)
@@ -1309,6 +1315,8 @@ static rpmRC finalizeSpec(rpmSpec spec)
 	headerPutString(pkg->header, RPMTAG_OS, os);
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
 	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
+	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
+
 
 	if (pkg != spec->packages) {
 	    copyInheritedTags(pkg->header, spec->packages->header);
