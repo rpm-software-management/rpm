@@ -735,7 +735,10 @@ static void initSourceHeader(rpmSpec spec)
 
 static void finalizeSourceHeader(rpmSpec spec)
 {
+    uint32_t one = 1;
+
     /* Only specific tags are added to the source package header */
+    headerPutUint32(spec->sourcePackage->header, RPMTAG_SOURCEPACKAGE, &one, 1);
     headerCopyTags(spec->packages->header, spec->sourcePackage->header, sourceTags);
 
     /* Provide all package NEVRs that would be built */

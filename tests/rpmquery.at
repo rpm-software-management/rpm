@@ -1317,6 +1317,7 @@ runroot rpmspec -q --qf "[[%{*:tagnum}\n]]" --srpm /data/SPECS/mini.spec
 1016
 1021
 1022
+1106
 ],
 [])
 
@@ -1334,6 +1335,7 @@ License
 Group
 Os
 Arch
+Sourcepackage
 ],
 [])
 RPMTEST_CLEANUP
