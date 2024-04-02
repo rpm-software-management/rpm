@@ -261,22 +261,6 @@ typedef enum pgpValType_e {
 const char * pgpValString(pgpValType type, uint8_t val);
 
 /** \ingroup rpmpgp
- * Return (native-endian) integer from big-endian representation.
- * @param s		pointer to big-endian integer
- * @param nbytes	no. of bytes
- * @return		native-endian integer
- */
-static inline
-unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
-{
-    size_t i = 0;
-    size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
-    while (nb--)
-	i = (i << 8) | *s++;
-    return i;
-}
-
-/** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)

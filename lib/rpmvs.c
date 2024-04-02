@@ -195,6 +195,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
 	char *lints = NULL;
         int ec = pgpPrtParams2(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig, &lints);
+	const uint8_t *signid;
 	if (ec) {
 	    if (lints) {
 		rasprintf(&sinfo->msg,
@@ -212,7 +213,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    free(lints);
 	}
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
-	sinfo->keyid = pgpGrab(pgpDigParamsSignID(sinfo->sig)+4, 4);
+	signid = pgpDigParamsSignID(sinfo->sig);	/* 8 bytes key id */
+	sinfo->keyid = signid[4] << 24 | signid[5] << 16 | signid[6] << 8 | signid[7];
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE) {
 	    sinfo->dig = rpmhex(data, dlen);
