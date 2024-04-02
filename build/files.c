@@ -2661,16 +2661,6 @@ exit:
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
-static void genSourceRpmName(rpmSpec spec)
-{
-    if (spec->sourceRpmName == NULL) {
-	char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);
-	rasprintf(&spec->sourceRpmName, "%s.%ssrc.rpm", nvr,
-	    	  spec->noSource ? "no" : "");
-	free(nvr);
-    }
-}
-
 rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
@@ -2688,7 +2678,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	oneshot = 1;
     }
 
-    genSourceRpmName(spec);
     /* Construct the file list and source entries */
     argvAdd(&files, spec->specFile);
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
@@ -3130,7 +3119,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     elf_version (EV_CURRENT);
 #endif
     check_fileList = newStringBuf();
-    genSourceRpmName(spec);
     buildroot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     
     if (rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
@@ -3185,8 +3173,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (pkg->fileList == NULL)
 	    continue;
-
-	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
