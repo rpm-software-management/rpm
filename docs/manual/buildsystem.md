@@ -90,16 +90,15 @@ supported by the buildsystem mechanism. These defaults, if defined,
 are only called if there's no corresponding buildsystem specific macro
 defined.
 
-Rpm ships with a default to perform `%autosetup -p1` in `%prep`,
+Rpm ships with a default to perform `%autosetup -p1 -C` in `%prep`,
 so unless a buildsystem has an unusual source preparation sequence
 source preparation will "just work". Passing extra arguments to a section
 is exactly the same with defaults and buildsystem specific macros, so
 the user does not need to know which one is being used. For example,
-if the upstream source doesn' version their source release directory,
-it can simply be supplied with the following in the spec:
+if your patches need to be applied with a non-default prefix stripping:
 
 ```
-BuildOption(prep): -n %{name}
+BuildOption(prep): -p0
 ```
 
 Note that the defaults are only meant for upstream and distro-level
