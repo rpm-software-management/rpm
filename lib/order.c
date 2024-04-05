@@ -601,7 +601,7 @@ int rpmtsOrder(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
 		   erasedPackages : tsmem->addedPackages;
-	rpmTag ordertags[] = {
+	rpmTagVal ordertags[] = {
 		RPMTAG_REQUIRENAME,
 		RPMTAG_RECOMMENDNAME,
 		RPMTAG_SUGGESTNAME,
