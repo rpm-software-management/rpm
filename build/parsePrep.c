@@ -72,7 +72,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	goto exit;
     }
-    const char *fn = sp->path;
 
     if (db) {
 	rasprintf(&arg_backup, "-b --suffix %s", db);
@@ -96,10 +95,10 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		setUtc ? " -Z" : "");
 
     /* Avoid the extra cost of fork and pipe for uncompressed patches */
-    if (notCompressed(fn)) {
-	patchcmd = rpmExpand("%{__patch} ", args, " < ", fn, NULL);
+    if (notCompressed(sp->path)) {
+	patchcmd = rpmExpand("%{__patch} ", args, " < ", sp->path, NULL);
     } else {
-	patchcmd = rpmExpand("{ %{__rpmuncompress} ", fn, " || echo patch_fail ; } | "
+	patchcmd = rpmExpand("{ %{__rpmuncompress} ", sp->path, " || echo patch_fail ; } | "
                              "%{__patch} ", args, NULL);
     }
 
