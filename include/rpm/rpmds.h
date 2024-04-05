@@ -456,6 +456,7 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
 
 
 typedef enum rpmrichOp_e {
+    RPMRICHOP_NONE    = 0,
     RPMRICHOP_SINGLE  = 1,
     RPMRICHOP_AND     = 2,
     RPMRICHOP_OR      = 3,
