@@ -1042,6 +1042,8 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
         if (srcdate && rpmExpandNumeric("%{?clamp_mtime_to_source_date_epoch}")) {
 	    free(mtime_policy_str);
 	    mtime_policy_str = xstrdup("clamp_to_source_date_epoch");
+	    rpmlog(RPMLOG_WARNING,
+		    _("%%clamp_mtime_to_source_date_epoch is deprecated, please use %%build_mtime_policy\n"));
 	}
     }
 
