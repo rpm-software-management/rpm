@@ -1,4 +1,4 @@
-librpm.so.10.0.0
-librpmbuild.so.10.0.0
-librpmio.so.10.0.0
-librpmsign.so.10.0.0
+librpm.so.10.1.0
+librpmbuild.so.10.1.0
+librpmio.so.10.1.0
+librpmsign.so.10.1.0
