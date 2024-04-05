@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmfi.h>
+#include <rpm/rpmcallback.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +35,7 @@ RPM_GNUC_INTERNAL
 int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
 
 RPM_GNUC_INTERNAL
-void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount);
+void rpmpsmNotify(rpmpsm psm, rpmCallbackType what, rpm_loff_t amount);
 #ifdef __cplusplus
 }
 #endif

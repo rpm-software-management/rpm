@@ -683,7 +683,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
     return psm;
 }
 
-void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
+void rpmpsmNotify(rpmpsm psm, rpmCallbackType what, rpm_loff_t amount)
 {
     if (psm) {
 	int changed = 0;
