@@ -32,13 +32,13 @@ typedef char * (*headerTagFormatFunction) (rpmtd td, char **emsg);
 struct headerFmt_s {
     rpmtdFormats fmt;	/*!< Value of extension */
     const char *name;	/*!< Name of extension. */
-    rpmTagClass class;	/*!< Class of source data (RPM_ANY_CLASS for any) */
+    rpmTagClass tclass;	/*!< Class of source data (RPM_ANY_CLASS for any) */
     headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
 };
 
-static const char *classEr(rpmTagClass class)
+static const char *classEr(rpmTagClass tclass)
 {
-    switch (class) {
+    switch (tclass) {
     case RPM_BINARY_CLASS:	 return _("(not a blob)");
     case RPM_NUMERIC_CLASS:	 return _("(not a number)");
     case RPM_STRING_CLASS:	 return _("(not a string)");
@@ -652,8 +652,8 @@ char *rpmHeaderFormatCall(headerFmt fmt, rpmtd td)
     char *ret = NULL;
     char *err = NULL;
 
-    if (fmt->class != RPM_ANY_CLASS && rpmtdClass(td) != fmt->class)
-	err = xstrdup(classEr(fmt->class));
+    if (fmt->tclass != RPM_ANY_CLASS && rpmtdClass(td) != fmt->tclass)
+	err = xstrdup(classEr(fmt->tclass));
     else
 	ret = fmt->func(td, &err);
 
