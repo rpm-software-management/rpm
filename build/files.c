@@ -2865,11 +2865,11 @@ static void patchDebugPackageString(Package dbg, rpmTag tag, Package pkg, Packag
     old = headerGetString(dbg->header, tag);
     p = old ? strstr(old, oldsubst) : NULL;
     if (p) {
-	char *new = NULL;
-	rasprintf(&new, "%.*s%s%s", (int)(p - old), old, newsubst, p + strlen(oldsubst));
+	char *newval = NULL;
+	rasprintf(&newval, "%.*s%s%s", (int)(p - old), old, newsubst, p + strlen(oldsubst));
 	headerDel(dbg->header, tag);
-	headerPutString(dbg->header, tag, new);
-	_free(new);
+	headerPutString(dbg->header, tag, newval);
+	_free(newval);
     }
     _free(oldsubst);
     _free(newsubst);
