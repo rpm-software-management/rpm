@@ -101,7 +101,18 @@ Macro name                            | Description
 --------------------------------------|-----------
 `%source_date_epoch_from_changelog`   | Set `SOURCE_DATE_EPOCH` from latest `%changelog` entry
 `%use_source_date_epoch_as_buildtime` | Set package BuildTime to `SOURCE_DATE_EPOCH`
-`%clamp_mtime_to_source_date_epoch`   | Ensure file timestamps are not newer than `SOURCE_DATE_EPOCH`
+`%clamp_mtime_to_source_date_epoch`   | Ensure file timestamps are not newer than `SOURCE_DATE_EPOCH` (deprecated)
+`%build_mtime_policy`                 | Defines file timestamp handling
+
+The supported values for `%build_mtime_policy` are:
+
+* (unset)
+  leave the mtimes as is
+* `clamp_to_source_date_epoch`
+  clamp the mtimes so that they are not bigger than the `SOURCE_DATE_EPOCH`
+* `clamp_to_buildtime`
+  clamp the mtimes so that they are not bigger than the package build time (i.e. the time that
+  is used for the `BUILDTIME` tag)
 
 ### Vendor defaults
 
