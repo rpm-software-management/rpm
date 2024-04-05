@@ -68,12 +68,12 @@ rpmTagVal rpmtdTag(rpmtd td)
 
 rpmTagType rpmtdType(rpmtd td)
 {
-    return (td != NULL) ? td->type : 0;
+    return (td != NULL) ? (rpmTagType)td->type : RPM_NULL_TYPE;
 }
 
 rpmTagClass rpmtdClass(rpmtd td)
 {
-    return (td != NULL) ? rpmTagTypeGetClass(td->type) : 0;
+    return (td != NULL) ? rpmTagTypeGetClass(td->type) : RPM_NULL_CLASS;
 }
 
 rpmtdFlags rpmtdGetFlags(rpmtd td)
