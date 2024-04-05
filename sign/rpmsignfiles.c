@@ -5,7 +5,6 @@
  */
 
 #include "system.h"
-#include "imaevm.h"
 
 #include <string.h>
 #include <rpm/rpmstring.h>

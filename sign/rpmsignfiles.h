@@ -8,6 +8,9 @@
 extern "C" {
 #endif
 
+/* This doesn't have c++ guards on its own */
+#include <imaevm.h>
+
 /**
  * Sign file digests in header into signature header
  * @param sigh		package signature header
