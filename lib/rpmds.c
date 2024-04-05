@@ -1246,7 +1246,7 @@ static struct RichOpComp {
     { "else",	 RPMRICHOP_ELSE},
     { "with",	 RPMRICHOP_WITH},
     { "without", RPMRICHOP_WITHOUT},
-    { NULL, 0 },
+    { NULL, RPMRICHOP_NONE },
 };
 
 int rpmdsIsRich(rpmds dep)
@@ -1368,7 +1368,7 @@ static rpmRC rpmrichParseCheck(rpmrichOp op, int check, char **emsg)
 static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, int *checkp)
 {
     const char *p = *dstrp, *pe;
-    rpmrichOp op = RPMRICHOP_SINGLE, firstop = RPMRICHOP_SINGLE, chainop = 0;
+    rpmrichOp op = RPMRICHOP_SINGLE, firstop = RPMRICHOP_SINGLE, chainop = RPMRICHOP_NONE;
     int check = checkp ? *checkp : 0;
 
     if (cb && cb(cbdata, RPMRICH_PARSE_ENTER, p, 0, 0, 0, 0, op, emsg) != RPMRC_OK)
@@ -1415,7 +1415,7 @@ static rpmRC rpmrichParseInternal(const char **dstrp, char **emsg, rpmrichParseF
 	    firstop = op;
 
 	if (op == RPMRICHOP_ELSE && (chainop == RPMRICHOP_IF || chainop == RPMRICHOP_UNLESS))
-	    chainop = 0;
+	    chainop = RPMRICHOP_NONE;
         if (chainop && op != chainop) {
             if (emsg)
                 rasprintf(emsg, _("Cannot chain different ops"));
