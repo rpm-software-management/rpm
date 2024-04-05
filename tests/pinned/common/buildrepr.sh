@@ -6,7 +6,7 @@ runroot rpmbuild -bb --quiet \
 	--define "_buildhost localhost" \
 	--define "use_source_date_epoch_as_buildtime 1" \
 	--define "source_date_epoch_from_changelog 1" \
-	--define "clamp_mtime_to_source_date_epoch 1" \
+	--define "build_mtime_policy clamp_to_source_date_epoch" \
 	--define "_use_weak_usergroup_deps 0" \
 	/data/SPECS/attrtest.spec
 
