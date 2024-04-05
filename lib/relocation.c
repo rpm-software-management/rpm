@@ -351,7 +351,7 @@ assert(fn != NULL);		/* XXX can't happen */
  */
 static struct tagMacro {
     const char *macroname; 	/*!< Macro name to define. */
-    rpmTag tag;			/*!< Header tag to use for value. */
+    rpmTagVal tag;		/*!< Header tag to use for value. */
 } const tagMacros[] = {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },

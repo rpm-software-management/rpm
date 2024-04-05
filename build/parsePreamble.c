@@ -574,7 +574,7 @@ static struct optionalTag {
     { RPMTAG_TRANSLATIONURL,	"%{translationurl}" },
     { RPMTAG_UPSTREAMRELEASES,	"%{upstreamreleases}" },
     { RPMTAG_MODULARITYLABEL,	"%{modularitylabel}"},
-    { -1, NULL }
+    { 0, NULL }
 };
 
 /**
