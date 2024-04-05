@@ -33,7 +33,7 @@ static struct poptOption optionsTable[] = {
 };
 
 #ifdef HAVE_READLINE
-static char *myreadline(char *prompt)
+static char *myreadline(const char *prompt)
 {
     char *line = readline(prompt);
     if (line && *line)
