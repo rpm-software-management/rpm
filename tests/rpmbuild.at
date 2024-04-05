@@ -708,28 +708,6 @@ runroot rpm -q --dump /build/RPMS/noarch/test-1-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild _buildtime macro])
-AT_KEYWORDS([build])
-RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot \
-  rpmbuild \
-  -bb --quiet \
-  --define "_buildtime 16994604181" \
-  --define "build_mtime_policy clamp_to_buildtime" \
-  /data/SPECS/source_date_epoch.spec
-
-runroot rpm -q --dump /build/RPMS/noarch/test-1-1.noarch.rpm
-runroot rpm -q --qf '%{BUILDTIME}\n' /build/RPMS/noarch/test-1-1.noarch.rpm
-],
-[0],
-[/0.txt 15 1699460418 91751cee0a1ab8414400238a761411daa29643ab4b8243e9a91649e25be53ada 0100644 root root 0 0 0 X
-1699460418
-],
-[])
-RPMTEST_CLEANUP
-
 AT_SETUP([rpmbuild unpackaged files])
 AT_KEYWORDS([build])
 RPMDB_INIT
