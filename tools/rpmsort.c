@@ -144,17 +144,17 @@ static void add_input(const char *filename, char ***package_names,
     while (input_buffer && *input_buffer &&
 	   (position_of_newline = strchrnul(input_buffer, '\n'))) {
 	size_t sz = position_of_newline - input_buffer;
-	char *new;
+	char *newl;
 
 	if (sz == 0) {
 	    input_buffer = position_of_newline + 1;
 	    continue;
 	}
 
-	new = rstrndup(input_buffer, sz);
+	newl = rstrndup(input_buffer, sz);
 
 	names = xrealloc(names, sizeof(char *) * (n_names + 1));
-	names[n_names] = new;
+	names[n_names] = newl;
 	n_names++;
 
 	/* Move buffer ahead to next line. */
