@@ -261,12 +261,12 @@ static int rpmfcExpandAppend(ARGV_t * argvp, ARGV_const_t av)
 }
 
 static rpmds rpmdsSingleNS(rpmstrPool pool,
-			rpmTagVal tagN, const char *namespace,
+			rpmTagVal tagN, const char *namespc,
 			const char * N, const char * EVR, rpmsenseFlags Flags)
 {
     rpmds ds = NULL;
-    if (namespace) {
-	char *NSN = rpmExpand(namespace, "(", N, ")", NULL);
+    if (namespc) {
+	char *NSN = rpmExpand(namespc, "(", N, ")", NULL);
 	ds = rpmdsSinglePool(pool, tagN, NSN, EVR, Flags);
 	free(NSN);
     } else {
@@ -594,7 +594,7 @@ static ARGV_t runCall(const char *name, const char *buildRoot, ARGV_t fns)
 
 struct addReqProvDataFc {
     rpmfc fc;
-    const char *namespace;
+    const char *namespc;
     regex_t *exclude;
 };
 
@@ -604,10 +604,10 @@ static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
 {
     struct addReqProvDataFc *data = cbdata;
     rpmfc fc = data->fc;
-    const char *namespace = data->namespace;
+    const char *namespc = data->namespc;
     regex_t *exclude = data->exclude;
 
-    rpmds ds = rpmdsSingleNS(fc->pool, tagN, namespace, N, EVR, Flags);
+    rpmds ds = rpmdsSingleNS(fc->pool, tagN, namespc, N, EVR, Flags);
     /* Add to package and file dependencies unless filtered */
     if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0)
 	rpmfcAddFileDep(&fc->fileDeps, ds, index);
@@ -683,7 +683,7 @@ static int genDeps(const char *mname, int multifile, rpmTagVal tagN,
 static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
 		       const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
-		       const char *namespace, const char *mname)
+		       const char *namespc, const char *mname)
 {
     int rc = 0;
     const char **paths = xcalloc(n + 1, sizeof(*paths));
@@ -708,7 +708,7 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
 
     struct addReqProvDataFc data;
     data.fc = fc;
-    data.namespace = namespace;
+    data.namespc = namespc;
     data.exclude = excl->exclude;
 
     if (proto && rstreq(proto, "multifile")) {
@@ -1116,7 +1116,7 @@ static int applyAttr(rpmfc fc, int aix,
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
 
 	if (rpmMacroIsDefined(NULL, mname)) {
-	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
+	    char *ns = rpmfcAttrMacro(aname, "namespc", NULL);
 	    rc = rpmfcHelper(fc, ixs, n, attr->proto,
 			    excl, dep->type, dep->tag, ns, mname);
 	    free(ns);
