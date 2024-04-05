@@ -140,6 +140,11 @@ typedef struct FileEntry_s {
     int isDir;
 } * FileEntry;
 
+struct FileEntries_s {
+    struct FileEntry_s defEntry;
+    struct FileEntry_s curEntry;
+};
+
 typedef struct specialDir_s {
     char * dirname;
     ARGV_t files;
@@ -150,11 +155,7 @@ typedef struct specialDir_s {
     int entriesCount;
     int entriesAlloced;
 
-    struct {
-	struct FileEntry_s defEntry;
-	struct FileEntry_s curEntry;
-    } *entries;
-
+    struct FileEntries_s *entries;
 } * specialDir;
 
 typedef struct FileRecords_s {
