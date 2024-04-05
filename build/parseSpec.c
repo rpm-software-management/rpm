@@ -345,7 +345,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 	
 	/* If it doesn't, ask for one more line. */
 	if (pc || bc || xc || nc ) {
-	    spec->nextline = "";
+	    spec->nextline = NULL;
 	    return 1;
 	}
 	spec->lbufOff = 0;
