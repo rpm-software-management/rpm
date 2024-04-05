@@ -883,7 +883,7 @@ static VFA_t const virtualAttrs[] = {
 static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
     char *s, *t, *end;
-    char *delim = " \t\n";
+    const char *delim = " \t\n";
     int quotes = 0;
     rpmRC res = RPMRC_OK;
     int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
