@@ -295,7 +295,7 @@ static int getOutputFrom(ARGV_t argv,
 	return -1;
     }
     
-    void *oldhandler = signal(SIGPIPE, SIG_IGN);
+    sighandler_t oldhandler = signal(SIGPIPE, SIG_IGN);
 
     child = fork();
     if (child < 0) {
