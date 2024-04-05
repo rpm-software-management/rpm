@@ -1028,7 +1028,7 @@ int rpmtsCheck(rpmts ts)
     confilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
     connothash = depexistsHashCreate(257, sidHash, sidCmp, NULL);
     connotfilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
-    addIndexToDepHashes(ts, RPMTAG_CONFLICTNAME, NULL, confilehash, connothash, connotfilehash);
+    addIndexToDepHashes(ts, RPMDBI_CONFLICTNAME, NULL, confilehash, connothash, connotfilehash);
     if (!filedepHashNumKeys(confilehash))
 	confilehash = filedepHashFree(confilehash);
     if (!depexistsHashNumKeys(connothash))
@@ -1040,7 +1040,7 @@ int rpmtsCheck(rpmts ts)
     reqfilehash = filedepHashCreate(8191, sidHash, sidCmp, NULL, NULL);
     reqnothash = depexistsHashCreate(257, sidHash, sidCmp, NULL);
     reqnotfilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
-    addIndexToDepHashes(ts, RPMTAG_REQUIRENAME, NULL, reqfilehash, reqnothash, reqnotfilehash);
+    addIndexToDepHashes(ts, RPMDBI_REQUIRENAME, NULL, reqfilehash, reqnothash, reqnotfilehash);
     if (!filedepHashNumKeys(reqfilehash))
 	reqfilehash = filedepHashFree(reqfilehash);
     if (!depexistsHashNumKeys(reqnothash))
