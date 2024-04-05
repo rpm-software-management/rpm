@@ -1501,8 +1501,8 @@ static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
 	    uint32_t slen = strlen(s);
 	    uint32_t len = slen / 2;
 	    if (slen % 2) {
-		bin = rfree(bin);
-		offs = rfree(offs);
+		bin = _free(bin);
+		offs = _free(offs);
 		goto exit;
 	    }
 	    offs[i] = t - bin;
@@ -1536,7 +1536,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
 		continue;
 	    }
 	    if (strlen(s) != len * 2) {
-		bin = rfree(bin);
+		bin = _free(bin);
 		break;
 	    }
 	    for (int j = 0; j < len; j++, t++, s += 2)

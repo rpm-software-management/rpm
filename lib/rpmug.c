@@ -234,6 +234,6 @@ void rpmugFree(void)
 	free(rpmug->lastGname);
 	free(rpmug->pwpath);
 	free(rpmug->grppath);
-	rpmug = rfree(rpmug);
+	rpmug = _free(rpmug);
     }
 }
