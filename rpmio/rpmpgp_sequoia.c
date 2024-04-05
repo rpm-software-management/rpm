@@ -24,6 +24,10 @@
     return _##f args;          \
   }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 W(int, pgpSignatureType, (pgpDigParams _digp), (_digp))
 W(pgpDigParams, pgpDigParamsFree, (pgpDigParams digp), (digp))
 W(int, pgpDigParamsCmp, (pgpDigParams p1, pgpDigParams p2), (p1, p2))
@@ -80,3 +84,8 @@ W(int, rpmDigestUpdate, (DIGEST_CTX ctx, const void * data, size_t len),
 W(int, rpmDigestFinal,
   (DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii),
   (ctx, datap, lenp, asAscii))
+
+#ifdef __cplusplus
+}
+#endif
+
