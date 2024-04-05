@@ -6,7 +6,7 @@
 typedef struct rpmlua_s * rpmlua;
 struct rpmhookArgs_s;
 
-typedef char * (*rpmluarl)(char *);
+typedef char * (*rpmluarl)(const char *);
 
 #ifdef __cplusplus
 extern "C" {

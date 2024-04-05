@@ -343,7 +343,7 @@ int rpmluaRunScriptFile(rpmlua lua, const char *filename)
     return ret;
 }
 
-static char *lamereadline(char *prompt)
+static char *lamereadline(const char *prompt)
 {
     static char buffer[1024];
     if (prompt) {
