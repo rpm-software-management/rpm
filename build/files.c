@@ -2856,8 +2856,8 @@ static rpmTagVal copyTagsFromMainDebug[] = {
  * the correct package name */
 static void patchDebugPackageString(Package dbg, rpmTag tag, Package pkg, Package mainpkg)
 {
-    const char *oldname, *newname, *old;
-    char *oldsubst = NULL, *newsubst = NULL, *p;
+    const char *oldname, *newname, *old, *p;
+    char *oldsubst = NULL, *newsubst = NULL;
     oldname = headerGetString(mainpkg->header, RPMTAG_NAME);
     newname = headerGetString(pkg->header, RPMTAG_NAME);
     rasprintf(&oldsubst, "package %s", oldname);
