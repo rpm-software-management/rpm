@@ -205,7 +205,7 @@ rpmgi rpmgiFree(rpmgi gi)
 
 rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
 {
-    rpmgi gi = xcalloc(1, sizeof(*gi));
+    rpmgi gi = (rpmgi)xcalloc(1, sizeof(*gi));
 
     gi->ts = rpmtsLink(ts);
 

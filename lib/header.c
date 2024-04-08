@@ -259,7 +259,7 @@ Header headerFree(Header h)
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    uint32_t * ei = entry->data;
+		    uint32_t * ei = (uint32_t *)entry->data;
 		    if ((ei - 2) == h->blob) h->blob = _free(h->blob);
 		    entry->data = NULL;
 		}
@@ -278,7 +278,7 @@ Header headerFree(Header h)
 
 static Header headerCreate(void *blob, int32_t indexLen)
 {
-    Header h = xcalloc(1, sizeof(*h));
+    Header h = (Header)xcalloc(1, sizeof(*h));
     if (blob) {
 	h->blob = blob;
 	h->indexAlloced = indexLen + 1;
@@ -289,7 +289,7 @@ static Header headerCreate(void *blob, int32_t indexLen)
     }
     h->instance = 0;
     h->sorted = 0;
-    h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
+    h->index = (indexEntry)xcalloc(h->indexAlloced, sizeof(*h->index));
 
     h->nrefs = 0;
     return headerLink(h);
@@ -300,7 +300,7 @@ Header headerNew(void)
     return headerCreate(NULL, 0);
 }
 
-static rpmRC hdrblobVerifyInfo(hdrblob blob, char **emsg)
+static int hdrblobVerifyInfo(hdrblob blob, char **emsg)
 {
     struct entryInfo_s info;
     uint32_t i, len = 0;
@@ -455,7 +455,7 @@ static inline int strtaglen(const char *str, uint32_t c, const char *end,
     int rc = -1; /* assume failure */
 
     if (end) {
-	while (end > start && (s = memchr(start, '\0', end-start))) {
+	while (end > start && (s = (const char *)memchr(start, '\0', end-start))) {
 	    if (--c == 0)
 		break;
 	    start = s + 1;
@@ -490,8 +490,8 @@ static inline int strtaglen(const char *str, uint32_t c, const char *end,
 static int dataLength(uint32_t type, const void * p, uint32_t count,
 			 int onDisk, const void * pend, uint32_t *len)
 {
-    const char * s = p;
-    const char * se = pend;
+    const char * s = (const char *)p;
+    const char * se = (const char *)pend;
     uint32_t length = 0;
 
     switch (type) {
@@ -604,7 +604,7 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 	case RPM_INT64_TYPE:
-	{   uint64_t * it = ie.data;
+	{   uint64_t * it = (uint64_t *)ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -612,7 +612,7 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 	    }
 	}   break;
 	case RPM_INT32_TYPE:
-	{   uint32_t * it = ie.data;
+	{   uint32_t * it = (uint32_t *)ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -620,7 +620,7 @@ static int regionSwab(indexEntry entry, uint32_t il, uint32_t dl,
 	    }
 	}   break;
 	case RPM_INT16_TYPE:
-	{   uint16_t * it = ie.data;
+	{   uint16_t * it = (uint16_t *)ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -651,7 +651,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
     int i;
     uint32_t drlen, ndribbles;
     size_t ilen = indexUsed * sizeof(struct indexEntry_s);
-    indexEntry index = memcpy(xmalloc(ilen), hindex, ilen);
+    indexEntry index = (indexEntry)memcpy(xmalloc(ilen), hindex, ilen);
 
     /* Sort entries by (offset,tag). */
     qsort(index, indexUsed, sizeof(*index), offsetCmp);
@@ -709,7 +709,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 
     len = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
 
-    ei = xmalloc(len);
+    ei = (uint32_t *)xmalloc(len);
     ei[0] = htonl(il);
     ei[1] = htonl(dl);
 
@@ -808,7 +808,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 	switch (entry->info.type) {
 	case RPM_INT64_TYPE:
 	    count = entry->info.count;
-	    src = entry->data;
+	    src = (const char *)entry->data;
 	    while (count--) {
 		*((uint64_t *)te) = htonll(*((uint64_t *)src));
 		te += sizeof(uint64_t);
@@ -818,7 +818,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 
 	case RPM_INT32_TYPE:
 	    count = entry->info.count;
-	    src = entry->data;
+	    src = (const char *)entry->data;
 	    while (count--) {
 		*((uint32_t *)te) = htonl(*((uint32_t *)src));
 		te += sizeof(uint32_t);
@@ -828,7 +828,7 @@ static void * doExport(const struct indexEntry_s *hindex, int indexUsed,
 
 	case RPM_INT16_TYPE:
 	    count = entry->info.count;
-	    src = entry->data;
+	    src = (const char *)entry->data;
 	    while (count--) {
 		*((uint16_t *)te) = htons(*((uint16_t *)src));
 		te += sizeof(uint16_t);
@@ -891,7 +891,7 @@ indexEntry findEntry(Header h, rpmTagVal tag, uint32_t type)
 
     key.info.tag = tag;
 
-    entry = bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
+    entry = (indexEntry)bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
     if (entry == NULL)
 	return NULL;
 
@@ -1200,7 +1200,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     case RPM_STRING_TYPE:
 	/* simple string, but fallthrough if its actually an array */
 	if (count == 1 && !argvArray) {
-	    td->data = allocMem ? xstrdup(entry->data) : entry->data;
+	    td->data = allocMem ? xstrdup((const char *)entry->data) : entry->data;
 	    break;
 	}
     case RPM_STRING_ARRAY_TYPE:
@@ -1213,9 +1213,9 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	if (minMem) {
 	    td->data = xmalloc(tableSize);
 	    ptrEntry = (const char **) td->data;
-	    t = entry->data;
+	    t = (char *)entry->data;
 	} else {
-	    t = xmalloc(tableSize + entry->length);
+	    t = (char *)xmalloc(tableSize + entry->length);
 	    td->data = (void *)t;
 	    ptrEntry = (const char **) td->data;
 	    t += tableSize;
@@ -1349,7 +1349,7 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td,
 	    {};
 
 	/* For each entry in the header ... */
-	for (langNum = 0, t = table->data, ed = entry->data;
+	for (langNum = 0, t = (const char *)table->data, ed = (char *)entry->data;
 	     langNum < entry->info.count && langNum < table->info.count;
 	     langNum++, t += strlen(t) + 1, ed += strlen(ed) + 1) {
 
@@ -1369,7 +1369,7 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td,
 
 exit:
     if (flags & HEADERGET_ALLOC) {
-	td->data = xstrdup(td->data);
+	td->data = xstrdup((const char *)td->data);
 	td->flags |= RPMTD_ALLOCED;
     }
 
@@ -1437,7 +1437,7 @@ static void copyData(uint32_t type, void * dstPtr,
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     {	const char ** av = (const char **) srcPtr;
-	char * t = dstPtr;
+	char * t = (char *)dstPtr;
 
 	while (cnt-- > 0 && dataLength > 0) {
 	    const char * s;
@@ -1544,7 +1544,7 @@ static int intAppendEntry(Header h, rpmtd td)
 	return 0;
 
     if (ENTRY_IN_REGION(entry)) {
-	char * t = xmalloc(entry->length + length);
+	char * t = (char *)xmalloc(entry->length + length);
 	memcpy(t, entry->data, entry->length);
 	entry->data = t;
 	entry->info.offset = 0;
@@ -1617,7 +1617,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 	return 0;
     if (!lang) lang = "C";
 
-    {	const char * l = table->data;
+    {	const char * l = (const char *)table->data;
 	for (langNum = 0; langNum < table->info.count; langNum++) {
 	    if (rstreq(l, lang)) break;
 	    l += strlen(l) + 1;
@@ -1627,7 +1627,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
     if (langNum >= table->info.count) {
 	length = strlen(lang) + 1;
 	if (ENTRY_IN_REGION(table)) {
-	    char * t = xmalloc(table->length + length);
+	    char * t = (char *)xmalloc(table->length + length);
 	    memcpy(t, table->data, table->length);
 	    table->data = t;
 	    table->info.offset = 0;
@@ -1641,7 +1641,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
     if (!entry) {
 	int rc;
 	struct rpmtd_s td;
-	strArray = xmalloc(sizeof(*strArray) * (langNum + 1));
+	strArray = (const char **)xmalloc(sizeof(*strArray) * (langNum + 1));
 	for (i = 0; i < langNum; i++)
 	    strArray[i] = "";
 	strArray[langNum] = string;
@@ -1659,7 +1659,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 	
 	length = strlen(string) + 1 + ghosts;
 	if (ENTRY_IN_REGION(entry)) {
-	    char * t = xmalloc(entry->length + length);
+	    char * t = (char *)xmalloc(entry->length + length);
 	    memcpy(t, entry->data, entry->length);
 	    entry->data = t;
 	    entry->info.offset = 0;
@@ -1676,7 +1676,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 	size_t bn, sn, en;
 
 	/* Set beginning/end pointers to previous data */
-	b = be = e = ee = entry->data;
+	b = be = e = ee = (char *)entry->data;
 	for (i = 0; i < table->info.count; i++) {
 	    if (i == langNum)
 		be = ee;
@@ -1690,7 +1690,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 	sn = strlen(string) + 1;
 	en = (ee-e);
 	length = bn + sn + en;
-	t = buf = xmalloc(length);
+	t = buf = (char *)xmalloc(length);
 
 	/* Copy values into new storage */
 	memcpy(t, b, bn);
@@ -1770,7 +1770,7 @@ HeaderIterator headerFreeIterator(HeaderIterator hi)
 
 HeaderIterator headerInitIterator(Header h)
 {
-    HeaderIterator hi = xmalloc(sizeof(*hi));
+    HeaderIterator hi = (HeaderIterator)xmalloc(sizeof(*hi));
 
     headerSort(h);
 
@@ -1834,7 +1834,7 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size)
 {
     ssize_t total = 0;
     ssize_t nb = 0;
-    char * bufp = buf;
+    char * bufp = (char *)buf;
 
     while (total < size) {
 	nb = Fread(bufp, 1, size - total, fd);
@@ -1945,7 +1945,7 @@ exit:
 
 hdrblob hdrblobCreate(void)
 {
-    hdrblob blob = xcalloc(1, sizeof(*blob));
+    hdrblob blob = (hdrblob)xcalloc(1, sizeof(*blob));
     return blob;
 }
 
@@ -2007,7 +2007,7 @@ rpmRC hdrblobRead(FD_t fd, int magic, int exact_size, rpmTagVal regionTag, hdrbl
 
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     uc = sizeof(il) + sizeof(dl) + nb;
-    ei = xmalloc(uc);
+    ei = (uint32_t *)xmalloc(uc);
     ei[0] = block[2];
     ei[1] = block[3];
     if ((xx = Freadall(fd, (char *)&ei[2], nb)) != nb) {

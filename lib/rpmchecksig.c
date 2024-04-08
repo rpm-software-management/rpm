@@ -126,7 +126,7 @@ struct vfydata_s {
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    struct vfydata_s *vd = cbdata;
+    struct vfydata_s *vd = (struct vfydata_s *)cbdata;
     vd->seen |= sinfo->type;
     if (sinfo->rc != RPMRC_OK)
 	vd->bad |= sinfo->type;

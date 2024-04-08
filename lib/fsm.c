@@ -844,7 +844,7 @@ struct diriter_s {
 
 static int onChdir(rpmfi fi, void *data)
 {
-    struct diriter_s *di = data;
+    struct diriter_s *di = (struct diriter_s *)data;
 
     fsmClose(&(di->dirfd));
     return 0;
@@ -883,7 +883,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     int nofcaps = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCAPS) ? 1 : 0;
     int firstlinkfile = -1;
     char *tid = NULL;
-    struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
+    struct filedata_s *fdata = (struct filedata_s *)xcalloc(fc, sizeof(*fdata));
     struct filedata_s *firstlink = NULL;
     struct diriter_s di = { -1, -1 };
 
@@ -1122,7 +1122,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     rpmPlugins plugins = rpmtsPlugins(ts);
     int fc = rpmfilesFC(files);
     int fx = -1;
-    struct filedata_s *fdata = xcalloc(fc, sizeof(*fdata));
+    struct filedata_s *fdata = (struct filedata_s *)xcalloc(fc, sizeof(*fdata));
     int rc = 0;
 
     while (!rc && (fx = rpmfiNext(fi)) >= 0) {

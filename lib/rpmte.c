@@ -265,7 +265,7 @@ rpmte rpmteFree(rpmte te)
 rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
 	       rpmRelocation * relocs, int addop)
 {
-    rpmte p = xcalloc(1, sizeof(*p));
+    rpmte p = (rpmte)xcalloc(1, sizeof(*p));
     p->ts = ts;
     p->type = type;
     p->addop = addop;
@@ -307,8 +307,7 @@ Header rpmteSetHeader(rpmte te, Header h)
 
 rpmElementType rpmteType(rpmte te)
 {
-    /* XXX returning negative for unsigned type */
-    return (te != NULL ? te->type : -1);
+    return te->type;
 }
 
 const char * rpmteN(rpmte te)
@@ -502,7 +501,7 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     if (!(te && deptype && (Count = rpmdsCount(ds)) > 0 && rpmfilesFC(te->files) > 0))
 	return;
 
-    colors = xcalloc(Count, sizeof(*colors));
+    colors = (rpm_color_t *)xcalloc(Count, sizeof(*colors));
 
     /* Calculate dependency color. */
     fi = rpmfilesIter(te->files, RPMFI_ITER_FWD);
@@ -550,7 +549,7 @@ static Header rpmteDBHeader(rpmte te)
 static Header rpmteFDHeader(rpmte te)
 {
     Header h = NULL;
-    te->fd = rpmtsNotify(te->ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    te->fd = (FD_t)rpmtsNotify(te->ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
     if (te->fd != NULL) {
 	rpmVSFlags ovsflags;
 	rpmRC pkgrc;

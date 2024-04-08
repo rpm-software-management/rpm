@@ -6,7 +6,7 @@
 
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
 {
-    dbiIndexSet set = xcalloc(1, sizeof(*set));
+    dbiIndexSet set = (dbiIndexSet)xcalloc(1, sizeof(*set));
     if (sizehint > 0)
 	dbiIndexSetGrow(set, sizehint);
     return set;
@@ -33,7 +33,8 @@ void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
 
 static int hdrNumCmp(const void * one, const void * two)
 {
-    const struct dbiIndexItem_s *a = one, *b = two;
+    const struct dbiIndexItem_s *a = (const struct dbiIndexItem_s *)one;
+    const struct dbiIndexItem_s *b = (const struct dbiIndexItem_s *)two;
     if (a->hdrNum - b->hdrNum != 0)
 	return a->hdrNum - b->hdrNum;
     return a->tagNum - b->tagNum;

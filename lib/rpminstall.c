@@ -417,7 +417,7 @@ static int rpmNoGlob(const char *fn, int *argcPtr, ARGV_t * argvPtr)
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
-    struct rpmEIU * eiu = xcalloc(1, sizeof(*eiu));
+    struct rpmEIU * eiu = (struct rpmEIU *)xcalloc(1, sizeof(*eiu));
     rpmRelocation * relocations;
     char * fileURL = NULL;
     rpmVSFlags vsflags, ovsflags;

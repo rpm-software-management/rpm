@@ -57,6 +57,24 @@ if(ENABLE_NDB)
 	)
 endif()
 
+if (WITH_CXX)
+# sources converted to c++ so far (avoid having to do everything at once)
+set (cxx_sources
+	cpio.c depends.c formats.c fprint.c fsm.c header.c
+	headerfmt.c headerutil.c manifest.c order.c package.c
+	poptALL.c poptI.c poptQV.c psm.c
+	query.c relocation.c rpmal.c rpmchecksig.c rpmchroot.c
+	rpmdb.c rpmds.c rpmfi.c rpmfs.c rpmgi.c rpminstall.c
+	rpmlead.c rpmlock.c rpmplugins.c rpmprob.c rpmps.c
+	rpmrc.c rpmscript.c rpmtd.c rpmte.c rpmtriggers.c
+	rpmts.c rpmug.c rpmvs.c signature.c tagexts.c tagname.c
+	transaction.c verify.c
+	backend/dbi.c backend/dbiset.c backend/bdb_ro.c
+	backend/dummydb.c backend/sqlite.c backend/ndb/glue.c
+)
+set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
+endif()
+
 if(ENABLE_BDB_RO)
 	target_sources(librpm PRIVATE backend/bdb_ro.c)
 endif()

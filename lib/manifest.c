@@ -154,7 +154,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
     /* Copy old arg list, inserting manifest before argv[next]. */
     if (argv != NULL) {
 	int nac = npre + ac;
-	char ** nav = xcalloc((nac + 1), sizeof(*nav));
+	char ** nav = (char **)xcalloc((nac + 1), sizeof(*nav));
 
 	for (i = 0, j = 0; i < next; i++) {
 	    if (argv[i] != NULL)

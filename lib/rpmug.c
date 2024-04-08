@@ -130,7 +130,7 @@ static int lookup_str(const char *path, long val, int vcol, int rcol,
 static void rpmugInit(void)
 {
     if (rpmug == NULL)
-	rpmug = xcalloc(1, sizeof(*rpmug));
+	rpmug = (struct rpmug_s *)xcalloc(1, sizeof(*rpmug));
 }
 
 /* 

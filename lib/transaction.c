@@ -126,7 +126,7 @@ static int getRotational(const char *dirName, dev_t dev)
 static int rpmtsInitDSI(const rpmts ts)
 {
     ts->dsi = _free(ts->dsi);
-    ts->dsi = xcalloc(1, sizeof(*ts->dsi));
+    ts->dsi = (rpmDiskSpaceInfo)xcalloc(1, sizeof(*ts->dsi));
     return 0;
 }
 
@@ -837,7 +837,7 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     int noArtifacts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOARTIFACTS);
     int * drc;
-    char * dff;
+    uint8_t * dff;
     int dc;
     int i, j, ix;
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
@@ -847,8 +847,8 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 
     /* Compute directory refcount, skip directory if now empty. */
     dc = rpmfiDC(fi);
-    drc = xcalloc(dc, sizeof(*drc));
-    dff = xcalloc(dc, sizeof(*dff));
+    drc = (int *)xcalloc(dc, sizeof(*drc));
+    dff = (uint8_t *)xcalloc(dc, sizeof(*dff));
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
@@ -1233,7 +1233,7 @@ struct vfydata_s {
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    struct vfydata_s *vd = cbdata;
+    struct vfydata_s *vd = (struct vfydata_s *)cbdata;
 
     if (sinfo->type & RPMSIG_VERIFIABLE_TYPE && sinfo->rc != RPMRC_NOTFOUND) {
 	int res = (sinfo->rc != RPMRC_OK);
@@ -1291,7 +1291,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 	int prc = RPMRC_FAIL;
 
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
-	FD_t fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+	FD_t fd = (FD_t)rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
 	if (fd != NULL) {
 	    prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
 	    rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
@@ -1634,7 +1634,7 @@ static int rpmtsProcess(rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	failed = rpmteProcess(p, rpmteType(p), i++);
+	failed = rpmteProcess(p, (pkgGoal)rpmteType(p), i++);
 	if (failed) {
 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));
@@ -1709,7 +1709,7 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 	rpmteSetHeader(te, h);
     }
 
-    sfd = rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_START, stag, 0);
+    sfd = (FD_t)rpmtsNotify(ts, te, RPMCALLBACK_SCRIPT_START, stag, 0);
     if (sfd == NULL)
 	sfd = rpmtsScriptFd(ts);
 

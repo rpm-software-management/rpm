@@ -49,7 +49,7 @@ int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name)
 
 rpmPlugins rpmpluginsNew(rpmts ts)
 {
-    rpmPlugins plugins = xcalloc(1, sizeof(*plugins));
+    rpmPlugins plugins = (rpmPlugins)xcalloc(1, sizeof(*plugins));
     plugins->ts = ts;
     return plugins;
 }
@@ -80,13 +80,13 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path,
     hooks_name = rstrscat(NULL, name, "_hooks", NULL);
     /* clear out any old errors that weren't fetched */
     dlerror();
-    hooks = dlsym(handle, hooks_name);
+    hooks = (rpmPluginHooks)dlsym(handle, hooks_name);
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 	       hooks_name, error);
 	mydlclose(handle);
     } else {
-	plugin = xcalloc(1, sizeof(*plugin));
+	plugin = (rpmPlugin)xcalloc(1, sizeof(*plugin));
 	plugin->name = xstrdup(name);
 	plugin->handle = handle;
 	plugin->hooks = hooks;

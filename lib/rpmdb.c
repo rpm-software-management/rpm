@@ -425,7 +425,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
 	return NULL;
     }
 
-    db = xcalloc(sizeof(*db), 1);
+    db = (rpmdb)xcalloc(sizeof(*db), 1);
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
@@ -438,7 +438,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_fullpath = rpmGenPath(db->db_root, db->db_home, NULL);
     db->db_tags = dbiTags;
     db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
-    db->db_indexes = xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
+    db->db_indexes = (dbiIndex *)xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
     db->nrefs = 0;
     return rpmdbLink(db);
 }
@@ -590,7 +590,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     while (i < allMatches->count) {
 	struct rpmtd_s bn, dn, di, fs;
 	const char ** baseNames, ** dirNames;
-	uint32_t * dirIndexes;
+	const uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h = rpmdbGetHeaderAt(db, offset);
@@ -603,9 +603,9 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM);
 	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
 	headerGet(h, RPMTAG_DIRINDEXES, &di, HEADERGET_MINMEM);
-	baseNames = bn.data;
-	dirNames = dn.data;
-	dirIndexes = di.data;
+	baseNames = (const char **)bn.data;
+	dirNames = (const char **)dn.data;
+	dirIndexes = (const uint32_t *)di.data;
 	if (usestate)
 	    headerGet(h, RPMTAG_FILESTATES, &fs, HEADERGET_MINMEM);
 
@@ -910,7 +910,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 	unsigned int hdrLen = 0;
-	unsigned char *hdrBlob = headerExport(mi->mi_h, &hdrLen);
+	uint8_t *hdrBlob = (uint8_t *)headerExport(mi->mi_h, &hdrLen);
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
@@ -1120,7 +1120,7 @@ static char * mireDup(rpmTagVal tag, rpmMireMode *modep,
 	    c = *s;
 	}
 
-	pat = t = xmalloc(nb);
+	pat = t = (char *)xmalloc(nb);
 
 	if (pattern[0] != '^') *t++ = '^';
 
@@ -1196,7 +1196,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
     case RPMMIRE_STRCMP:
 	break;
     case RPMMIRE_REGEX:
-	preg = xcalloc(1, sizeof(*preg));
+	preg = (regex_t *)xcalloc(1, sizeof(*preg));
 	cflags = (REG_EXTENDED | REG_NOSUB);
 	rc = regcomp(preg, allpat, cflags);
 	if (rc) {
@@ -1493,7 +1493,7 @@ void rpmdbUniqIterator(rpmdbMatchIterator mi)
 }
 
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
-			const void * keyp, size_t keylen)
+			const char* keyp, size_t keylen)
 {
     dbiIndex dbi = NULL;
     dbiIndexSet set = NULL;
@@ -1589,7 +1589,7 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 	    return NULL;
     }
 
-    mi = xcalloc(1, sizeof(*mi));
+    mi = (rpmdbMatchIterator)xcalloc(1, sizeof(*mi));
     mi->mi_set = NULL;
     mi->mi_db = rpmdbLink(db);
     mi->mi_rpmtag = dbitag;
@@ -1632,7 +1632,7 @@ static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
 }
 
 static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
-				        const void * keyp, size_t keylen)
+				        const char *keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
     rpmDbiTagVal dbtag = rpmtag;
@@ -1686,16 +1686,16 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 
     if (db != NULL) {
 	if (rpmtag == RPMDBI_PACKAGES)
-	    mi = pkgdbIterInit(db, keyp, keylen);
+	    mi = pkgdbIterInit(db, (unsigned int *)keyp, keylen);
 	else
-	    mi = indexIterInit(db, rpmtag, keyp, keylen);
+	    mi = indexIterInit(db, rpmtag, (const char *)keyp, keylen);
     }
 
     return mi;
 }
 
 rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
-					    const void * pfx, size_t plen)
+					    const char* pfx, size_t plen)
 {
     rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
@@ -1793,7 +1793,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     if (indexOpen(db, rpmtag, 0, &dbi))
 	return NULL;
 
-    ii = xcalloc(1, sizeof(*ii));
+    ii = (rpmdbIndexIterator)xcalloc(1, sizeof(*ii));
     ii->ii_db = rpmdbLink(db);
     ii->ii_rpmtag = rpmtag;
     ii->ii_dbi = dbi;
@@ -1856,7 +1856,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
 	     * "simple" string. However this can disagree with the
 	     * type of the index tag, eg requires are string arrays.
 	     */
-	    char *key = memcpy(xmalloc(keylen + 1), keyp, keylen);
+	    char *key = (char *)memcpy(xmalloc(keylen + 1), keyp, keylen);
 	    key[keylen] = '\0';
 	    keytd->data = key;
 	    keytd->type = RPM_STRING_TYPE;
@@ -1866,7 +1866,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
 	    keytd->count = keylen;
 	    /* fallthrough */
 	case RPM_NUMERIC_CLASS:
-	    keytd->data = memcpy(xmalloc(keylen), keyp, keylen);
+	    keytd->data = (char *)memcpy(xmalloc(keylen), keyp, keylen);
 	    break;
 	default:
 	    rpmtdReset(keytd);
@@ -1902,7 +1902,7 @@ const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii)
     if (ii->ii_hdrNums)
 	ii->ii_hdrNums = _free(ii->ii_hdrNums);
 
-    ii->ii_hdrNums = xmalloc(sizeof(*ii->ii_hdrNums) * ii->ii_set->count);
+    ii->ii_hdrNums = (unsigned int *)xmalloc(sizeof(*ii->ii_hdrNums) * ii->ii_set->count);
     for (i = 0; i < ii->ii_set->count; i++) {
 	ii->ii_hdrNums[i] = ii->ii_set->recs[i].hdrNum;
     }
@@ -2016,7 +2016,7 @@ struct updateRichDepData {
 static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
-    struct updateRichDepData *data = cbdata;
+    struct updateRichDepData *data = (struct updateRichDepData *)cbdata;
     if (type == RPMRICH_PARSE_ENTER) {
 	data->level++;
 	data->nargv_level = xrealloc(data->nargv_level, data->level * (sizeof(int)));
@@ -2026,7 +2026,7 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
 	data->level--;
     }
     if (type == RPMRICH_PARSE_SIMPLE && nl && !(nl > 7 && !strncmp(n, "rpmlib(", 7))) {
-	char *name = xmalloc(nl + 2);
+	char *name = (char *)xmalloc(nl + 2);
 	*name = data->neg ? '!' : ' ';
 	strncpy(name + 1, n, nl);
 	name[1 + nl] = 0;
@@ -2057,7 +2057,7 @@ static rpmRC updateRichDepCB(void *cbdata, rpmrichParseType type,
     return RPMRC_OK;
 }
 
-static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
+static int updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
                            struct dbiIndexItem_s *rec,
                            idxfunc idxupdate)
 {
@@ -2068,7 +2068,7 @@ static rpmRC updateRichDep(dbiIndex dbi, dbiCursor dbc, const char *str,
     data.neg = 0;
     data.nargv = 0;
     data.level = 0;
-    data.nargv_level = xcalloc(1, sizeof(int));
+    data.nargv_level = (int *)xcalloc(1, sizeof(int));
     if (rpmrichParse(&str, NULL, updateRichDepCB, &data) == RPMRC_OK) {
 	n = argvCount(data.argv);
 	if (n) {
@@ -2153,7 +2153,7 @@ rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	    }
 	case RPMTAG_TRIGGERNAME:
 	    if (i > 0) {	/* don't add duplicates */
-		const char **tnames = tagdata.data;
+		const char **tnames = (const char **)tagdata.data;
 		const char *str = rpmtdGetString(&tagdata);
 		for (j = 0; j < i; j++) {
 		    if (rstreq(str, tnames[j]))
@@ -2170,7 +2170,7 @@ rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc += idxupdate(dbi, dbc, key, keylen, &rec);
+	rc += idxupdate(dbi, dbc, (const char *)key, keylen, &rec);
 
 	if (*(char *)key == '(') {
 	    switch (rpmtag) {
@@ -2203,13 +2203,13 @@ int rpmdbAdd(rpmdb db, Header h)
     dbiCursor dbc = NULL;
     unsigned int hdrNum = 0;
     unsigned int hdrLen = 0;
-    unsigned char *hdrBlob = NULL;
+    uint8_t *hdrBlob = NULL;
     int ret = 0;
 
     if (db == NULL)
 	return 0;
 
-    hdrBlob = headerExport(h, &hdrLen);
+    hdrBlob = (uint8_t *)headerExport(h, &hdrLen);
     if (hdrBlob == NULL || hdrLen == 0) {
 	ret = -1;
 	goto exit;
@@ -2556,7 +2556,7 @@ char *rpmdbCookie(rpmdb db)
 	rpmDigestFinal(ctx, &cookie, NULL, 1);
     }
     rpmdbIndexIteratorFree(ii);
-    return cookie;
+    return (char *)cookie;
 }
 
 int rpmdbFStat(rpmdb db, struct stat *statbuf)

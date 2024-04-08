@@ -155,7 +155,7 @@ exit:
 
 static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    struct pkgdata_s *pkgdata = cbdata;
+    struct pkgdata_s *pkgdata = (struct pkgdata_s *)cbdata;
 
     if (pkgdata->msgfunc) {
 	char *vsmsg = rpmsinfoMsg(sinfo);
