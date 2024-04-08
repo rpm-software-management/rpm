@@ -20,10 +20,10 @@ struct StringBufRec {
 
 StringBuf newStringBuf(void)
 {
-    StringBuf sb = xmalloc(sizeof(*sb));
+    StringBuf sb = (StringBuf)xmalloc(sizeof(*sb));
 
     sb->free = sb->allocated = BUF_CHUNK;
-    sb->buf = xcalloc(sb->allocated, sizeof(*sb->buf));
+    sb->buf = (char *)xcalloc(sb->allocated, sizeof(*sb->buf));
     sb->buf[0] = '\0';
     sb->tail = sb->buf;
     
