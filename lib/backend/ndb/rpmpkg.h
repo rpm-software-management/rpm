@@ -1,3 +1,5 @@
+#include <rpm/rpmtypes.h>
+
 struct rpmpkgdb_s;
 typedef struct rpmpkgdb_s *rpmpkgdb;
 
@@ -13,13 +15,13 @@ void rpmpkgSetFsync(rpmpkgdb pkgdbp, int dofsync);
 int rpmpkgLock(rpmpkgdb pkgdb, int excl);
 int rpmpkgUnlock(rpmpkgdb pkgdb, int excl);
 
-int rpmpkgGet(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char **blobp, unsigned int *bloblp);
-int rpmpkgPut(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char *blob, unsigned int blobl);
-int rpmpkgDel(rpmpkgdb pkgdb, unsigned int pkgidx);
-int rpmpkgList(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsigned int *npkgidxlistp);
-int rpmpkgVerify(rpmpkgdb pkgdb);
+rpmRC rpmpkgGet(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char **blobp, unsigned int *bloblp);
+rpmRC rpmpkgPut(rpmpkgdb pkgdb, unsigned int pkgidx, unsigned char *blob, unsigned int blobl);
+rpmRC rpmpkgDel(rpmpkgdb pkgdb, unsigned int pkgidx);
+rpmRC rpmpkgList(rpmpkgdb pkgdb, unsigned int **pkgidxlistp, unsigned int *npkgidxlistp);
+rpmRC rpmpkgVerify(rpmpkgdb pkgdb);
 
-int rpmpkgNextPkgIdx(rpmpkgdb pkgdb, unsigned int *pkgidxp);
+rpmRC rpmpkgNextPkgIdx(rpmpkgdb pkgdb, unsigned int *pkgidxp);
 int rpmpkgGeneration(rpmpkgdb pkgdb, unsigned int *generationp);
 
 int rpmpkgStats(rpmpkgdb pkgdb);
