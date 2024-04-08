@@ -202,6 +202,7 @@ int main(int argc, char *argv[])
     int ec = EXIT_FAILURE;
     poptContext optCon = NULL;
     const char *arg = NULL;
+    char *cmd = NULL;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
@@ -210,7 +211,7 @@ int main(int argc, char *argv[])
 	goto exit;
     }
 
-    char *cmd = extract ? doUntar(arg) : doUncompress(arg);
+    cmd = extract ? doUntar(arg) : doUncompress(arg);
     if (cmd) {
 	FILE *inp = NULL;
 

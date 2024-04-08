@@ -572,6 +572,7 @@ doShellEscape(rpmMacroBuf mb, const char * cmd, size_t clen)
     char *buf = NULL;
     FILE *shf;
     int c;
+    size_t tpos;
 
     if (expandThis(mb, cmd, clen, &buf, NULL))
 	goto exit;
@@ -582,7 +583,7 @@ doShellEscape(rpmMacroBuf mb, const char * cmd, size_t clen)
 	goto exit;
     }
 
-    size_t tpos = mb->tpos;
+    tpos = mb->tpos;
     while ((c = fgetc(shf)) != EOF) {
 	rpmMacroBufAppend(mb, c);
     }
