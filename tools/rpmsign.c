@@ -91,7 +91,7 @@ static char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
     int passlen = 64;
-    char *password = xmalloc(passlen);
+    char *password = (char *)xmalloc(passlen);
     char *pwd = NULL;
 
     tcgetattr(fileno(stdin), &flags);

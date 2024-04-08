@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 
 	/* we've already ensured !(!ia->prefix && !ia->relocations) */
 	if (ia->prefix) {
-	    ia->relocations = xmalloc(2 * sizeof(*ia->relocations));
+	    ia->relocations = (struct rpmRelocation_s *)xmalloc(2 * sizeof(*ia->relocations));
 	    ia->relocations[0].oldPath = NULL;   /* special case magic */
 	    ia->relocations[0].newPath = ia->prefix;
 	    ia->relocations[1].oldPath = NULL;

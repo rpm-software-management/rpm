@@ -281,7 +281,7 @@ static int processFile(const char *fn, int dtype)
     int fdno;
     struct stat st;
     GElf_Ehdr *ehdr, ehdr_mem;
-    elfInfo *ei = rcalloc(1, sizeof(*ei));
+    elfInfo *ei = (elfInfo *)rcalloc(1, sizeof(*ei));
     ARGV_t dep = NULL;
 
     fdno = open(fn, O_RDONLY);
