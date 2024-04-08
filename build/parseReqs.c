@@ -89,13 +89,13 @@ static rpmRC parseRCPOTRichCB(void *cbdata, rpmrichParseType type,
     } else if (type == RPMRICH_PARSE_LEAVE) {
 	appendStringBuf(sb, ")");
     } else if (type == RPMRICH_PARSE_SIMPLE) {
-	char *N = xmalloc(nl + 1);
+	char *N = (char *)xmalloc(nl + 1);
 	char *EVR = NULL;
 	rstrlcpy(N, n, nl + 1);
 	appendStringBuf(sb, N);
 	if (el) {
 	    char rel[6], *rp = rel;
-	    EVR = xmalloc(el + 1);
+	    EVR = (char *)xmalloc(el + 1);
 	    rstrlcpy(EVR, e, el + 1);
 	    *rp++ = ' ';
 	    if (sense & RPMSENSE_LESS)
@@ -240,7 +240,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	re = r;
 	SKIPNONWHITE(re);
-	N = xmalloc((re-r) + 1);
+	N = (char *)xmalloc((re-r) + 1);
 	rstrlcpy(N, r, (re-r) + 1);
 
 	/* Parse EVR */
@@ -267,7 +267,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		    rasprintf(&emsg, _("Version required"));
 		    goto exit;
 		}
-		EVR = xmalloc((ve-v) + 1);
+		EVR = (char *)xmalloc((ve-v) + 1);
 		rstrlcpy(EVR, v, (ve-v) + 1);
 		re = ve;	/* ==> next token after EVR string starts here */
 	    }

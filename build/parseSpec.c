@@ -149,7 +149,7 @@ int handleComments(char *s)
 static void ofilineMacro(rpmMacroBuf mb,
 			rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
-    OFI_t *ofi = rpmMacroEntryPriv(me);
+    OFI_t *ofi = (OFI_t *)rpmMacroEntryPriv(me);
     if (ofi) {
 	char lnobuf[16];
 	snprintf(lnobuf, sizeof(lnobuf), "%d", ofi->lineNum);
@@ -160,13 +160,13 @@ static void ofilineMacro(rpmMacroBuf mb,
 /* Push a file to spec's file stack, return the newly pushed entry */
 static OFI_t * pushOFI(rpmSpec spec, const char *fn)
 {
-    OFI_t *ofi = xcalloc(1, sizeof(*ofi));
+    OFI_t *ofi = (OFI_t *)xcalloc(1, sizeof(*ofi));
 
     ofi->fp = NULL;
     ofi->fileName = xstrdup(fn);
     ofi->lineNum = 0;
     ofi->readBufLen = BUFSIZ;
-    ofi->readBuf = xmalloc(ofi->readBufLen);
+    ofi->readBuf = (char *)xmalloc(ofi->readBufLen);
     ofi->readBuf[0] = '\0';
     ofi->readPtr = NULL;
     ofi->next = spec->fileStack;
@@ -309,7 +309,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi, int strip)
 
 	    if (spec->lbufOff >= spec->lbufSize) {
 		spec->lbufSize += BUFSIZ;
-		spec->lbuf = realloc(spec->lbuf, spec->lbufSize);
+		spec->lbuf = xrealloc(spec->lbuf, spec->lbufSize);
 	    }
 	}
 	spec->lbuf[spec->lbufOff] = '\0';
@@ -569,7 +569,7 @@ retry:
     }
 
     if (lineType->id & LINE_IFANY) {
-	rl = xmalloc(sizeof(*rl));
+	rl = (struct ReadLevelEntry *)xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	rl->lineNum = ofi->lineNum;
@@ -1183,7 +1183,7 @@ static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 
 	    closeSpec(spec);
 
-	    spec->BASpecs = xcalloc(spec->BACount, sizeof(*spec->BASpecs));
+	    spec->BASpecs = (rpmSpec *)xcalloc(spec->BACount, sizeof(*spec->BASpecs));
 	    index = 0;
 	    if (spec->BANames != NULL)
 	    for (x = 0; x < spec->BACount; x++) {

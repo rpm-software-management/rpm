@@ -44,7 +44,7 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
 		    const char * N, const char *EVR, rpmsenseFlags Flags,
 		    int index)
 {
-    Package pkg = cbdata;
+    Package pkg = (Package)cbdata;
     return addReqProv(pkg, tagN, N, EVR, Flags, index) ? RPMRC_FAIL : RPMRC_OK;
 }
 
