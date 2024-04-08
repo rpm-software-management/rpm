@@ -985,20 +985,11 @@ static int sysusersTag(Header h, rpmtd td, headerGetFlags hgflags)
     rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
 
     while (rpmdsNext(provides) >= 0) {
-	size_t llen = 0;
 	char *line = NULL;
-	const char *name = rpmdsN(provides);
-
-	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)
-	      || rstreqn(name, "groupmember(", 12)))
-	    continue;
-	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
-	    continue;
-	if (rpmBase64Decode(rpmdsEVR(provides), (void **)&line, &llen))
-	    continue;
-
-	argvAddN(&sysusers, line, llen);
-	free(line);
+	if (rpmdsIsSysuser(provides, &line)) {
+	    argvAdd(&sysusers, line);
+	    free(line);
+	}
     }
     rpmdsFree(provides);
 

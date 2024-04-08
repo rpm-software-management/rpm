@@ -373,19 +373,11 @@ static rpmRC runSysusers(rpmpsm psm)
      * followed by decoded sysusers lines.
      */
     while ((dx = rpmdsNext(provides)) >= 0) {
-	const char *name = rpmdsN(provides);
-	char *fn = NULL;
 	char *line = NULL;
-	size_t llen = 0;
+	if (!rpmdsIsSysuser(provides, &line))
+	    continue;
+	char *fn = NULL;
 	int px = -1;
-
-	if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6)
-	      || rstreqn(name, "groupmember(", 12)))
-	    continue;
-	if (!(rpmdsFlags(provides) & RPMSENSE_EQUAL))
-	    continue;
-	if (rpmBase64Decode(rpmdsEVR(provides), (void **)&line, &llen))
-	    continue;
 
 	if (sysusers == NULL)
 	    sysusers = xcalloc(rpmdsCount(provides), sizeof(*sysusers));
@@ -408,7 +400,7 @@ static rpmRC runSysusers(rpmpsm psm)
 	    nsysusers++;
 	}
 
-	argvAddN(&sysusers[px], line, llen);
+	argvAdd(&sysusers[px], line);
 
 	free(fn);
 	free(line);
