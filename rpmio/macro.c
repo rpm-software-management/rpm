@@ -463,7 +463,7 @@ expandThis(rpmMacroBuf mb, const char * src, size_t slen, char **target, int *fl
 
 static rpmMacroBuf mbCreate(rpmMacroContext mc, int flags)
 {
-    rpmMacroBuf mb = xcalloc(1, sizeof(*mb));
+    rpmMacroBuf mb = (rpmMacroBuf)xcalloc(1, sizeof(*mb));
     mb->buf = NULL;
     mb->depth = mc->depth;
     mb->level = mc->level;
@@ -477,7 +477,7 @@ static rpmMacroBuf mbCreate(rpmMacroContext mc, int flags)
 static void mbAllocBuf(rpmMacroBuf mb, size_t slen)
 {
     size_t blen = MACROBUFSIZ + slen;
-    mb->buf = xmalloc(blen + 1);
+    mb->buf = (char *)xmalloc(blen + 1);
     mb->buf[0] = '\0';
     mb->tpos = 0;
     mb->nb = blen;
@@ -684,7 +684,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 {
     const char *start = se;
     const char *s = se;
-    char *buf = xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
+    char *buf = (char *)xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
     char *n = buf, *ne = n;
     char *o = NULL, *oe;
     char *b, *be, *ebody = NULL;
@@ -859,7 +859,7 @@ static void doDump(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed
 
 static int mbopt(int c, const char *oarg, int oint, void *data)
 {
-    rpmMacroBuf mb = data;
+    rpmMacroBuf mb = (rpmMacroBuf)data;
     char *name = NULL, *body = NULL;
 
     /* Define option macros. */
@@ -1028,7 +1028,7 @@ char *unsplitQuoted(ARGV_const_t av, const char *sep)
     seplen = av[1] ? strlen(sep) : 0;
     for (av2 = av; *av2; av2++)
 	len += strlen(*av2) + 2 + seplen;
-    b = buf = xmalloc(len + 1 - seplen);
+    b = buf = (char *)xmalloc(len + 1 - seplen);
     for (av2 = av; *av2; av2++) {
 	*b++ = qchar;
 	strcpy(b, *av2);
@@ -1848,7 +1848,7 @@ static void pushMacroAny(rpmMacroContext mc,
     rpmMacroEntry *mep = findEntry(mc, n, 0, &pos);
     if (mep) {
 	/* entry with shared name */
-	me = xmalloc(mesize);
+	me = (rpmMacroEntry)xmalloc(mesize);
 	p = me->arena;
 	/* set name */
 	me->name = (*mep)->name;
@@ -1857,7 +1857,7 @@ static void pushMacroAny(rpmMacroContext mc,
 	/* entry with new name */
 	mep = newEntry(mc, pos);
 	size_t nlen = strlen(n);
-	me = xmalloc(mesize + nlen + 1);
+	me = (rpmMacroEntry)xmalloc(mesize + nlen + 1);
 	p = me->arena;
 	/* copy name */
 	me->name = p;
@@ -1873,7 +1873,7 @@ static void pushMacroAny(rpmMacroContext mc,
     p += blen + 1;
     /* copy options */
     if (olen)
-	me->opts = memcpy(p, o, olen + 1);
+	me->opts = (char *)memcpy(p, o, olen + 1);
     else
 	me->opts = o ? "" : NULL;
     /* initialize */
@@ -1920,7 +1920,7 @@ static void popMacro(rpmMacroContext mc, const char * n)
 
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 {
-    rpmMacroBuf mb = xcalloc(1, sizeof(*mb));
+    rpmMacroBuf mb = (rpmMacroBuf)xcalloc(1, sizeof(*mb));
     int rc;
     size_t parsed = 0;
 
@@ -1935,7 +1935,7 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 static void linenoMacro(rpmMacroBuf mb,
 		    rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
-    int *lineno = rpmMacroEntryPriv(me);
+    int *lineno = (int *)rpmMacroEntryPriv(me);
     if (lineno) {
 	char lnobuf[16];
 	snprintf(lnobuf, sizeof(lnobuf), "%d", *lineno);
@@ -1947,7 +1947,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FILE *fd = fopen(fn, "r");
     size_t blen = MACROBUFSIZ;
-    char *buf = xmalloc(blen);
+    char *buf = (char *)xmalloc(blen);
     int rc = -1;
     int nfailed = 0;
     int lineno = 0;
@@ -2241,7 +2241,7 @@ rpmExpand(const char *arg, ...)
 	blen += strlen(s);
     va_end(ap);
 
-    buf = xmalloc(blen + 1);
+    buf = (char *)xmalloc(blen + 1);
     buf[0] = '\0';
 
     va_start(ap, arg);

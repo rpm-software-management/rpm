@@ -13,7 +13,7 @@
 char *rpmhex(const uint8_t *p, size_t plen)
 {
     char *t, *str;
-    str = t = xmalloc(plen * 2 + 1);
+    str = t = (char *)xmalloc(plen * 2 + 1);
     static char const hex[] = "0123456789abcdef";
     while (plen-- > 0) {
 	size_t i;
@@ -81,7 +81,7 @@ int rvasprintf(char **strp, const char *fmt, va_list ap)
 
     if (n >= -1) {
 	size_t nb = n + 1;
-	p = xmalloc(nb);
+	p = (char *)xmalloc(nb);
 	va_copy(aq, ap);
         n = vsnprintf(p, nb, fmt, aq);
 	va_end(aq);
