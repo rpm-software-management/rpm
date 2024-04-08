@@ -1,6 +1,10 @@
 struct rpmpkgdb_s;
 typedef struct rpmpkgdb_s *rpmpkgdb;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int rpmpkgOpen(rpmpkgdb *pkgdbp, const char *filename, int flags, int mode);
 int rpmpkgSalvage(rpmpkgdb *pkgdbp, const char *filename);
 void rpmpkgClose(rpmpkgdb pkgdbp);
@@ -20,3 +24,6 @@ int rpmpkgGeneration(rpmpkgdb pkgdb, unsigned int *generationp);
 
 int rpmpkgStats(rpmpkgdb pkgdb);
 
+#ifdef __cplusplus
+}
+#endif
