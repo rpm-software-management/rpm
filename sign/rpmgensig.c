@@ -12,6 +12,9 @@
 #ifdef WITH_FSVERITY
 #include <libfsverity.h>
 #endif
+#ifdef WITH_IMAEVM
+#include "rpmsignfiles.h"
+#endif
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmmacro.h>
@@ -25,7 +28,6 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "rpmvs.h"
-#include "rpmsignfiles.h"
 #include "rpmsignverity.h"
 
 #include "debug.h"
