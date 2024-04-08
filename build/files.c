@@ -2646,6 +2646,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	goto exit;
 
 #ifdef HAVE_LIBDW
+{
     /* Check build-ids and add build-ids links for files to package list. */
     const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
     if (!rstreq(arch, "noarch")) {
@@ -2667,6 +2668,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (fl.processingFailed)
 	    goto exit;
     }
+}
 #endif
 
     /* Verify that file attributes scope over hardlinks correctly. */
