@@ -129,7 +129,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
     indexLen = numEntries * sizeof(*entry);
     headerLen = indexLen + numBytes;
 
-    blob = malloc(sizeof(numEntries) + sizeof(numBytes) + headerLen);
+    blob = (uint32_t *)malloc(sizeof(numEntries) + sizeof(numBytes) + headerLen);
     blob[0] = htonl(numEntries);
     blob[1] = htonl(numBytes);
 

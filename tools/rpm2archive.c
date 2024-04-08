@@ -230,7 +230,7 @@ static int process_package(rpmts ts, const char * filename)
 
     entry = archive_entry_new();
 
-    char * buf = xmalloc(BUFSIZE);
+    char * buf = (char *)xmalloc(BUFSIZE);
     char * hardlink = NULL;
 
     rpmfiles files = rpmfilesNew(NULL, h, 0, RPMFI_KEEPHEADER);
