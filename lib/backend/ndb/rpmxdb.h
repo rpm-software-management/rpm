@@ -3,6 +3,10 @@
 struct rpmxdb_s;
 typedef struct rpmxdb_s *rpmxdb;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int rpmxdbOpen(rpmxdb *xdbp, rpmpkgdb pkgdb, const char *filename, int flags, int mode);
 void rpmxdbClose(rpmxdb xdb);
 void rpmxdbSetFsync(rpmxdb xdb, int dofsync);
@@ -27,3 +31,6 @@ int rpmxdbGetUserGeneration(rpmxdb xdb, unsigned int *usergenerationp);
 
 int rpmxdbStats(rpmxdb xdb);
 
+#ifdef __cplusplus
+}
+#endif

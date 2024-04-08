@@ -4,6 +4,10 @@
 struct rpmidxdb_s;
 typedef struct rpmidxdb_s *rpmidxdb;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int rpmidxOpen(rpmidxdb *idxdbp, rpmpkgdb pkgdb, const char *filename, int flags, int mode);
 int rpmidxOpenXdb(rpmidxdb *idxdbp, rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdbtag, int flags);
 int rpmidxDelXdb(rpmpkgdb pkgdb, rpmxdb xdb, unsigned int xdbtag);
@@ -16,3 +20,6 @@ int rpmidxList(rpmidxdb idxdb, unsigned int **keylistp, unsigned int *nkeylistp,
 
 int rpmidxStats(rpmidxdb idxdb);
 
+#ifdef __cplusplus
+}
+#endif
