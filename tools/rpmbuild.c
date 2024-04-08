@@ -142,7 +142,7 @@ static void buildArgCallback( poptContext con,
 
 static struct poptOption rpmBuildPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	buildArgCallback, 0, NULL, NULL },
+	(void *)buildArgCallback, 0, NULL, NULL },
 
  { "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
 	N_("build through %prep (unpack sources and apply patches) from <specfile>"),
