@@ -281,7 +281,7 @@ static char *getValuebuf(ParseState state, const char *p, size_t size)
     char *temp;
     if ((state->flags & RPMEXPR_DISCARD) != 0)
 	size = 0;
-    temp = xmalloc(size + 1);
+    temp = (char *)xmalloc(size + 1);
     memcpy(temp, p, size);
     temp[size] = '\0';
     if (size && (state->flags & RPMEXPR_EXPAND) != 0) {
@@ -531,7 +531,7 @@ static Value doLuaFunction(ParseState state, const char *name, int argc, Value *
     if (state->flags & RPMEXPR_DISCARD)
 	return valueMakeString(xstrdup(""));
     args = rpmhookArgsNew(argc);
-    argt = xmalloc(argc + 1);
+    argt = (char *)xmalloc(argc + 1);
     for (i = 0; i < argc; i++) {
 	switch (argv[i]->type) {
 	    case VALUE_TYPE_INTEGER:
@@ -796,7 +796,7 @@ static Value doAddSubtract(ParseState state)
         goto err;
       }
 
-      copy = xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
+      copy = (char *)xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
       (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
 
       valueSetString(v1, copy);

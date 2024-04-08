@@ -25,7 +25,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 {
     unsigned char * dig = NULL;
     size_t diglen, buflen = 32 * BUFSIZ;
-    unsigned char *buf = xmalloc(buflen);
+    unsigned char *buf = (unsigned char *)xmalloc(buflen);
     int rc = 0;
 
     FD_t fd = Fopen(fn, "r.ufdio");
@@ -394,7 +394,7 @@ static char * rpmEscapeChars(const char *s, const char *accept, int (*fn)(int))
     }
     nb++;
 
-    t = te = xmalloc(nb);
+    t = te = (char *)xmalloc(nb);
     for (se = s; *se; se++) {
 	if ((accept && strchr(accept, *se)) || (fn && fn(*se)))
 	    *te++ = '\\';

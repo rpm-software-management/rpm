@@ -162,7 +162,7 @@ rpmver rpmverParse(const char *evr)
     rpmver rv = NULL;
     if (evr && *evr) {
 	size_t evrlen = strlen(evr) + 1;
-	rv = xmalloc(sizeof(*rv) + evrlen);
+	rv = (rpmver)xmalloc(sizeof(*rv) + evrlen);
 	memcpy(rv->arena, evr, evrlen);
 	parseEVR(rv->arena, &rv->e, &rv->v, &rv->r);
     }
@@ -177,7 +177,7 @@ rpmver rpmverNew(const char *e, const char *v, const char *r)
 	size_t nb = strlen(v) + 1;
 	nb += (e != NULL) ? strlen(e) + 1 : 0;
 	nb += (r != NULL) ? strlen(r) + 1 : 0;
-	rv = xmalloc(sizeof(*rv) + nb);
+	rv = (rpmver)xmalloc(sizeof(*rv) + nb);
 
 	rv->e = NULL;
 	rv->v = NULL;

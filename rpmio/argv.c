@@ -27,7 +27,7 @@ void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp)
 
 ARGV_t argvNew(void)
 {
-    ARGV_t argv = xcalloc(1, sizeof(*argv));
+    ARGV_t argv = (ARGV_t)xcalloc(1, sizeof(*argv));
     return argv;
 }
 
@@ -104,7 +104,7 @@ ARGV_t argvSearch(ARGV_const_t argv, const char *val,
 	return NULL;
     if (compar == NULL)
 	compar = argvCmp;
-    return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
+    return (ARGV_t)bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
 }
 
 int argiAdd(ARGI_t * argip, int ix, int val)
@@ -114,7 +114,7 @@ int argiAdd(ARGI_t * argip, int ix, int val)
     if (argip == NULL)
 	return -1;
     if (*argip == NULL)
-	*argip = xcalloc(1, sizeof(**argip));
+	*argip = (ARGI_t)xcalloc(1, sizeof(**argip));
     argi = *argip;
     if (ix < 0)
 	ix = argi->nvals;
@@ -186,7 +186,7 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
     if (str == NULL || seps == NULL)
 	return NULL;
 
-    dest = xmalloc(strlen(str) + 1);
+    dest = (char *)xmalloc(strlen(str) + 1);
     for (argc = 1, s = str, t = dest; (c = *s); s++, t++) {
 	if (strchr(seps, c)) {
 	    argc++;
@@ -196,7 +196,7 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
     }
     *t = '\0';
 
-    argv = xmalloc( (argc + 1) * sizeof(*argv));
+    argv = (ARGV_t)xmalloc( (argc + 1) * sizeof(*argv));
 
     for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
 	if (*s == '\0' && (flags & ARGV_SKIPEMPTY))
@@ -235,7 +235,7 @@ char *argvJoin(ARGV_const_t argv, const char *sep)
 	size_t seplen = (sep != NULL) ? strlen(sep) : 0;
 	char *p;
 
-	dest = xmalloc(argvlen + (seplen * (argc - 1)) + 1);
+	dest = (char *)xmalloc(argvlen + (seplen * (argc - 1)) + 1);
 
 	p = stpcpy(dest, argv[0]);
 	for (int i = 1; i < argc; i++) {

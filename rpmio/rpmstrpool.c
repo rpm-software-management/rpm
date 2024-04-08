@@ -124,9 +124,9 @@ static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
 
-    ht = xmalloc(sizeof(*ht));
+    ht = (poolHash)xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
-    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    ht->buckets = (poolHashBucket *)xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keyCount = 0;
     return ht;
 }
@@ -134,7 +134,7 @@ static poolHash poolHashCreate(int numBuckets)
 static void poolHashResize(rpmstrPool pool, int numBuckets)
 {
     poolHash ht = pool->hash;
-    poolHashBucket * buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    poolHashBucket * buckets = (poolHashBucket *)xcalloc(numBuckets, sizeof(*ht->buckets));
 
     for (int i=0; i<ht->numBuckets; i++) {
         if (!ht->buckets[i].keyid) continue;
@@ -244,16 +244,16 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 
 rpmstrPool rpmstrPoolCreate(void)
 {
-    rpmstrPool pool = xcalloc(1, sizeof(*pool));
+    rpmstrPool pool = (rpmstrPool)xcalloc(1, sizeof(*pool));
 
     pool->offs_alloced = STROFFS_CHUNK;
-    pool->offs = xcalloc(pool->offs_alloced, sizeof(*pool->offs));
+    pool->offs = (const char **)xcalloc(pool->offs_alloced, sizeof(*pool->offs));
 
     pool->chunks_allocated = STRDATA_CHUNKS;
-    pool->chunks = xcalloc(pool->chunks_allocated, sizeof(*pool->chunks));
+    pool->chunks = (char **)xcalloc(pool->chunks_allocated, sizeof(*pool->chunks));
     pool->chunks_size = 1;
     pool->chunk_allocated = STRDATA_CHUNK;
-    pool->chunks[pool->chunks_size] = xcalloc(1, pool->chunk_allocated);
+    pool->chunks[pool->chunks_size] = (char *)xcalloc(1, pool->chunk_allocated);
     pool->offs[1] = pool->chunks[pool->chunks_size];
 
     rpmstrPoolRehash(pool);
@@ -353,12 +353,12 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 	    pool->chunk_allocated = 2 * ssize;
 	}
 
-	pool->chunks[pool->chunks_size] = xcalloc(1, pool->chunk_allocated);
+	pool->chunks[pool->chunks_size] = (char *)xcalloc(1, pool->chunk_allocated);
 	pool->chunk_used = 0;
     }
 
     /* Copy the string into current chunk, ensure termination */
-    t = memcpy(pool->chunks[pool->chunks_size] + pool->chunk_used, s, slen);
+    t = (char *)memcpy(pool->chunks[pool->chunks_size] + pool->chunk_used, s, slen);
     t[slen] = '\0';
     pool->chunk_used += ssize;
 

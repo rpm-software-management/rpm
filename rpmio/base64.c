@@ -61,7 +61,7 @@ static char *base64_encode_block(const char *plaintext_in, int length_in, char *
 char *rpmBase64Encode(const void *data, size_t len, int linelen)
 {
 	size_t encodedlen;
-	const char *dataptr = data;
+	const char *dataptr = (const char *)data;
 	char *output;
 	char *outptr;
 	
@@ -78,7 +78,7 @@ char *rpmBase64Encode(const void *data, size_t len, int linelen)
 	}
 	++encodedlen; /* for zero termination */
 
-	output = malloc(encodedlen);
+	output = (char *)malloc(encodedlen);
 	if (output == NULL)
 		return NULL;
 		
@@ -189,12 +189,12 @@ int rpmBase64Decode(const char *in, void **out, size_t *outlen)
 	
 	outcnt = (outcnt / 4) * 3;
 	
-	*out = malloc(outcnt + 1); /* base64_decode_block can write one extra character */
+	*out = (char *)malloc(outcnt + 1); /* base64_decode_block can write one extra character */
 	
 	if (*out == NULL)
 		return 4;
 	
-	*outlen = base64_decode_block(in, inptr - in, *out);
+	*outlen = base64_decode_block(in, inptr - in, (char *)*out);
 
 	return 0;
 }

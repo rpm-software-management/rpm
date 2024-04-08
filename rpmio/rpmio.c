@@ -76,7 +76,7 @@ static void fdSetFdno(FD_t fd, int fdno)
 
 static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
-    FDSTACK_t fps = xcalloc(1, sizeof(*fps));
+    FDSTACK_t fps = (FDSTACK_t) xcalloc(1, sizeof(*fps));
     fps->io = io;
     fps->fp = fp;
     fps->fdno = fdno;
@@ -335,12 +335,12 @@ FD_t fdFree( FD_t fd)
 
 static FD_t fdNew(int fdno, const char *descr)
 {
-    FD_t fd = xcalloc(1, sizeof(*fd));
+    FD_t fd = (FD_t)xcalloc(1, sizeof(*fd));
     fd->nrefs = 0;
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;
-    fd->stats = xcalloc(1, sizeof(*fd->stats));
+    fd->stats = (FDSTAT_t)xcalloc(1, sizeof(*fd->stats));
     fd->digests = NULL;
     fd->descr = descr ? xstrdup(descr) : NULL;
 
@@ -771,7 +771,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
 	return NULL;
-    lzfile = calloc(1, sizeof(*lzfile));
+    lzfile = (LZFILE *)calloc(1, sizeof(*lzfile));
     lzfile->file = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
@@ -858,7 +858,7 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
       return -1;
     if (lzfile->eof)
       return 0;
-    lzfile->strm.next_out = buf;
+    lzfile->strm.next_out = (uint8_t *)buf;
     lzfile->strm.avail_out = len;
     for (;;) {
 	if (!lzfile->strm.avail_in) {
@@ -889,7 +889,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 	return -1;
     if (!len)
 	return 0;
-    lzfile->strm.next_in = buf;
+    lzfile->strm.next_in = (uint8_t *)buf;
     lzfile->strm.avail_in = len;
     for (;;) {
 	lzfile->strm.next_out = lzfile->buf;
@@ -1131,7 +1131,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     zstd->level = level;
     zstd->fp = fp;
     zstd->nb = nb;
-    zstd->b = xmalloc(nb);
+    zstd->b = (uint8_t *)xmalloc(nb);
 
     return zstd;
 
@@ -1700,7 +1700,7 @@ int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
     blen = (size >= 0 ? size : blenmax);
     if (blen) {
 	int nb;
-	b = xmalloc(blen+1);
+	b = (uint8_t *)xmalloc(blen+1);
 	b[0] = '\0';
 	nb = Fread(b, sizeof(*b), blen, fd);
 	if (Ferror(fd) || (size > 0 && nb != blen)) {

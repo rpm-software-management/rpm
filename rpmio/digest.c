@@ -34,7 +34,7 @@ static int findID(rpmDigestBundle bundle, int id)
 
 rpmDigestBundle rpmDigestBundleNew(void)
 {
-    rpmDigestBundle bundle = xcalloc(1, sizeof(*bundle));
+    rpmDigestBundle bundle = (rpmDigestBundle)xcalloc(1, sizeof(*bundle));
     return bundle;
 }
 
