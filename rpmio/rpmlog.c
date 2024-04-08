@@ -382,7 +382,7 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
     FILE *clog = NULL;
-    rpmlogCallbackData *cbdata = NULL;
+    rpmlogCallbackData cbdata = NULL;
     rpmlogCallback cbfunc = NULL;
     rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
 
