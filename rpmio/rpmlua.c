@@ -354,7 +354,7 @@ static char *lamereadline(const char *prompt)
 }
 
 /* From lua.c */
-static int rpmluaReadline(lua_State *L, char *prompt, rpmluarl rlcb)
+static int rpmluaReadline(lua_State *L, const char *prompt, rpmluarl rlcb)
 {
     char *line = rlcb(prompt);
     if (line) {
