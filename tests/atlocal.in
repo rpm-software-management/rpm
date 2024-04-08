@@ -40,6 +40,12 @@ if [ "@WITH_CAP@" == "ON" ]; then
 else
     CAP_DISABLED=true;
 fi
+if (grep -q '#define HAVE_DLINFO 1' "${abs_top_builddir}/config.h" &&
+    grep -q '#define HAVE_DLMOPEN 1' "${abs_top_builddir}/config.h"); then
+    HAVE_GNU_DLFCN=true;
+else
+    HAVE_GNU_DLFCN=false;
+fi
 if mknod foodev c 123 123 2>/dev/null; then
    MKNOD_DISABLED=false
    rm -f foodev

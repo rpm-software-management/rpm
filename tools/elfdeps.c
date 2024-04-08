@@ -2,6 +2,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -9,9 +10,13 @@
 #include <popt.h>
 #include <gelf.h>
 
+#include <link.h>
+#include <dlfcn.h>
+
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
+int full_name_version_fallback = 0;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
@@ -33,6 +38,131 @@ typedef struct elfInfo_s {
     ARGV_t requires;
     ARGV_t provides;
 } elfInfo;
+
+/*
+ * If filename is a symlink to a path that contains ".so." followed by
+ * a version number, return a copy of its _elf_version
+ */
+static char *getFullNameVer(const char *filename)
+{
+    char *link_basename, *dest_basename;
+    char dest[PATH_MAX];
+    int destsize = 0;
+
+    destsize = readlink(filename, dest, PATH_MAX);
+    if (destsize == -1 && errno != EINVAL) {
+	exit(EXIT_FAILURE);
+    }
+    /*
+     * filename must be a symlink and the destination must be long enough
+     * to contain ".so." and a number.
+     */
+    if ((destsize == -1 && errno == EINVAL) ||
+	(destsize < sizeof(".so.1"))) {
+	return NULL;
+    }
+
+    /* The base name of filename and dest must be different. */
+    link_basename = rindex(filename, '/');
+    dest_basename = rindex(dest, '/');
+    if (link_basename == NULL) link_basename = (char *)filename;
+    if (dest_basename == NULL) dest_basename = dest;
+    if (strcmp(link_basename, dest_basename) == 0)
+	return NULL;
+    if (strstr(link_basename, ".so") == NULL)
+	return NULL;
+
+    {
+	char elf_version_path[PATH_MAX];
+	char elf_version[64];
+	int elf_version_fd, bytes_read;
+
+	/* If no '/' character was found, construct a relative path */
+	if (link_basename != filename) {
+	    link_basename[0] = 0;
+	    link_basename++;
+	    snprintf(elf_version_path, sizeof(elf_version_path),
+		     "%s/.elf-version/%s", filename, link_basename);
+	} else {
+	    snprintf(elf_version_path, sizeof(elf_version_path),
+		     "./.elf-version/%s", link_basename);
+	}
+	elf_version_fd = open(elf_version_path, O_RDONLY);
+	if (elf_version_fd == -1)
+	    return NULL;
+	bytes_read = read(elf_version_fd, elf_version, sizeof(elf_version));
+	close(elf_version_fd);
+	if (bytes_read <= 0)
+	    return NULL;
+	if (elf_version[bytes_read-1] == '\n') elf_version[bytes_read-1] = 0;
+	return strdup(elf_version);
+    }
+}
+
+/*
+ * Rather than re-implement path searching for shared objects, use
+ * dlmopen().  This will still perform initialization and finalization
+ * functions, which isn't necessarily safe, so do that in a separate
+ * process.
+ */
+static char *getFullNameVerFromShLink(const char *filename)
+{
+#if defined(HAVE_DLMOPEN) && defined(HAVE_DLINFO)
+    char dest[PATH_MAX];
+    int pipefd[2];
+    pid_t cpid;
+
+    if (pipe(pipefd) == -1) {
+	exit(EXIT_FAILURE);
+    }
+    cpid = fork();
+    if (cpid == -1) {
+	exit(EXIT_FAILURE);
+    }
+    if (cpid == 0) {
+	void *dl_handle;
+	struct link_map *linkmap;
+	char *version = NULL;
+
+	close(pipefd[0]);
+	dl_handle = dlmopen(LM_ID_NEWLM, filename, RTLD_LAZY);
+	if (dl_handle == NULL) _exit(EXIT_FAILURE);
+	if (dlinfo(dl_handle, RTLD_DI_LINKMAP, &linkmap) == -1)
+	    _exit(EXIT_FAILURE);
+	version = getFullNameVer(linkmap->l_name);
+	if (version)
+	    (void) write(pipefd[1], version, strlen(version));
+	close(pipefd[1]);
+	free(version);
+	dlclose(dl_handle);
+	_exit(0);
+    } else {
+	ssize_t len;
+	int wstatus;
+
+	close(pipefd[1]);
+	dest[0] = 0;
+	while ((len = read(pipefd[0], dest, sizeof(dest))) == -1
+	    && errno == EINTR);
+	if (len > 0) dest[len] = 0;
+	close(pipefd[0]);
+	wait(&wstatus);
+	if (WIFSIGNALED(wstatus) || WEXITSTATUS(wstatus))
+	    exit(EXIT_FAILURE);
+    }
+    if (strlen(dest) > 0)
+	return strdup(dest);
+    else
+	return NULL;
+#else
+    /*
+     * Without dlmopen and dlinfo, elfdeps cannot improve
+     * requirement lists, and will simply continue its prior
+     * behavior of unversioned dependencies.
+     */
+    return NULL;
+#endif
+}
 
 /*
  * Rough soname sanity filtering: all sane soname's dependencies need to
@@ -96,15 +226,32 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
+static int findSonameInDeps(ARGV_t deps, const char *soname)
+{
+    for (ARGV_t dep = deps; *dep; dep++) {
+	if (strncmp(*dep, soname, strlen(soname)) == 0) return 1;
+    }
+    return 0;
+}
+
 static void addDep(ARGV_t *deps,
-		   const char *soname, const char *ver, const char *marker)
+		   const char *soname, const char *ver, const char *marker,
+		   const char *compare_op, const char *fallback_ver)
 {
     char *dep = NULL;
 
     if (skipSoname(soname))
 	return;
 
-    if (ver || marker) {
+    if (compare_op && fallback_ver) {
+	/*
+	 * when versioned symbols aren't available, the full name version
+	 * might be used to generate a minimum dependency version.
+	 */
+	rasprintf(&dep,
+		  "%s()%s %s %s", soname, marker ? marker : "",
+		  compare_op, fallback_ver);
+    } else if (ver || marker) {
 	rasprintf(&dep,
 		  "%s(%s)%s", soname, ver ? ver : "", marker ? marker : "");
     }
@@ -144,10 +291,10 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only) {
-		    addDep(&ei->provides, soname, s, ei->marker);
+		    addDep(&ei->provides, soname, s, ei->marker, NULL, NULL);
 		}
 	    }
-		    
+
 	}
     }
     rfree(soname);
@@ -183,7 +330,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && soname && !soname_only) {
-		    addDep(&ei->requires, soname, s, ei->marker);
+		    addDep(&ei->requires, soname, s, ei->marker, NULL, NULL);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -223,8 +370,19 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_NEEDED:
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    if (s)
-			addDep(&ei->requires, s, NULL, ei->marker);
+		    if (s) {
+			char *full_name_ver = NULL;
+			/*
+			 * If soname matches an item already in the deps, then
+			 * it had versioned symbols and doesn't require fallback.
+			 */
+			if (full_name_version_fallback &&
+			      !findSonameInDeps(ei->requires, s)) {
+			    full_name_ver = getFullNameVerFromShLink(s);
+			}
+			addDep(&ei->requires, s, NULL, ei->marker, ">=", full_name_ver);
+			free(full_name_ver);
+		    }
 		}
 		break;
 	    }
@@ -323,8 +481,14 @@ static int processFile(const char *fn, int dtype)
 	    const char *bn = strrchr(fn, '/');
 	    ei->soname = rstrdup(bn ? bn + 1 : fn);
 	}
-	if (ei->soname)
-	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
+	if (ei->soname) {
+	    char *full_name_ver = NULL;
+	    if (full_name_version_fallback) {
+		full_name_ver = getFullNameVer(fn);
+	    }
+	    addDep(&ei->provides, ei->soname, NULL, ei->marker, "=", full_name_ver);
+	    free(full_name_ver);
+	}
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -364,12 +528,13 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
+	{ "full-name-version-fallback", 0, POPT_ARG_VAL, &full_name_version_fallback, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	{ "multifile", 'm', POPT_ARG_VAL, &multifile, -1, NULL, NULL },
-	POPT_AUTOHELP 
+	POPT_AUTOHELP
 	POPT_TABLEEND
     };
 

@@ -39,11 +39,15 @@ This has two "side-effects":
 It's a fairly common mistake to replace legacy PreReq dependencies with Requires(pre), but this is not the same, due to the latter point above!
 
 ## Automatic Dependencies
-To reduce the amount of work required by the package builder, RPM scans the file list of a package when it is being built. Any files in the file list which require shared libraries to work (as determined by ldd) cause that package to require the shared library.
+To reduce the amount of work required by the package builder, RPM scans the file list of a package when it is being built. Any files in the file list which require shared libraries to work (as determined by elfdeps for ELF objects) cause that package to require the shared library.
 
-For example, if your package contains /bin/vi, RPM will add dependencies for both libtermcap.so.2 and libc.so.5. These are treated as virtual packages, so no version numbers are used.
+For example, if your package contains /bin/vi, RPM will add dependencies for both libtermcap.so.2 and libc.so.5. These are treated as virtual packages.
 
 A similar process allows RPM to add Provides information automatically. Any shared library in the file list is examined for its soname (the part of the name which must match for two shared libraries to be considered equivalent) and that soname is automatically provided by the package. For example, the libc-5.3.12 package has provides information added for libm.so.5 and libc.so.5. We expect this automatic dependency generation to eliminate the need for most packages to use explicit Requires: lines.
+
+As of rpm version (TBD), the internal dependency generator provides optional support for generating versioned ELF object dependencies on objects that do not provide versioned symbols.  Distributions that wish to make use of this support should enable the \_elf\_provide\_fallback\_versions and \_elf\_require\_fallback\_versions macros.  When these macros are enabled, the dependency generator will attempt to resolve shared object dependencies to a full path.  If the shared object does not provide versioned symbols, and the soname is a symlink to a full name that differs from the soname, and the full name ends in ".so." followed by a sequence of numbers optionally separated by the '.' character, then that trailing sequence will be treated as a version and included in the automatically generated dependencies.  While shared objects with versioned symbols are well supported, and are the preferred approach to ensuring that a dependency actually provides the ABI that another package requires, this fallback approach to versioning dependencies provides reasonably good coverage for the large body of ELF shared objects that do not yet maintain versioned symbols.
+
+The most likely case where the fallback version system will break is a shared object being updated from a purely numeric version suffix to a version suffix with non-numeric characters (e.g. "libfoo.so.3.0.1" is updated to "libfoo.so.3.0.1a").  In that case, the dependency generator would not provide a version for that shared object, and the package maintainer would need to manually add a Provides: tag to the package in order to continue satisfying existing package dependencies.
 
 ## Custom Automatic Dependency
 Customizing automatic dependency generation is covered in [dependency generator documentation]().
