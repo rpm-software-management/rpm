@@ -200,7 +200,7 @@ static int Pdir(lua_State *L)			/** dir([path]) */
 
 static int aux_files(lua_State *L)
 {
-	DIR *d = lua_touserdata(L, lua_upvalueindex(1));
+	DIR *d = (DIR *)lua_touserdata(L, lua_upvalueindex(1));
 	struct dirent *entry;
 	if (d == NULL) return luaL_error(L, "attempt to use closed dir");
 	entry = readdir(d);
@@ -346,7 +346,7 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 
 	rpmSetCloseOnExec();
 
-	argv = malloc((n+1)*sizeof(char*));
+	argv = (char **)malloc((n+1)*sizeof(char*));
 	if (argv==NULL) return luaL_error(L,"not enough memory");
 	argv[0] = (char*)path;
 	for (i=1; i<n; i++) argv[i] = (char*)luaL_checkstring(L, i+1);
@@ -399,8 +399,8 @@ static int Pputenv(lua_State *L)		/** putenv(string) */
 #ifdef HAVE_PUTENV
 	size_t l;
 	const char *s=luaL_checklstring(L, 1, &l);
-	char *e=malloc(++l);
-	return pushresult(L, (e==NULL) ? -1 : putenv(memcpy(e,s,l)), s);
+	char *e=(char *)malloc(++l);
+	return pushresult(L, (e==NULL) ? -1 : putenv((char *)memcpy(e,s,l)), s);
 #else
 	return -1;
 #endif
@@ -563,7 +563,7 @@ static int Pgetlogin(lua_State *L)		/** getlogin() */
 
 static int Fgetpasswd(lua_State *L, int i, const void *data)
 {
-	const struct passwd *p=data;
+	const struct passwd *p= (const struct passwd *)data;
 	switch (i)
 	{
 		case 0: lua_pushstring(L, p->pw_name); break;
@@ -648,7 +648,7 @@ struct mytimes
 
 static int Ftimes(lua_State *L, int i, const void *data)
 {
-	const struct mytimes *t=data;
+	const struct mytimes *t=(const struct mytimes *)data;
 	switch (i)
 	{
 		case 0: pushtime(L, t->t.tms_utime); break;
@@ -684,7 +684,7 @@ struct mystat
 
 static int Fstat(lua_State *L, int i, const void *data)
 {
-	const struct mystat *s=data;
+	const struct mystat *s=(const struct mystat *)data;
 	switch (i)
 	{
 		case 0: lua_pushstring(L, s->mode); break;
@@ -755,7 +755,7 @@ static const int Kpathconf[] =
 
 static int Fpathconf(lua_State *L, int i, const void *data)
 {
-	const char *path=data;
+	const char *path=(const char *)data;
 	lua_pushnumber(L, pathconf(path, Kpathconf[i]));
 	return 1;
 }
