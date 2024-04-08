@@ -39,7 +39,7 @@ static int keyidcmp(const void *k1, const void *k2)
 
 rpmKeyring rpmKeyringNew(void)
 {
-    rpmKeyring keyring = xcalloc(1, sizeof(*keyring));
+    rpmKeyring keyring = (rpmKeyring)xcalloc(1, sizeof(*keyring));
     keyring->keys = NULL;
     keyring->numkeys = 0;
     keyring->nrefs = 1;
@@ -73,7 +73,7 @@ static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
 {
     rpmPubkey *found = NULL;
     if (key && keyring->keys) {
-	found = bsearch(&key, keyring->keys, keyring->numkeys,
+	found = (rpmPubkey *)bsearch(&key, keyring->keys, keyring->numkeys,
 			sizeof(*keyring->keys), keyidcmp);
     }
     return found ? *found : NULL;
@@ -142,8 +142,8 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     if (pgpPrtParams(pkt, pktlen, PGPTAG_PUBLIC_KEY, &pgpkey))
 	goto exit;
 
-    key = xcalloc(1, sizeof(*key));
-    key->pkt = xmalloc(pktlen);
+    key = (rpmPubkey)xcalloc(1, sizeof(*key));
+    key->pkt = (uint8_t *)xmalloc(pktlen);
     key->pktlen = pktlen;
     key->pgpkey = pgpkey;
     key->nrefs = 1;
@@ -165,10 +165,10 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
     if (mainkey && !pgpPrtParamsSubkeys(mainkey->pkt, mainkey->pktlen,
 			mainkey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
 
-	subkeys = xmalloc(pgpsubkeysCount * sizeof(*subkeys));
+	subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
 
 	for (i = 0; i < pgpsubkeysCount; i++) {
-	    rpmPubkey subkey = xcalloc(1, sizeof(*subkey));
+	    rpmPubkey subkey = (rpmPubkey)xcalloc(1, sizeof(*subkey));
 	    subkeys[i] = subkey;
 
 	    /* Packets with all subkeys already stored in main key */

@@ -80,7 +80,7 @@ DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags)
     if (!gcryalgo || gcry_md_open(&h, gcryalgo, 0) != 0)
 	return NULL;
 
-    ctx = xcalloc(1, sizeof(*ctx));
+    ctx = (DIGEST_CTX)xcalloc(1, sizeof(*ctx));
     ctx->flags = flags;
     ctx->algo = hashalgo;
     ctx->h = h;
@@ -129,7 +129,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
         gcry_md_hd_t h;
 	if (gcry_md_copy(&h, octx->h))
 	    return NULL;
-	nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
+	nctx = (DIGEST_CTX)memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
 	nctx->h = h;
     }
     return nctx;

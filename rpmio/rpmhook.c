@@ -137,7 +137,7 @@ static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
 	(*table)->used++;
     }
     while (*item) item = &(*item)->next;
-    *item = xcalloc(1, sizeof(**item));
+    *item = (rpmhookItem)xcalloc(1, sizeof(**item));
     (*item)->func = func;
     (*item)->data = data;
 }

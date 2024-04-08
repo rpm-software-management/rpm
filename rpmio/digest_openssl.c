@@ -31,7 +31,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
     if (!octx) return NULL;
 
     DIGEST_CTX nctx = NULL;
-    nctx = xcalloc(1, sizeof(*nctx));
+    nctx = (DIGEST_CTX)xcalloc(1, sizeof(*nctx));
 
     nctx->flags = octx->flags;
     nctx->algo = octx->algo;
@@ -83,7 +83,7 @@ size_t rpmDigestLength(int hashalgo)
 
 DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags)
 {
-    DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
+    DIGEST_CTX ctx = (DIGEST_CTX)xcalloc(1, sizeof(*ctx));
 
     ctx->md_ctx = EVP_MD_CTX_new();
     if (!ctx->md_ctx) {
@@ -121,13 +121,13 @@ int rpmDigestUpdate(DIGEST_CTX ctx, const void *data, size_t len)
 int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
     int ret;
-    unsigned char *digest = NULL;
+    uint8_t *digest = NULL;
     unsigned int digestlen;
 
     if (ctx == NULL) return -1;
 
     digestlen = EVP_MD_CTX_size(ctx->md_ctx);
-    digest = xcalloc(digestlen, sizeof(*digest));
+    digest = (uint8_t *)xcalloc(digestlen, sizeof(*digest));
 
     ret = EVP_DigestFinal_ex(ctx->md_ctx, digest, &digestlen);
     if (ret != 1) goto done;
