@@ -200,7 +200,7 @@ static void rpmcliAllArgCallback( poptContext con,
 struct poptOption rpmcliAllPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-        rpmcliAllArgCallback, 0, NULL, NULL },
+        (void *)rpmcliAllArgCallback, 0, NULL, NULL },
 
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },

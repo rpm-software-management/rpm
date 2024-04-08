@@ -29,7 +29,7 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
                             const char * altNEVR,
                             const char * str, uint64_t number)
 {
-    rpmProblem p = xcalloc(1, sizeof(*p));
+    rpmProblem p = (rpmProblem)xcalloc(1, sizeof(*p));
 
     p->type = type;
     p->key = key;

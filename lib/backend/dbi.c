@@ -37,7 +37,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 
 dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 {
-    dbiIndex dbi = xcalloc(1, sizeof(*dbi));
+    dbiIndex dbi = (dbiIndex)xcalloc(1, sizeof(*dbi));
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);

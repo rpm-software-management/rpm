@@ -116,7 +116,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
     Header sig = headerNew();
     struct rpmtd_s td;
     rpmRC rc = RPMRC_OK;
-    char *reservedSpace;
+    uint8_t *reservedSpace;
     int spaceSize = 32; /* always reserve a bit of space */
     int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
     rpm_off_t size32 = size;
@@ -206,7 +206,7 @@ reserve:
 	spaceSize += gpgSize;
 
     if (spaceSize > 0) {
-	reservedSpace = xcalloc(spaceSize, sizeof(char));
+	reservedSpace = (uint8_t *)xcalloc(spaceSize, sizeof(char));
 	rpmtdReset(&td);
 	td.tag = reserveTag;
 	td.count = spaceSize;

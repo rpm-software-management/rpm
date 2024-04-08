@@ -92,7 +92,7 @@ fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool)
 {
     fingerPrintCache fpc;
 
-    fpc = xcalloc(1, sizeof(*fpc));
+    fpc = (fingerPrintCache)xcalloc(1, sizeof(*fpc));
     fpc->ht = rpmFpEntryHashCreate(sizeHint, sidHash, sidCmp,
 				   NULL, (rpmFpEntryHashFreeData)free);
     fpc->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
@@ -179,7 +179,8 @@ static int doLookupId(fingerPrintCache cache,
 	if (cacheHit != NULL) {
 	    fp->entry = cacheHit;
 	} else if (!stat(rpmstrPoolStr(cache->pool, fpId), &sb)) {
-	    struct fprintCacheEntry_s * newEntry = xmalloc(sizeof(* newEntry));
+	    struct fprintCacheEntry_s * newEntry =
+		(struct fprintCacheEntry_s *)xmalloc(sizeof(* newEntry));
 
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
@@ -231,7 +232,7 @@ int fpLookup(fingerPrintCache cache,
              fingerPrint **fp)
 {
     if (*fp == NULL)
-	*fp = xcalloc(1, sizeof(**fp));
+	*fp = (fingerPrint *)xcalloc(1, sizeof(**fp));
     return doLookup(cache, dirName, baseName, *fp);
 }
 
@@ -240,7 +241,7 @@ int fpLookupId(fingerPrintCache cache,
                fingerPrint **fp)
 {
     if (*fp == NULL)
-	*fp = xcalloc(1, sizeof(**fp));
+	*fp = (fingerPrint *)xcalloc(1, sizeof(**fp));
     return doLookupId(cache, dirNameId, baseNameId, *fp);
 }
 
@@ -311,7 +312,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 		  const uint32_t * dirIndexes, 
 		  int fileCount)
 {
-    fingerPrint * fps = xmalloc(fileCount * sizeof(*fps));
+    fingerPrint * fps = (fingerPrint *)xmalloc(fileCount * sizeof(*fps));
     int i;
 
     /*

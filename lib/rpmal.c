@@ -96,13 +96,13 @@ static void rpmalFreeIndex(rpmal al)
 
 rpmal rpmalCreate(rpmts ts, int delta)
 {
-    rpmal al = xcalloc(1, sizeof(*al));
+    rpmal al = (rpmal)xcalloc(1, sizeof(*al));
 
     al->pool = rpmstrPoolLink(rpmtsPool(ts));
     al->delta = delta;
     al->size = 0;
     al->alloced = al->delta;
-    al->list = xmalloc(sizeof(*al->list) * al->alloced);
+    al->list = (availablePackage)xmalloc(sizeof(*al->list) * al->alloced);
 
     al->providesHash = NULL;
     al->obsoletesHash = NULL;
@@ -348,7 +348,7 @@ rpmte * rpmalAllObsoletes(rpmal al, rpmds ds)
 	availablePackage alp;
 	int rc, found = 0;
 
-	ret = xmalloc((resultCnt+1) * sizeof(*ret));
+	ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
 
 	for (int i = 0; i < resultCnt; i++) {
 	    alp = al->list + result[i].pkgNum;
@@ -400,7 +400,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 
 	if (resultCnt > 0) {
 	    int i, found;
-	    ret = xmalloc((resultCnt+1) * sizeof(*ret));
+	    ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
 	    fingerPrint * fp = NULL;
 	    rpmsid dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 1);
 
@@ -473,7 +473,7 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 
     if (resultCnt==0) return NULL;
 
-    ret = xmalloc((resultCnt+1) * sizeof(*ret));
+    ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
 
     for (found=i=0; i<resultCnt; i++) {
 	alp = al->list + result[i].pkgNum;

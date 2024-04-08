@@ -18,10 +18,10 @@
 
 rpmtriggers rpmtriggersCreate(unsigned int hint)
 {
-    rpmtriggers triggers = xmalloc(sizeof(struct rpmtriggers_s));
+    rpmtriggers triggers = (rpmtriggers)xmalloc(sizeof(struct rpmtriggers_s));
     triggers->count = 0;
     triggers->alloced = hint;
-    triggers->triggerInfo = xmalloc(sizeof(struct triggerInfo_s) *
+    triggers->triggerInfo = (struct triggerInfo_s *)xmalloc(sizeof(struct triggerInfo_s) *
 				    triggers->alloced);
     return triggers;
 }
@@ -51,7 +51,8 @@ static void rpmtriggersAdd(rpmtriggers trigs, unsigned int hdrNum,
 
 static int trigCmp(const void *a, const void *b)
 {
-    const struct triggerInfo_s *trigA = a, *trigB = b;
+    const struct triggerInfo_s *trigA = (const struct triggerInfo_s *)a;
+    const struct triggerInfo_s *trigB = (const struct triggerInfo_s *)b;
 
     if (trigA->priority < trigB->priority)
 	return 1;
@@ -191,8 +192,8 @@ int runPostUnTransFileTrigs(rpmts ts)
 	trigName = headerGetString(trigH, RPMTAG_NAME);
 	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), trigName);
 
-	nerrors += runScript(ts, NULL, trigH, installPrefixes.data, script,
-			     arg1, -1);
+	ARGV_const_t prefixes = (ARGV_const_t)installPrefixes.data;
+	nerrors += runScript(ts, NULL, trigH, prefixes, script, arg1, -1);
 	rpmtdFreeData(&installPrefixes);
 	rpmScriptFree(script);
 	headerFree(trigH);
@@ -260,7 +261,7 @@ static rpmfiles rpmtsNextFiles(matchFilesIter mfi)
 
 static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te)
 {
-    matchFilesIter mfi = xcalloc(1, sizeof(*mfi));
+    matchFilesIter mfi = (matchFilesIter)xcalloc(1, sizeof(*mfi));
     rpmdsInit(trigger);
     mfi->rpmdsTrigger = trigger;
     mfi->files = rpmfilesLink(files);
@@ -271,7 +272,7 @@ static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te
 static matchFilesIter matchDBFilesIterator(rpmds trigger, rpmts ts,
 					    int inTransaction)
 {
-    matchFilesIter mfi = xcalloc(1, sizeof(*mfi));
+    matchFilesIter mfi = (matchFilesIter)xcalloc(1, sizeof(*mfi));
     rpmsenseFlags sense;
 
     rpmdsSetIx(trigger, 0);
@@ -445,8 +446,8 @@ static int runHandleTriggersInPkg(rpmts ts, rpmte te, Header h,
 	    if (arg2 < 0 && tm == RPMSCRIPT_FILETRIGGER && mfi->pkgname)
 		arg2 = rpmdbCountPackages(rpmtsGetRdb(ts), mfi->pkgname);
 
-	    nerrors += runScript(ts, NULL, h, installPrefixes.data,
-				script, arg1, arg2);
+	    ARGV_const_t prefixes = (ARGV_const_t)installPrefixes.data;
+	    nerrors += runScript(ts, NULL, h, prefixes, script, arg1, arg2);
 	    rpmtdFreeData(&installPrefixes);
 	    rpmScriptFree(script);
 	}
@@ -520,11 +521,11 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 	priorityTag = RPMTAG_TRANSFILETRIGGERPRIORITIES;
     }
 
-    ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), triggerDsTag(tm));
+    ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), (rpmDbiTag)triggerDsTag(tm));
 
     /* Loop over all file triggers in rpmdb */
     while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
-	pfx = xmalloc(keylen + 1);
+	pfx = (char *)xmalloc(keylen + 1);
 	memcpy(pfx, key, keylen);
 	pfx[keylen] = '\0';
 

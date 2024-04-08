@@ -167,7 +167,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     case RPM_STRING_ARRAY_TYPE:
 	data = rpmtdGetString(td);
 	if (data)
-	    dlen = strlen(data);
+	    dlen = strlen((const char *)data);
 	break;
     case RPM_BIN_TYPE:
 	data = td->data;
@@ -194,7 +194,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
 	char *lints = NULL;
-        int ec = pgpPrtParams2(data, dlen, PGPTAG_SIGNATURE, &sinfo->sig, &lints);
+        int ec = pgpPrtParams2((const uint8_t *)data, dlen, PGPTAG_SIGNATURE,
+				&sinfo->sig, &lints);
 	const uint8_t *signid;
 	if (ec) {
 	    if (lints) {
@@ -217,14 +218,14 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	sinfo->keyid = signid[4] << 24 | signid[5] << 16 | signid[6] << 8 | signid[7];
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE) {
-	    sinfo->dig = rpmhex(data, dlen);
+	    sinfo->dig = rpmhex((const uint8_t *)data, dlen);
 	} else {
-	    if (!validHex(data, dlen)) {
+	    if (!validHex((const char *)data, dlen)) {
 		rasprintf(&sinfo->msg,
 			_("%s: tag %u: invalid hex"), origin, td->tag);
 		goto exit;
 	    }
-	    sinfo->dig = xstrdup(data);
+	    sinfo->dig = xstrdup((const char *)data);
 	}
     }
 
@@ -351,7 +352,7 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
 
 struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring)
 {
-    struct rpmvs_s *sis = xcalloc(1, sizeof(*sis));
+    struct rpmvs_s *sis = (struct rpmvs_s *)xcalloc(1, sizeof(*sis));
     sis->vsflags = vsflags;
     sis->keyring = rpmKeyringLink(keyring);
     sis->vfylevel = vfylevel;
@@ -431,8 +432,8 @@ int rpmvsRange(struct rpmvs_s *vs)
 
 static int sinfoCmp(const void *a, const void *b)
 {
-    const struct rpmsinfo_s *sa = a;
-    const struct rpmsinfo_s *sb = b;
+    const struct rpmsinfo_s *sa = (const struct rpmsinfo_s *)a;
+    const struct rpmsinfo_s *sb = (const struct rpmsinfo_s *)b;
     int rc = sa->range - sb->range;
     /* signatures before digests */
     if (rc == 0)

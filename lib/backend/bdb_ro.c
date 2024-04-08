@@ -163,7 +163,7 @@ static struct bdb_db *bdb_open(const char *name)
     if (fd == -1) {
 	return NULL;
     }
-    db = xcalloc(1, sizeof(*db));
+    db = (struct bdb_db *)xcalloc(1, sizeof(*db));
     db->fd = fd;
     if (pread(fd, meta, 512, 0) != 512) {
 	rpmlog(RPMLOG_ERR, "%s: pread: %s\n", name, strerror(errno));
@@ -224,11 +224,11 @@ static int ovfl_get(struct bdb_cur *cur, struct bdb_kv *kv, struct bdb_kv *ov, u
 	if (ov->kv)
 	    ov->kv = xrealloc(ov->kv, len);
 	else
-	    ov->kv = xmalloc(len);
+	    ov->kv = (unsigned char *)xmalloc(len);
 	ov->len = len;
     }
     if (!cur->ovpage)
-	cur->ovpage = xmalloc(cur->db->pagesize);
+	cur->ovpage = (unsigned char *)xmalloc(cur->db->pagesize);
     p = ov->kv;
     while (len > 0) {
 	if (bdb_getpage(cur->db, cur->ovpage, pageno))
@@ -485,9 +485,9 @@ static int btree_getval(struct bdb_cur *cur)
 
 static struct bdb_cur *cur_open(struct bdb_db *db)
 {
-    struct bdb_cur *cur = xcalloc(1, sizeof(*cur));
+    struct bdb_cur *cur = (struct bdb_cur *)xcalloc(1, sizeof(*cur));
     cur->db = db;
-    cur->page = xmalloc(db->pagesize);
+    cur->page = (unsigned char *)xmalloc(db->pagesize);
     return cur;
 }
 
@@ -628,7 +628,7 @@ static int bdbro_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags
 static int bdbro_Close(dbiIndex dbi, unsigned int flags)
 {
     if (dbi->dbi_db)
-	bdb_close(dbi->dbi_db);
+	bdb_close((struct bdb_db *)dbi->dbi_db);
     dbiFree(dbi);
     return 0;
 }
@@ -650,19 +650,19 @@ static int bdbro_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 static dbiCursor bdbro_CursorInit(dbiIndex dbi, unsigned int flags)
 {
     /* Secondary indexes may be missing */
-    return (dbi && dbi->dbi_db) ? (void *)cur_open(dbi->dbi_db) : NULL;
+    return (dbi && dbi->dbi_db) ? (dbiCursor)cur_open((struct bdb_db *)dbi->dbi_db) : NULL;
 }
 
 static dbiCursor bdbro_CursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc)
-	cur_close((void *)dbc);
+	cur_close((struct bdb_cur *)dbc);
     return NULL;
 }
 
 static void appenddbt(dbiCursor dbc, unsigned char *val, unsigned int vallen, dbiIndexSet *setp)
 {
-    struct bdb_cur *cur = (void *)dbc;
+    struct bdb_cur *cur = (struct bdb_cur *)dbc;
     dbiIndexSet set;
     unsigned int i;
 
@@ -694,7 +694,7 @@ static rpmRC bdbro_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum,
 static rpmRC bdbro_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                           dbiIndexSet *set, int searchType)
 {
-    struct bdb_cur *cur = (void *)dbc;
+    struct bdb_cur *cur = (struct bdb_cur *)dbc;
     int r;
 
     if (!cur)
@@ -738,7 +738,7 @@ static rpmRC bdbro_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_
 
 static const void *bdbro_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
 {
-    struct bdb_cur *cur = (void *)dbc;
+    struct bdb_cur *cur = (struct bdb_cur *)dbc;
     if (!cur || !cur->key.kv)
 	return 0;
     if (keylen)
@@ -760,7 +760,7 @@ static rpmRC bdbro_pkgdbDel(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum)
 static rpmRC bdbro_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    struct bdb_cur *cur = (void *)dbc;
+    struct bdb_cur *cur = (struct bdb_cur *)dbc;
     int r;
     if (hdrNum) {
 	unsigned char hdrkey[4];
@@ -784,7 +784,7 @@ static rpmRC bdbro_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 
 static unsigned int bdbro_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 {
-    struct bdb_cur *cur = (void *)dbc;
+    struct bdb_cur *cur = (struct bdb_cur *)dbc;
     if (!cur || !cur->key.kv || cur->key.len != 4)
         return 0;
     return getui32(cur->key.kv, cur->db->swapped);

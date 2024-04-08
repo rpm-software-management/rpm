@@ -83,7 +83,7 @@ rpmcpio_t rpmcpioOpen(FD_t fd, char mode)
         (mode & O_ACCMODE) != O_WRONLY)
         return NULL;
 
-    rpmcpio_t cpio = xcalloc(1, sizeof(*cpio));
+    rpmcpio_t cpio = (rpmcpio_t)xcalloc(1, sizeof(*cpio));
     cpio->fd = fdLink(fd);
     cpio->mode = mode;
     cpio->offset = 0;

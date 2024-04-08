@@ -276,7 +276,7 @@ char * rpmVerifyString(uint32_t verifyResult, const char *pad)
 char * rpmFFlagsString(uint32_t fflags)
 {
     char *fmt, *p;
-    fmt = p = xmalloc(10);
+    fmt = p = (char *)xmalloc(10);
     if ((fflags & RPMFILE_DOC))
         *p++ = 'd';
     if ((fflags & RPMFILE_CONFIG))
