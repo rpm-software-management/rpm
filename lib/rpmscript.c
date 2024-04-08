@@ -4,7 +4,6 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <lua.h>
 #include <signal.h>
 
 #include <rpm/rpmfileutil.h>

@@ -1,10 +1,5 @@
 #include "system.h"
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-#include "lposix.h"
-
 #ifndef LUA_LOADED_TABLE
 /* feature introduced in Lua 5.3.4 */
 #define LUA_LOADED_TABLE "_LOADED"
@@ -31,6 +26,7 @@
 #include "rpmlua.h"
 #include "rpmio_internal.h"
 #include "rpmmacro_internal.h"
+#include "lposix.h"
 
 #include "debug.h"
 
