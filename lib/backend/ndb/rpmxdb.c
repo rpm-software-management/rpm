@@ -25,10 +25,6 @@
 
 #include "rpmxdb.h"
 
-#define RPMRC_OK 0
-#define RPMRC_NOTFOUND 1
-#define RPMRC_FAIL 2
-
 typedef struct rpmxdb_s {
     rpmpkgdb pkgdb;             /* main database */
     char *filename;
