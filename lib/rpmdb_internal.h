@@ -114,7 +114,7 @@ const char *rpmdbHome(rpmdb db);
  * @return		0 on success
  */
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
-			const void * keyp, size_t keylen);
+			const char * keyp, size_t keylen);
 
 /** \ingroup rpmdb
  * sort the iterator by (recnum, filenum)
@@ -171,7 +171,7 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
  */
 RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
-					const void * pfx, size_t plen);
+					const char* pfx, size_t plen);
 /** \ingroup rpmdb
  * Get package offsets of entries
  * @param ii		index iterator

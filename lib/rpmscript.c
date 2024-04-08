@@ -108,7 +108,7 @@ static const struct scriptInfo_s * findTag(rpmTagVal tag)
 
 static int next_file(lua_State *L)
 {
-    scriptNextFileFunc nff = lua_touserdata(L, lua_upvalueindex(1));
+    scriptNextFileFunc nff = (scriptNextFileFunc)lua_touserdata(L, lua_upvalueindex(1));
     lua_pushstring(L, nff->func(nff->param));
     return 1;
 }
@@ -139,7 +139,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     char *scriptbuf = NULL;
     rpmRC rc = RPMRC_FAIL;
     rpmlua lua = rpmluaGetGlobalState();
-    lua_State *L = rpmluaGetLua(lua);
+    lua_State *L = (lua_State *)rpmluaGetLua(lua);
     int cwd = -1;
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
@@ -525,7 +525,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 			      rpmscriptFlags flags, const char *prefix)
 {
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
-    rpmScript script = xcalloc(1, sizeof(*script));
+    rpmScript script = (rpmScript)xcalloc(1, sizeof(*script));
     script->tag = tag;
     script->type = getScriptType(tag);
     script->flags = getDefFlags(tag) | flags;
@@ -553,7 +553,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param)
 {
-    script->nextFileFunc = xmalloc(sizeof(*script->nextFileFunc));
+    script->nextFileFunc = (struct scriptNextFileFunc_s *)xmalloc(sizeof(*script->nextFileFunc));
     script->nextFileFunc->func = func;
     script->nextFileFunc->param = param;
 }
@@ -655,7 +655,7 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 				rpmtdGetString(&tscripts), sflags, prefix);
 
 	/* hack up a hge-style NULL-terminated array */
-	script->args = xmalloc(2 * sizeof(*script->args) + strlen(prog) + 1);
+	script->args = (char **)xmalloc(2 * sizeof(*script->args) + strlen(prog) + 1);
 	script->args[0] = (char *)(script->args + 2);
 	script->args[1] = NULL;
 	strcpy(script->args[0], prog);
@@ -694,7 +694,7 @@ rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 			      headerGetNumber(h, getFlagTag(scriptTag)), "");
 
 	if (headerGet(h, progTag, &prog, (HEADERGET_ALLOC|HEADERGET_ARGV))) {
-	    script->args = prog.data;
+	    script->args = (char **)prog.data;
 	}
     }
     return script;

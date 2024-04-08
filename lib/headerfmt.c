@@ -434,7 +434,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	if (*chptr == '%' || *chptr == '[') numTokens++;
     numTokens = numTokens * 2 + 1;
 
-    format = xcalloc(numTokens, sizeof(*format));
+    format = (sprintfToken)xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
     dst = start = str;

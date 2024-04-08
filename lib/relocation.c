@@ -35,7 +35,7 @@ const char * ftstring (rpmFileTypes ft)
 
 static char **duparray(char ** src, int size)
 {
-    char **dest = xmalloc((size+1) * sizeof(*dest));
+    char **dest = (char **)xmalloc((size+1) * sizeof(*dest));
     for (int i = 0; i < size; i++) {
 	dest[i] = xstrdup(src[i]);
     }
@@ -69,7 +69,7 @@ static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
 	return 0;
     }
 
-    actualRelocations = xmalloc(rpmtdCount(&validRelocs) * sizeof(*actualRelocations));
+    actualRelocations = (const char **)xmalloc(rpmtdCount(&validRelocs) * sizeof(*actualRelocations));
     rpmtdInit(&validRelocs);
     while ((validprefix = rpmtdNextString(&validRelocs))) {
 	int j;
@@ -160,12 +160,13 @@ void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations,
     headerGet(h, RPMTAG_DIRNAMES, &dnames, HEADERGET_MINMEM);
     headerGet(h, RPMTAG_FILEMODES, &fmodes, HEADERGET_MINMEM);
     /* TODO XXX ugh.. use rpmtd iterators & friends instead */
-    baseNames = bnames.data;
-    dirIndexes = dindexes.data;
+    baseNames = (char **)bnames.data;
+    dirIndexes = (uint32_t *)dindexes.data;
     fileCount = rpmtdCount(&bnames);
     dirCount = rpmtdCount(&dnames);
     /* XXX TODO: use rpmtdDup() instead */
-    dirNames = dnames.data = duparray(dnames.data, dirCount);
+    dirNames = duparray((char **)dnames.data, dirCount);
+    dnames.data = dirNames;
     dnames.flags |= RPMTD_PTR_ALLOCED;
 
     /*
@@ -285,8 +286,9 @@ assert(fn != NULL);		/* XXX can't happen */
 	}
 
 	/* Creating new paths is a pita */
-	dirNames = dnames.data = xrealloc(dnames.data, 
+	dnames.data = xrealloc(dnames.data,
 			       sizeof(*dirNames) * (dirCount + 1));
+	dirNames = (char **)dnames.data;
 
 	dirNames[dirCount] = xstrdup(fn);
 	dirIndexes[i] = dirCount;
@@ -500,7 +502,7 @@ void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 	nrelocs++;
 
     headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM);
-    relocs = xmalloc(sizeof(*relocs) * (nrelocs+1));
+    relocs = (rpmRelocation *)xmalloc(sizeof(*relocs) * (nrelocs+1));
 
     /* Build sorted relocation list from raw relocations. */
     for (i = 0; i < nrelocs; i++) {
@@ -541,7 +543,7 @@ void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 
 	    if (!valid) {
 		if (badrelocs == NULL)
-		    badrelocs = xcalloc(nrelocs, sizeof(*badrelocs));
+		    badrelocs = (uint8_t *)xcalloc(nrelocs, sizeof(*badrelocs));
 		badrelocs[i] = 1;
 	    }
 	} else {

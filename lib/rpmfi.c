@@ -58,7 +58,7 @@ struct rpmfi_s {
 
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
-    unsigned char * found;	/*!< Bit field of files found in the archive */
+    uint8_t * found;	/*!< Bit field of files found in the archive */
     int nrefs;			/*!< Reference count */
 };
 
@@ -194,7 +194,7 @@ static int rpmfnInit(rpmfn fndata, rpmTagVal bntag, Header h, rpmstrPool pool)
 	    fndata->bnid = rpmtdToPool(&bn, pool);
 	    fndata->dnid = rpmtdToPool(&dn, pool);
 	    /* Steal index data from the td (pooh...) */
-	    fndata->dil = dx.data;
+	    fndata->dil = (uint32_t *)dx.data;
 	    dx.data = NULL;
 	    rc = fndata->fc;
 	} else {
@@ -538,7 +538,7 @@ rpmfileState rpmfilesFState(rpmfiles fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fstates != NULL)
-	    fstate = fi->fstates[ix];
+	    fstate = (rpmfileState)fi->fstates[ix];
     }
     return fstate;
 }
@@ -1364,12 +1364,12 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 	    rpmlog(RPMLOG_ERR, _("Malformed data for tag %s: %u bytes found but %" PRIu64 " expected.\n"), rpmTagGetName(_tag), (_td)->size, (uint64_t)totalfc * sizeof(*(_data))); \
 	    goto err;				\
 	} \
-	_data = ((_td)->data); \
+	_data = (typeof((_data)))((_td)->data); \
     }
 /* Get file data from header without checking number of entries */
 #define _hgfinc(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) {\
-	_data = ((_td)->data);	   \
+	_data = (typeof((_data)))((_td)->data);	   \
     }
 
 /*** Hard link handling ***/
@@ -1461,7 +1461,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	    fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
 	    if (fcnt > 1 && !nlinkHashHasEntry(fi->nlinks, i)) {
 		struct hardlinks_s * hlinks;
-		hlinks = xmalloc(sizeof(struct hardlinks_s)+
+		hlinks = (struct hardlinks_s *)xmalloc(sizeof(*hlinks) +
 			fcnt*sizeof(hlinks->files[0]));
 		hlinks->nlink = fcnt;
 		for (int j=0; j<fcnt; j++) {
@@ -1494,8 +1494,8 @@ static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
     if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
 	const char *s;
 	int i = 0;
-	uint8_t *t = bin = xmalloc(((rpmtdSize(&td) / 2) + 1));
-	offs = xmalloc((num + 1) * sizeof(*offs));
+	uint8_t *t = bin = (uint8_t *)xmalloc(((rpmtdSize(&td) / 2) + 1));
+	offs = (uint32_t *)xmalloc((num + 1) * sizeof(*offs));
 
 	while ((s = rpmtdNextString(&td))) {
 	    uint32_t slen = strlen(s);
@@ -1526,7 +1526,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
     uint8_t *bin = NULL;
 
     if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
-	uint8_t *t = bin = xmalloc(num * len);
+	uint8_t *t = bin = (uint8_t *)xmalloc(num * len);
 	const char *s;
 
 	while ((s = rpmtdNextString(&td))) {
@@ -1560,8 +1560,8 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     uint8_t *bin = NULL, *t = NULL;
     size_t maxlen = 0;
     int status, i= 0;
-    void **arr = xmalloc(num * sizeof(void *));
-    size_t *lengths = xcalloc(num, sizeof(size_t));
+    uint8_t **arr = (uint8_t **)xmalloc(num * sizeof(void *));
+    size_t *lengths = (size_t *)xcalloc(num, sizeof(size_t));
     const char *s;
 
     if (!headerGet(h, tag, &td, HEADERGET_MINMEM) || rpmtdCount(&td) != num)
@@ -1573,7 +1573,7 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
 	    arr[i++] = NULL;
 	    continue;
 	}
-	status = rpmBase64Decode(s, &arr[i], &lengths[i]);
+	status = rpmBase64Decode(s, (void**)&arr[i], &lengths[i]);
 	if (lengths[i] > maxlen)
 	    maxlen = lengths[i];
 	if (status) {
@@ -1588,7 +1588,7 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
 	rpmlog(RPMLOG_DEBUG, _("%s: base64 decode success, len %zu\n"),
 	       __func__, maxlen);
 
-	t = bin = xcalloc(num, maxlen);
+	t = bin = (uint8_t *)xcalloc(num, maxlen);
 
 	for (i = 0; i < num; i++) {
 	    if (arr[i]) {
@@ -1709,7 +1709,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
-    rpmfiles fi = xcalloc(1, sizeof(*fi)); 
+    rpmfiles fi = (rpmfiles)xcalloc(1, sizeof(*fi));
     int fc;
 
     fi->magic = RPMFIMAGIC;
@@ -1732,7 +1732,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 	if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 	    /* For relocated packages, grab the original paths too */
 	    int ofc;
-	    fi->ofndata = xmalloc(sizeof(*fi->ofndata));
+	    fi->ofndata = (rpmfn)xmalloc(sizeof(*fi->ofndata));
 	    ofc = rpmfnInit(fi->ofndata, RPMTAG_ORIGBASENAMES, h, fi->pool);
 	    
 	    if (ofc != 0 && ofc != fc)
@@ -1780,7 +1780,7 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
     rpmfi fi = NULL;
 
     if (files && itype>=0 && itype<=RPMFILEITERMAX) {
-	fi = xcalloc(1, sizeof(*fi)); 
+	fi = (rpmfi)xcalloc(1, sizeof(*fi));
 	fi->i = -1;
 	fi->j = -1;
 	fi->files = link ? rpmfilesLink(files) : files;
@@ -1790,7 +1790,7 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
 	} else if (itype >=RPMFI_ITER_READ_ARCHIVE
 	    && itype <= RPMFI_ITER_READ_ARCHIVE_OMIT_HARDLINKS) {
 
-	    fi->found = xcalloc(1, (rpmfiFC(fi)>>3) + 1);
+	    fi->found = (uint8_t *)xcalloc(1, (rpmfiFC(fi)>>3) + 1);
 	}
 	rpmfiLink(fi);
     }
@@ -1866,7 +1866,7 @@ void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
 	/* Switch over to 64 bit variant */
 	int fc = rpmfilesFC(fi);
 	if (newsize > UINT32_MAX && fi->replacedLSizes == NULL) {
-	    fi->replacedLSizes = xcalloc(fc, sizeof(*fi->replacedLSizes));
+	    fi->replacedLSizes = (rpm_loff_t *)xcalloc(fc, sizeof(*fi->replacedLSizes));
 	    /* copy 32 bit data */
 	    if (fi->replacedSizes) {
 		for (int i=0; i < fc; i++)
@@ -1878,7 +1878,7 @@ void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
 	    fi->replacedLSizes[ix] = newsize;
 	} else {
 	    if (fi->replacedSizes == NULL)
-		fi->replacedSizes = xcalloc(fc, sizeof(*fi->replacedSizes));
+		fi->replacedSizes = (rpm_off_t *)xcalloc(fc, sizeof(*fi->replacedSizes));
 	    fi->replacedSizes[ix] = (rpm_off_t) newsize;
 	}
     }
@@ -2278,7 +2278,7 @@ static int iterReadArchiveNext(rpmfi fi)
 	} else if (S_ISLNK(mode)) {
 	    /* Skip over symlink target data in payload */
 	    rpm_loff_t lsize = rpmfilesFSize(fi->files, fx);
-	    char *buf = xmalloc(lsize + 1);
+	    char *buf = (char *)xmalloc(lsize + 1);
 	    if (rpmcpioRead(fi->archive, buf, lsize) != lsize)
 		rc = RPMERR_READ_FAILED;
 	    /* XXX should we validate the payload matches? */
