@@ -106,6 +106,7 @@ static struct pgpValTbl_s const pgpSubTypeTbl[] = {
     { PGPSUBTYPE_REVOKE_REASON,	"reason for revocation" },
     { PGPSUBTYPE_FEATURES,	"features" },
     { PGPSUBTYPE_EMBEDDED_SIG,	"embedded signature" },
+    { PGPSUBTYPE_ISSUER_FINGERPRINT,"issuer fingerprint" },
 
     { PGPSUBTYPE_INTERNAL_100,	"internal subpkt type 100" },
     { PGPSUBTYPE_INTERNAL_101,	"internal subpkt type 101" },
