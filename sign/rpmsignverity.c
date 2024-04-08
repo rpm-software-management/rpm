@@ -155,7 +155,7 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
      * special files. Last we walk the array and populate the header.
      */
     nr_files = rpmfiFC(hfi);
-    signatures = xcalloc(nr_files, sizeof(char *));
+    signatures = (char **)xcalloc(nr_files, sizeof(char *));
 
     if (!algo)
 	    algo = FS_VERITY_HASH_ALG_SHA256;
