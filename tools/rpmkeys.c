@@ -88,12 +88,15 @@ int main(int argc, char *argv[])
 	ec = rpmcliImportPubkeys(ts, args);
 	break;
     case MODE_DELKEY:
+    {
 	struct rpmInstallArguments_s * ia = &rpmIArgs;
 	ARGV_t gpgargs = gpgkeyargs(args);
 	ec = rpmErase(ts, ia, gpgargs);
 	argvFree(gpgargs);
 	break;
+    }
     case MODE_LISTKEY:
+    {
 	ARGV_t query = NULL;
 	if (args != NULL) {
 	    query = gpgkeyargs(args);
@@ -105,6 +108,7 @@ int main(int argc, char *argv[])
 	ec = rpmcliQuery(ts, &rpmQVKArgs, (ARGV_const_t) query);
 	query = argvFree(query);
 	break;
+    }
     default:
 	argerror(_("only one major mode may be specified"));
     }
