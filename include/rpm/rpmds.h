@@ -300,6 +300,14 @@ int rpmdsIsWeak(rpmds ds);
 int rpmdsIsReverse(rpmds ds);
 
 /** \ingroup rpmds
+ * Return whether dependency represents a sysusers.d entry
+ * @param ds		dependency set
+ * @param[out] sysuser	sysusers.d line if true (malloced), may be NULL
+ * @return		1 if reversed, 0 if not
+ */
+int rpmdsIsSysuser(rpmds ds, char **sysuser);
+
+/** \ingroup rpmds
  * Return current dependency color.
  * @param ds		dependency set
  * @return		current dependency color
