@@ -83,6 +83,12 @@ rpmds_IsReverse(rpmdsObject * s)
 }
 
 static PyObject *
+rpmds_IsSysuser(rpmdsObject * s)
+{
+    return PyBool_FromLong(rpmdsIsSysuser(s->ds, NULL));
+}
+
+static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
     PyObject * result = NULL;
@@ -216,6 +222,8 @@ The current index in ds is positioned at overlapping member." },
   "ds.IsRich() -- Return whether the dependency is rich."},
  {"IsReverse",	(PyCFunction)rpmds_IsReverse,	METH_NOARGS,
   "ds.IsReverse() -- Return whether the dependency is reversed."},
+ {"IsSysuser",	(PyCFunction)rpmds_IsSysuser,	METH_NOARGS,
+  "ds.IsSysuser() -- Return whether the dependency represents a sysusers.d entry."},
  {NULL,		NULL}		/* sentinel */
 };
 

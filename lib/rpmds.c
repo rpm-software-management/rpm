@@ -8,6 +8,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstrpool.h>
+#include <rpm/rpmbase64.h>
 
 #include "rpmds_internal.h"
 
@@ -1177,6 +1178,32 @@ int rpmdsIsReverse(rpmds ds)
 	break;
     }
     return reverse;
+}
+
+int rpmdsIsSysuser(rpmds ds, char **sysuser)
+{
+    if (rpmdsTagN(ds) != RPMTAG_PROVIDENAME)
+	return 0;
+    if (!(rpmdsFlags(ds) & RPMSENSE_EQUAL))
+	return 0;
+
+    const char *name = rpmdsN(ds);
+    if (!(rstreqn(name, "user(", 5) || rstreqn(name, "group(", 6) ||
+	    rstreqn(name, "groupmember(", 12))) {
+	return 0;
+    }
+
+    char *line = NULL;
+    size_t llen = 0;
+
+    if (rpmBase64Decode(rpmdsEVR(ds), (void **)&line, &llen))
+	return 0;
+
+    if (sysuser)
+	*sysuser = rstrndup(line, llen);
+    free(line);
+
+    return 1;
 }
 
 rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags)
