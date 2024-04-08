@@ -258,6 +258,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
     lua_State *L = lua->L;
     int ret = -1;
     int oind = 0;
+    int nret = 0;
     static const char *lualocal = "local opt, arg = ...;";
     int otop = lua_gettop(L); /* this can recurse through macros */
 
@@ -305,7 +306,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
 	goto exit;
     }
 
-    int nret = lua_gettop(L) - otop;
+    nret = lua_gettop(L) - otop;
     if (nret > 0 && lua->printbuf) {
 	lua_getglobal(L, "print");
 	lua_insert(L, -(nret + 1));
