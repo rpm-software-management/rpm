@@ -144,7 +144,7 @@ static char *rpmfcAttrMacroV(const char *arg, va_list args)
     }
     blen += sizeof("}") - 1;
 
-    buf = xmalloc(blen + 1);
+    buf = (char *)xmalloc(blen + 1);
 
     pe = buf;
     pe = stpcpy(pe, "%{?_");
@@ -183,7 +183,7 @@ static regex_t *rpmfcAttrReg(const char *arg, ...)
     pattern = rpmfcAttrMacroV(arg, args);
     va_end(args);
     if (pattern) {
-	reg = xcalloc(1, sizeof(*reg));
+	reg = (regex_t *)xcalloc(1, sizeof(*reg));
 	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
 	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex %s\n"), pattern);
 	    reg = _free(reg);
@@ -195,7 +195,7 @@ static regex_t *rpmfcAttrReg(const char *arg, ...)
 
 static rpmfcAttr rpmfcAttrNew(const char *name)
 {
-    rpmfcAttr attr = xcalloc(1, sizeof(*attr));
+    rpmfcAttr attr = (rpmfcAttr)xcalloc(1, sizeof(*attr));
     struct matchRule *rules[] = { &attr->incl, &attr->excl, NULL };
 
     attr->name = xstrdup(name);
@@ -602,7 +602,7 @@ static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
 			  const char * N, const char * EVR, rpmsenseFlags Flags,
 			  int index)
 {
-    struct addReqProvDataFc *data = cbdata;
+    struct addReqProvDataFc *data = (struct addReqProvDataFc *)cbdata;
     rpmfc fc = data->fc;
     const char *namespc = data->namespc;
     regex_t *exclude = data->exclude;
@@ -686,8 +686,8 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
 		       const char *namespc, const char *mname)
 {
     int rc = 0;
-    const char **paths = xcalloc(n + 1, sizeof(*paths));
-    int *fnx = xmalloc(n * sizeof(*fnx));
+    const char **paths = (const char **)xcalloc(n + 1, sizeof(*paths));
+    int *fnx = (int *)xmalloc(n * sizeof(*fnx));
     int nfn = 0;
 
     for (int i = 0; i < n; i++) {
@@ -945,15 +945,15 @@ rpmfc rpmfcFree(rpmfc fc)
 
 rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
 {
-    rpmfc fc = xcalloc(1, sizeof(*fc));
+    rpmfc fc = (rpmfc)xcalloc(1, sizeof(*fc));
     if (buildRoot) {
 	fc->buildRoot = xstrdup(buildRoot);
 	fc->brlen = strlen(buildRoot);
     }
     fc->pool = rpmstrPoolCreate();
-    fc->pkg = xcalloc(1, sizeof(*fc->pkg));
+    fc->pkg = (Package)xcalloc(1, sizeof(*fc->pkg));
     fc->fileDeps.alloced = 10;
-    fc->fileDeps.data = xmalloc(fc->fileDeps.alloced *
+    fc->fileDeps.data = (rpmfcFileDep *)xmalloc(fc->fileDeps.alloced *
 	sizeof(fc->fileDeps.data[0]));
     return fc;
 }
@@ -1040,7 +1040,7 @@ static int cmpIndexDeps(const void *a, const void *b)
 static void rpmfcNormalizeFDeps(rpmfc fc)
 {
     rpmstrPool versionedDeps = rpmstrPoolCreate();
-    rpmfcFileDep *normalizedFDeps = xmalloc(fc->fileDeps.size *
+    rpmfcFileDep *normalizedFDeps = (rpmfcFileDep *)xmalloc(fc->fileDeps.size *
 	sizeof(normalizedFDeps[0]));
     int ix = 0;
     char *depStr;
@@ -1219,7 +1219,7 @@ static int initAttrs(rpmfc fc)
 
     /* Initialize attr objects */
     nattrs = argvCount(all_attrs);
-    fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
+    fc->atypes = (rpmfcAttr*)xcalloc(nattrs + 1, sizeof(*fc->atypes));
 
     for (int i = 0; i < nattrs; i++) {
 	fc->atypes[i] = rpmfcAttrNew(all_attrs[i]);
@@ -1306,11 +1306,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     }
 
     fc->nfiles = argvCount(argv);
-    fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
-    fc->ftype = xcalloc(fc->nfiles, sizeof(*fc->ftype));
-    fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
-    fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
-    fc->fcdictx = xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
+    fc->fn = (char **)xcalloc(fc->nfiles, sizeof(*fc->fn));
+    fc->ftype = (char **)xcalloc(fc->nfiles, sizeof(*fc->ftype));
+    fc->fattrs = (ARGV_t *)xcalloc(fc->nfiles, sizeof(*fc->fattrs));
+    fc->fcolor = (rpm_color_t *)xcalloc(fc->nfiles, sizeof(*fc->fcolor));
+    fc->fcdictx = (rpmsid *)xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
     fc->fahash = fattrHashCreate(fc->nfiles / 3, intId, intCmp, NULL, NULL);
 
     /* Initialize the per-file dictionary indices. */
@@ -1701,7 +1701,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Extract absolute file paths in argv format. */
-    fmode = xcalloc(ac+1, sizeof(*fmode));
+    fmode = (rpm_mode_t *)xcalloc(ac+1, sizeof(*fmode));
 
     fc = rpmfcCreate(spec->buildRoot, 0);
     freePackage(fc->pkg);

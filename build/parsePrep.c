@@ -157,7 +157,7 @@ exit:
  */
 void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
-    rpmSpec spec = rpmMacroEntryPriv(me);
+    rpmSpec spec = (rpmSpec)rpmMacroEntryPriv(me);
     char *line = argvJoin(margs, " ");
     char *buf = NULL;
     StringBuf before = newStringBuf();
@@ -321,7 +321,7 @@ exit:
  */
 void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed)
 {
-    rpmSpec spec = rpmMacroEntryPriv(me);
+    rpmSpec spec = (rpmSpec)rpmMacroEntryPriv(me);
     char *line = argvJoin(margs, " ");
     char *opt_b, *opt_d, *opt_o;
     int opt_p, opt_R, opt_E, opt_F, opt_Z;

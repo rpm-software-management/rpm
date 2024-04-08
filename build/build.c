@@ -67,7 +67,7 @@ static char * buildHost(void)
     if (strcmp(bhMacro, "") != 0) {
         rasprintf(&hostname, "%s", bhMacro);
     } else {
-	hostname = rcalloc(NI_MAXHOST + 1, sizeof(*hostname));
+	hostname = (char *)rcalloc(NI_MAXHOST + 1, sizeof(*hostname));
 	if (gethostname(hostname, NI_MAXHOST) == 0) {
 	    struct addrinfo *ai, hints;
 	    memset(&hints, 0, sizeof(hints));
