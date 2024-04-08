@@ -320,7 +320,7 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 
     pktlen = st.st_size;
     rpmlog(RPMLOG_DEBUG, "GPG sig size: %zd\n", pktlen);
-    pkt = xmalloc(pktlen);
+    pkt = (uint8_t *)xmalloc(pktlen);
 
     {	FD_t fd;
 
@@ -375,9 +375,9 @@ static int haveSignature(rpmtd sigtd, Header h)
     if (!headerGet(h, rpmtdTag(sigtd), &oldtd, HEADERGET_DEFAULT))
 	return rc;
 
-    pgpPrtParams(sigtd->data, sigtd->count, PGPTAG_SIGNATURE, &sig1);
+    pgpPrtParams((uint8_t *)sigtd->data, sigtd->count, PGPTAG_SIGNATURE, &sig1);
     while (rpmtdNext(&oldtd) >= 0 && rc == 0) {
-	pgpPrtParams(oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2);
+	pgpPrtParams((uint8_t *)oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2);
 	if (pgpDigParamsCmp(sig1, sig2) == 0)
 	    rc = 1;
 	sig2 = pgpDigParamsFree(sig2);
@@ -517,7 +517,7 @@ static rpmRC includeVeritySignatures(FD_t fd, Header *sigp, Header *hdrp)
 
 static int msgCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    char **msg = cbdata;
+    char **msg = (char **)cbdata;
     if (sinfo->rc && *msg == NULL)
 	*msg = rpmsinfoMsg(sinfo);
     return (sinfo->rc != RPMRC_FAIL);
@@ -665,7 +665,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	if (diff) {
 	    utd.count -= diff;
 	    if (utd.count > 0 && utd.count < origSigSize) {
-		char *zeros = xcalloc(utd.count, sizeof(*zeros));
+		uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
 		utd.data = zeros;
 		headerMod(sigh, &utd);
 		insSig = 1;
