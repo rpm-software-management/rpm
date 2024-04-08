@@ -78,7 +78,7 @@ static void rpmQVSourceArgCallback( poptContext con,
 struct poptOption rpmQVSourcePoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-	rpmQVSourceArgCallback, 0, NULL, NULL },
+	(void *)rpmQVSourceArgCallback, 0, NULL, NULL },
  { "all", 'a', 0, 0, 'a',
 	N_("query/verify all packages"), NULL },
  { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
@@ -224,7 +224,7 @@ struct poptOption rpmQVFilePoptTable[] = {
  */
 struct poptOption rpmQueryPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	queryArgCallback, 0, NULL, NULL },
+	(void *)queryArgCallback, 0, NULL, NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
  { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
@@ -246,7 +246,7 @@ struct poptOption rpmQueryPoptTable[] = {
 struct poptOption rpmVerifyPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
-	queryArgCallback, 0, NULL, NULL },
+	(void *)queryArgCallback, 0, NULL, NULL },
 
  { "nofiledigest", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },

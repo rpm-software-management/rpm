@@ -53,7 +53,7 @@ rpmpsi rpmpsInitIterator(rpmps ps)
 {
     rpmpsi psi = NULL;
     if (ps != NULL && ps->numProblems > 0) {
-	psi = xcalloc(1, sizeof(*psi));
+	psi = (rpmpsi)xcalloc(1, sizeof(*psi));
 	psi->ps = rpmpsLink(ps);
 	psi->ix = -1;
     }
@@ -99,7 +99,7 @@ rpmProblem rpmpsGetProblem(rpmpsi psi)
 
 rpmps rpmpsCreate(void)
 {
-    rpmps ps = xcalloc(1, sizeof(*ps));
+    rpmps ps = (rpmps)xcalloc(1, sizeof(*ps));
     return rpmpsLink(ps);
 }
 

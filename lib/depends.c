@@ -852,7 +852,7 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
     if (depds)
 	dep = rpmdsN(depds);
     if (neg) {
-	ndep = rmalloc(strlen(dep) + 2);
+	ndep = (char *)xmalloc(strlen(dep) + 2);
 	ndep[0] = '!';
 	strcpy(ndep + 1, dep);
 	dep = ndep;

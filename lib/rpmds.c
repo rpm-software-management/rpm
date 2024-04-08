@@ -250,7 +250,7 @@ static rpmds rpmdsCreate(rpmstrPool pool,
 		  rpmTagVal tagN, const char * Type, int Count,
 		  unsigned int instance)
 {
-    rpmds ds = xcalloc(1, sizeof(*ds));
+    rpmds ds = (rpmds)xcalloc(1, sizeof(*ds));
 
     ds->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
     ds->tagN = tagN;
@@ -299,9 +299,9 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 
 	ds->N = names.count ? rpmtdToPool(&names, ds->pool) : NULL;
 	ds->EVR = evr.count ? rpmtdToPool(&evr, ds->pool): NULL;
-	ds->Flags = dflags.data;
+	ds->Flags = (uint32_t *)dflags.data;
 	if (tagTi != RPMTAG_NOT_FOUND) {
-	    ds->ti = tindices.data;
+	    ds->ti = (int *)tindices.data;
 	}
 
 	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
@@ -355,7 +355,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	nb += strlen(EVR);
     }
 
-    t = tbuf = xmalloc(nb + 1);
+    t = tbuf = (char *)xmalloc(nb + 1);
     if (dspfx) {
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
@@ -392,14 +392,14 @@ static rpmds singleDSPool(rpmstrPool pool, rpmTagVal tagN,
 
     ds = rpmdsCreate(pool, tagN, Type, 1, instance);
 
-    ds->N = xmalloc(1 * sizeof(*ds->N));
+    ds->N = (rpmsid *)xmalloc(1 * sizeof(*ds->N));
     ds->N[0] = N;
-    ds->EVR = xmalloc(1 * sizeof(*ds->EVR));
+    ds->EVR = (rpmsid *)xmalloc(1 * sizeof(*ds->EVR));
     ds->EVR[0] = EVR;
-    ds->Flags = xmalloc(sizeof(*ds->Flags));
+    ds->Flags = (uint32_t *)xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
     if (tagTi != RPMTAG_NOT_FOUND) {
-	ds->ti = xmalloc(sizeof(*ds->ti));
+	ds->ti = (int *)xmalloc(sizeof(*ds->ti));
 	ds->ti[0] = triggerIndex;
     }
     ds->i = 0;
@@ -493,10 +493,10 @@ rpmds rpmdsFilterTi(rpmds ds, int ti)
 
     fds = rpmdsCreate(ds->pool, ds->tagN, ds->Type, tiCount, ds->instance);
 
-    fds->N = xmalloc(tiCount * sizeof(*fds->N));
-    fds->EVR = xmalloc(tiCount * sizeof(*fds->EVR));
-    fds->Flags = xmalloc(tiCount * sizeof(*fds->Flags));
-    fds->ti = xmalloc(tiCount * sizeof(*fds->ti));
+    fds->N = (rpmsid *)xmalloc(tiCount * sizeof(*fds->N));
+    fds->EVR = (rpmsid *)xmalloc(tiCount * sizeof(*fds->EVR));
+    fds->Flags = (uint32_t *)xmalloc(tiCount * sizeof(*fds->Flags));
+    fds->ti = (int *)xmalloc(tiCount * sizeof(*fds->ti));
     fds->i = -1;
 
     i2 = 0;
@@ -663,7 +663,7 @@ rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color == NULL) {
-	    ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
+	    ds->Color = (uint32_t *)xcalloc(ds->Count, sizeof(*ds->Color));
 	}
 	ocolor = ds->Color[ds->i];
 	ds->Color[ds->i] = color;
@@ -716,22 +716,22 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->i = ods->i;
 
     nb = ds->Count * sizeof(*ds->N);
-    ds->N = memcpy(xmalloc(nb), ods->N, nb);
+    ds->N = (rpmsid *)memcpy(xmalloc(nb), ods->N, nb);
     
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (ods->EVR) {
 	nb = ds->Count * sizeof(*ds->EVR);
-	ds->EVR = memcpy(xmalloc(nb), ods->EVR, nb);
+	ds->EVR = (rpmsid *)memcpy(xmalloc(nb), ods->EVR, nb);
     }
 
     if (ods->Flags) {
 	nb = ds->Count * sizeof(*ds->Flags);
-	ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
+	ds->Flags = (uint32_t *)memcpy(xmalloc(nb), ods->Flags, nb);
     }
 
     if (ods->ti) {
 	nb = ds->Count * sizeof(*ds->ti);
-	ds->ti = memcpy(xmalloc(nb), ods->ti, nb);
+	ds->ti = (int *)memcpy(xmalloc(nb), ods->ti, nb);
     }
 
     return ds;
@@ -813,12 +813,12 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 
     /* Ensure EVR and Flags exist */
     if (ds->EVR == NULL)
-	ds->EVR = xcalloc(ds->Count, sizeof(*ds->EVR));
+	ds->EVR = (rpmsid *)xcalloc(ds->Count, sizeof(*ds->EVR));
     if (ds->Flags == NULL)
-	ds->Flags = xcalloc(ds->Count, sizeof(*ds->Flags));
+	ds->Flags = (uint32_t *)xcalloc(ds->Count, sizeof(*ds->Flags));
     if (ds->ti == NULL && ods->ti) {
 	int i;
-	ds->ti = xcalloc(ds->Count, sizeof(*ds->ti));
+	ds->ti = (int *)xcalloc(ds->Count, sizeof(*ds->ti));
 	for (i = 0; i < ds->Count; i++)
 	    ds->ti[i] = -1;
     }
@@ -1124,7 +1124,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 
 int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
 {
-    const struct rpmlibProvides_s * rltblp = tblp;
+    const struct rpmlibProvides_s * rltblp = (const struct rpmlibProvides_s *)tblp;
     const struct rpmlibProvides_s * rlp;
     int rc = 0;
 
@@ -1523,7 +1523,7 @@ struct rpmdsParseRichDepData {
 static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
-    struct rpmdsParseRichDepData *data = cbdata;
+    struct rpmdsParseRichDepData *data = (struct rpmdsParseRichDepData *)cbdata;
     rpmds ds = 0;
 
     if (type == RPMRICH_PARSE_ENTER)
@@ -1531,7 +1531,7 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
     else if (type == RPMRICH_PARSE_LEAVE) {
 	if (--data->depth == 0 && data->dochain && data->rightstart) {
 	    /* chain op hack, construct a sub-ds from the right side of the chain */
-	    char *right = xmalloc(n + nl - data->rightstart + 2);
+	    char *right = (char *)xmalloc(n + nl - data->rightstart + 2);
 	    right[0] = '(';
 	    strncpy(right + 1, data->rightstart, n + nl - data->rightstart);
 	    right[n + nl - data->rightstart + 1] = 0;

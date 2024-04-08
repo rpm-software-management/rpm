@@ -41,7 +41,7 @@ struct headerTagFunc_s {
 static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 {
     const char **baseNames, **dirNames;
-    const char *fileStates = NULL;
+    const uint8_t *fileStates = NULL;
     uint32_t *dirIndexes;
     rpm_count_t count, retcount, dncount;
     size_t size = 0;
@@ -76,15 +76,15 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 	    goto exit;
 	if (rpmtdCount(&fstates) != count)
 	    td->flags |= RPMTD_INVALID;
-	fileStates = fstates.data;
+	fileStates = (const uint8_t *)fstates.data;
     }
 
     if (td->flags & RPMTD_INVALID)
 	goto exit;
 
-    baseNames = bnames.data;
-    dirNames = dnames.data;
-    dirIndexes = dixs.data;
+    baseNames = (const char **)bnames.data;
+    dirNames = (const char **)dnames.data;
+    dirIndexes = (uint32_t *)dixs.data;
 
     /*
      * fsm, psm and rpmfi assume the data is stored in a single allocation
@@ -105,7 +105,7 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
     }
 
     if (!(td->flags & RPMTD_INVALID)) {
-	char **fileNames = xmalloc(size + (sizeof(*fileNames) * retcount));
+	char **fileNames = (char **)xmalloc(size + (sizeof(*fileNames) * retcount));
 	char *t = ((char *) fileNames) + (sizeof(*fileNames) * retcount);
 	for (i = 0, j = 0; i < count; i++) {
 	    if (fileStates && !RPMFILE_IS_INSTALLED(fileStates[i]))
@@ -150,7 +150,7 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
 
     ds = rpmdsNew(h, tagN, 0);
     deptype = rpmdsD(ds);
-    fdeps = xmalloc(numfiles * sizeof(*fdeps));
+    fdeps = (char **)xmalloc(numfiles * sizeof(*fdeps));
 
     while ((fileix = rpmfiNext(fi)) >= 0) {
 	ARGV_t deps = NULL;
@@ -248,10 +248,10 @@ static int triggercondsTagFor(tMode mode, Header h, rpmtd td,
 
     td->type = RPM_STRING_ARRAY_TYPE;
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
-    td->data = conds = xmalloc(sizeof(*conds) * rpmtdCount(&scripttd));
+    td->data = conds = (char **)xmalloc(sizeof(*conds) * rpmtdCount(&scripttd));
     td->count = rpmtdCount(&scripttd);
 
-    indices = indextd.data;
+    indices = (uint32_t *)indextd.data;
 
     while ((i = rpmtdNext(&scripttd)) >= 0) {
 	rpm_flag_t *flag;
@@ -353,7 +353,7 @@ static int triggertypeTagFor(tMode mode, Header h, rpmtd td,
 
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
     td->count = rpmtdCount(&scripts);
-    td->data = conds = xmalloc(sizeof(*conds) * td->count);
+    td->data = conds = (char **)xmalloc(sizeof(*conds) * td->count);
     td->type = RPM_STRING_ARRAY_TYPE;
 
     while ((i = rpmtdNext(&scripts)) >= 0) {
@@ -488,7 +488,7 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
     int numfiles = rpmfiFC(fi);
 
     if (numfiles > 0) {
-	char **fclasses = xmalloc(numfiles * sizeof(*fclasses));
+	char **fclasses = (char **)xmalloc(numfiles * sizeof(*fclasses));
 	int ix;
 
 	rpmfiInit(fi, 0);
@@ -592,7 +592,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 
 	if (domain && msgid) {
 	    td->data = dgettext(domain, msgid);
-	    td->data = xstrdup(td->data); /* XXX xstrdup has side effects. */
+	    td->data = xstrdup((const char *)td->data); /* XXX xstrdup has side effects. */
 	    td->count = 1;
 	    td->flags = RPMTD_ALLOCED;
 	}
@@ -668,7 +668,7 @@ static int get64(Header h, rpmtd td, rpmTag newtag, rpmTag oldtag)
 	    td->count = olddata.count;
 	    td->flags = RPMTD_ALLOCED;
 	    td->data = xmalloc(sizeof(*d64) * td->count);
-	    d64 = td->data;
+	    d64 = (uint64_t *)td->data;
 	    while ((d32 = rpmtdNextUint32(&olddata))) {
 		*d64++ = *d32;
 	    }
@@ -709,7 +709,7 @@ static int longsigsizeTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 static int numberTag(rpmtd td, uint32_t val)
 {
-    uint32_t *tval = xmalloc(sizeof(*tval));
+    uint32_t *tval = (uint32_t *)xmalloc(sizeof(*tval));
 
     tval[0] = val;
     td->type = RPM_INT32_TYPE;
@@ -854,7 +854,7 @@ static int epochnumTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     /* For consistency, always return malloced data */
     if (!headerGet(h, RPMTAG_EPOCH, td, HEADERGET_ALLOC)) {
-	uint32_t *e = malloc(sizeof(*e));
+	uint32_t *e = (uint32_t *)malloc(sizeof(*e));
 	*e = 0;
 	td->data = e;
 	td->type = RPM_INT32_TYPE;
@@ -872,7 +872,7 @@ static int depnevrsTag(Header h, rpmtd td, headerGetFlags hgflags,
     int ndeps = rpmdsCount(ds);
 
     if (ndeps > 0) {
-	char **deps = xmalloc(sizeof(*deps) * ndeps);
+	char **deps = (char **)xmalloc(sizeof(*deps) * ndeps);
 	int i;
 	while ((i = rpmdsNext(ds)) >= 0) {
 	    deps[i] = rpmdsNewDNEVR(NULL, ds);
@@ -895,7 +895,7 @@ static int depnevrsTagFiltered(Header h, rpmtd td, headerGetFlags hgflags,
     int ndeps = rpmdsCount(ds);
 
     if (ndeps > 0) {
-	char **deps = xmalloc(sizeof(*deps) * ndeps);
+	char **deps = (char **)xmalloc(sizeof(*deps) * ndeps);
 	ndeps = 0;
 	while (rpmdsNext(ds) >= 0) {
 	    if ((rpmdsFlags(ds) & RPMSENSE_STRONG) == (strong ? RPMSENSE_STRONG : 0))
@@ -964,7 +964,7 @@ static int filenlinksTag(Header h, rpmtd td, headerGetFlags hgflags)
     rpm_count_t fc = rpmfiFC(fi);
 
     if (fc > 0) {
-	uint32_t *nlinks = xmalloc(fc * sizeof(*nlinks));
+	uint32_t *nlinks = (uint32_t *)xmalloc(fc * sizeof(*nlinks));
 	int ix;
 	while ((ix = rpmfiNext(fi)) >= 0) {
 	    nlinks[ix] = rpmfiFNlink(fi);

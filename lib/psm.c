@@ -82,7 +82,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     if (num == 0)
 	return RPMRC_OK;
 
-    offsets = xmalloc(num * sizeof(*offsets));
+    offsets = (unsigned int *)xmalloc(num * sizeof(*offsets));
     offsets[0] = 0;
     num = prev = 0;
     for (sfi = replaced; sfi; sfi=rpmfsNextReplaced(fs, sfi)) {
@@ -252,7 +252,8 @@ static rpmRC runInstScript(rpmpsm psm, rpmTagVal scriptTag)
 
     if (script) {
 	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
-	rc = runScript(psm->ts, psm->te, h, pfx.data, script, psm->scriptArg, -1);
+	rc = runScript(psm->ts, psm->te, h, (ARGV_const_t)pfx.data,
+			script, psm->scriptArg, -1);
 	rpmtdFreeData(&pfx);
     }
 
@@ -271,7 +272,7 @@ struct ARGVi_s {
 static const char *nextarg(void *data)
 {
     const char *l = NULL;
-    struct ARGVi_s *avi = data;
+    struct ARGVi_s *avi = (struct ARGVi_s *)data;
     if (avi->ix < avi->argc) {
 	l = avi->argv[avi->ix];
 	avi->ix++;
@@ -313,8 +314,8 @@ static rpmRC execSysusers(rpmpsm psm, Header h, const char *cmd,
 	    rpmScriptSetNextFileFunc(script, nextarg, &avi);
 	    headerGet(h, RPMTAG_INSTPREFIXES, &pfx,
 			HEADERGET_ALLOC|HEADERGET_ARGV);
-	    rc = runScript(psm->ts, psm->te, h, pfx.data, script,
-			psm->scriptArg, -1);
+	    rc = runScript(psm->ts, psm->te, h, (ARGV_const_t)pfx.data,
+			   script, psm->scriptArg, -1);
 	    rpmtdFreeData(&pfx);
 	}
 	rpmScriptFree(script);
@@ -380,7 +381,7 @@ static rpmRC runSysusers(rpmpsm psm)
 	int px = -1;
 
 	if (sysusers == NULL)
-	    sysusers = xcalloc(rpmdsCount(provides), sizeof(*sysusers));
+	    sysusers = (ARGV_t *)xcalloc(rpmdsCount(provides), sizeof(*sysusers));
 
 	/* Find the providing file (if any) */
 	fn = findProviderFile(psm->files, dx);
@@ -474,7 +475,8 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
 		arg1 += countCorrection;
-		rc = runScript(ts, te, trigH, pfx.data, script, arg1, arg2);
+		rc = runScript(ts, te, trigH, (ARGV_const_t)pfx.data,
+				script, arg1, arg2);
 		if (triggersAlreadyRun != NULL)
 		    triggersAlreadyRun[tix] = 1;
 
@@ -541,7 +543,7 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 {
     const rpmts ts = psm->ts;
-    unsigned char * triggersRun;
+    uint8_t * triggersRun;
     struct rpmtd_s tnames, tindexes;
     Header h = rpmteHeader(psm->te);
     int nerrors = 0;
@@ -551,10 +553,10 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	goto exit;
     }
 
-    triggersRun = xcalloc(rpmtdCount(&tindexes), sizeof(*triggersRun));
+    triggersRun = (uint8_t *)xcalloc(rpmtdCount(&tindexes), sizeof(*triggersRun));
     {	Header sourceH = NULL;
 	const char *trigName;
-    	rpm_count_t *triggerIndices = tindexes.data;
+	rpm_count_t *triggerIndices = (rpm_count_t *)tindexes.data;
 
 	while ((trigName = rpmtdNextString(&tnames))) {
 	    rpmdbMatchIterator mi;
@@ -613,7 +615,7 @@ static int isUpdate(rpmts ts, rpmte te)
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 {
-    rpmpsm psm = xcalloc(1, sizeof(*psm));
+    rpmpsm psm = (rpmpsm)xcalloc(1, sizeof(*psm));
     psm->ts = rpmtsLink(ts);
     psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */

@@ -18,11 +18,11 @@ struct rpmfs_s {
 
 rpmfs rpmfsNew(rpm_count_t fc, int initState)
 {
-    rpmfs fs = xcalloc(1, sizeof(*fs));
+    rpmfs fs = (rpmfs)xcalloc(1, sizeof(*fs));
     fs->fc = fc;
-    fs->actions = xcalloc(fs->fc, sizeof(*fs->actions));
+    fs->actions = (rpmFileAction *)xcalloc(fs->fc, sizeof(*fs->actions));
     if (initState) {
-	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
+	fs->states = (rpm_fstate_t *)xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
     }
     return fs;
@@ -49,7 +49,7 @@ void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, char rstate,
 			int otherPkg, int otherFileNum)
 {
     if (!fs->replaced) {
-	fs->replaced = xcalloc(3, sizeof(*fs->replaced));
+	fs->replaced = (sharedFileInfo)xcalloc(3, sizeof(*fs->replaced));
 	fs->allocatedReplaced = 3;
     }
     if (fs->numReplaced>=fs->allocatedReplaced) {

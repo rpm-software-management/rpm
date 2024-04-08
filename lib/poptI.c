@@ -113,7 +113,7 @@ static void installArgCallback( poptContext con,
 struct poptOption rpmInstallPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	installArgCallback, 0, NULL, NULL },
+	(void *)installArgCallback, 0, NULL, NULL },
 
  { "allfiles", '\0', POPT_BIT_SET,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ALLFILES,

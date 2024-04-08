@@ -40,7 +40,7 @@ struct ndbEnv_s {
 
 static void closeEnv(rpmdb rdb)
 {
-    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)rdb->db_dbenv;
     if (--ndbenv->refs == 0) {
 	if (ndbenv->xdb) {
 	    rpmxdbClose(ndbenv->xdb);
@@ -59,9 +59,9 @@ static void closeEnv(rpmdb rdb)
 
 static struct ndbEnv_s *openEnv(rpmdb rdb)
 {
-    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)rdb->db_dbenv;
     if (!ndbenv) {
-	rdb->db_dbenv = ndbenv = xcalloc(1, sizeof(struct ndbEnv_s));
+	rdb->db_dbenv = ndbenv = (struct ndbEnv_s *)xcalloc(1, sizeof(struct ndbEnv_s));
 	ndbenv->dofsync = 1;
     }
     ndbenv->refs++;
@@ -72,7 +72,7 @@ static int ndb_Close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rdb = dbi->dbi_rpmdb;
     if (dbi->dbi_type != DBI_PRIMARY && dbi->dbi_db) {
-	rpmidxClose(dbi->dbi_db);
+	rpmidxClose((rpmidxdb)dbi->dbi_db);
 	rpmlog(RPMLOG_DEBUG, "closed   db index       %s\n", dbi->dbi_file);
     }
     if (rdb->db_dbenv)
@@ -161,16 +161,16 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
 	    /* Open indexes readwrite if possible */
 	    ioflags = O_RDWR;
-	    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
+	    rc = rpmxdbOpen(&ndbenv->xdb, (rpmpkgdb)rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 	    if (rc && (errno == EACCES || errno == EROFS)) {
 		/* If it is not asked for rw explicitly, try to open ro */
 		if (!(oflags & O_RDWR)) {
 		    ioflags = O_RDONLY;
-		    rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
+		    rc = rpmxdbOpen(&ndbenv->xdb, (rpmpkgdb)rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 		}
 	    } else if (rc && errno == ENOENT) {
 		ioflags = O_CREAT|O_RDWR;
-		rc = rpmxdbOpen(&ndbenv->xdb, rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
+		rc = rpmxdbOpen(&ndbenv->xdb, (rpmpkgdb)rdb->db_pkgs->dbi_db, path, ioflags, rdb->db_perms);
 		created = 1;
 	    }
 	    if (rc) {
@@ -189,7 +189,7 @@ static int ndb_Open(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    dbi->dbi_flags |= DBI_CREATED;
 	}
 	rpmlog(RPMLOG_DEBUG, "opening  db index       %s tag=%d\n", dbiName(dbi), rpmtag);
-	if (rpmidxOpenXdb(&idxdb, rdb->db_pkgs->dbi_db, ndbenv->xdb, rpmtag, oflags)) {
+	if (rpmidxOpenXdb(&idxdb, (rpmpkgdb)rdb->db_pkgs->dbi_db, ndbenv->xdb, rpmtag, oflags)) {
 	    perror("rpmidxOpenXdb");
 	    ndb_Close(dbi, 0);
 	    return 1;
@@ -211,7 +211,7 @@ static int ndb_Verify(dbiIndex dbi, unsigned int flags)
 {
     int rc;
     if (dbi->dbi_type == DBI_PRIMARY) {
-	rc = rpmpkgVerify(dbi->dbi_db);
+	rc = rpmpkgVerify((rpmpkgdb)dbi->dbi_db);
     } else {
 	rc = 0;		/* cannot verify the index databases */
     }
@@ -220,7 +220,7 @@ static int ndb_Verify(dbiIndex dbi, unsigned int flags)
 
 static void ndb_SetFSync(rpmdb rdb, int enable)
 {
-    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)rdb->db_dbenv;
     if (ndbenv) {
 	ndbenv->dofsync = enable;
 	if (ndbenv->pkgdb)
@@ -249,25 +249,25 @@ static int indexSync(rpmpkgdb pkgdb, rpmxdb xdb)
 
 static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 {
-    struct ndbEnv_s *ndbenv = rdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)rdb->db_dbenv;
 
     switch (ctrl) {
     case DB_CTRL_LOCK_RO:
 	if (!rdb->db_pkgs)
 	    return 1;
-	return rpmpkgLock(rdb->db_pkgs->dbi_db, 0);
+	return rpmpkgLock((rpmpkgdb)rdb->db_pkgs->dbi_db, 0);
     case DB_CTRL_LOCK_RW:
 	if (!rdb->db_pkgs)
 	    return 1;
-	return rpmpkgLock(rdb->db_pkgs->dbi_db, 1);
+	return rpmpkgLock((rpmpkgdb)rdb->db_pkgs->dbi_db, 1);
     case DB_CTRL_UNLOCK_RO:
 	if (!rdb->db_pkgs)
 	    return 1;
-	return rpmpkgUnlock(rdb->db_pkgs->dbi_db, 0);
+	return rpmpkgUnlock((rpmpkgdb)rdb->db_pkgs->dbi_db, 0);
     case DB_CTRL_UNLOCK_RW:
 	if (!rdb->db_pkgs)
 	    return 1;
-	return rpmpkgUnlock(rdb->db_pkgs->dbi_db, 1);
+	return rpmpkgUnlock((rpmpkgdb)rdb->db_pkgs->dbi_db, 1);
     case DB_CTRL_INDEXSYNC:
 	if (!ndbenv)
 	    return 1;
@@ -280,7 +280,7 @@ static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 
 static dbiCursor ndb_CursorInit(dbiIndex dbi, unsigned int flags)
 {
-    dbiCursor dbc = xcalloc(1, sizeof(*dbc));
+    dbiCursor dbc = (dbiCursor)xcalloc(1, sizeof(*dbc));
     dbc->dbi = dbi;
     dbc->flags = flags;
     return dbc;
@@ -301,7 +301,7 @@ static dbiCursor ndb_CursorFree(dbiIndex dbi, dbiCursor dbc)
 
 static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
-    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     if (ndbenv->data)
 	free(ndbenv->data);
     ndbenv->hdrNum  = hdrNum;
@@ -311,18 +311,18 @@ static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob,
 
 static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
-    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     unsigned int hnum = *hdrNum;
     rpmRC rc = RPMRC_OK;
 
     if (hnum == 0) {
-	rc = rpmpkgNextPkgIdx(dbc->dbi->dbi_db, &hnum);
+	rc = rpmpkgNextPkgIdx((rpmpkgdb)dbc->dbi->dbi_db, &hnum);
 	if (!rc && ndbenv->hdrNum == hnum)
 	    setdata(dbc, hnum, 0, 0);
     }
 
     if (!rc)
-	rc = rpmpkgPut(dbc->dbi->dbi_db, hnum, hdrBlob, hdrLen);
+	rc = rpmpkgPut((rpmpkgdb)dbc->dbi->dbi_db, hnum, hdrBlob, hdrLen);
 
     if (!rc) {
 	dbc->hdrNum = hnum;
@@ -335,11 +335,11 @@ static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, un
 
 static rpmRC ndb_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
-    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     dbc->hdrNum = 0;
     if (ndbenv->hdrNum == hdrNum)
 	setdata(dbc, 0, 0, 0);
-    return rpmpkgDel(dbc->dbi->dbi_db, hdrNum);
+    return rpmpkgDel((rpmpkgdb)dbc->dbi->dbi_db, hdrNum);
 }
 
 /* iterate over all packages */
@@ -349,7 +349,7 @@ static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor dbc, unsigned char **hdrBlob,
     unsigned int hdrNum;
 
     if (!dbc->list) {
-	rc = rpmpkgList(dbc->dbi->dbi_db, &dbc->list, &dbc->nlist);
+	rc = rpmpkgList((rpmpkgdb)dbc->dbi->dbi_db, &dbc->list, &dbc->nlist);
 	if (rc)
 	    return rc;
 	dbc->ilist = 0;
@@ -361,7 +361,7 @@ static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor dbc, unsigned char **hdrBlob,
 	}
 	*hdrBlob = 0;
 	hdrNum = dbc->list[dbc->ilist];
-	rc = rpmpkgGet(dbc->dbi->dbi_db, hdrNum, hdrBlob, hdrLen);
+	rc = rpmpkgGet((rpmpkgdb)dbc->dbi->dbi_db, hdrNum, hdrBlob, hdrLen);
 	if (rc && rc != RPMRC_NOTFOUND)
 	    break;
 	dbc->ilist++;
@@ -377,16 +377,16 @@ static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor dbc, unsigned char **hdrBlob,
 static rpmRC ndb_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     rpmRC rc;
-    struct ndbEnv_s *ndbenv = dbc->dbi->dbi_rpmdb->db_dbenv;
+    struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
 
     if (!hdrNum)
 	return ndb_pkgdbIter(dbi, dbc, hdrBlob, hdrLen);
     if (hdrNum == ndbenv->hdrNum && ndbenv->data) {
-	*hdrBlob = ndbenv->data;
+	*hdrBlob = (unsigned char *)ndbenv->data;
 	*hdrLen = ndbenv->datalen;
 	return RPMRC_OK;
     }
-    rc = rpmpkgGet(dbc->dbi->dbi_db, hdrNum, hdrBlob, hdrLen);
+    rc = rpmpkgGet((rpmpkgdb)dbc->dbi->dbi_db, hdrNum, hdrBlob, hdrLen);
     if (!rc) {
 	dbc->hdrNum = hdrNum;
 	setdata(dbc, hdrNum, *hdrBlob, *hdrLen);
@@ -425,7 +425,7 @@ static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
     rpmRC rc;
     if (!dbc->list) {
 	/* setup iteration list on first call */
-	rc = rpmidxList(dbc->dbi->dbi_db, &dbc->list, &dbc->nlist, &dbc->listdata);
+	rc = rpmidxList((rpmidxdb)dbc->dbi->dbi_db, &dbc->list, &dbc->nlist, &dbc->listdata);
 	if (rc)
 	    return rc;
 	dbc->ilist = 0;
@@ -451,7 +451,7 @@ static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
 
 	pkglist = 0;
 	pkglistn = 0;
-	rc = rpmidxGet(dbc->dbi->dbi_db, k, kl, &pkglist, &pkglistn);
+	rc = rpmidxGet((rpmidxdb)dbc->dbi->dbi_db, k, kl, &pkglist, &pkglistn);
 	if (rc && rc != RPMRC_NOTFOUND)
 	    break;
 	dbc->ilist += 2;
@@ -479,7 +479,7 @@ static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
 	unsigned int *list = 0, nlist = 0, i = 0;
 	unsigned char *listdata = 0;
 	rpmRC rrc = RPMRC_NOTFOUND;
-	rc = rpmidxList(dbc->dbi->dbi_db, &list, &nlist, &listdata);
+	rc = rpmidxList((rpmidxdb)dbc->dbi->dbi_db, &list, &nlist, &listdata);
 	if (rc)
 	    return rc;
 	for (i = 0; i < nlist && !rc; i += 2) {
@@ -500,7 +500,7 @@ static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
 	return rc ? rc : rrc;
     }
 
-    rc = rpmidxGet(dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, &pkglist, &pkglistn);
+    rc = rpmidxGet((rpmidxdb)dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, &pkglist, &pkglistn);
     if (!rc)
 	addtoset(set, pkglist, pkglistn);
     return rc;
@@ -508,7 +508,7 @@ static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
 
 static rpmRC ndb_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
-    return rpmidxPut(dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
+    return rpmidxPut((rpmidxdb)dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
 }
 
 static rpmRC ndb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
@@ -518,7 +518,7 @@ static rpmRC ndb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, H
 
 static rpmRC ndb_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
-    return rpmidxDel(dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
+    return rpmidxDel((rpmidxdb)dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
 }
 
 static rpmRC ndb_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)

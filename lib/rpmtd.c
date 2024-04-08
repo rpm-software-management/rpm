@@ -9,7 +9,7 @@
 
 rpmtd rpmtdNew(void)
 {
-    rpmtd td = xmalloc(sizeof(*td));
+    rpmtd td = (rpmtd)xmalloc(sizeof(*td));
     rpmtdReset(td);
     return td;
 }
@@ -36,7 +36,7 @@ void rpmtdFreeData(rpmtd td)
 {
     if (td && td->data && td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
-	    char **data = td->data;
+	    char **data = (char **)td->data;
 	    for (int i = 0; i < td->count; i++) {
 		free(data[i]);
 	    }
@@ -431,7 +431,7 @@ rpmtd rpmtdDup(rpmtd td)
     newtd->flags &= ~(RPMTD_IMMUTABLE);
 
     newtd->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
-    newtd->data = data = xmalloc(td->count * sizeof(*data));
+    newtd->data = data = (char **)xmalloc(td->count * sizeof(*data));
     while ((i = rpmtdNext(td)) >= 0) {
 	data[i] = xstrdup(rpmtdGetString(td));
     }
@@ -444,11 +444,11 @@ rpmsid * rpmtdToPool(rpmtd td, rpmstrPool pool)
     rpmsid *sids = NULL;
 
     if (pool && td) {
-	const char **strings = td->data;
+	const char **strings = (const char **)td->data;
 	switch (td->type) {
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
-	    sids = xmalloc(td->count * sizeof(*sids));
+	    sids = (rpmsid *)xmalloc(td->count * sizeof(*sids));
 	    for (rpm_count_t i = 0; i < td->count; i++)
 		sids[i] = rpmstrPoolId(pool, strings[i], 1);
 	    break;

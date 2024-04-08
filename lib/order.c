@@ -156,7 +156,7 @@ static inline int addSingleRelation(rpmte p,
     /* bump p predecessor count */
     tsi_p->tsi_count++;
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation)xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_p;
     rel->rel_flags = flags;
 
@@ -167,7 +167,7 @@ static inline int addSingleRelation(rpmte p,
     /* bump q successor count */
     tsi_q->tsi_qcnt++;
 
-    rel = xcalloc(1, sizeof(*rel));
+    rel = (relation)xcalloc(1, sizeof(*rel));
     rel->rel_suc = tsi_q;
     rel->rel_flags = flags;
 
@@ -350,7 +350,8 @@ static void tarjan(sccData sd, tsortInfo tsi)
 	    } while (tsi_q != tsi);
 	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
-	    sd->SCCs[sd->sccCnt].members = xcalloc(sd->SCCs[sd->sccCnt].size,
+	    sd->SCCs[sd->sccCnt].members =
+				(tsortInfo *)xcalloc(sd->SCCs[sd->sccCnt].size,
 					   sizeof(tsortInfo));
 	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
 		   sd->SCCs[sd->sccCnt].size * sizeof(tsortInfo));
@@ -364,8 +365,8 @@ static void tarjan(sccData sd, tsortInfo tsi)
 static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
 {
     /* Set up data structures needed for the tarjan algorithm */
-    scc SCCs = xcalloc(nelem+3, sizeof(*SCCs));
-    tsortInfo *stack = xcalloc(nelem, sizeof(*stack));
+    scc SCCs = (scc)xcalloc(nelem+3, sizeof(*SCCs));
+    tsortInfo *stack = (tsortInfo *)xcalloc(nelem, sizeof(*stack));
     struct sccData_s sd = { 0, stack, 0, SCCs, 2 };
 
     for (int i = 0; i < nelem; i++) {
@@ -468,7 +469,7 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
     relation rel;
 
     /* can use a simple queue as edge weights are always 1 */
-    tsortInfo * queue = xmalloc((SCC->size+1) * sizeof(*queue));
+    tsortInfo * queue = (tsortInfo *)xmalloc((SCC->size+1) * sizeof(*queue));
 
     /*
      * Find packages that are prerequired and use them as
@@ -583,7 +584,7 @@ int rpmtsOrder(rpmts ts)
     rpmal erasedPackages;
     scc SCCs;
     int nelem = rpmtsNElements(ts);
-    tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
+    tsortInfo sortInfo = (tsortInfo)xcalloc(nelem, sizeof(struct tsortInfo_s));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -620,7 +621,7 @@ int rpmtsOrder(rpmts ts)
 
     rpmtsiFree(pi);
 
-    newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
+    newOrder = (rpmte*)xcalloc(tsmem->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");

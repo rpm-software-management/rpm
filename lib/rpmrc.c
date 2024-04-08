@@ -265,7 +265,7 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	    entry->equivs = xrealloc(entry->equivs, sizeof(*entry->equivs)
 					* (entry->count + 1));
 	else
-	    entry->equivs = xmalloc(sizeof(*entry->equivs));
+	    entry->equivs = (char **)xmalloc(sizeof(*entry->equivs));
 
 	entry->equivs[entry->count] = xstrdup(chptr);
 	entry->count++;
@@ -297,7 +297,7 @@ static void machAddEquiv(machEquivTable table, const char * name,
 	    table->list = xrealloc(table->list, (table->count + 1)
 				    * sizeof(*table->list));
 	else
-	    table->list = xmalloc(sizeof(*table->list));
+	    table->list = (machEquivInfo)xmalloc(sizeof(*table->list));
 
 	table->list[table->count].name = xstrdup(name);
 	table->list[table->count++].score = distance;
@@ -557,8 +557,8 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 
 	/* Find keyword in table */
 	searchOption.name = s;
-	option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(optionTable[0]), optionCompare);
+	option = (struct rpmOption *)bsearch(&searchOption, optionTable,
+			optionTableSize, sizeof(optionTable[0]), optionCompare);
 
 	if (option) {	/* For configuration variables  ... */
 	    const char *arch, *val;
@@ -609,7 +609,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 	    if (option->macroize &&
 	      (arch == NULL || rstreq(arch, ctx->current[ARCH]))) {
 		char *n, *name;
-		n = name = xmalloc(strlen(option->name)+2);
+		n = name = (char *)xmalloc(strlen(option->name)+2);
 		if (option->localize)
 		    *n++ = '_';
 		strcpy(n, option->name);
@@ -1509,7 +1509,7 @@ static void rpmSetVarArch(rpmrcCtx ctx,
 	    next->value = _free(next->value);
 	    next->arch = _free(next->arch);
 	} else if (next->arch || arch) {
-	    next->next = xmalloc(sizeof(*next->next));
+	    next->next = (struct rpmvarValue *)xmalloc(sizeof(*next->next));
 	    next = next->next;
 	    next->value = NULL;
 	    next->arch = NULL;

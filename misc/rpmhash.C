@@ -68,9 +68,9 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
 {
     HASHTYPE ht;
 
-    ht = xmalloc(sizeof(*ht));
+    ht = (HASHTYPE)xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets > 11 ? numBuckets : 11;
-    ht->buckets = xcalloc(ht->numBuckets, sizeof(*ht->buckets));
+    ht->buckets = (Bucket *)xcalloc(ht->numBuckets, sizeof(*ht->buckets));
     ht->freeKey = freeKey;
 #ifdef HTDATATYPE
     ht->freeData = freeData;
@@ -83,7 +83,7 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
 }
 
 static void HASHPREFIX(Resize)(HASHTYPE ht, int numBuckets) {
-    Bucket * buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    Bucket * buckets = (Bucket *)xcalloc(numBuckets, sizeof(*ht->buckets));
 
     for (int i=0; i<ht->numBuckets; i++) {
 	Bucket b = ht->buckets[i];
@@ -131,7 +131,7 @@ void HASHPREFIX(AddHEntry)(HASHTYPE ht, HTKEYTYPE key, unsigned int keyHash
 
     if (b == NULL) {
 	ht->keyCount += 1;
-	b = xmalloc(sizeof(*b));
+	b = (Bucket)xmalloc(sizeof(*b));
 	b->key = key;
 #ifdef HTDATATYPE
 	b->dataCount = 1;

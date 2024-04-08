@@ -61,7 +61,7 @@ static char * stringFormat(rpmtd td, char **emsg)
 	    break;
 	}
 	case RPM_BINARY_CLASS:
-	    val = rpmhex(td->data, td->count);
+	    val = rpmhex((uint8_t *)td->data, td->count);
 	    break;
 	default:
 	    *emsg = xstrdup("(unknown type)");
@@ -230,7 +230,7 @@ static char * armorFormat(rpmtd td, char **emsg)
 
     switch (rpmtdType(td)) {
     case RPM_BIN_TYPE:
-	s = td->data;
+	s = (const unsigned char *)td->data;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	ns = td->count;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
@@ -418,7 +418,7 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
     char * val = NULL;
     pgpDigParams sigp = NULL;
 
-    if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
+    if (pgpPrtParams((uint8_t*)td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
 	*emsg = xstrdup(_("(not an OpenPGP signature)"));
     } else {
 	char dbuf[BUFSIZ];
@@ -450,7 +450,7 @@ static char * depflagsFormat(rpmtd td, char **emsg)
 {
     char * val = NULL;
     uint64_t anint = rpmtdGetNumber(td);
-    val = xcalloc(4, 1);
+    val = (char *)xcalloc(4, 1);
 
     if (anint & RPMSENSE_LESS)
 	strcat(val, "<");
@@ -475,7 +475,7 @@ static char * fstateFormat(rpmtd td, char **emsg)
 {
     char * val = NULL;
     const char * str;
-    rpmfileState fstate = rpmtdGetNumber(td);
+    rpmfileState fstate = (rpmfileState)rpmtdGetNumber(td);
     switch (fstate) {
     case RPMFILE_STATE_NORMAL:
 	str = _("normal");
