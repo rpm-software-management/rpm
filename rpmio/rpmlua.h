@@ -6,11 +6,16 @@
 typedef struct rpmlua_s * rpmlua;
 struct rpmhookArgs_s;
 
-typedef char * (*rpmluarl)(const char *);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Upstream Lua headers lack C++ protection, include them all centrally */
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
+typedef char * (*rpmluarl)(const char *);
 
 rpmlua rpmluaNew(void);
 rpmlua rpmluaFree(rpmlua lua);

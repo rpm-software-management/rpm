@@ -1,8 +1,6 @@
 
 #include "system.h"
 
-#include <lua.h>
-
 #include "rpmlua.h"
 #include "rpmbuild_internal.h"
 
