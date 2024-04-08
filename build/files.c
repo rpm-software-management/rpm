@@ -360,7 +360,7 @@ static rpmRC parseForVerify(char * buf, int def, FileEntry entry)
     }
 
     /* Localize. Erase parsed string */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -437,10 +437,10 @@ static rpmRC parseForDev(char * buf, FileEntry cur)
     }
 
     /* Localize. Erase parsed string */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
 
-    attr_parameters = xmalloc((pe-p) + 1);
+    attr_parameters = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(attr_parameters, p, (pe-p) + 1);
 
     while (p <= pe)
@@ -552,10 +552,10 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
     }
 
     /* Localize. Erase parsed string */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
 
-    attr_parameters = xmalloc((pe-p) + 1);
+    attr_parameters = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(attr_parameters, p, (pe-p) + 1);
 
     while (p <= pe)
@@ -677,7 +677,7 @@ static rpmRC parseForConfig(char * buf, FileEntry cur)
     }
 
     /* Localize. Erase parsed string. */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -765,7 +765,7 @@ static rpmRC parseForLang(char * buf, FileEntry cur)
     }
 
     /* Localize. Erase parsed string. */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -826,7 +826,7 @@ static rpmRC parseForCaps(char * buf, FileEntry cur)
     }
 
     /* Localize. Erase parsed string. */
-    q = xmalloc((pe-p) + 1);
+    q = (char *)xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -1121,7 +1121,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	      sizeof(*(fl->files.recs)), compareFileListRecs);
     }
     
-    pkg->dpaths = xmalloc((fl->files.used + 1) * sizeof(*pkg->dpaths));
+    pkg->dpaths = (char **)xmalloc((fl->files.used + 1) * sizeof(*pkg->dpaths));
 
     /* Generate the header. */
     for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
@@ -1946,7 +1946,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			    addid = 1;
 			}
 			if (addid) {
-			    const unsigned char *p = build_id;
+			    const unsigned char *p = (const unsigned char *)build_id;
 			    const unsigned char *end = p + len;
 			    char *id_str;
 			    if (allocated <= nr_ids) {
@@ -1958,7 +1958,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			    }
 
 			    paths[nr_ids] = xstrdup(flp->cpioPath);
-			    id_str = ids[nr_ids] = xmalloc(2 * len + 1);
+			    id_str = ids[nr_ids] = (char *)xmalloc(2 * len + 1);
 			    while (p < end)
 				id_str += sprintf(id_str, "%02x",
 						  (unsigned)*p++);
@@ -2359,11 +2359,11 @@ static char * getSpecialDocDir(Header h, rpmFlags sdtype)
 
 static specialDir specialDirNew(Header h, rpmFlags sdtype)
 {
-    specialDir sd = xcalloc(1, sizeof(*sd));
+    specialDir sd = (specialDir)xcalloc(1, sizeof(*sd));
 
     sd->entriesCount = 0;
     sd->entriesAlloced = 10;
-    sd->entries = xcalloc(sd->entriesAlloced, sizeof(sd->entries[0]));
+    sd->entries = (struct FileEntries_s *)xcalloc(sd->entriesAlloced, sizeof(*(sd->entries)));
 
     sd->dirname = getSpecialDocDir(h, sdtype);
     sd->sdtype = sdtype;
@@ -2412,7 +2412,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     StringBuf docScript = newStringBuf();
     int count = sd->entriesCount;
     char *basepath = rpmGenPath(spec->rootDir, "%{builddir}", "%{?buildsubdir}");
-    ARGV_t *files = xmalloc(sizeof(*files) * count);
+    ARGV_t *files = (ARGV_t *)xmalloc(sizeof(*files) * count);
     int i, j;
 
     /* Glob and copy file entries from builddir to buildroot */
@@ -2732,7 +2732,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	free(a);
     }
     fl.files.alloced = spec->numSources + 1;
-    fl.files.recs = xcalloc(fl.files.alloced, sizeof(*fl.files.recs));
+    fl.files.recs = (FileListRec)xcalloc(fl.files.alloced, sizeof(*fl.files.recs));
     fl.pkgFlags = pkgFlags;
 
     for (ARGV_const_t fp = files; *fp != NULL; fp++) {

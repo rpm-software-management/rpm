@@ -162,7 +162,7 @@ static ModuleRec newModule(const char *path, const char *name,
 	return NULL;
     }
 
-    mod = xcalloc(1, sizeof(*mod));
+    mod = (ModuleRec)xcalloc(1, sizeof(*mod));
 
     mod->path = rpmGenPath(buildDir, NULL, path);
 

@@ -225,7 +225,7 @@ struct charInDepData {
 static rpmRC charInDepCb(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
-    struct charInDepData *data = cbdata;
+    struct charInDepData *data = (struct charInDepData *)cbdata;
     if (e && data && memchr(e, data->c, el))
 	data->present = 1;
 
@@ -479,8 +479,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (pkg->rpmver >= 6)
 	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &(pkg->rpmver), 1);
 
-    /* Create a dummy payload digests + size to get the header size right */
-    pld = nullDigest(pld_algo, 1);
+    /* Create a dummy payload digests to get the header size right */
+    pld = (char *)nullDigest(pld_algo, 1);
     headerPutUint32(pkg->header, RPMTAG_PAYLOADDIGESTALGO, &pld_algo, 1);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, pld);
@@ -513,10 +513,10 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Generate and write a placeholder signature header */
     if (pkg->rpmver < 6) {
-	SHA1 = nullDigest(RPM_HASH_SHA1, 1);
-	MD5 = nullDigest(RPM_HASH_MD5, 0);
+	SHA1 = (char *)nullDigest(RPM_HASH_SHA1, 1);
+	MD5 = (uint8_t *)nullDigest(RPM_HASH_MD5, 0);
     }
-    SHA256 = nullDigest(RPM_HASH_SHA256, 1);
+    SHA256 = (char *)nullDigest(RPM_HASH_SHA256, 1);
     if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, pkg->rpmver))
 	goto exit;
     SHA1 = _free(SHA1);
@@ -778,7 +778,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
         npkgs++;
-    tasks = xcalloc(npkgs, sizeof(Package));
+    tasks = (Package *)xcalloc(npkgs, sizeof(Package));
 
     pkg = spec->packages;
     for (int i = 0; i < npkgs; i++) {

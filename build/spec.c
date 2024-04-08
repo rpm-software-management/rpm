@@ -102,7 +102,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
 Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
 {
-    Package p = xcalloc(1, sizeof(*p));
+    Package p = (Package)xcalloc(1, sizeof(*p));
     p->header = headerNew();
     p->autoProv = 1;
     p->autoReq = 1;
@@ -203,19 +203,19 @@ rpmds * packageDependencies(Package pkg, rpmTagVal tag)
 
 rpmSpec newSpec(void)
 {
-    rpmSpec spec = xcalloc(1, sizeof(*spec));
+    rpmSpec spec = (rpmSpec)xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
 
     spec->fileStack = NULL;
     spec->lbufSize = BUFSIZ * 10;
-    spec->lbuf = xmalloc(spec->lbufSize);
+    spec->lbuf = (char *)xmalloc(spec->lbufSize);
     spec->lbuf[0] = '\0';
     spec->line = spec->lbuf;
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
     spec->lineNum = 0;
-    spec->readStack = xcalloc(1, sizeof(*spec->readStack));
+    spec->readStack = (struct ReadLevelEntry*)xcalloc(1, sizeof(*spec->readStack));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
     spec->readStack->lastConditional = lineTypes;
@@ -342,7 +342,7 @@ struct rpmSpecIter_s {
 #define SPEC_LISTITER_INIT(_itertype, _iteritem)	\
     _itertype iter = NULL;				\
     if (spec) {						\
-	iter = xcalloc(1, sizeof(*iter));		\
+	iter = (_itertype)xcalloc(1, sizeof(*iter));		\
 	iter->next = spec->_iteritem;			\
     }							\
     return iter
@@ -350,7 +350,7 @@ struct rpmSpecIter_s {
 #define SPEC_LISTITER_NEXT(_valuetype)			\
     _valuetype item = NULL;				\
     if (iter) {						\
-	item = iter->next;				\
+	item = (_valuetype)iter->next;				\
 	iter->next = (item) ? item->next : NULL;	\
     }							\
     return item
