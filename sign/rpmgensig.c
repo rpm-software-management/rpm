@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #ifdef WITH_FSVERITY
 #include <libfsverity.h>
+#include "rpmsignverity.h"
 #endif
 #ifdef WITH_IMAEVM
 #include "rpmsignfiles.h"
@@ -28,7 +29,6 @@
 #include "rpmlead.h"
 #include "signature.h"
 #include "rpmvs.h"
-#include "rpmsignverity.h"
 
 #include "debug.h"
 
