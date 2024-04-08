@@ -459,7 +459,7 @@ typedef enum rpmSigTag_e {
 /** \ingroup header
  * The basic types of data in tags from headers.
  */
-typedef enum rpmTagType_e {
+enum rpmTagType_e {
 #define	RPM_MIN_TYPE		1
     RPM_NULL_TYPE		=  0,
     RPM_CHAR_TYPE		=  1,
@@ -474,7 +474,8 @@ typedef enum rpmTagType_e {
 #define	RPM_MAX_TYPE		9
 #define RPM_FORCEFREE_TYPE	0xff
 #define RPM_MASK_TYPE		0x0000ffff
-} rpmTagType;
+};
+typedef rpmFlags rpmTagType;
 
 /** \ingroup rpmtag
  * The classes of data in tags from headers.
