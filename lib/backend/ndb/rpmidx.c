@@ -26,10 +26,6 @@
 #include "rpmidx.h"
 #include "rpmxdb.h"
 
-#define RPMRC_OK 0
-#define RPMRC_NOTFOUND 1
-#define RPMRC_FAIL 2
-
 /* Index database
  *
  *
@@ -956,7 +952,7 @@ void rpmidxClose(rpmidxdb idxdb)
     free(idxdb);
 }
 
-int rpmidxPut(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int pkgidx, unsigned int datidx)
+rpmRC rpmidxPut(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int pkgidx, unsigned int datidx)
 {
     int rc;
     if (!pkgidx || datidx >= 0x80000000) {
@@ -969,7 +965,7 @@ int rpmidxPut(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsig
     return rc;
 }
 
-int rpmidxDel(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int pkgidx, unsigned int datidx)
+rpmRC rpmidxDel(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int pkgidx, unsigned int datidx)
 {
     int rc;
     if (!pkgidx || datidx >= 0x80000000) {
@@ -982,7 +978,7 @@ int rpmidxDel(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsig
     return rc;
 }
 
-int rpmidxGet(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int **pkgidxlistp, unsigned int *pkgidxnump)
+rpmRC rpmidxGet(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsigned int **pkgidxlistp, unsigned int *pkgidxnump)
 {
     int rc;
     *pkgidxlistp = 0;
@@ -994,7 +990,7 @@ int rpmidxGet(rpmidxdb idxdb, const unsigned char *key, unsigned int keyl, unsig
     return rc;
 }
 
-int rpmidxList(rpmidxdb idxdb, unsigned int **keylistp, unsigned int *nkeylistp, unsigned char **datap)
+rpmRC rpmidxList(rpmidxdb idxdb, unsigned int **keylistp, unsigned int *nkeylistp, unsigned char **datap)
 {
     int rc;
     *keylistp = 0;
