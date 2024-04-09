@@ -41,8 +41,6 @@ option(WITH_LIBELF "Build with libelf support" ON)
 option(WITH_LIBLZMA "Build with liblzma support" ON)
 option(WITH_DOXYGEN "Build API docs with doxygen" OFF)
 
-option(WITH_CXX "Build with C++" ON)
-
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_MACROSDIR "${RPM_CONFIGDIR}/macros.d")
 set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
@@ -405,11 +403,8 @@ if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
 
-if (WITH_CXX)
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -Wno-c++20-compat -Wno-sign-compare")
-else()
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes -Wstrict-prototypes")
-endif()
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -Wno-c++20-compat -Wno-sign-compare")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes -Wstrict-prototypes")
 
 if (ENABLE_ASAN)
 	add_compile_options(-fsanitize=address)
