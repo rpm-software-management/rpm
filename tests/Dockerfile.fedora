@@ -16,6 +16,7 @@ RUN dnf -y install \
   doxygen \
   make \
   gcc \
+  gcc-c++ \
   git-core \
   glibc-gconv-extra \
   zlib-devel \
