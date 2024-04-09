@@ -616,9 +616,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if (txn == NULL)
 	return rc;
 
-    krc = pgpPubKeyLint(pkt, pktlen, &lints);
+    rc = pgpPubKeyLint(pkt, pktlen, &lints);
     if (lints) {
-        if (krc != RPMRC_OK) {
+        if (rc != RPMRC_OK) {
             rpmlog(RPMLOG_ERR, "%s\n", lints);
         } else {
 	    /* XXX Hack to ease testing between different backends */
@@ -627,8 +627,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
         }
         free(lints);
     }
-    if (krc != RPMRC_OK) {
-        rc = krc;
+    if (rc != RPMRC_OK) {
         goto exit;
     }
 
