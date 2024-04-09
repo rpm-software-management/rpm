@@ -28,7 +28,7 @@ static char * fileSigningCert = NULL;
 static char * verityAlgorithm = NULL;
 #endif
 
-static struct rpmSignArgs sargs = {NULL, 0, 0};
+static struct rpmSignArgs sargs;
 
 static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
