@@ -49,7 +49,6 @@ if(OpenMP_C_FOUND)
 	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_C)
 endif()
 
-if (WITH_CXX)
 set (cxx_sources
 	build.c files.c misc.c pack.c
 	parseChangelog.c parseDescription.c parseFiles.c parseList.c
@@ -61,7 +60,6 @@ set (cxx_sources
 set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
 if (OpenMP_C_FOUND)
 	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_CXX)
-endif()
 endif()
 
 install(TARGETS librpmbuild EXPORT rpm-targets)

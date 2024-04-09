@@ -66,14 +66,12 @@ if (WITH_ARCHIVE)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 endif()
 
-if (WITH_CXX)
 set (cxx_sources
 	cliutils.c elfdeps.c rpm2archive.c rpmbuild.c rpm.c rpmdb.c
 	rpmdeps.c rpmdump.c rpmgraph.c rpmkeys.c rpmlua.c rpmsign.c
 	rpmsort.c rpmspec.c
 )
 set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
-endif()
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec

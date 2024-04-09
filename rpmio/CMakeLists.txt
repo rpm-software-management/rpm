@@ -38,7 +38,6 @@ else()
 	endif()
 endif()
 
-if (WITH_CXX)
 set (cxx_sources
 	argv.c base64.c digest.c expression.c lposix.c macro.c
 	digest_libgcrypt.c digest_openssl.c
@@ -48,7 +47,6 @@ set (cxx_sources
 	rpmver.c rpmvercmp.c url.c
 )
 set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
-endif()
 
 set_target_properties(librpmio PROPERTIES
 	VERSION ${RPM_LIBVERSION}
