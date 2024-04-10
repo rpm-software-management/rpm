@@ -53,7 +53,7 @@ if (WITH_CXX)
 set (cxx_sources
 	build.c files.c misc.c pack.c
 	parseChangelog.c parseDescription.c parseFiles.c parseList.c
-	parsePolicies.c parsePreamble.c parsePrep.c parseReq.c
+	parsePolicies.c parsePreamble.c parsePrep.c parseReqs.c
 	parseScript.c parseSimpleScript.c parseSpec.c
 	policies.c reqprov.c rpmfc.c
 	spec.c speclua.c
