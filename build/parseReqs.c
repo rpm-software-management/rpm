@@ -80,7 +80,7 @@ struct parseRCPOTRichData {
 static rpmRC parseRCPOTRichCB(void *cbdata, rpmrichParseType type,
 		const char *n, int nl, const char *e, int el, rpmsenseFlags sense,
 		rpmrichOp op, char **emsg) {
-    struct parseRCPOTRichData *data = cbdata;
+    struct parseRCPOTRichData *data = (struct parseRCPOTRichData *)cbdata;
     StringBuf sb = data->sb;
     rpmRC rc = RPMRC_OK;
 
