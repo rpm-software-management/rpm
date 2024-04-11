@@ -383,3 +383,30 @@ runroot_other rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf 
 ])
 
 RPMTEST_CLEANUP
+
+AT_SETUP([urlhelper missing])
+AT_KEYWORDS([urlhelper])
+RPMDB_INIT
+RPMTEST_CHECK([
+# runroot rpm --define "_urlhelper /not/there" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm
+runroot rpm --define "_urlhelper /not/there" -qp https://www.example.com/foo-1.0-1.x86_64.rpm
+],
+[1],
+[],
+[error: Could not find url helper: "/not/there"
+error: open of https://www.example.com/foo-1.0-1.x86_64.rpm failed: No such file or directory
+])
+RPMTEST_CLEANUP
+
+AT_SETUP([urlhelper fails])
+AT_KEYWORDS([urlhelper])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpm --define "_urlhelper /bin/false" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm 2> >(sed 's|rpm-tmp.* https|rpm-tmp https|' >&2)
+],
+[1],
+[],
+[error: Executing url helper "/bin/false /usr/local/var/tmp/rpm-tmp https://example.com/foo-0.1-1.noarch.rpm" failed with status 1
+error: open of https://example.com/foo-0.1-1.noarch.rpm failed: No such file or directory
+])
+RPMTEST_CLEANUP
