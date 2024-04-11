@@ -228,6 +228,7 @@ static void copyFileEntry(FileEntry src, FileEntry dest)
 static void FileEntryFree(FileEntry entry)
 {
     argvFree(entry->langs);
+    free(entry->caps);
     memset(entry, 0, sizeof(*entry));
 }
 
