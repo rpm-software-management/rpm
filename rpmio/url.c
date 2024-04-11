@@ -99,6 +99,7 @@ int urlGetFile(const char * url, const char * dest)
     char *urlhelper = NULL;
     int status;
     pid_t pid;
+    int res = -1;
 
     urlhelper = rpmExpand("%{?_urlhelper}", NULL);
 
@@ -118,9 +119,17 @@ int urlGetFile(const char * url, const char * dest)
         execvp(argv[0], argv);
         exit(127); /* exit with 127 for compatibility with bash(1) */
     }
+
+    if ((waitpid(pid, &status, 0) != -1) && WIFEXITED(status)) {
+	if (WEXITSTATUS(status) == 127)
+	    rpmlog(RPMLOG_ERR, _("Could not find url helper: \"%s\"\n"), urlhelper);
+	else if (WEXITSTATUS(status) == 0)
+	    res = 0;
+	else
+	    rpmlog(RPMLOG_ERR, _("Executing url helper \"%s\" failed with status %i\n"), cmd, WEXITSTATUS(status));
+    }
+
     free(cmd);
     free(urlhelper);
-
-    return ((waitpid(pid, &status, 0) != -1) &&
-	    WIFEXITED(status) && (WEXITSTATUS(status) == 0)) ? 0 : -1;
+    return res;
 }
