@@ -2995,3 +2995,33 @@ runroot rpmbuild --quiet -bb /data/SPECS/noperms.spec
 [],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild %caps])
+AT_KEYWORDS([build])
+AT_SKIP_IF([$CAP_DISABLED])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bb /data/SPECS/caps.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -q --filecaps /build/RPMS/*/caps-1.0-1.*.rpm | grep -v build-id
+],
+[0],
+[/usr/bin/test	cap_net_raw=p
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U --nodeps /build/RPMS/*/caps-1.0-1.*.rpm
+runroot_other /usr/sbin/getcap /usr/bin/test
+],
+[0],
+[/usr/bin/test cap_net_raw=p]
+[])
+
+RPMTEST_CLEANUP
