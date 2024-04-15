@@ -1099,3 +1099,70 @@ runroot rpm -qp /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 error: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: not an rpm package (or package manifest)
 ])
 RPMTEST_CLEANUP
+
+
+# ------------------------------
+# Test ed25519 signature creation and verification
+AT_SETUP([Ed25519 signatures])
+AT_KEYWORDS([rpmsign signature])
+AT_SKIP_IF([test x$PGP = xdummy])
+RPMDB_INIT
+gpg2 --import ${RPMTEST}/data/keys/*.secret
+# Our keys have no passphrases to be asked, silence GPG_TTY warning
+export GPG_TTY=""
+RPMTEST_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 757BF69E --digest-algo sha512 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo PRE-IMPORT
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+echo POST-IMPORT
+runroot rpmkeys --import /data/keys/rpm.org-ed25519-test.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+],
+[0],
+[PRE-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 757bf69e: NOKEY
+POST-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 757bf69e: OK
+],
+[])
+gpgconf --kill gpg-agent
+RPMTEST_CLEANUP
+
+
+# ------------------------------
+# Test NIST p-256 signature creation and verification
+AT_SETUP([NIST P-256 signatures])
+AT_KEYWORDS([rpmsign signature])
+AT_SKIP_IF([test x$PGP = xdummy])
+RPMDB_INIT
+gpg2 --import ${RPMTEST}/data/keys/*.secret
+# Our keys have no passphrases to be asked, silence GPG_TTY warning
+export GPG_TTY=""
+RPMTEST_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 5F65BBE8 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo PRE-IMPORT
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+echo POST-IMPORT
+runroot rpmkeys --import /data/keys/rpm.org-nistp256-test.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+],
+[0],
+[PRE-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 ECDSA/SHA256 Signature, key ID 5f65bbe8: NOKEY
+POST-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 ECDSA/SHA256 Signature, key ID 5f65bbe8: OK
+],
+[])
+gpgconf --kill gpg-agent
+RPMTEST_CLEANUP
+
