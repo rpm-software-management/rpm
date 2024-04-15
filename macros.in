@@ -198,11 +198,12 @@ package or when debugging this package.\
 %{nil}
 
 %debug_package \
-%ifnarch noarch\
 %global __debug_package 1\
+%(cat > "%{specpartsdir}/rpm-debuginfo.specpart" << EOL\
 %_debuginfo_template\
 %{?_debugsource_packages:%_debugsource_template}\
-%endif\
+EOL\
+)\
 %{nil}
 
 %_langpack_template() \
@@ -878,6 +879,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %{nil}
 %__spec_install_template	#!%{__spec_install_shell}\
 %{__spec_install_pre}\
+%[ "%{_target_cpu}" != "noarch" ? "%{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}" : ""]\
 %{nil}
 
 #%{__spec_install_body}\
