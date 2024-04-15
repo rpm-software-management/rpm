@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <dirent.h> /* To iterate through files in file system */
 #include <errno.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -86,6 +87,112 @@ static char * buildHost(void)
     return(hostname);
 }
 
+#define HASH_ERROR 0ULL
+#define MAX_FILES 512
+
+/* Simple hash function, should be replaced with crc64 */
+static uint64_t hashFile(const char* filePath)
+{
+    int byte;
+    uint64_t ret = 0;
+    FILE *file = fopen(filePath, "rb");
+    if (!file) {
+        rpmlog(RPMLOG_ERR, _("Unable to open stream build file: %s with error %s\n"), filePath, strerror(errno));
+        return HASH_ERROR;
+    }
+    while ((byte = fgetc(file)) != EOF) {
+        ret += (uint8_t)byte;
+    }
+    return ret == HASH_ERROR ? 1 : ret;  /* do not collide with error */
+}
+
+/** Store hash for a single file */
+struct fileHash {
+    char path[PATH_MAX];
+    uint64_t hash;
+};
+
+/** Container to store hashes of multiple files */
+struct directoryHashes {
+    unsigned long long count;
+    struct fileHash hashes[MAX_FILES];
+};
+
+/** Generate hashes for all files in given directory
+ *  Returns 0 on success, -1 on error, 1 if limits are reached.
+ */
+static int hashDirectoryFiles(const char* directory, struct directoryHashes *hashes)
+{
+    DIR *dir;
+    struct dirent *entry;
+    int ret;
+
+    if (!hashes) {
+        fprintf(stderr, "Error: no hash container given\n");
+        return -1;
+    }
+
+    dir = opendir(directory);
+    if (!dir) {
+        fprintf(stderr, "Error opening directory: %s\n", directory);
+        return -1;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+            char fullPath[PATH_MAX];
+            snprintf(fullPath, sizeof(fullPath), "%s/%s", directory, entry->d_name);
+
+            fprintf(stderr, "analyzing for hash: %s\n", fullPath);
+            if (entry->d_type == DT_DIR) {
+                ret = hashDirectoryFiles(fullPath, hashes); /* process subdirectory */
+                if (ret) {
+                    fprintf(stderr, "failed with status %d analyzing for hash: %s\n", ret, fullPath);
+                    return ret;
+                }
+            } else {
+                if (strlen(fullPath) >= PATH_MAX) return -1;
+                strcpy(hashes->hashes[hashes->count].path, fullPath);
+                hashes->hashes[hashes->count].hash = hashFile(fullPath);
+                if (hashes->hashes[hashes->count].hash == HASH_ERROR) {
+                    fprintf(stderr, "failed hashing: %s\n", fullPath);
+                    return -1;
+                }
+
+                fprintf(stderr, "Hash: %lld: %ld for %s\n", hashes->count, hashes->hashes[hashes->count].hash, fullPath);
+                hashes->count++;
+
+                if (hashes->count >= MAX_FILES) {
+                    fprintf(stderr, "Maximum number of files reached. Increase MAX_FILES.\n");
+                    return 1;
+                }
+            }
+        }
+    }
+
+    closedir(dir);
+    return 0;
+}
+
+static int checkDirectoryFileHashes(struct directoryHashes *hashes)
+{
+    int i = 0, ret = 0;
+    uint64_t hashCandidate;
+
+    for (i = 0; i < hashes->count; ++i) {
+        hashCandidate = hashFile(hashes->hashes[i].path);
+        if (hashCandidate == HASH_ERROR) {
+            fprintf(stderr, "Failed to compare hash for file '%s', ignoring ...\n", hashes->hashes[i].path);
+        } else if (hashes->hashes[i].hash != hashCandidate) {
+            ret = 1;
+            fprintf(stderr, "error: Failed to verify hash for file %s\n", hashes->hashes[i].path);
+        } else {
+            fprintf(stderr, "Verified hash for file %s\n", hashes->hashes[i].path);
+        }
+    }
+    return ret;
+}
+
 /**
  */
 static int doRmSource(rpmSpec spec)
@@ -131,6 +238,8 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     int argc = 0;
     const char **argv = NULL;
     FILE * fp = NULL;
+    int hashStatus = 0;
+    struct directoryHashes hashes;
 
     FD_t fd = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -233,6 +342,17 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
 
+    hashes.count = 0;
+    if (what == RPMBUILD_CHECK) {
+    fprintf(stderr, "Perform check presteps with rootDir '%s' buildDir '%s'\n", spec->rootDir, spec->buildRoot);
+    /* TODO: implement variant that scans all files */
+    hashStatus = hashDirectoryFiles(spec->buildRoot, &hashes);
+    if (hashStatus < 0) {
+        hashes.count = 0;  /* In case of hashing failure, for now do not continue to check, might need to print an INFO */
+    }
+    fprintf(stderr, "Detected %lld files to which we checked hashes (with status %d)\n", hashes.count, hashStatus);
+    }
+
     buildCmd = rpmExpand(mCmd, " ", scriptName, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
@@ -247,6 +367,17 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     }
     rc = RPMRC_OK;
     
+    if (what == RPMBUILD_CHECK) {
+    fprintf(stderr, "Perform check poststeps with rootDir '%s' buildDir '%s'\n", spec->rootDir, spec->buildRoot);
+    if (0 != checkDirectoryFileHashes(&hashes)) {
+    rpmlog(RPMLOG_ERR, _("Bad file hash check from %s (%s)\n"),
+         scriptName, name);
+    rc = RPMRC_FAIL;
+    goto exit;
+    }
+    fprintf(stderr, "Successfully verified %lld file hashes\n", hashes.count);
+    }
+
 exit:
     Fclose(fd);
     if (scriptName) {
