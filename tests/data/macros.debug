@@ -26,10 +26,6 @@
     %{__os_install_post}\
 %{nil}
 
-%install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
-%%install\
-%{nil}
-
 # Should missing buildids terminate a build?
 %_missing_build_ids_terminate_build    1
 

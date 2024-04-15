@@ -341,6 +341,60 @@ static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
     return rc;
 }
 
+/* Write out a specpart for debuginfo packages if the stars align just so. */
+static rpmRC doDebugPackage(rpmSpec spec)
+{
+    rpmRC rc = RPMRC_OK;
+
+    /* noarch packages don't get debuginfo. */
+    if (rstreq(headerGetString(spec->packages->header, RPMTAG_ARCH), "noarch"))
+	return rc;
+
+    /* debuginfo is only enabled if buildsubdir is defined. */
+    char *t = rpmExpand("%{?buildsubdir:%{macrobody:debug_package}}", NULL);
+
+    /*
+     * Finally, LOTS of things rely on defining %debug_package to %{nil}
+     * for disabling debug package generation. We're not expanding the
+     * %debug_package body above to avoid double-expansion side-effects,
+     * so we need to test for the %{nil} override literally.
+     */
+    if (t && *t && strcmp(t, "%{nil}")) {
+	char *p = rpmGetPath("%{specpartsdir}/rpm-debuginfo.specpart", NULL);
+	FILE *f = fopen(p, "w+");
+	if (f == NULL || fputs(t, f) == EOF)
+	    rc = RPMRC_FAIL;
+	if (f)
+	    fclose(f);
+
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+		    _("failed to write debuginfo template: %s: %s\n"),
+		    p, strerror(errno));
+	} else {
+	    /* debuginfo extraction is further conditioned on __debug_package */
+	    rpmPushMacro(spec->macros, "__debug_package", NULL, "1", RMIL_SPEC);
+	}
+	free(p);
+    }
+    free(t);
+    return rc;
+}
+
+static rpmRC doInstallScript(rpmSpec spec, int test, StringBuf *sbp)
+{
+    rpmRC rc = RPMRC_OK;
+    const char *script = rpmSpecGetSection(spec, RPMBUILD_INSTALL);
+
+    if (script && rpmExpandNumeric("%{?_enable_debug_packages}"))
+	rc = doDebugPackage(spec);
+
+    if (!rc)
+	rc = doScript(spec, RPMBUILD_INSTALL, "%install", script, test, sbp);
+
+    return rc;
+}
+
 static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 {
     int rc = RPMRC_OK;
@@ -464,9 +518,7 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
-	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
-			   rpmSpecGetSection(spec, RPMBUILD_INSTALL),
-			   test, sbp)))
+	    (rc = doInstallScript(spec, test, sbp)))
 		goto exit;
 
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
