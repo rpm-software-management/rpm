@@ -470,6 +470,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 #%_missing_build_ids_terminate_build	1
 
+# Enable debuginfo package generation
+%_enable_debug_packages		1
+
 #
 # Include minimal debug information in build binaries.
 # Requires _enable_debug_packages.
