@@ -3,6 +3,7 @@ Version: 1.0
 Release: 1
 License: Public Domain
 Summary: Test read-only files in build
+BuildArch: noarch
 
 %description
 %{summary}
