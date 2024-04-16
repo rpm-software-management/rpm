@@ -469,7 +469,8 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 			   test, sbp)))
 		goto exit;
 
-	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&
+	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
+	     (what & RPMBUILD_FILECHECK)) &&
 	    (rc = parseGeneratedSpecs(spec)))
 		goto exit;
 
