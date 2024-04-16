@@ -145,6 +145,9 @@
 #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 %__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
 
+# enable debug package generation
+%_enable_debug_packages 1
+
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
