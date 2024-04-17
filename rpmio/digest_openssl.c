@@ -1,8 +1,6 @@
 #include "system.h"
 
 #include <openssl/evp.h>
-#include <openssl/core_names.h>
-#include <openssl/param_build.h>
 #include <rpm/rpmcrypto.h>
 #include <rpm/rpmstring.h>
 
