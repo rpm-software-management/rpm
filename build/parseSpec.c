@@ -1039,6 +1039,32 @@ exit:
     return rc;
 }
 
+static rpmRC applyAppendPrepend(rpmSpec spec)
+{
+    for (struct sectname_s *sc = sectList; sc->name; sc++) {
+	ARGV_const_t sp = spec->sectionparts[sc->section];
+	if (sp) {
+	    int nparts = argvCount(sp);
+	    int *modes = argiData(spec->sectionops[sc->section]);
+	    StringBuf *sbp = &spec->sections[sc->section];
+	    if (*sbp == NULL)
+		*sbp = newStringBuf();
+	    for (int i = 0; i < nparts; i++) {
+		if (modes[i] == PARSE_APPEND) {
+		    appendStringBuf(*sbp, sp[i]);
+		} else if (modes[i] == PARSE_PREPEND) {
+		    StringBuf nbuf = newStringBuf();
+		    appendStringBuf(nbuf, sp[i]);
+		    appendStringBuf(nbuf, getStringBuf(*sbp));
+		    freeStringBuf(*sbp);
+		    *sbp = nbuf;
+		}
+	    }
+	}
+    }
+    return RPMRC_OK;
+}
+
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 int recursing);
 
@@ -1060,7 +1086,18 @@ static int parseBuildScript(rpmSpec spec, int part)
     if (sc == NULL) /* can't happen */
 	return -1;
 
-    return parseSimpleScript(spec, sc->name, &spec->sections[sc->section]);
+    int mode = 0;
+    int rc = parseSimpleScript(spec, sc->name,
+				&spec->sections[sc->section],
+				&spec->sectionparts[sc->section],
+				&mode);
+
+    if (mode) {
+	int ix = argvCount(spec->sectionparts[sc->section]);
+	argiAdd(&spec->sectionops[sc->section], ix-1, mode);
+    }
+
+    return rc;
 }
 
 static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
@@ -1213,8 +1250,12 @@ static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 	}
     }
 
-    if (stage == PARSE_SPECFILE && parseBuildsystem(spec))
-	goto errxit;
+    if (stage == PARSE_SPECFILE) {
+	if (parseBuildsystem(spec))
+	    goto errxit;
+	if (applyAppendPrepend(spec))
+	    goto errxit;
+    }
 
     /* Add arch for each package */
     addArch(spec);
