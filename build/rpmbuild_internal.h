@@ -38,6 +38,14 @@ enum sections_e {
 };
 #define NR_SECT 7
 
+struct sectname_s {
+    const char *name;
+    int section;
+    int part;
+    int required;
+};
+
+
 struct TriggerFileEntry {
     int index;
     char * fileName;
@@ -654,7 +662,7 @@ void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 
 /* Return section number, -1 on error */
 RPM_GNUC_INTERNAL
-int getSection(const char *name);
+const struct sectname_s *getSection(const char *name, int part);
 
 #ifdef __cplusplus
 }
