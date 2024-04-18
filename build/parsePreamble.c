@@ -791,9 +791,9 @@ static int addBuildOption(rpmSpec spec, const char *sect, const char *opt)
     if (*sect == '\0')
 	sect = "conf";
 
-    int sn = getSection(sect);
-    if (sn >= 0) {
-	argvAdd(&(spec->buildopts[sn]), opt);
+    const struct sectname_s *sc = getSection(sect, 0);
+    if (sc) {
+	argvAdd(&(spec->buildopts[sc->section]), opt);
 	rc = RPMRC_OK;
     }
     return rc;
