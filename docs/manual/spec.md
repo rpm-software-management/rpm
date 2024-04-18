@@ -496,9 +496,10 @@ omitted.
 Each section may be present only once, but in rpm >= 4.20 it is
 possible to augment them by appending or prepending to them using
 `-a` and `-p` options.
-If the main section exists, it must come first to avoid ambiguity.
-Otherwise, append and prepend can be used in any order and multiple
-times, even if the corresponding main section does not exist.
+Append and prepend can be used multiple times. They are applied relative
+to the corresponding main section, in the order they appear in the spec.
+If the main section does not exist, they are applied relative to the
+first fragment.
 
 During the execution of build scriptlets, (at least) the following
 rpm-specific environment variables are set:
