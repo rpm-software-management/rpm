@@ -282,6 +282,8 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
     for (int i = 0; i < NR_SECT; i++) {
 	argvFree(spec->buildopts[i]);
+	argvFree(spec->sectionparts[i]);
+	argiFree(spec->sectionops[i]);
     }
 
     if (!spec->recursing) {
