@@ -1054,6 +1054,15 @@ static int checkPart(int parsePart, enum parseStages stage) {
     return 0;
 }
 
+static int parseBuildScript(rpmSpec spec, int part)
+{
+    const struct sectname_s *sc = getSection(NULL, part);
+    if (sc == NULL) /* can't happen */
+	return -1;
+
+    return parseSimpleScript(spec, sc->name, &spec->sections[sc->section]);
+}
+
 static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 {
     rpmSpec spec = *specptr;
@@ -1090,34 +1099,17 @@ static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 	case PART_PREP:
 	    rpmPushMacroAux(NULL, "setup", "-", doSetupMacro, spec, -1, 0, 0);
 	    rpmPushMacroAux(NULL, "patch", "-", doPatchMacro, spec, -1, 0, 0);
-	    parsePart = parseSimpleScript(spec, "%prep",
-					&(spec->sections[SECT_PREP]));
+	    parsePart = parseBuildScript(spec, parsePart);
 	    rpmPopMacro(NULL, "patch");
 	    rpmPopMacro(NULL, "setup");
 	    break;
 	case PART_CONF:
-	    parsePart = parseSimpleScript(spec, "%conf",
-					&(spec->sections[SECT_CONF]));
-	    break;
 	case PART_BUILDREQUIRES:
-	    parsePart = parseSimpleScript(spec, "%generate_buildrequires",
-				      &(spec->sections[SECT_BUILDREQUIRES]));
-	    break;
 	case PART_BUILD:
-	    parsePart = parseSimpleScript(spec, "%build",
-					&(spec->sections[SECT_BUILD]));
-	    break;
 	case PART_INSTALL:
-	    parsePart = parseSimpleScript(spec, "%install",
-					&(spec->sections[SECT_INSTALL]));
-	    break;
 	case PART_CHECK:
-	    parsePart = parseSimpleScript(spec, "%check",
-					&(spec->sections[SECT_CHECK]));
-	    break;
 	case PART_CLEAN:
-	    parsePart = parseSimpleScript(spec, "%clean",
-					&(spec->sections[SECT_CLEAN]));
+	    parsePart = parseBuildScript(spec, parsePart);
 	    break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);
