@@ -922,33 +922,26 @@ exit:
     return res;
 }
 
-struct sectname_s {
-    const char *name;
-    int section;
-    int required;
-};
-
 struct sectname_s sectList[] = {
-    { "prep", SECT_PREP, 0 },
-    { "conf", SECT_CONF, 1 },
-    { "generate_buildrequires", SECT_BUILDREQUIRES, 0 },
-    { "build", SECT_BUILD, 1 },
-    { "install", SECT_INSTALL, 1 },
-    { "check", SECT_CHECK, 0 },
-    { "clean", SECT_CLEAN, 0 },
-    { NULL, -1 }
+    { "prep", SECT_PREP, PART_PREP, 0 },
+    { "conf", SECT_CONF, PART_CONF, 1 },
+    { "generate_buildrequires", SECT_BUILDREQUIRES, PART_BUILDREQUIRES, 0 },
+    { "build", SECT_BUILD, PART_BUILD, 1 },
+    { "install", SECT_INSTALL, PART_INSTALL, 1 },
+    { "check", SECT_CHECK, PART_CHECK, 0 },
+    { "clean", SECT_CLEAN, PART_CLEAN, 0 },
+    { NULL, -1, -1, 0 }
 };
 
-int getSection(const char *name)
+const struct sectname_s *getSection(const char *name, int part)
 {
-    int sn = -1;
-    for (struct sectname_s *sc = sectList; sc->name; sc++) {
-	if (rstreq(name, sc->name)) {
-	    sn = sc->section;
-	    break;
-	}
+    for (const struct sectname_s *sc = sectList; sc->name; sc++) {
+	if (name && rstreq(name, sc->name))
+	    return sc;
+	if (part && part == sc->part)
+	    return sc;
     }
-    return sn;
+    return NULL;
 }
 
 int checkBuildsystem(rpmSpec spec, const char *name)
