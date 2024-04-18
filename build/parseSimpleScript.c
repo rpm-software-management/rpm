@@ -9,7 +9,8 @@
 #include "debug.h"
 
 
-int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
+int parseSimpleScript(rpmSpec spec, const char * name,
+		      StringBuf *sbp, ARGV_t *avp, int *modep)
 {
     int res = PART_ERROR;
     poptContext optCon = NULL;
@@ -17,10 +18,10 @@ int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
     const char **argv = NULL;
     StringBuf *target = sbp;
     StringBuf buf = NULL;
-    int rc, append = 0, prepend = 0;
+    int rc, mode = PARSE_NONE;
     struct poptOption optionsTable[] = {
-	{ NULL, 'a', POPT_ARG_NONE, &append, 'a', NULL, NULL },
-	{ NULL, 'p', POPT_ARG_NONE, &prepend, 'p', NULL, NULL },
+	{ NULL, 'a', POPT_BIT_SET, &mode, PARSE_APPEND, NULL, NULL },
+	{ NULL, 'p', POPT_BIT_SET, &mode, PARSE_PREPEND, NULL, NULL },
 	{ NULL, 0, 0, NULL, 0, NULL, NULL }
     };
 
@@ -41,20 +42,19 @@ int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
 	goto exit;
     }
 
-    if (*sbp != NULL && append == 0 && prepend == 0) {
+    if (*sbp != NULL && mode == PARSE_NONE) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
 		spec->lineNum, name);
 	goto exit;
     }
 
-    if (append && prepend) {
+    if (mode == (PARSE_APPEND|PARSE_PREPEND)) {
 	rpmlog(RPMLOG_ERR, _("line %d: append and prepend specified: %s\n"),
 		spec->lineNum, spec->line);
 	goto exit;
     }
 
-    /* Prepend is only special if the section already exists */
-    if (prepend && *sbp) {
+    if (mode) {
 	buf = newStringBuf();
 	target = &buf;
     }
@@ -62,12 +62,13 @@ int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp)
     res = parseLines(spec, STRIP_NOTHING, NULL, target);
 
     if (buf) {
-	appendStringBuf(buf, getStringBuf(*sbp));
-	freeStringBuf(*sbp);
-	*sbp = buf;
+	argvAdd(avp, getStringBuf(buf));
+	freeStringBuf(buf);
     }
 
 exit:
+    if (modep)
+	*modep = mode;
     free(argv);
     poptFreeContext(optCon);
 

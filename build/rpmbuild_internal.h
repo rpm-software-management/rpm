@@ -38,13 +38,18 @@ enum sections_e {
 };
 #define NR_SECT 7
 
+enum parseOps_e {
+    PARSE_NONE		= 0,
+    PARSE_PREPEND	= (1 << 0),
+    PARSE_APPEND	= (1 << 1),
+};
+
 struct sectname_s {
     const char *name;
     int section;
     int part;
     int required;
 };
-
 
 struct TriggerFileEntry {
     int index;
@@ -165,6 +170,8 @@ struct rpmSpec_s {
 
     StringBuf sections[NR_SECT]; /*!< spec sections (%prep etc) */
     ARGV_t buildopts[NR_SECT];	/*!< per-section buildsystem options */
+    ARGV_t sectionparts[NR_SECT];
+    ARGI_t sectionops[NR_SECT];
 
     StringBuf parsed;		/*!< parsed spec contents */
 
@@ -336,7 +343,8 @@ int isPart(const char * line)	;
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 RPM_GNUC_INTERNAL
-int parseSimpleScript(rpmSpec spec, const char * name, StringBuf *sbp);
+int parseSimpleScript(rpmSpec spec, const char * name,
+		      StringBuf *sbp, ARGV_t *avp, int *modep);
 
 /** \ingroup rpmbuild
  * Parse %%changelog section of a spec file.
