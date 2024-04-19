@@ -2195,38 +2195,22 @@ rpmFreeMacros(rpmMacroContext mc)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    size_t blen = 0;
-    char *buf = NULL, *ret = NULL;
-    char *pe;
-    const char *s;
+    if (arg == NULL)
+	return xstrdup("");
+
+    std::string buf;
+    char *ret = NULL;
     va_list ap;
-    rpmMacroContext mc;
-
-    if (arg == NULL) {
-	ret = xstrdup("");
-	goto exit;
-    }
-
-    /* precalculate unexpanded size */
-    va_start(ap, arg);
-    for (s = arg; s != NULL; s = va_arg(ap, const char *))
-	blen += strlen(s);
-    va_end(ap);
-
-    buf = (char *)xmalloc(blen + 1);
-    buf[0] = '\0';
 
     va_start(ap, arg);
-    for (pe = buf, s = arg; s != NULL; s = va_arg(ap, const char *))
-	pe = stpcpy(pe, s);
+    for (const char *s = arg; s != NULL; s = va_arg(ap, const char *))
+	buf += s;
     va_end(ap);
 
-    mc = rpmmctxAcquire(NULL);
-    (void) doExpandMacros(mc, buf, 0, &ret);
+    rpmMacroContext mc = rpmmctxAcquire(NULL);
+    (void) doExpandMacros(mc, buf.c_str(), 0, &ret);
     rpmmctxRelease(mc);
 
-    free(buf);
-exit:
     return ret;
 }
 
