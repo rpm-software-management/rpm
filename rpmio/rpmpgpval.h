@@ -17,6 +17,7 @@ static struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_CASUAL_CERT,	"Casual certification of a User ID and Public Key" },
     { PGPSIGTYPE_POSITIVE_CERT,	"Positive certification of a User ID and Public Key" },
     { PGPSIGTYPE_SUBKEY_BINDING,"Subkey Binding Signature" },
+    { PGPSIGTYPE_PRIMARY_BINDING,"Primary Binding Signature" },
     { PGPSIGTYPE_SIGNED_KEY,	"Signature directly on a key" },
     { PGPSIGTYPE_KEY_REVOKE,	"Key revocation signature" },
     { PGPSIGTYPE_SUBKEY_REVOKE,	"Subkey revocation signature" },
