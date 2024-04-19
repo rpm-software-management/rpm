@@ -81,6 +81,7 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_POSITIVE_CERT	 = 0x13,
 		/*!< Positive certification of a User ID & Public Key */
     PGPSIGTYPE_SUBKEY_BINDING	 = 0x18, /*!< Subkey Binding */
+    PGPSIGTYPE_PRIMARY_BINDING	 = 0x19, /*!< Primary Binding */
     PGPSIGTYPE_SIGNED_KEY	 = 0x1F, /*!< Signature directly on a key */
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
