@@ -224,6 +224,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+cu
   | grep -v '^=' \
   | ${FILTER} \
   > ${PPD}/macros
+  echo "Created ${PPD}/macros"
 
 done
 
