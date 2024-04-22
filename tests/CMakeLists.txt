@@ -57,6 +57,7 @@ set(TESTSUITE_AT
 )
 
 FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at)
+FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at "m4_define([RPM_PGP], [${PGP}])\n")
 foreach(at ${TESTSUITE_AT})
 	FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at "m4_include([${at}])\n")
 endforeach()

@@ -2,6 +2,11 @@
 
 AT_BANNER([RPM signatures and digests])
 
+m4_define([RPMOUTPUT_SEQUOIA], [m4_if(RPM_PGP, [sequoia], [$1
+])])
+m4_define([RPMOUTPUT_LEGACY], [m4_if(RPM_PGP, [legacy], [$1
+])])
+
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
@@ -169,12 +174,11 @@ RPMTEST_CLEANUP
 # not.  Keys should only be rejected when verifying a signature.  This
 # is because a key's validity depends on the current time.  Thus, the
 # time to check for validity is when the key is used, not when it is
-# imported.  The internal OpenPGP implementation checks for validity
-# when the key is imported; other implementations should not do this.
+# imported.
 AT_SETUP([rpmkeys --import rsa (rpmdb)])
 AT_KEYWORDS([rpmkeys import])
 AT_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_CHECK_UNQUOTED([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -226,12 +230,9 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 
 gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:4344591e1964c5fc-58e63918
 gpg(1964c5fc) = 4:4344591e1964c5fc-58e63918
-gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918\
-`if test x$PGP != xlegacy; then
-  echo
-  echo 'gpg(f00650f8) = 4:185e6146f00650f8-58e63918'
-  echo 'gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918'
-fi`
+gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918
+gpg(f00650f8) = 4:185e6146f00650f8-58e63918
+gpg(185e6146f00650f8) = 4:185e6146f00650f8-58e63918
 ],
 [])
 RPMTEST_CLEANUP
@@ -285,13 +286,9 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a subkey
-# Note: the internal PGP implementation can't import the certificate,
-# because it has critical subpackets that the internal PGP implementation
-# does not support.
 AT_SETUP([rpmkeys --import, signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -353,11 +350,9 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with an expired subkey
-# Note: the internal PGP implementation does not support expiry.
 AT_SETUP([rpmkeys --import, signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -375,7 +370,7 @@ echo Checking package after importing key, no signature:
 runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 ],
 [0],
-[[Checking package before importing key:
+[Checking package before importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOKEY
     Header DSA signature: NOTFOUND
@@ -392,10 +387,11 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
-  Key 1F71177215217EE0 invalid: key is not alive
-      because: The subkey is not live
-      because: Expired on 2022-04-12T00:00:15Z
+RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) expired on 2022-04-12 00:00:15])dnl
+RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
+RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 invalid: key is not alive])dnl
+RPMOUTPUT_SEQUOIA([      because: The subkey is not live])dnl
+RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
@@ -407,10 +403,11 @@ error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFE
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
-  Key 1F71177215217EE0 invalid: key is not alive
-      because: The subkey is not live
-      because: Expired on 2022-04-12T00:00:15Z
+RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) expired on 2022-04-12 00:00:15])dnl
+RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
+RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 invalid: key is not alive])dnl
+RPMOUTPUT_SEQUOIA([      because: The subkey is not live])dnl
+RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
@@ -423,17 +420,15 @@ Checking package after importing key, no signature:
     Payload SHA256 digest: OK
     MD5 digest: OK
 0
-]],
+],
 [])
 RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a revoked subkey
-# Note: the internal PGP implementation does not support revoked subkeys.
 AT_SETUP([rpmkeys --import, signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-AT_SKIP_IF([test x$PGP = xlegacy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -451,7 +446,7 @@ echo Checking package after importing key, no signature:
 runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 ],
 [0],
-[[Checking package before importing key:
+[Checking package before importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOKEY
     Header DSA signature: NOTFOUND
@@ -468,8 +463,9 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
-  Key 1F71177215217EE0 is invalid: key is revoked
+RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) has been revoked])dnl
+RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
+RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
@@ -481,8 +477,9 @@ error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFE
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):
-  Key 1F71177215217EE0 is invalid: key is revoked
+RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) has been revoked])dnl
+RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
+RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
     Header V4 RSA/SHA512 Signature, key ID 15217ee0: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
@@ -495,7 +492,7 @@ Checking package after importing key, no signature:
     Payload SHA256 digest: OK
     MD5 digest: OK
 0
-]],
+],
 [])
 RPMTEST_CLEANUP
 
@@ -504,57 +501,47 @@ AT_KEYWORDS([rpmkeys import])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
-# The following certificates include subkeys with errors.  In general,
-# all subkeys should be returned whether they are valid or not.  Keys
-# should only be rejected when verifying a signature.  This is because
-# a key's validity depends on the current time.  Thus, the time to
-# check for validity is when the key is used, not when it is imported.
-# The internal OpenPGP implementation checks for validity when the key
-# is imported; other implementations should not do this.
-RPMTEST_CHECK_UNQUOTED([
+# The following certificates include subkeys with errors.  The internal
+# OpenPGP implementation rejects those keys at import time whereas
+# other implementations reject them at key usage time.
+RPMTEST_CHECK([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-badbind.asc
 echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xlegacy;
-then
-    echo 'error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[dnl
+RPMOUTPUT_LEGACY([error: Pubkey misses a self-signature])dnl
+RPMOUTPUT_LEGACY([error: /data/keys/CVE-2021-3521-badbind.asc: key 1 import failed.])dnl
+RPMOUTPUT_LEGACY([exit code: 1])dnl
+RPMOUTPUT_SEQUOIA([exit code: 0])dnl
+])
 
-RPMTEST_CHECK_UNQUOTED([
+RPMTEST_CHECK([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig.asc
 echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xlegacy;
-then
-    echo 'error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[dnl
+RPMOUTPUT_LEGACY([error: Pubkey misses a self-signature])dnl
+RPMOUTPUT_LEGACY([error: /data/keys/CVE-2021-3521-nosubsig.asc: key 1 import failed.])dnl
+RPMOUTPUT_LEGACY([exit code: 1])dnl
+RPMOUTPUT_SEQUOIA([exit code: 0])dnl
+])
 
-RPMTEST_CHECK_UNQUOTED([
+RPMTEST_CHECK([
 runroot rpmkeys --quiet --import /data/keys/CVE-2021-3521-nosubsig-last.asc
 echo exit code: $? >&2
 ],
 [ignore],
 [],
-[`if test x$PGP = xlegacy;
-then
-    echo 'error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.'
-    echo exit code: 1
-else
-    echo exit code: 0
-fi`]
-)
+[dnl
+RPMOUTPUT_LEGACY([error: Pubkey misses a self-signature])dnl
+RPMOUTPUT_LEGACY([error: /data/keys/CVE-2021-3521-nosubsig-last.asc: key 1 import failed.])dnl
+RPMOUTPUT_LEGACY([exit code: 1])dnl
+RPMOUTPUT_SEQUOIA([exit code: 0])dnl
+])
 RPMTEST_CLEANUP
 
 # -----------------------------------------
@@ -630,7 +617,8 @@ runroot rpmkeys --import /data/keys/type-confusion.asc
 ],
 [1],
 [],
-[error: /data/keys/type-confusion.asc: key 1 import failed.]
+[error: Bad pubkey structure
+error: /data/keys/type-confusion.asc: key 1 import failed.]
 )
 RPMTEST_CLEANUP
 
@@ -734,7 +722,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 AT_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_CHECK_UNQUOTED([
+RPMTEST_CHECK([
 RPMDB_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
@@ -748,28 +736,22 @@ runroot rpmkeys -Kv /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64-signed.rpm:
-`if test x$PGP = xlegacy; then
-    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
-else
-    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
-    echo '  Failed to parse Signature Packet'
-    echo '      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.'
-    echo '      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))'
-fi`
+RPMOUTPUT_LEGACY([    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Signature without creation time)])dnl
+RPMOUTPUT_SEQUOIA([    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:])dnl
+RPMOUTPUT_SEQUOIA([  Failed to parse Signature Packet])dnl
+RPMOUTPUT_SEQUOIA([      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.])dnl
+RPMOUTPUT_SEQUOIA([      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))])dnl
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
     MD5 digest: OK
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-`if test x$PGP = xlegacy; then
-    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
-else
-    echo '    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
-    echo '  Failed to parse Signature Packet'
-    echo '      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.'
-    echo '      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))'
-fi`
+RPMOUTPUT_LEGACY([    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Signature without creation time)])dnl
+RPMOUTPUT_SEQUOIA([    Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:])dnl
+RPMOUTPUT_SEQUOIA([  Failed to parse Signature Packet])dnl
+RPMOUTPUT_SEQUOIA([      because: Signature appears to be created by a non-conformant OpenPGP implementation, see <https://github.com/rpm-software-management/rpm/issues/2351>.])dnl
+RPMOUTPUT_SEQUOIA([      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))])dnl
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
