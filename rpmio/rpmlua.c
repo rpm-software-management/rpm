@@ -5,6 +5,8 @@
 #define LUA_LOADED_TABLE "_LOADED"
 #endif
 
+#include <vector>
+
 #include <unistd.h>
 #include <assert.h>
 #include <spawn.h>
@@ -116,7 +118,7 @@ rpmlua rpmluaNew()
 
     luaL_openlibs(L);
 
-    lua = (rpmlua) xcalloc(1, sizeof(*lua));
+    lua = new rpmlua_s {};
     lua->L = L;
 
     for (lib = extlibs; lib->name; lib++) {
@@ -154,8 +156,8 @@ rpmlua rpmluaFree(rpmlua lua)
 {
     if (lua) {
 	if (lua->L) lua_close(lua->L);
-	free(lua->printbuf);
-	free(lua);
+	delete lua->printbuf;
+	delete lua;
 	if (lua == globalLuaState) globalLuaState = NULL;
     }
     return NULL;
@@ -181,7 +183,7 @@ void * rpmluaGetLua(rpmlua lua)
 void rpmluaPushPrintBuffer(rpmlua lua)
 {
     INITSTATE(lua);
-    rpmluapb prbuf = (rpmluapb)xcalloc(1, sizeof(*prbuf));
+    rpmluapb prbuf = new rpmluapb_s {};
     prbuf->buf = NULL;
     prbuf->alloced = 0;
     prbuf->used = 0;
@@ -199,7 +201,7 @@ char *rpmluaPopPrintBuffer(rpmlua lua)
     if (prbuf) {
 	ret = prbuf->buf;
 	lua->printbuf = prbuf->next;
-	free(prbuf);
+	delete prbuf;
     }
 
     return ret;
@@ -723,7 +725,7 @@ static int rpm_call(lua_State *L)
     } else {
 	rpmhookArgs args = rpmhookArgsNew(lua_gettop(L)-1);
 	const char *name = lua_tostring(L, 1);
-	char *argt = (char *)xmalloc(args->argc+1);
+	std::vector<char> argt(args->argc+1);
 	int i;
 	for (i = 0; i != args->argc; i++) {
 	    argt[i] = rpmluaHookGetArg(L, i + 2, args->argv + i);
@@ -733,9 +735,8 @@ static int rpm_call(lua_State *L)
 		args->argv[i].p = NULL;
 	    }
 	}
-	args->argt = argt;
+	args->argt = argt.data();
 	rpmhookCallArgs(name, args);
-	free(argt);
 	(void) rpmhookArgsFree(args);
     }
     return 0;
@@ -818,16 +819,14 @@ static int rpm_execute(lua_State *L)
     int status;
     pid_t pid;
 
-    char **argv = (char **)malloc((n + 1) * sizeof(char *));
-    if (argv == NULL)
-	return luaL_error(L, "not enough memory");
-    argv[0] = (char *)file;
+    std::vector<const char *> argv(n+1);
+    argv[0] = file;
     for (i = 1; i < n; i++)
-	argv[i] = (char *)luaL_checkstring(L, i + 1);
+	argv[i] = luaL_checkstring(L, i + 1);
     argv[i] = NULL;
     rpmSetCloseOnExec();
-    status = posix_spawnp(&pid, file, NULL, NULL, argv, environ);
-    free(argv);
+    status = posix_spawnp(&pid, file, NULL, NULL,
+			const_cast<char* const*>(argv.data()), environ);
     if (status != 0)
 	return pusherror(L, status, NULL);
     if (waitpid(pid, &status, 0) == -1)
