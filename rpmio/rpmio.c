@@ -37,12 +37,12 @@ struct FDSTACK_s {
  */
 typedef	struct {
     struct rpmop_s	ops[FDSTAT_MAX];	/*!< Cumulative statistics. */
-} * FDSTAT_t;
+} FDSTAT_s;
 
 /** \ingroup rpmio
  * The FD_t File Handle data structure.
  */
-struct _FD_s {
+struct FD_s {
     int		nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
@@ -52,7 +52,7 @@ struct _FD_s {
     int		urlType;	/* ufdio: */
 
     char	*descr;		/* file name (or other description) */
-    FDSTAT_t	stats;		/* I/O statistics */
+    FDSTAT_s	*stats;		/* I/O statistics */
 
     rpmDigestBundle digests;
 };
@@ -76,7 +76,7 @@ static void fdSetFdno(FD_t fd, int fdno)
 
 static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
-    FDSTACK_t fps = (FDSTACK_t) xcalloc(1, sizeof(*fps));
+    FDSTACK_t fps = new FDSTACK_s {};
     fps->io = io;
     fps->fp = fp;
     fps->fdno = fdno;
@@ -90,7 +90,7 @@ static FDSTACK_t fdPop(FD_t fd)
 {
     FDSTACK_t fps = fd->fps;
     fd->fps = fps->prev;
-    free(fps);
+    delete fps;
     fps = fd->fps;
     fdFree(fd);
     return fps;
@@ -322,25 +322,25 @@ FD_t fdFree( FD_t fd)
     if (fd) {
 	if (--fd->nrefs > 0)
 	    return fd;
-	fd->stats = _free(fd->stats);
+	delete fd->stats;
 	if (fd->digests) {
 	    fd->digests = rpmDigestBundleFree(fd->digests);
 	}
-	free(fd->fps);
+	delete fd->fps;
 	free(fd->descr);
-	free(fd);
+	delete fd;
     }
     return NULL;
 }
 
 static FD_t fdNew(int fdno, const char *descr)
 {
-    FD_t fd = (FD_t)xcalloc(1, sizeof(*fd));
+    FD_t fd = new FD_s {};
     fd->nrefs = 0;
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;
-    fd->stats = (FDSTAT_t)xcalloc(1, sizeof(*fd->stats));
+    fd->stats = new FDSTAT_s {};
     fd->digests = NULL;
     fd->descr = descr ? xstrdup(descr) : NULL;
 
@@ -731,7 +731,7 @@ const FDIO_t bzdio = &bzdio_s ;
 
 #define kBufferSize (1 << 15)
 
-typedef struct lzfile {
+typedef struct lzfile_s {
   /* IO buffer */
     uint8_t buf[kBufferSize];
 
@@ -771,7 +771,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
 	return NULL;
-    lzfile = (LZFILE *)calloc(1, sizeof(*lzfile));
+    lzfile = new lzfile_s {};
     lzfile->file = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
@@ -815,7 +815,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 		break;
 	}
 	fclose(fp);
-	free(lzfile);
+	delete lzfile;
 	return NULL;
     }
     return lzfile;
@@ -845,7 +845,7 @@ static int lzclose(LZFILE *lzfile)
     }
     lzma_end(&lzfile->strm);
     rc = fclose(lzfile->file);
-    free(lzfile);
+    delete lzfile;
     return rc;
 }
 
@@ -1008,7 +1008,7 @@ typedef struct rpmzstd_s {
 	ZSTD_CStream *c;
     } stream;
     size_t nb;
-    void * b;
+    uint8_t * b;
     ZSTD_inBuffer zib;          /*!< ZSTD_inBuffer */
     ZSTD_outBuffer zob;         /*!< ZSTD_outBuffer */
 } * rpmzstd;
@@ -1096,7 +1096,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     if (fp == NULL)
 	return NULL;
 
-    zstd = (rpmzstd) xcalloc(1, sizeof(*zstd));
+    zstd = new rpmzstd_s {};
     size_t nb = 0;
 
     if ((flags & O_ACCMODE) == O_RDONLY) {	/* decompressing */
@@ -1131,7 +1131,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     zstd->level = level;
     zstd->fp = fp;
     zstd->nb = nb;
-    zstd->b = (uint8_t *)xmalloc(nb);
+    zstd->b = new uint8_t(nb);
 
     return zstd;
 
@@ -1286,8 +1286,8 @@ assert(zstd);
     if (zstd->fp && fileno(zstd->fp) > 2)
 	(void) fclose(zstd->fp);
 
-    if (zstd->b) free(zstd->b);
-    free(zstd);
+    delete zstd->b;
+    delete zstd;
 
     return rc;
 }

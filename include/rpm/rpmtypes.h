@@ -96,7 +96,7 @@ typedef struct rpmRelocation_s rpmRelocation;
 /** \ingroup rpmtypes 
  * RPM IO file descriptor type
  */
-typedef struct _FD_s * FD_t;
+typedef struct FD_s * FD_t;
 
 /** \ingroup rpmtypes
  * Package read return codes.
