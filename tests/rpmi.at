@@ -361,7 +361,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [`if test x$PGP = xlegacy; then
-    echo 'error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header RSA signature: BAD (package tag 268: invalid OpenPGP signature)'
+    echo 'error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Corrupt PGP packet)'
 else
     echo 'error: /tmp/hello-2.0-1.x86_64-signed.rpm: Header RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:'
     echo '  Failed to parse Signature Packet'
