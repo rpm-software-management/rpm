@@ -1197,7 +1197,6 @@ static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 			spec->BACount = index;
 			goto errxit;
 		}
-		rpmPopMacro(NULL, "_target_cpu");
 		index++;
 	    }
 
@@ -1214,8 +1213,8 @@ static rpmRC parseSpecSection(rpmSpec *specptr, enum parseStages stage)
 	     * causes problems for "rpm -q --specfile". This is
 	     * still a hack because there may be more than 1 arch
 	     * specified (unlikely but possible.) There's also the
-	     * further problem that the macro context, particularly
-	     * %{_target_cpu}, disagrees with the info in the header.
+	     * further problem that the macro context, disagrees
+	     * with the info in the header.
 	     */
 	    if (spec->BACount >= 1) {
 		rpmSpec nspec = spec->BASpecs[0];
