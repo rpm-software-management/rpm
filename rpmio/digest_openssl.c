@@ -28,19 +28,16 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
 {
     if (!octx) return NULL;
 
-    DIGEST_CTX nctx = NULL;
-    nctx = (DIGEST_CTX)xcalloc(1, sizeof(*nctx));
+    DIGEST_CTX nctx = new DIGEST_CTX_s { *octx };
 
-    nctx->flags = octx->flags;
-    nctx->algo = octx->algo;
     nctx->md_ctx = EVP_MD_CTX_new();
     if (!nctx->md_ctx) {
-        free(nctx);
+        delete nctx;
         return NULL;
     }
 
     if (!EVP_MD_CTX_copy(nctx->md_ctx, octx->md_ctx)) {
-        free(nctx);
+        delete nctx;
         return NULL;
     }
 
@@ -81,18 +78,18 @@ size_t rpmDigestLength(int hashalgo)
 
 DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags)
 {
-    DIGEST_CTX ctx = (DIGEST_CTX)xcalloc(1, sizeof(*ctx));
+    DIGEST_CTX ctx = new DIGEST_CTX_s {};
 
     ctx->md_ctx = EVP_MD_CTX_new();
     if (!ctx->md_ctx) {
-        free(ctx);
+        delete ctx;
         return NULL;
     }
 
     const EVP_MD *md = getEVPMD(hashalgo);
     if (md == EVP_md_null()) {
         free(ctx->md_ctx);
-        free(ctx);
+        delete ctx;
         return NULL;
     }
 
@@ -100,7 +97,7 @@ DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags)
     ctx->flags = flags;
     if (!EVP_DigestInit_ex(ctx->md_ctx, md, NULL)) {
         free(ctx->md_ctx);
-        free(ctx);
+        delete ctx;
         return NULL;
     }
 
@@ -158,7 +155,7 @@ done:
     }
 
     EVP_MD_CTX_free(ctx->md_ctx);
-    free(ctx);
+    delete ctx;
 
     if (ret != 1) {
         return -1;

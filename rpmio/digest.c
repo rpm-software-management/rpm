@@ -34,7 +34,7 @@ static int findID(rpmDigestBundle bundle, int id)
 
 rpmDigestBundle rpmDigestBundleNew(void)
 {
-    rpmDigestBundle bundle = (rpmDigestBundle)xcalloc(1, sizeof(*bundle));
+    rpmDigestBundle bundle = new rpmDigestBundle_s {};
     return bundle;
 }
 
@@ -47,8 +47,7 @@ rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle)
 	    rpmDigestFinal(bundle->digests[i], NULL, NULL, 0);
 	    bundle->digests[i] = NULL;
 	}
-	memset(bundle, 0, sizeof(*bundle));
-	free(bundle);
+	delete bundle;
     }
     return NULL;
 }
