@@ -13,6 +13,8 @@
 
 #include "system.h"
 
+#include <vector>
+#include <string>
 #include <string.h>
 
 #include <rpm/rpmlog.h>
@@ -42,7 +44,7 @@ typedef enum {
 /**
  * Encapsulation of a "value"
  */
-typedef struct _value {
+typedef struct value_s {
   valueType type;
   union {
     char *s;
@@ -80,9 +82,7 @@ static void valueReset(Value v)
  */
 static Value valueMakeInteger(int i)
 {
-  Value v;
-
-  v = (Value) xmalloc(sizeof(*v));
+  Value v = new value_s {};
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
   return v;
@@ -92,9 +92,7 @@ static Value valueMakeInteger(int i)
  */
 static Value valueMakeString(char *s)
 {
-  Value v;
-
-  v = (Value) xmalloc(sizeof(*v));
+  Value v = new value_s {};
   v->type = VALUE_TYPE_STRING;
   v->data.s = s;
   return v;
@@ -106,7 +104,7 @@ static Value valueMakeVersion(const char *s)
   rpmver rv = rpmverParse(s);
 
   if (rv) {
-    v = (Value) xmalloc(sizeof(*v));
+    v = new value_s {};
     v->type = VALUE_TYPE_VERSION;
     v->data.v = rv;
   }
@@ -123,11 +121,11 @@ static void valueSetInteger(Value v, int i)
 
 /**
  */
-static void valueSetString(Value v, char *s)
+static void valueSetString(Value v, std::string & s)
 {
   valueReset(v);
   v->type = VALUE_TYPE_STRING;
-  v->data.s = s;
+  v->data.s = xstrdup(s.c_str());
 }
 
 /**
@@ -136,7 +134,7 @@ static void valueFree( Value v)
 {
   if (v) {
     valueReset(v);
-    free(v);
+    delete v;
   }
 }
 
@@ -525,14 +523,12 @@ static Value doLuaFunction(ParseState state, const char *name, int argc, Value *
     rpmhookArgs args = NULL;
     Value v = NULL;
     char *result = NULL;
-    char *argt = NULL;
-    int i;
+    std::vector<char> argt(argc + 1);
     
     if (state->flags & RPMEXPR_DISCARD)
 	return valueMakeString(xstrdup(""));
     args = rpmhookArgsNew(argc);
-    argt = (char *)xmalloc(argc + 1);
-    for (i = 0; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
 	switch (argv[i]->type) {
 	    case VALUE_TYPE_INTEGER:
 		argt[i] = 'i';
@@ -548,30 +544,27 @@ static Value doLuaFunction(ParseState state, const char *name, int argc, Value *
 	}
     }
     argt[argc] = 0;
-    args->argt = argt;
+    args->argt = argt.data();
     result = rpmluaCallStringFunction(lua, name, args);
     if (result)
 	v = valueMakeString(result);
 exit:
     rpmhookArgsFree(args);
-    free(argt);
     return v;
 }
 
 static Value doFunction(ParseState state)
 {
   Value vname = state->tokenValue;
-  Value v = NULL, *varg = NULL;
-  int i, narg = 0;
+  Value v = NULL;
+  std::vector<Value> varg {};
   if (rdToken(state))
     goto exit;
   /* gather args */
   while (state->nextToken != TOK_CLOSE_P) {
-      varg = xrealloc(varg, (narg + 1) * sizeof(Value));
-      varg[narg] = doTernary(state);
-      if (!varg[narg])
+      varg.push_back(doTernary(state));
+      if (!varg.back())
 	goto exit;
-      narg++;
       if (state->nextToken == TOK_CLOSE_P)
 	break;
       if (state->nextToken != TOK_COMMA) {
@@ -591,14 +584,13 @@ static Value doFunction(ParseState state)
 
   /* do the call... */
   if (!strncmp(vname->data.s, "lua:", 4))
-    v = doLuaFunction(state, vname->data.s + 4, narg, varg);
+    v = doLuaFunction(state, vname->data.s + 4, varg.size(), varg.data());
   else
     exprErr(state, _("unsupported funcion"), state->p);
 
 exit:
-  for (i = 0; i < narg; i++)
-    valueFree(varg[i]);
-  free(varg);
+  for (auto & v : varg)
+    valueFree(v);
   valueFree(vname);
   return v;
 }
@@ -789,16 +781,13 @@ static Value doAddSubtract(ParseState state)
       exprErr(state, _("+ and - not supported for versions"), p);
       goto err;
     } else {
-      char *copy;
-
       if (op == TOK_MINUS) {
         exprErr(state, _("- not supported for strings"), p);
         goto err;
       }
 
-      copy = (char *)xmalloc(strlen(v1->data.s) + strlen(v2->data.s) + 1);
-      (void) stpcpy( stpcpy(copy, v1->data.s), v2->data.s);
-
+      std::string copy = v1->data.s;
+      copy += v2->data.s;
       valueSetString(v1, copy);
     }
   }
