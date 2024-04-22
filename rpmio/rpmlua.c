@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <stack>
 
 #include <unistd.h>
 #include <assert.h>
@@ -35,12 +36,9 @@
 
 int _rpmlua_have_forked = 0;
 
-typedef struct rpmluapb_s * rpmluapb;
-
 struct rpmlua_s {
     lua_State *L;
-    size_t pushsize;
-    rpmluapb printbuf;
+    std::stack<std::string> printbuf;
 };
 
 #define INITSTATE(lua) \
@@ -50,11 +48,6 @@ struct rpmlua_s {
 			(globalLuaState = rpmluaNew()) \
 			\
 	    ))
-
-struct rpmluapb_s {
-    std::string buf;
-    rpmluapb next;
-};
 
 static rpmlua globalLuaState = NULL;
 
@@ -155,7 +148,6 @@ rpmlua rpmluaFree(rpmlua lua)
 {
     if (lua) {
 	if (lua->L) lua_close(lua->L);
-	delete lua->printbuf;
 	delete lua;
 	if (lua == globalLuaState) globalLuaState = NULL;
     }
@@ -182,22 +174,17 @@ void * rpmluaGetLua(rpmlua lua)
 void rpmluaPushPrintBuffer(rpmlua lua)
 {
     INITSTATE(lua);
-    rpmluapb prbuf = new rpmluapb_s {};
-    prbuf->next = lua->printbuf;
-
-    lua->printbuf = prbuf;
+    lua->printbuf.push({});
 }
 
 char *rpmluaPopPrintBuffer(rpmlua lua)
 {
     INITSTATE(lua);
-    rpmluapb prbuf = lua->printbuf;
     char *ret = NULL;
 
-    if (prbuf) {
-	ret = xstrdup(prbuf->buf.c_str());
-	lua->printbuf = prbuf->next;
-	delete prbuf;
+    if (!lua->printbuf.empty()) {
+	ret = xstrdup(lua->printbuf.top().c_str());
+	lua->printbuf.pop();
     }
 
     return ret;
@@ -301,7 +288,7 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
     }
 
     nret = lua_gettop(L) - otop;
-    if (nret > 0 && lua->printbuf) {
+    if (nret > 0 && !lua->printbuf.empty()) {
 	lua_getglobal(L, "print");
 	lua_insert(L, -(nret + 1));
 	if (rpm_pcall(L, nret, 0, 0) != 0) {
@@ -748,11 +735,11 @@ static int rpm_print (lua_State *L)
     for (i = 1; i <= n; i++) {
 	size_t sl;
 	const char *s = luaL_tolstring(L, i, &sl);
-	if (lua->printbuf) {
-	    rpmluapb prbuf = lua->printbuf;
+	if (!lua->printbuf.empty()) {
+	    auto & buf = lua->printbuf.top();
 	    if (i > 1)
-		prbuf->buf += '\t';
-	    prbuf->buf += s;
+		buf += '\t';
+	    buf += s;
 	} else {
 	    if (i > 1)
 		(void) fputs("\t", stdout);
@@ -760,7 +747,7 @@ static int rpm_print (lua_State *L)
 	}
 	lua_pop(L, 1);  /* pop result */
     }
-    if (!lua->printbuf) {
+    if (lua->printbuf.empty()) {
 	(void) fputs("\n", stdout);
     }
     return 0;
