@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <vector>
 #include <pthread.h>
 
 #include <rpm/rpmstring.h>
@@ -14,8 +15,7 @@
 int _print_pkts = 0;
 
 struct rpmPubkey_s {
-    uint8_t *pkt;
-    size_t pktlen;
+    std::vector<uint8_t> pkt;
     pgpKeyID_t keyid;
     pgpDigParams pgpkey;
     int nrefs;
@@ -39,7 +39,7 @@ static int keyidcmp(const void *k1, const void *k2)
 
 rpmKeyring rpmKeyringNew(void)
 {
-    rpmKeyring keyring = (rpmKeyring)xcalloc(1, sizeof(*keyring));
+    rpmKeyring keyring = new rpmKeyring_s {};
     keyring->keys = NULL;
     keyring->numkeys = 0;
     keyring->nrefs = 1;
@@ -62,7 +62,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 	}
 	pthread_rwlock_unlock(&keyring->lock);
 	pthread_rwlock_destroy(&keyring->lock);
-	free(keyring);
+	delete keyring;
     } else {
 	pthread_rwlock_unlock(&keyring->lock);
     }
@@ -142,12 +142,11 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     if (pgpPrtParams(pkt, pktlen, PGPTAG_PUBLIC_KEY, &pgpkey))
 	goto exit;
 
-    key = (rpmPubkey)xcalloc(1, sizeof(*key));
-    key->pkt = (uint8_t *)xmalloc(pktlen);
-    key->pktlen = pktlen;
+    key = new rpmPubkey_s {};
+    key->pkt.resize(pktlen);
     key->pgpkey = pgpkey;
     key->nrefs = 1;
-    memcpy(key->pkt, pkt, pktlen);
+    memcpy(key->pkt.data(), pkt, pktlen);
     memcpy(key->keyid, keyid, sizeof(keyid));
     pthread_rwlock_init(&key->lock, NULL);
 
@@ -162,18 +161,17 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
     int pgpsubkeysCount = 0;
     int i;
 
-    if (mainkey && !pgpPrtParamsSubkeys(mainkey->pkt, mainkey->pktlen,
+    if (mainkey && !pgpPrtParamsSubkeys(mainkey->pkt.data(), mainkey->pkt.size(),
 			mainkey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
 
+	/* Returned to C, can't use new */
 	subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
 
 	for (i = 0; i < pgpsubkeysCount; i++) {
-	    rpmPubkey subkey = (rpmPubkey)xcalloc(1, sizeof(*subkey));
+	    rpmPubkey subkey = new rpmPubkey_s {};
 	    subkeys[i] = subkey;
 
 	    /* Packets with all subkeys already stored in main key */
-	    subkey->pkt = NULL;
-	    subkey->pktlen = 0;
 
 	    subkey->pgpkey = pgpsubkeys[i];
 	    memcpy(subkey->keyid, pgpDigParamsSignID(pgpsubkeys[i]), PGP_KEYID_LEN);
@@ -195,10 +193,9 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     pthread_rwlock_wrlock(&key->lock);
     if (--key->nrefs == 0) {
 	pgpDigParamsFree(key->pgpkey);
-	free(key->pkt);
 	pthread_rwlock_unlock(&key->lock);
 	pthread_rwlock_destroy(&key->lock);
-	free(key);
+	delete key;
     } else {
 	pthread_rwlock_unlock(&key->lock);
     }
@@ -221,7 +218,7 @@ char * rpmPubkeyBase64(rpmPubkey key)
 
     if (key) {
 	pthread_rwlock_rdlock(&key->lock);
-	enc = rpmBase64Encode(key->pkt, key->pktlen, -1);
+	enc = rpmBase64Encode(key->pkt.data(), key->pkt.size(), -1);
 	pthread_rwlock_unlock(&key->lock);
     }
     return enc;
@@ -242,8 +239,7 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
     rpmPubkey key = NULL;
 
     if (keyring && sig) {
-	struct rpmPubkey_s needle;
-	memset(&needle, 0, sizeof(needle));
+	struct rpmPubkey_s needle {};
 	memcpy(needle.keyid, pgpDigParamsSignID(sig), PGP_KEYID_LEN);
 	
 	key = rpmKeyringFindKeyid(keyring, &needle);
