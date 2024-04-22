@@ -6,6 +6,7 @@
 #endif
 
 #include <vector>
+#include <string>
 
 #include <unistd.h>
 #include <assert.h>
@@ -51,9 +52,7 @@ struct rpmlua_s {
 	    ))
 
 struct rpmluapb_s {
-    size_t alloced;
-    size_t used;
-    char *buf;
+    std::string buf;
     rpmluapb next;
 };
 
@@ -184,9 +183,6 @@ void rpmluaPushPrintBuffer(rpmlua lua)
 {
     INITSTATE(lua);
     rpmluapb prbuf = new rpmluapb_s {};
-    prbuf->buf = NULL;
-    prbuf->alloced = 0;
-    prbuf->used = 0;
     prbuf->next = lua->printbuf;
 
     lua->printbuf = prbuf;
@@ -199,7 +195,7 @@ char *rpmluaPopPrintBuffer(rpmlua lua)
     char *ret = NULL;
 
     if (prbuf) {
-	ret = prbuf->buf;
+	ret = xstrdup(prbuf->buf.c_str());
 	lua->printbuf = prbuf->next;
 	delete prbuf;
     }
@@ -754,14 +750,9 @@ static int rpm_print (lua_State *L)
 	const char *s = luaL_tolstring(L, i, &sl);
 	if (lua->printbuf) {
 	    rpmluapb prbuf = lua->printbuf;
-	    if (prbuf->used+sl+1 > prbuf->alloced) {
-		prbuf->alloced += sl+512;
-		prbuf->buf = xrealloc(prbuf->buf, prbuf->alloced);
-	    }
 	    if (i > 1)
-		prbuf->buf[prbuf->used++] = '\t';
-	    memcpy(prbuf->buf+prbuf->used, s, sl+1);
-	    prbuf->used += sl;
+		prbuf->buf += '\t';
+	    prbuf->buf += s;
 	} else {
 	    if (i > 1)
 		(void) fputs("\t", stdout);
@@ -771,13 +762,6 @@ static int rpm_print (lua_State *L)
     }
     if (!lua->printbuf) {
 	(void) fputs("\n", stdout);
-    } else {
-	rpmluapb prbuf = lua->printbuf;
-	if (prbuf->used+1 > prbuf->alloced) {
-	    prbuf->alloced += 512;
-	    prbuf->buf = xrealloc(prbuf->buf, prbuf->alloced);
-	}
-	prbuf->buf[prbuf->used] = '\0';
     }
     return 0;
 }
