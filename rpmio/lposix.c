@@ -9,6 +9,8 @@
 #include <config.h>
 #endif
 
+#include <vector>
+
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -339,20 +341,17 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
-	char **argv;
 
 	if (!_rpmlua_have_forked)
 	    return luaL_error(L, "exec not permitted in this context");
 
 	rpmSetCloseOnExec();
 
-	argv = (char **)malloc((n+1)*sizeof(char*));
-	if (argv==NULL) return luaL_error(L,"not enough memory");
-	argv[0] = (char*)path;
-	for (i=1; i<n; i++) argv[i] = (char*)luaL_checkstring(L, i+1);
+	std::vector<const char *> argv(n+1);
+	argv[0] = path;
+	for (i=1; i<n; i++) argv[i] = luaL_checkstring(L, i+1);
 	argv[i] = NULL;
-	execvp(path,argv);
-	free(argv);
+	execvp(path,const_cast<char* const*>(argv.data()));
 	return pusherror(L, path);
 }
 
