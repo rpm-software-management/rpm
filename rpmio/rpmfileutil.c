@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <filesystem>
+#include <vector>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,14 +30,14 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 {
     unsigned char * dig = NULL;
     size_t diglen, buflen = 32 * BUFSIZ;
-    unsigned char *buf = (unsigned char *)xmalloc(buflen);
+    std::vector<uint8_t> buf(buflen);
     int rc = 0;
 
     FD_t fd = Fopen(fn, "r.ufdio");
 
     if (fd) {
 	fdInitDigest(fd, algo, 0);
-	while ((rc = Fread(buf, sizeof(*buf), buflen, fd)) > 0) {};
+	while ((rc = Fread(buf.data(), 1, buflen, fd)) > 0) {};
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
     }
 
@@ -47,7 +48,6 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
     }
 
     dig = _free(dig);
-    free(buf);
     Fclose(fd);
 
     return rc;

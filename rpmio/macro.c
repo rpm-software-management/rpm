@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <string>
+#include <vector>
 
 #include <stdarg.h>
 #include <pthread.h>
@@ -1925,7 +1926,7 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FILE *fd = fopen(fn, "r");
     size_t blen = MACROBUFSIZ;
-    char *buf = (char *)xmalloc(blen);
+    std::vector<char> buf(blen);
     int rc = -1;
     int nfailed = 0;
     int lineno = 0;
@@ -1939,11 +1940,11 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
 			RMIL_MACROFILES, ME_FUNC);
 
     buf[0] = '\0';
-    while ((nlines = rdcl(buf, blen, fd)) > 0) {
+    while ((nlines = rdcl(buf.data(), blen, fd)) > 0) {
 	char c, *n;
 
 	lineno += nlines;
-	n = buf;
+	n = buf.data();
 	SKIPBLANK(n, c);
 
 	if (c != '%')
@@ -1960,7 +1961,6 @@ static int loadMacroFile(rpmMacroContext mc, const char * fn)
     rc = (nfailed > 0);
 
 exit:
-    _free(buf);
     return rc;
 }
 
