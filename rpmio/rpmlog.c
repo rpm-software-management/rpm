@@ -433,23 +433,14 @@ void rpmlog (int code, const char *fmt, ...)
     unsigned mask = RPMLOG_MASK(pri);
     int saverec = (pri <= RPMLOG_WARNING);
     va_list ap;
-    int n;
+    char *msg = NULL;
 
     if ((mask & rpmlogSetMask(0)) == 0)
 	goto exit;
 
     va_start(ap, fmt);
-    n = vsnprintf(NULL, 0, fmt, ap);
-    va_end(ap);
-
-    if (n >= -1) {
+    if (rvasprintf(&msg, fmt, ap) >= 0) {
 	struct rpmlogRec_s rec;
-	size_t nb = n + 1;
-	char *msg = (char *)xmalloc(nb);
-
-	va_start(ap, fmt);
-	n = vsnprintf(msg, nb, fmt, ap);
-	va_end(ap);
 
 	rec.code = code;
 	rec.pri = (rpmlogLvl)pri;
@@ -459,6 +450,7 @@ void rpmlog (int code, const char *fmt, ...)
 
 	free(msg);
     }
+    va_end(ap);
 exit:
     errno = saved_errno;
 }
