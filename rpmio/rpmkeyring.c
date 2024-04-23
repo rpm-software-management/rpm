@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include <vector>
+#include <string>
+#include <map>
 #include <pthread.h>
 
 #include <rpm/rpmstring.h>
@@ -16,32 +18,26 @@ int _print_pkts = 0;
 
 struct rpmPubkey_s {
     std::vector<uint8_t> pkt;
-    pgpKeyID_t keyid;
+    std::string keyid;
     pgpDigParams pgpkey;
     int nrefs;
     pthread_rwlock_t lock;
 };
 
 struct rpmKeyring_s {
-    struct rpmPubkey_s **keys;
-    size_t numkeys;
+    std::map<std::string,rpmPubkey> keys; /* pointers to keys */
     int nrefs;
     pthread_rwlock_t lock;
 };
 
-static int keyidcmp(const void *k1, const void *k2)
+static std::string key2str(const uint8_t *keyid)
 {
-    const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
-    const struct rpmPubkey_s *key2 = *(const struct rpmPubkey_s **) k2;
-    
-    return memcmp(key1->keyid, key2->keyid, sizeof(key1->keyid));
+    return std::string(reinterpret_cast<const char *>(keyid), PGP_KEYID_LEN);
 }
 
 rpmKeyring rpmKeyringNew(void)
 {
     rpmKeyring keyring = new rpmKeyring_s {};
-    keyring->keys = NULL;
-    keyring->numkeys = 0;
     keyring->nrefs = 1;
     pthread_rwlock_init(&keyring->lock, NULL);
     return keyring;
@@ -54,12 +50,8 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 
     pthread_rwlock_wrlock(&keyring->lock);
     if (--keyring->nrefs == 0) {
-	if (keyring->keys) {
-	    for (int i = 0; i < keyring->numkeys; i++) {
-		keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
-	    }
-	    free(keyring->keys);
-	}
+	for (auto & item : keyring->keys)
+	    rpmPubkeyFree(item.second);
 	pthread_rwlock_unlock(&keyring->lock);
 	pthread_rwlock_destroy(&keyring->lock);
 	delete keyring;
@@ -67,16 +59,6 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 	pthread_rwlock_unlock(&keyring->lock);
     }
     return NULL;
-}
-
-static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
-{
-    rpmPubkey *found = NULL;
-    if (key && keyring->keys) {
-	found = (rpmPubkey *)bsearch(&key, keyring->keys, keyring->numkeys,
-			sizeof(*keyring->keys), keyidcmp);
-    }
-    return found ? *found : NULL;
 }
 
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
@@ -87,13 +69,8 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 
     /* check if we already have this key, but always wrlock for simplicity */
     pthread_rwlock_wrlock(&keyring->lock);
-    if (!rpmKeyringFindKeyid(keyring, key)) {
-	keyring->keys = xrealloc(keyring->keys,
-				 (keyring->numkeys + 1) * sizeof(rpmPubkey));
-	keyring->keys[keyring->numkeys] = rpmPubkeyLink(key);
-	keyring->numkeys++;
-	qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys),
-		keyidcmp);
+    if (keyring->keys.find(key->keyid) == keyring->keys.end()) {
+	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
 	rc = 0;
     }
     pthread_rwlock_unlock(&keyring->lock);
@@ -147,7 +124,7 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     key->pgpkey = pgpkey;
     key->nrefs = 1;
     memcpy(key->pkt.data(), pkt, pktlen);
-    memcpy(key->keyid, keyid, sizeof(keyid));
+    key->keyid = key2str(keyid);
     pthread_rwlock_init(&key->lock, NULL);
 
 exit:
@@ -174,7 +151,7 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
 	    /* Packets with all subkeys already stored in main key */
 
 	    subkey->pgpkey = pgpsubkeys[i];
-	    memcpy(subkey->keyid, pgpDigParamsSignID(pgpsubkeys[i]), PGP_KEYID_LEN);
+	    subkey->keyid = key2str(pgpDigParamsSignID(pgpsubkeys[i]));
 	    subkey->nrefs = 1;
 	    pthread_rwlock_init(&subkey->lock, NULL);
 	}
@@ -239,11 +216,10 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
     rpmPubkey key = NULL;
 
     if (keyring && sig) {
-	struct rpmPubkey_s needle {};
-	memcpy(needle.keyid, pgpDigParamsSignID(sig), PGP_KEYID_LEN);
-	
-	key = rpmKeyringFindKeyid(keyring, &needle);
-	if (key) {
+	auto keyid = key2str(pgpDigParamsSignID(sig));
+	auto item = keyring->keys.find(keyid);
+	if (item != keyring->keys.end()) {
+	    key = item->second;
 	    pgpDigParams pub = key->pgpkey;
 	    /* Do the parameters match the signature? */
 	    if ((pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
