@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <filesystem>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -17,6 +19,8 @@
 #include "rpmio_internal.h"
 
 #include "debug.h"
+
+namespace fs = std::filesystem;
 
 static const char *rpm_config_dir = NULL;
 static pthread_once_t configDirSet = PTHREAD_ONCE_INIT;
@@ -441,16 +445,9 @@ int rpmFileHasSuffix(const char *path, const char *suffix)
 
 char * rpmGetCwd(void)
 {
-    int currDirLen = 0;
-    char * currDir = NULL;
-
-    do {
-	currDirLen += 128;
-	currDir = xrealloc(currDir, currDirLen);
-	memset(currDir, 0, currDirLen);
-    } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
-
-    return currDir;
+    std::error_code ec;
+    auto currDir = fs::current_path(ec);
+    return ec ? NULL : xstrdup(currDir.c_str());;
 }
 
 int rpmMkdirs(const char *root, const char *pathstr)
