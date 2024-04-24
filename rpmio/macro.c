@@ -139,7 +139,7 @@ static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
 static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
-static void popMacro(rpmMacroContext mc, const char * n);
+static rpmMacroEntry popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
 
@@ -948,10 +948,13 @@ freeArgs(rpmMacroBuf mb)
 	    me->flags |= ME_USED;
 	}
 
-	/* compensate if the slot is to go away */
-	if (me->prev == NULL)
+	while ((me = popMacro(mc, me->name))) {
+	    if (me->level < mb->level)
+		break;
+	}
+	/* compensate if the slot went away */
+	if (me == NULL)
 	    i--;
-	popMacro(mc, me->name);
     }
     mb->level--;
     mb->args = NULL;
@@ -1867,17 +1870,18 @@ static void pushMacro(rpmMacroContext mc,
     return pushMacroAny(mc, n, o, b, NULL, NULL, 0, level, flags);
 }
 
-static void popMacro(rpmMacroContext mc, const char * n)
+/* Return pointer to the _previous_ macro definition (or NULL) */
+static rpmMacroEntry popMacro(rpmMacroContext mc, const char * n)
 {
     size_t pos;
     rpmMacroEntry *mep = findEntry(mc, n, 0, &pos);
     if (mep == NULL)
-	return;
+	return NULL;
     /* parting entry */
     rpmMacroEntry me = *mep;
     assert(me);
     /* detach/pop definition */
-    mc->tab[pos] = me->prev;
+    rpmMacroEntry prev = mc->tab[pos] = me->prev;
     /* shrink macro table */
     if (me->prev == NULL) {
 	mc->n--;
@@ -1889,6 +1893,7 @@ static void popMacro(rpmMacroContext mc, const char * n)
     }
     /* comes in a single chunk */
     free(me);
+    return prev;
 }
 
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
