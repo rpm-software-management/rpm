@@ -69,8 +69,14 @@ struct rpmMacroContext_s {
     int level;		 /*!< Scope level tracking when on external recursion */
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
-};
 
+    rpmMacroContext_s() = default;
+    rpmMacroContext_s(const rpmMacroContext_s &other) = delete;
+    rpmMacroContext_s(const rpmMacroContext_s &&other) = delete;
+    rpmMacroContext_s &operator =(const rpmMacroContext_s & other) = delete;
+    rpmMacroContext_s &operator =(const rpmMacroContext_s && other) = delete;
+    ~rpmMacroContext_s();
+};
 
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
 rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
@@ -143,6 +149,20 @@ static void pushMacro(rpmMacroContext mc,
 static rpmMacroEntry popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
+
+static void freeMacros(rpmMacroContext mc)
+{
+    while (mc->n > 0) {
+	/* remove from the end to avoid memmove */
+	rpmMacroEntry me = mc->tab[mc->n - 1];
+	while ((me = popMacro(mc, me->name))) {}
+    }
+}
+
+rpmMacroContext_s::~rpmMacroContext_s()
+{
+    freeMacros(this);
+}
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
 {
@@ -2189,11 +2209,7 @@ void
 rpmFreeMacros(rpmMacroContext mc)
 {
     mc = rpmmctxAcquire(mc);
-    while (mc->n > 0) {
-	/* remove from the end to avoid memmove */
-	rpmMacroEntry me = mc->tab[mc->n - 1];
-	popMacro(mc, me->name);
-    }
+    freeMacros(mc);
     rpmmctxRelease(mc);
 }
 
