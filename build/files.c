@@ -2650,7 +2650,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 {
     /* Check build-ids and add build-ids links for files to package list. */
     const char *arch = headerGetString(pkg->header, RPMTAG_ARCH);
-    if (!rstreq(arch, "noarch")) {
+    if (rpmExpandNumeric("%{?__debug_package}") && !rstreq(arch, "noarch")) {
 	/* Go through the current package list and generate a files list. */
 	ARGV_t idFiles = NULL;
 	if (generateBuildIDs (&fl, &idFiles) != 0) {
@@ -3138,15 +3138,19 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     Package deplink = NULL;		/* create requires to this package */
     /* The debugsource package, if it exists, that the debuginfo package(s)
        should Recommend.  */
-    Package dbgsrcpkg = findDebugsourcePackage(spec);
+    Package dbgsrcpkg = NULL;
+    int processDebug = rpmExpandNumeric("%{?__debug_package}");
     
 #ifdef HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
     check_fileList = newStringBuf();
     buildroot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
-    
-    if (rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
+
+    if (processDebug)
+	dbgsrcpkg = findDebugsourcePackage(spec);
+
+    if (processDebug && rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
 	maindbg = findDebuginfoPackage(spec);
 	if (maindbg) {
 	    /* move debuginfo package to back */
