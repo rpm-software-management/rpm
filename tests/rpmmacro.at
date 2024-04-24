@@ -1087,7 +1087,6 @@ RPMTEST_CLEANUP
 AT_SETUP([%define + %undefine in nested levels 3])
 AT_KEYWORDS([macros define])
 RPMTEST_CHECK([
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 # %define macro twice in a nested scope
 runroot rpm \
     --define '%foo() %{expand:%define xxx 1} %{echo:%xxx} %{expand: %define xxx 2} %{echo:%xxx}' \
@@ -1100,6 +1099,15 @@ runroot rpm \
 .    .
 %xxx
 ])
+
+RPMTEST_CHECK([
+runroot rpm --define "aa 0" --define "my() %{define:aa 1}%{define:aa 2}" --eval "%my" --eval "%aa"
+],
+[0],
+[
+0
+],
+[ignore])
 RPMTEST_CLEANUP
 
 AT_SETUP([%define + %undefine in nested levels 4])
