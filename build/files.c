@@ -3138,15 +3138,19 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     Package deplink = NULL;		/* create requires to this package */
     /* The debugsource package, if it exists, that the debuginfo package(s)
        should Recommend.  */
-    Package dbgsrcpkg = findDebugsourcePackage(spec);
+    Package dbgsrcpkg = NULL;
+    int processDebug = rpmExpandNumeric("%{?_enable_debug_packages}");
     
 #ifdef HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
     check_fileList = newStringBuf();
     buildroot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
-    
-    if (rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
+
+    if (processDebug)
+	dbgsrcpkg = findDebugsourcePackage(spec);
+
+    if (processDebug && rpmExpandNumeric("%{?_debuginfo_subpackages}")) {
 	maindbg = findDebuginfoPackage(spec);
 	if (maindbg) {
 	    /* move debuginfo package to back */
