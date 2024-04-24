@@ -3,6 +3,9 @@
  */
 
 #include "system.h"
+
+#include <vector>
+
 #include <stdarg.h>
 #include <errno.h>
 #include <ctype.h>
@@ -1007,8 +1010,7 @@ typedef struct rpmzstd_s {
 	ZSTD_DStream *d;
 	ZSTD_CStream *c;
     } stream;
-    size_t nb;
-    uint8_t * b;
+    std::vector<uint8_t> b;
     ZSTD_inBuffer zib;          /*!< ZSTD_inBuffer */
     ZSTD_outBuffer zob;         /*!< ZSTD_outBuffer */
 } * rpmzstd;
@@ -1130,8 +1132,7 @@ static rpmzstd rpmzstdNew(int fdno, const char *fmode)
     zstd->fdno = fdno;
     zstd->level = level;
     zstd->fp = fp;
-    zstd->nb = nb;
-    zstd->b = new uint8_t(nb);
+    zstd->b.resize(nb);
 
     return zstd;
 
@@ -1174,15 +1175,15 @@ assert(zstd);
 	int xx;
 	do {
 	  ZSTD_inBuffer zib = { NULL, 0, 0 };
-	  zstd->zob.dst  = zstd->b;
-	  zstd->zob.size = zstd->nb;
+	  zstd->zob.dst  = zstd->b.data();
+	  zstd->zob.size = zstd->b.size();
 	  zstd->zob.pos  = 0;
 	  xx = ZSTD_compressStream2(zstd->stream.c, &zstd->zob, &zib, ZSTD_e_flush);
 	  if (ZSTD_isError(xx)) {
 	      fps->errcookie = ZSTD_getErrorName(xx);
 	      break;
 	  }
-	  else if (zstd->zob.pos != fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp)) {
+	  else if (zstd->zob.pos != fwrite(zstd->b.data(), 1, zstd->zob.pos, zstd->fp)) {
 	      fps->errcookie = "zstdClose fwrite failed.";
 	      break;
 	  }
@@ -1202,10 +1203,10 @@ assert(zstd);
     while (zob.pos < zob.size) {
 	/* Re-fill compressed data buffer. */
 	if (zstd->zib.pos >= zstd->zib.size) {
-	    zstd->zib.size = fread(zstd->b, 1, zstd->nb, zstd->fp);
+	    zstd->zib.size = fread(zstd->b.data(), 1, zstd->b.size(), zstd->fp);
 	    if (zstd->zib.size == 0)
 		break;		/* EOF */
-	    zstd->zib.src  = zstd->b;
+	    zstd->zib.src  = zstd->b.data();
 	    zstd->zib.pos  = 0;
 	}
 
@@ -1228,8 +1229,8 @@ assert(zstd);
     while (zib.pos < zib.size) {
 
 	/* Reset to beginning of compressed data buffer. */
-	zstd->zob.dst  = zstd->b;
-	zstd->zob.size = zstd->nb;
+	zstd->zob.dst  = zstd->b.data();
+	zstd->zob.size = zstd->b.size();
 	zstd->zob.pos  = 0;
 
 	/* Compress next chunk. */
@@ -1241,7 +1242,7 @@ assert(zstd);
 
 	/* Write compressed data buffer. */
         if (zstd->zob.pos > 0) {
-	    size_t nw = fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp);
+	    size_t nw = fwrite(zstd->b.data(), 1, zstd->zob.pos, zstd->fp);
 	    if (nw != zstd->zob.pos) {
 		fps->errcookie = "zstdWrite fwrite failed.";
 		return -1;
@@ -1265,15 +1266,15 @@ assert(zstd);
 	int xx;
 	do {
 	  ZSTD_inBuffer zib = { NULL, 0, 0 };
-	  zstd->zob.dst  = zstd->b;
-	  zstd->zob.size = zstd->nb;
+	  zstd->zob.dst  = zstd->b.data();
+	  zstd->zob.size = zstd->b.size();
 	  zstd->zob.pos  = 0;
 	  xx = ZSTD_compressStream2(zstd->stream.c, &zstd->zob, &zib, ZSTD_e_end);
 	  if (ZSTD_isError(xx)) {
 	      fps->errcookie = ZSTD_getErrorName(xx);
 	      break;
 	  }
-	  else if (zstd->zob.pos != fwrite(zstd->b, 1, zstd->zob.pos, zstd->fp)) {
+	  else if (zstd->zob.pos != fwrite(zstd->b.data(), 1, zstd->zob.pos, zstd->fp)) {
 	      fps->errcookie = "zstdClose fwrite failed.";
 	      break;
 	  }
@@ -1286,7 +1287,6 @@ assert(zstd);
     if (zstd->fp && fileno(zstd->fp) > 2)
 	(void) fclose(zstd->fp);
 
-    delete zstd->b;
     delete zstd;
 
     return rc;
