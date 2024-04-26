@@ -29,7 +29,7 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
                             const char * altNEVR,
                             const char * str, uint64_t number)
 {
-    rpmProblem p = (rpmProblem)xcalloc(1, sizeof(*p));
+    rpmProblem p = new rpmProblem_s {};
 
     p->type = type;
     p->key = key;
@@ -52,7 +52,7 @@ rpmProblem rpmProblemFree(rpmProblem prob)
     prob->pkgNEVR = _free(prob->pkgNEVR);
     prob->altNEVR = _free(prob->altNEVR);
     prob->str1 = _free(prob->str1);
-    free(prob);
+    delete prob;
     return NULL;
 }
 

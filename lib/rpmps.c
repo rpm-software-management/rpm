@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <vector>
+
 #include <inttypes.h>
 #include <stdlib.h>
 
@@ -12,10 +14,10 @@
 
 #include "debug.h"
 
+using std::vector;
+
 struct rpmps_s {
-    int numProblems;		/*!< Current probs array size. */
-    int numProblemsAlloced;	/*!< Allocated probs array size. */
-    rpmProblem *probs;		/*!< Array of pointers to specific problems. */
+    vector<rpmProblem> probs;	/*!< Array of pointers to specific problems. */
     int nrefs;			/*!< Reference count. */
 };
 
@@ -44,16 +46,16 @@ rpmps rpmpsLink(rpmps ps)
 int rpmpsNumProblems(rpmps ps)
 {
     int numProblems = 0;
-    if (ps && ps->probs)
-	numProblems = ps->numProblems;
+    if (ps)
+	numProblems = ps->probs.size();
     return numProblems;
 }
 
 rpmpsi rpmpsInitIterator(rpmps ps)
 {
     rpmpsi psi = NULL;
-    if (ps != NULL && ps->numProblems > 0) {
-	psi = (rpmpsi)xcalloc(1, sizeof(*psi));
+    if (ps != NULL && ps->probs.empty() == false) {
+	psi = new rpmpsi_s {};
 	psi->ps = rpmpsLink(ps);
 	psi->ix = -1;
     }
@@ -64,7 +66,7 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
 {
     if (psi != NULL) {
 	rpmpsUnlink(psi->ps);
-	free(psi);
+	delete psi;
     }
     return NULL;
 }
@@ -74,7 +76,7 @@ rpmProblem rpmpsiNext(rpmpsi psi)
     rpmProblem p = NULL;
     if (psi != NULL && psi->ps != NULL && ++psi->ix >= 0) {
 	rpmps ps = psi->ps;
-	if (psi->ix < ps->numProblems) {
+	if (psi->ix < ps->probs.size()) {
 	    p = ps->probs[psi->ix];
 	} else {
 	    psi->ix = -1;
@@ -99,7 +101,7 @@ rpmProblem rpmpsGetProblem(rpmpsi psi)
 
 rpmps rpmpsCreate(void)
 {
-    rpmps ps = (rpmps)xcalloc(1, sizeof(*ps));
+    rpmps ps = new rpmps_s {};
     return rpmpsLink(ps);
 }
 
@@ -110,15 +112,9 @@ rpmps rpmpsFree(rpmps ps)
 	return rpmpsUnlink(ps);
     }
 	
-    if (ps->probs) {
-	rpmpsi psi = rpmpsInitIterator(ps);
-	while (rpmpsNextIterator(psi) >= 0) {
-	    rpmProblemFree(rpmpsGetProblem(psi));	
-	}
-	rpmpsFreeIterator(psi);
-	ps->probs = _free(ps->probs);
-    }
-    ps = _free(ps);
+    for (auto & prob : ps->probs)
+	rpmProblemFree(prob);
+    delete ps;
     return NULL;
 }
 
@@ -126,17 +122,7 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 {
     if (ps == NULL || prob == NULL) return;
 
-    if (ps->numProblems == ps->numProblemsAlloced) {
-	if (ps->numProblemsAlloced)
-	    ps->numProblemsAlloced *= 2;
-	else
-	    ps->numProblemsAlloced = 2;
-	ps->probs = xrealloc(ps->probs,
-			ps->numProblemsAlloced * sizeof(*ps->probs));
-    }
-
-    ps->probs[ps->numProblems] = rpmProblemLink(prob);
-    ps->numProblems++;
+    ps->probs.push_back(rpmProblemLink(prob));
 }
 
 /*
