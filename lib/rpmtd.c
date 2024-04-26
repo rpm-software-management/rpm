@@ -9,7 +9,7 @@
 
 rpmtd rpmtdNew(void)
 {
-    rpmtd td = (rpmtd)xmalloc(sizeof(*td));
+    rpmtd td = new rpmtd_s {};
     rpmtdReset(td);
     return td;
 }
@@ -19,7 +19,7 @@ rpmtd rpmtdFree(rpmtd td)
     /* permit free on NULL td */
     if (td != NULL) {
 	rpmtdFreeData(td);
-	free(td);
+	delete td;
     }
     return NULL;
 }
