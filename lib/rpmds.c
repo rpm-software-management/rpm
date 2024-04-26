@@ -241,8 +241,7 @@ rpmds rpmdsFree(rpmds ds)
     ds->Color = _free(ds->Color);
 
     (void) rpmdsUnlink(ds);
-    memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
-    ds = _free(ds);
+    delete ds;
     return NULL;
 }
 
@@ -250,7 +249,7 @@ static rpmds rpmdsCreate(rpmstrPool pool,
 		  rpmTagVal tagN, const char * Type, int Count,
 		  unsigned int instance)
 {
-    rpmds ds = (rpmds)xcalloc(1, sizeof(*ds));
+    rpmds ds = new rpmds_s {};
 
     ds->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
     ds->tagN = tagN;
