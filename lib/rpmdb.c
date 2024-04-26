@@ -40,15 +40,7 @@
 #include "misc.h"
 #include "debug.h"
 
-#define HASHTYPE dbChk
-#define HTKEYTYPE unsigned int
-#define HTDATATYPE rpmRC
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
+using std::unordered_map;
 using std::vector;
 
 static rpmdb rpmdbUnlink(rpmdb db);
@@ -95,16 +87,6 @@ static int buildIndexes(rpmdb db)
     return rc;
 }
 
-static int uintCmp(unsigned int a, unsigned int b)
-{
-    return (a != b);
-}
-
-static unsigned int uintId(unsigned int a)
-{
-    return a;
-}
-
 /** \ingroup dbi
  * Return (newly allocated) integer of the epoch.
  * @param s		version string optionally containing epoch number
@@ -148,10 +130,6 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 
 	db->db_pkgs = dbi;
-	/* Allocate header checking cache .. based on some random number */
-	if (!verifyonly && (db->db_checked == NULL)) {
-	    db->db_checked = dbChkCreate(567, uintId, uintCmp, NULL, NULL);
-	}
 	/* If primary got created, we can safely run without fsync */
 	if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
 	    rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
@@ -387,7 +365,6 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
-    db->db_checked = dbChkFree(db->db_checked);
     db->db_indexes = _free(db->db_indexes);
 
     delete db;
@@ -1354,12 +1331,12 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	return rpmrc;
 
     /* Don't bother re-checking a previously read header. */
-    if (mi->mi_db->db_checked) {
-	rpmRC *res;
-	if (dbChkGetEntry(mi->mi_db->db_checked, mi->mi_offset,
-			  &res, NULL, NULL)) {
-	    rpmrc = res[0];
-	}
+    int verifyonly = mi->mi_db->db_flags & RPMDB_FLAG_VERIFYONLY;
+    if (!verifyonly) {
+	auto const & db_checked = mi->mi_db->db_checked;
+	auto entry = db_checked.find(mi->mi_offset);
+	if (entry != db_checked.end())
+	    rpmrc = entry->second;
     }
 
     /* If blob is unchecked, check blob import consistency now. */
@@ -1375,8 +1352,8 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	msg = _free(msg);
 
 	/* Mark header checked. */
-	if (mi->mi_db && mi->mi_db->db_checked) {
-	    dbChkAddEntry(mi->mi_db->db_checked, mi->mi_offset, rpmrc);
+	if (mi->mi_db && !verifyonly) {
+	    mi->mi_db->db_checked.insert({mi->mi_offset, rpmrc});
 	}
     }
     return rpmrc;
@@ -2243,8 +2220,8 @@ int rpmdbAdd(rpmdb db, Header h)
     if (ret == 0) {
 	headerSetInstance(h, hdrNum);
 	/* Purge our verification cache on added public keys */
-	if (db->db_checked && headerIsEntry(h, RPMTAG_PUBKEYS)) {
-	    dbChkEmpty(db->db_checked);
+	if (headerIsEntry(h, RPMTAG_PUBKEYS)) {
+	    db->db_checked.clear();
 	}
     }
 
