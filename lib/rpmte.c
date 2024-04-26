@@ -4,6 +4,8 @@
  */
 #include "system.h"
 
+#include <vector>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
 #include <rpm/rpmmacro.h>
@@ -256,8 +258,7 @@ rpmte rpmteFree(rpmte te)
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
 
-	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
-	free(te);
+	delete te;
     }
     return NULL;
 }
@@ -265,7 +266,7 @@ rpmte rpmteFree(rpmte te)
 rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
 	       rpmRelocation * relocs, int addop)
 {
-    rpmte p = (rpmte)xcalloc(1, sizeof(*p));
+    rpmte p = new rpmte_s {};
     p->ts = ts;
     p->type = type;
     p->addop = addop;
@@ -492,7 +493,6 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     char deptype = rpmdsD(ds);
     char mydt;
     const uint32_t * ddict;
-    rpm_color_t * colors;
     rpm_color_t val;
     int Count;
     unsigned ix;
@@ -501,7 +501,7 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     if (!(te && deptype && (Count = rpmdsCount(ds)) > 0 && rpmfilesFC(te->files) > 0))
 	return;
 
-    colors = (rpm_color_t *)xcalloc(Count, sizeof(*colors));
+    std::vector<rpm_color_t> colors(Count, 0);
 
     /* Calculate dependency color. */
     fi = rpmfilesIter(te->files, RPMFI_ITER_FWD);
@@ -528,7 +528,6 @@ assert (ix < Count);
 	te->color |= val;
 	(void) rpmdsSetColor(ds, val);
     }
-    free(colors);
     rpmfiFree(fi);
 }
 
