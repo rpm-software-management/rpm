@@ -386,7 +386,7 @@ int rpmdbClose(rpmdb db)
     db->db_checked = dbChkFree(db->db_checked);
     db->db_indexes = _free(db->db_indexes);
 
-    db = _free(db);
+    delete db;
 
 exit:
     return rc;
@@ -425,7 +425,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
 	return NULL;
     }
 
-    db = (rpmdb)xcalloc(sizeof(*db), 1);
+    db = new rpmdb_s {};
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
@@ -977,7 +977,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     rpmdbClose(mi->mi_db);
     mi->mi_ts = rpmtsFree(mi->mi_ts);
 
-    mi = _free(mi);
+    delete mi;
 
     return NULL;
 }
@@ -1589,7 +1589,7 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 	    return NULL;
     }
 
-    mi = (rpmdbMatchIterator)xcalloc(1, sizeof(*mi));
+    mi = new rpmdbMatchIterator_s {};
     mi->mi_set = NULL;
     mi->mi_db = rpmdbLink(db);
     mi->mi_rpmtag = dbitag;
@@ -1793,7 +1793,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     if (indexOpen(db, rpmtag, 0, &dbi))
 	return NULL;
 
-    ii = (rpmdbIndexIterator)xcalloc(1, sizeof(*ii));
+    ii = new rpmdbIndexIterator_s {};
     ii->ii_db = rpmdbLink(db);
     ii->ii_rpmtag = rpmtag;
     ii->ii_dbi = dbi;
@@ -1932,7 +1932,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     if (ii->ii_hdrNums)
 	ii->ii_hdrNums = _free(ii->ii_hdrNums);
 
-    ii = _free(ii);
+    delete ii;
     return NULL;
 }
 
