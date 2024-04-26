@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <stack>
 
 #include <stdarg.h>
 #include <pthread.h>
@@ -52,7 +53,6 @@ enum macroFlags_e {
 
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
-    struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
     const char *name;  	/*!< Macro name. */
     const char *opts;  	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
@@ -65,20 +65,15 @@ struct rpmMacroEntry_s {
     string sopts;
 };
 
+typedef std::map<string,std::stack<rpmMacroEntry_s>> macroTable;
+
 /*! The structure used to store the set of macros in a context. */
 struct rpmMacroContext_s {
-    std::map<string,rpmMacroEntry> tab; /*!< Macro entry pointers. */
+    macroTable tab;	/*!< Map of macro entry stacks */
     int depth;		 /*!< Depth tracking on external recursion */
     int level;		 /*!< Scope level tracking when on external recursion */
     pthread_mutex_t lock;
     pthread_mutexattr_t lockattr;
-
-    rpmMacroContext_s() = default;
-    rpmMacroContext_s(const rpmMacroContext_s &other) = delete;
-    rpmMacroContext_s(const rpmMacroContext_s &&other) = delete;
-    rpmMacroContext_s &operator =(const rpmMacroContext_s & other) = delete;
-    rpmMacroContext_s &operator =(const rpmMacroContext_s && other) = delete;
-    ~rpmMacroContext_s();
 };
 
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
@@ -149,26 +144,13 @@ static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
 static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
-static rpmMacroEntry popMacro(rpmMacroContext mc, const char * n);
+static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
 
 static void freeMacros(rpmMacroContext mc)
 {
-    for (auto & it : mc->tab) {
-	rpmMacroEntry me = it.second;
-	while (me) {
-	    rpmMacroEntry prev = me->prev;
-	    delete me;
-	    me = prev;
-	}
-    }
     mc->tab.clear();
-}
-
-rpmMacroContext_s::~rpmMacroContext_s()
-{
-    freeMacros(this);
 }
 
 static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
@@ -203,7 +185,7 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
     auto const & entry = mc->tab.find(n);
     if (entry == mc->tab.end())
 	return NULL;
-    return entry->second;
+    return &entry->second.top();
 }
 
 /* =============================================================== */
@@ -922,26 +904,25 @@ freeArgs(rpmMacroBuf mb)
     /* Delete dynamic macro definitions */
     auto it = mc->tab.begin();
     while (it != mc->tab.end()) {
-	rpmMacroEntry me = it->second;
-	if (me->level < mb->level) {
+	auto & stack = it->second;
+	auto & me = stack.top();
+	if (me.level < mb->level) {
 	    ++it;
 	    continue;
 	}
 	/* Warn on defined but unused non-automatic, scoped macros */
-	if (!(me->flags & (ME_AUTO|ME_USED))) {
+	if (!(me.flags & (ME_AUTO|ME_USED))) {
 	    rpmMacroBufErr(mb, 0, _("Macro %%%s defined but not used within scope\n"),
-			me->name);
+			me.name);
 	    /* Only whine once */
-	    me->flags |= ME_USED;
+	    me.flags |= ME_USED;
 	}
 
-	while (me && me->level >= mb->level) {
-	    rpmMacroEntry prev = it->second = me->prev;
-	    delete me;
-	    me = prev;
-	}
+	do {
+	    stack.pop();
+	} while (stack.empty() == false && stack.top().level >= mb->level);
 
-	if (me == NULL)
+	if (stack.empty())
 	    it = mc->tab.erase(it);
 	else
 	    ++it;
@@ -1799,33 +1780,31 @@ static void pushMacroAny(rpmMacroContext mc,
 	const char * n, const char * o, const char * b,
 	macroFunc f, void *priv, int nargs, int level, int flags)
 {
-    rpmMacroEntry me = new rpmMacroEntry_s {};
-    auto res = mc->tab.insert({n, me});
+    auto res = mc->tab.insert({n, {}});
     auto & entry = res.first;
+    auto & stack = entry->second;
 
-    /* push on top of previous definition */
-    if (res.second == false) {
-	me->prev = entry->second;
-	entry->second = me;
-    }
+    /* push an empty entry to the stack and fillup */
+    stack.push({});
+    auto & me = stack.top();
 
     /* name is the map key */
-    me->name = entry->first.c_str();
+    me.name = entry->first.c_str();
     /* copy body and opts */
-    me->sbody = b;
-    me->body = me->sbody.c_str();
+    me.sbody = b;
+    me.body = me.sbody.c_str();
     if (o) {
-	me->sopts = o;
-	me->opts = me->sopts.c_str();
+	me.sopts = o;
+	me.opts = me.sopts.c_str();
     }
 
     /* initialize */
-    me->func = f;
-    me->priv = priv;
-    me->nargs = nargs;
-    me->flags = flags;
-    me->flags &= ~(ME_USED);
-    me->level = level;
+    me.func = f;
+    me.priv = priv;
+    me.nargs = nargs;
+    me.flags = flags;
+    me.flags &= ~(ME_USED);
+    me.level = level;
 }
 
 static void pushMacro(rpmMacroContext mc,
@@ -1835,17 +1814,15 @@ static void pushMacro(rpmMacroContext mc,
 }
 
 /* Return pointer to the _previous_ macro definition (or NULL) */
-static rpmMacroEntry popMacro(rpmMacroContext mc, const char * n)
+static void popMacro(rpmMacroContext mc, const char * n)
 {
     auto const & entry = mc->tab.find(n);
     if (entry == mc->tab.end())
-	return NULL;
-    rpmMacroEntry me = entry->second;
-    rpmMacroEntry prev = entry->second = me->prev;
-    if (prev == NULL)
+	return;
+    auto & stack = entry->second;
+    stack.pop();
+    if (stack.empty())
 	mc->tab.erase(entry);
-    delete me;
-    return prev;
 }
 
 static int defineMacro(rpmMacroContext mc, const char * macro, int level)
@@ -1918,8 +1895,8 @@ exit:
 static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
 {
     for (auto const & entry : src->tab) {
-	rpmMacroEntry me = entry.second;
-	pushMacro(dst, me->name, me->opts, me->body, level, me->flags);
+	auto const & me = entry.second.top();
+	pushMacro(dst, me.name, me.opts, me.body, level, me.flags);
     }
 }
 
@@ -1974,14 +1951,14 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     if (fp == NULL) fp = stderr;
     
     fprintf(fp, "========================\n");
-    for (auto const & entry : mc->tab) {
-	rpmMacroEntry me = entry.second;
-	fprintf(fp, "%3d%c %s", me->level,
-		    ((me->flags & ME_USED) ? '=' : ':'), me->name);
-	if (me->opts && *me->opts)
-		fprintf(fp, "(%s)", me->opts);
-	if (me->body && *me->body)
-		fprintf(fp, "\t%s", me->body);
+    for (auto & entry : mc->tab) {
+	auto const & me = entry.second.top();
+	fprintf(fp, "%3d%c %s", me.level,
+		    ((me.flags & ME_USED) ? '=' : ':'), me.name);
+	if (me.opts && *me.opts)
+		fprintf(fp, "(%s)", me.opts);
+	if (me.body && *me.body)
+		fprintf(fp, "\t%s", me.body);
 	fprintf(fp, "\n");
     }
     fprintf(fp, _("======================== active %zu empty %d\n"),
