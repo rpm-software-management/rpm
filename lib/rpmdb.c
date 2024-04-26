@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <vector>
+
 #include <sys/file.h>
 #include <utime.h>
 #include <errno.h>
@@ -46,6 +48,8 @@
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
+
+using std::vector;
 
 static rpmdb rpmdbUnlink(rpmdb db);
 
@@ -295,7 +299,7 @@ struct rpmdbIndexIterator_s {
     rpmDbiTag		ii_rpmtag;
     dbiCursor		ii_dbc;
     dbiIndexSet		ii_set;
-    unsigned int	*ii_hdrNums;
+    vector<unsigned>	ii_hdrNums;
     int			ii_skipdata;
 };
 
@@ -1894,20 +1898,15 @@ unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr)
 
 const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii)
 {
-    int i;
-
     if (!ii || !ii->ii_set)
 	return NULL;
 
-    if (ii->ii_hdrNums)
-	ii->ii_hdrNums = _free(ii->ii_hdrNums);
-
-    ii->ii_hdrNums = (unsigned int *)xmalloc(sizeof(*ii->ii_hdrNums) * ii->ii_set->count);
-    for (i = 0; i < ii->ii_set->count; i++) {
+    ii->ii_hdrNums.resize(ii->ii_set->count);
+    for (int i = 0; i < ii->ii_set->count; i++) {
 	ii->ii_hdrNums[i] = ii->ii_set->recs[i].hdrNum;
     }
 
-    return ii->ii_hdrNums;
+    return ii->ii_hdrNums.data();
 }
 
 unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr)
@@ -1928,9 +1927,6 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     ii->ii_dbi = NULL;
     rpmdbClose(ii->ii_db);
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
-
-    if (ii->ii_hdrNums)
-	ii->ii_hdrNums = _free(ii->ii_hdrNums);
 
     delete ii;
     return NULL;
