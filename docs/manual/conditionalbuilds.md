@@ -91,9 +91,9 @@ macros which is nicer in other situations, e.g.:
 
 Always test for the `with`-condition, not the `without`-counterpart!
 
-## Overrinding Defaults
+## Overriding Defaults
 
-For distributions it can be useful to overwrite the build conditionals on a global scale. To not interfere with the users ability to overwrite the conditionals on the command line there is an option to overwrite the default value indenpendent on the one chosen in the spec file.
+For distributions it can be useful to override the build conditionals on a global scale. To not interfere with the users ability to overwrite the conditionals on the command line there is an option to override the default value independently of the one chosen in the spec file.
 
 To do this one can define a `%bcond_override_default_NAME` macro as one or zero or use the `%{bcond_override_default NAME VALUE}` macro. Distributions can put the former into a global macro file that is installed during local builds to propagate these changed defaults outside their build system. Using different versions of the macro file allows building the same set of packages in different ways - e.g. against different libraries - without altering all the spec files.
 
