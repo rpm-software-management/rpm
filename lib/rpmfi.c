@@ -1242,7 +1242,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     if (rpmfilesFC(fi) > 0) {
 	if (fi->ofndata != &fi->fndata) {
 	    rpmfnClear(fi->ofndata);
-	    free(fi->ofndata);
+	    delete fi->ofndata;
 	}
 	rpmfnClear(&fi->fndata);
 
@@ -1291,8 +1291,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     fi->nlinks = nlinkHashFree(fi->nlinks);
 
     (void) rpmfilesUnlink(fi);
-    memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
-    fi = _free(fi);
+    delete fi;
 
     return NULL;
 }
@@ -1310,7 +1309,7 @@ rpmfi rpmfiFree(rpmfi fi)
     fi->found = _free(fi->found);
     fi->archive = rpmcpioFree(fi->archive);
 
-    free(fi);
+    delete fi;
     return NULL;
 }
 
@@ -1709,7 +1708,7 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
-    rpmfiles fi = (rpmfiles)xcalloc(1, sizeof(*fi));
+    rpmfiles fi = new rpmfiles_s {};
     int fc;
 
     fi->magic = RPMFIMAGIC;
@@ -1732,7 +1731,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 	if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 	    /* For relocated packages, grab the original paths too */
 	    int ofc;
-	    fi->ofndata = (rpmfn)xmalloc(sizeof(*fi->ofndata));
+	    fi->ofndata = new rpmfn_s {};
 	    ofc = rpmfnInit(fi->ofndata, RPMTAG_ORIGBASENAMES, h, fi->pool);
 	    
 	    if (ofc != 0 && ofc != fc)
@@ -1780,7 +1779,7 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
     rpmfi fi = NULL;
 
     if (files && itype>=0 && itype<=RPMFILEITERMAX) {
-	fi = (rpmfi)xcalloc(1, sizeof(*fi));
+	fi = new rpmfi_s {};
 	fi->i = -1;
 	fi->j = -1;
 	fi->files = link ? rpmfilesLink(files) : files;
