@@ -1,6 +1,8 @@
 #ifndef _DBI_H
 #define _DBI_H
 
+#include <unordered_map>
+
 #include <stdio.h>
 #include "dbiset.h"
 #include <rpm/rpmtag.h>
@@ -31,6 +33,8 @@ struct dbConfig_s {
     int	db_no_fsync;	/*!< no-op fsync for db */
 };
 
+typedef std::unordered_map<unsigned int,rpmRC> dbChk;
+
 struct rpmdbOps_s;
 
 /** \ingroup rpmdb
@@ -44,7 +48,7 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     const char	* db_descr;	/*!< db backend description (for error msgs) */
-    struct dbChk_s * db_checked;/*!< headerCheck()'ed package instances */
+    dbChk	db_checked;	/*!< headerCheck()'ed package instances */
     rpmdb	db_next;
     int		db_opens;
     dbiIndex	db_pkgs;	/*!< Package db */
