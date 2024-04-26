@@ -525,7 +525,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 			      rpmscriptFlags flags, const char *prefix)
 {
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
-    rpmScript script = (rpmScript)xcalloc(1, sizeof(*script));
+    rpmScript script = new rpmScript_s {};
     script->tag = tag;
     script->type = getScriptType(tag);
     script->flags = getDefFlags(tag) | flags;
@@ -553,7 +553,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
 void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param)
 {
-    script->nextFileFunc = (struct scriptNextFileFunc_s *)xmalloc(sizeof(*script->nextFileFunc));
+    script->nextFileFunc = new scriptNextFileFunc_s {};
     script->nextFileFunc->func = func;
     script->nextFileFunc->param = param;
 }
@@ -706,8 +706,8 @@ rpmScript rpmScriptFree(rpmScript script)
 	free(script->args);
 	free(script->body);
 	free(script->descr);
-	free(script->nextFileFunc);
-	free(script);
+	delete script->nextFileFunc;
+	delete script;
     }
     return NULL;
 }

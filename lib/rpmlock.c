@@ -24,7 +24,7 @@ struct rpmlock_s {
 
 static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 {
-    rpmlock lock = (rpmlock) malloc(sizeof(*lock));
+    rpmlock lock = new rpmlock_s {};
 
     if (lock != NULL) {
 	mode_t oldmask = umask(022);
@@ -35,7 +35,7 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	    if (errno == EACCES)
 		lock->fd = open(lock_path, O_RDONLY);
 	    if (lock->fd == -1) {
-		free(lock);
+		delete lock;
 		lock = NULL;
 	    } else {
 		lock->openmode = RPMLOCK_READ;
@@ -58,7 +58,7 @@ static void rpmlock_free(rpmlock lock)
 	free(lock->path);
 	free(lock->descr);
 	(void) close(lock->fd);
-	free(lock);
+	delete lock;
     }
 }
 

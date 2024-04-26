@@ -592,8 +592,7 @@ static rpmpsm rpmpsmFree(rpmpsm psm)
 	rpmfilesFree(psm->files);
 	rpmtsFree(psm->ts),
 	/* XXX rpmte not refcounted yet */
-	memset(psm, 0, sizeof(*psm)); /* XXX trash and burn */
-    	free(psm);
+	delete psm;
     }
     return NULL;
 }
@@ -615,7 +614,7 @@ static int isUpdate(rpmts ts, rpmte te)
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal)
 {
-    rpmpsm psm = (rpmpsm)xcalloc(1, sizeof(*psm));
+    rpmpsm psm = new rpmpsm_s {};
     psm->ts = rpmtsLink(ts);
     psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */

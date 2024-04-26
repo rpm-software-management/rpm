@@ -196,16 +196,14 @@ rpmgi rpmgiFree(rpmgi gi)
     if (gi != NULL) {
 	rpmtsFree(gi->ts);
 	argvFree(gi->argv);
-
-	memset(gi, 0, sizeof(*gi)); /* XXX trash and burn */
-	free(gi);
+	delete gi;
     }
     return NULL;
 }
 
 rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
 {
-    rpmgi gi = (rpmgi)xcalloc(1, sizeof(*gi));
+    rpmgi gi = new rpmgi_s {};
 
     gi->ts = rpmtsLink(ts);
 
