@@ -835,7 +835,7 @@ rpmts rpmtsFree(rpmts ts)
     tsmem->removedPackages = packageHashFree(tsmem->removedPackages);
     tsmem->installedPackages = packageHashFree(tsmem->installedPackages);
     tsmem->order = _free(tsmem->order);
-    ts->members = _free(ts->members);
+    delete ts->members;
 
     ts->dsi = _free(ts->dsi);
 
@@ -859,8 +859,7 @@ rpmts rpmtsFree(rpmts ts)
 	rpmtsPrintStats(ts);
 
     (void) rpmtsUnlink(ts);
-
-    ts = _free(ts);
+    delete ts;
 
     return NULL;
 }
@@ -1190,7 +1189,7 @@ static int vfylevel_init(void)
 
 rpmts rpmtsCreate(void)
 {
-    rpmts ts = (rpmts)xcalloc(1, sizeof(*ts));
+    rpmts ts = new rpmts_s {};
     tsMembers tsmem;
     char *source_date_epoch = NULL;
 
@@ -1241,7 +1240,7 @@ rpmts rpmtsCreate(void)
 	free(tmp);
     }
 
-    tsmem = (tsMembers)xcalloc(1, sizeof(*ts->members));
+    tsmem = new tsMembers_s {};
     tsmem->pool = NULL;
     tsmem->delta = 5;
     tsmem->addedPackages = NULL;
@@ -1288,16 +1287,14 @@ rpmtsi rpmtsiFree(rpmtsi tsi)
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
     if (tsi) {
 	tsi->ts = rpmtsFree(tsi->ts);
-	_free(tsi);
+	delete tsi;
     }
     return NULL;
 }
 
 rpmtsi rpmtsiInit(rpmts ts)
 {
-    rpmtsi tsi = NULL;
-
-    tsi = (rpmtsi)xcalloc(1, sizeof(*tsi));
+    rpmtsi tsi = new rpmtsi_s {};
     tsi->ts = rpmtsLink(ts);
     tsi->oc = 0;
     return tsi;
@@ -1364,7 +1361,7 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 	ts->lock = rpmlockNew(ts->lockPath, _("transaction"));
 
     if (rpmlockAcquire(ts->lock)) {
-	txn = (rpmtxn)xcalloc(1, sizeof(*txn));
+	txn = new rpmtxn_s {};
 	txn->lock = ts->lock;
 	txn->flags = flags;
 	txn->ts = rpmtsLink(ts);
@@ -1382,7 +1379,7 @@ rpmtxn rpmtxnEnd(rpmtxn txn)
 	if (txn->flags & RPMTXN_WRITE)
 	    rpmsqBlock(SIG_UNBLOCK);
 	rpmtsFree(txn->ts);
-	free(txn);
+	delete txn;
     }
     return NULL;
 }
