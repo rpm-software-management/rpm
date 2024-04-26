@@ -352,7 +352,7 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
 
 struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring)
 {
-    struct rpmvs_s *sis = (struct rpmvs_s *)xcalloc(1, sizeof(*sis));
+    struct rpmvs_s *sis = new rpmvs_s {};
     sis->vsflags = vsflags;
     sis->keyring = rpmKeyringLink(keyring);
     sis->vfylevel = vfylevel;
@@ -387,7 +387,7 @@ struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis)
 	    rpmsinfoFini(&sis->sigs[i]);
 	}
 	free(sis->sigs);
-	free(sis);
+	delete sis;
     }
     return NULL;
 }
