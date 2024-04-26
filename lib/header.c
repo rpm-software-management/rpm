@@ -272,13 +272,13 @@ Header headerFree(Header h)
     }
     h->blob = _free(h->blob);
 
-    h = _free(h);
+    delete h;
     return NULL;
 }
 
 static Header headerCreate(void *blob, int32_t indexLen)
 {
-    Header h = (Header)xcalloc(1, sizeof(*h));
+    Header h = new headerToken_s {};
     if (blob) {
 	h->blob = blob;
 	h->indexAlloced = indexLen + 1;
@@ -1046,7 +1046,7 @@ rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg)
 errxit:
     if (h) {
 	free(h->index);
-	free(h);
+	delete h;
 	rasprintf(emsg, _("hdr load: BAD"));
     }
     return RPMRC_FAIL;
@@ -1763,14 +1763,14 @@ HeaderIterator headerFreeIterator(HeaderIterator hi)
 {
     if (hi != NULL) {
 	hi->h = headerFree(hi->h);
-	hi = _free(hi);
+	delete hi;
     }
     return NULL;
 }
 
 HeaderIterator headerInitIterator(Header h)
 {
-    HeaderIterator hi = (HeaderIterator)xmalloc(sizeof(*hi));
+    HeaderIterator hi = new headerIterator_s {};
 
     headerSort(h);
 
@@ -1945,7 +1945,7 @@ exit:
 
 hdrblob hdrblobCreate(void)
 {
-    hdrblob blob = (hdrblob)xcalloc(1, sizeof(*blob));
+    hdrblob blob = new hdrblob_s {};
     return blob;
 }
 
@@ -1953,7 +1953,7 @@ hdrblob hdrblobFree(hdrblob blob)
 {
     if (blob) {
 	free(blob->ei);
-	free(blob);
+	delete blob;
     }
     return NULL;
 }
