@@ -90,9 +90,7 @@ struct fprintCache_s {
 
 fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool)
 {
-    fingerPrintCache fpc;
-
-    fpc = (fingerPrintCache)xcalloc(1, sizeof(*fpc));
+    fingerPrintCache fpc = new fprintCache_s {};
     fpc->ht = rpmFpEntryHashCreate(sizeHint, sidHash, sidCmp,
 				   NULL, (rpmFpEntryHashFreeData)free);
     fpc->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
@@ -105,7 +103,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
 	cache->ht = rpmFpEntryHashFree(cache->ht);
 	cache->fp = rpmFpHashFree(cache->fp);
 	cache->pool = rpmstrPoolFree(cache->pool);
-	free(cache);
+	delete cache;
     }
     return NULL;
 }
