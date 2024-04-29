@@ -716,20 +716,22 @@ static void initSourceHeader(rpmSpec spec)
 
     /* Add tags for sources and patches */
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
+	char *fn = rpmExpand(srcPtr->source, NULL);
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    headerPutString(sourcePkg->header, RPMTAG_SOURCE, srcPtr->source);
+	    headerPutString(sourcePkg->header, RPMTAG_SOURCE, fn);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
 		headerPutUint32(sourcePkg->header, RPMTAG_NOSOURCE,
 				&srcPtr->num, 1);
 	    }
 	}
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    headerPutString(sourcePkg->header, RPMTAG_PATCH, srcPtr->source);
+	    headerPutString(sourcePkg->header, RPMTAG_PATCH, fn);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
 		headerPutUint32(sourcePkg->header, RPMTAG_NOPATCH,
 				&srcPtr->num, 1);
 	    }
 	}
+	free(fn);
     }
     if (spec->sourceRpmName == NULL) {
 	char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);

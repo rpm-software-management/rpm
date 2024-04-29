@@ -3037,3 +3037,34 @@ runroot_other /usr/sbin/getcap /usr/bin/test
 [])
 
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild -bs with source macro])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bs /data/SPECS/macrosource.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -ql /build/SRPMS/macrosource-0-0.src.rpm
+],
+[0],
+[hello-1.0-install.patch
+hello-2.0.tar.gz
+macrosource.spec
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -q --qf "[%{SOURCE}\n]" --qf "[%{PATCH}\n]" /build/SRPMS/macrosource-0-0.src.rpm
+],
+[0],
+[hello-2.0.tar.gz
+hello-1.0-install.patch
+],
+[])
+RPMTEST_CLEANUP
