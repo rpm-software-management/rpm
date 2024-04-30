@@ -1295,7 +1295,7 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 	    }
 
 	    /* Using release here causes a buildid no-recompute test to fail */
-	    spec->buildDir = rpmExpand("%{_top_builddir}/%{NAME}-%{VERSION}-%{_arch}", NULL);
+	    spec->buildDir = rpmExpand("%{_top_builddir}/%{NAME}-%{VERSION}-build", NULL);
 	    /* Override toplevel _builddir for backwards compatibility */
 	    rpmPushMacroFlags(spec->macros, "_builddir", NULL, spec->buildDir,
 				RMIL_SPEC, RPMMACRO_LITERAL);
