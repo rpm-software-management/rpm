@@ -273,12 +273,12 @@ runroot_other find /build/BUILD|sort
 ],
 [0],
 [/build/BUILD
-/build/BUILD/simple-1.0-noarch
-/build/BUILD/simple-1.0-noarch/BUILDROOT
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin/simple
-/build/BUILD/simple-1.0-noarch/simple
+/build/BUILD/simple-1.0-build
+/build/BUILD/simple-1.0-build/BUILDROOT
+/build/BUILD/simple-1.0-build/BUILDROOT/opt
+/build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
+/build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/simple
 ],
 [ignore])
 
@@ -291,18 +291,18 @@ runroot_other find /build/BUILD|sort
 ],
 [0],
 [/build/BUILD
-/build/BUILD/simple-1.0-noarch
-/build/BUILD/simple-1.0-noarch/BUILDROOT
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin
-/build/BUILD/simple-1.0-noarch/BUILDROOT/opt/bin/simple
-/build/BUILD/simple-1.0-noarch/SPECPARTS
-/build/BUILD/simple-1.0-noarch/simple-1.0
-/build/BUILD/simple-1.0-noarch/simple-1.0/dir1
-/build/BUILD/simple-1.0-noarch/simple-1.0/dir1/file3
-/build/BUILD/simple-1.0-noarch/simple-1.0/file1
-/build/BUILD/simple-1.0-noarch/simple-1.0/file2
-/build/BUILD/simple-1.0-noarch/simple-1.0/simple
+/build/BUILD/simple-1.0-build
+/build/BUILD/simple-1.0-build/BUILDROOT
+/build/BUILD/simple-1.0-build/BUILDROOT/opt
+/build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
+/build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/SPECPARTS
+/build/BUILD/simple-1.0-build/simple-1.0
+/build/BUILD/simple-1.0-build/simple-1.0/dir1
+/build/BUILD/simple-1.0-build/simple-1.0/dir1/file3
+/build/BUILD/simple-1.0-build/simple-1.0/file1
+/build/BUILD/simple-1.0-build/simple-1.0/file2
+/build/BUILD/simple-1.0-build/simple-1.0/simple
 ],
 [ignore])
 RPMTEST_CLEANUP
@@ -2416,17 +2416,17 @@ runroot rpmbuild -bb --quiet /data/SPECS/filemiss.spec
 ],
 [1],
 [],
-[error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/CREDITS
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/foo
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/bar{a,b}
-cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/INSTALL': No such file or directory
-cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/README*': No such file or directory
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/INSTALL
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/doc/filemisstest-1.0/README*
-cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/LICENSE': No such file or directory
-cp: cannot stat '/build/BUILD/filemisstest-1.0-x86_64/OTHERLICENSE?': No such file or directory
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/licenses/filemisstest-1.0/LICENSE
-error: File not found: /build/BUILD/filemisstest-1.0-x86_64/BUILDROOT/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
+[error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/doc/filemisstest-1.0/CREDITS
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/foo
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/bar{a,b}
+cp: cannot stat '/build/BUILD/filemisstest-1.0-build/INSTALL': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-build/README*': No such file or directory
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/doc/filemisstest-1.0/INSTALL
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/doc/filemisstest-1.0/README*
+cp: cannot stat '/build/BUILD/filemisstest-1.0-build/LICENSE': No such file or directory
+cp: cannot stat '/build/BUILD/filemisstest-1.0-build/OTHERLICENSE?': No such file or directory
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/licenses/filemisstest-1.0/LICENSE
+error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/licenses/filemisstest-1.0/OTHERLICENSE?
 ],
 )
 RPMTEST_CLEANUP
