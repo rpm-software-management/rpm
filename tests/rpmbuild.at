@@ -1105,7 +1105,7 @@ RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
 		--define '__script_mime text/plain' \
-		--undefine '__script_magic' \
+		--define '__script_magic %{nil}' \
 		/data/SPECS/shebang.spec
 runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
 ],
@@ -3065,6 +3065,58 @@ runroot rpm -q --qf "[%{SOURCE}\n]" --qf "[%{PATCH}\n]" /build/SRPMS/macrosource
 [0],
 [hello-2.0.tar.gz
 hello-1.0-install.patch
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild target macro sanity])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+# This is surprisingly tricky - we need to place these macros in a place
+# that is after the platform stuff in macro path so we can't just drop
+# into macros.d, and then we need to take cmake prefix into account,
+# escape \'s and $'s and whatnot. Pff. Would be easier to place to
+# a macro file, but this is so tightly coupled that seems saner to
+# have it all here.
+etcdir=$(runroot rpm --eval "%_sysconfdir")
+mkdir -p ${RPMTEST}/${etcdir}/rpm/
+
+cat << EOF >> ${RPMTEST}/${etcdir}/rpm/macros.template
+%__spec_build_pre\\
+%{___build_pre_env}\\
+echo BUILD_PRE \${RPM_ARCH} %{_arch} %{_target_cpu} >> /tmp/build.out\\
+%{nil}
+
+%__spec_build_post\\
+echo BUILD_POST \${RPM_ARCH} %{_arch} %{_target_cpu} >> /tmp/build.out\\
+%{nil}
+EOF
+
+RPMTEST_CHECK([
+runroot_other rm -f /tmp/build.out
+runroot rpmbuild --quiet \
+	-bc /data/SPECS/templ.spec
+runroot_other cat /tmp/build.out
+],
+[0],
+[BUILD_PRE noarch noarch noarch
+BUILD noarch noarch noarch
+BUILD_POST noarch noarch noarch
+],
+[])
+
+RPMTEST_CHECK([
+runroot_other rm -f /tmp/build.out
+runroot rpmbuild --quiet \
+	--target noarch \
+	-bc /data/SPECS/templ.spec
+runroot_other cat /tmp/build.out
+],
+[0],
+[BUILD_PRE noarch noarch noarch
+BUILD noarch noarch noarch
+BUILD_POST noarch noarch noarch
 ],
 [])
 RPMTEST_CLEANUP
