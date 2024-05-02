@@ -10,7 +10,7 @@ struct test {
   char *fingerprint;
 };
 
-static int test(struct test *test)
+static int test(const struct test *test)
 {
     // This program is run from a container, the data is in /data.
     const char *dir = "/data/";
@@ -91,7 +91,7 @@ int main(void)
     int rt;
     int ec = 0;
 
-    struct test tests[] = {
+    const struct test tests[] = {
       // Make sure this fails.
       { "RPMS/hello-1.0-1.i386.rpm", NULL },
       // ASCII-armor
