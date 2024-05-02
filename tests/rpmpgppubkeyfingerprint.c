@@ -6,9 +6,9 @@
 #include <rpm/rpmfileutil.h>
 
 struct test {
-  char *filename;
-  // If NULL, then filename does not contain a valid fingerprint.
-  char *fingerprint;
+    char *filename;
+    // If NULL, then filename does not contain a valid fingerprint.
+    char *fingerprint;
 };
 
 #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
@@ -33,8 +33,8 @@ static int test(const struct test *test)
     size_t fplen = 0;
 
     if (!test) {
-    pr_err("Invalid arg\n");
-    goto end;
+	pr_err("Invalid arg\n");
+	goto end;
     }
 
     const char *filename = test->filename;
@@ -44,12 +44,12 @@ static int test(const struct test *test)
 
     f = fopen(path, "r");
     if (!f) {
-    char *cwd = rpmGetCwd();
-    pr_err("Failed to open %s (cwd: %s)\n",
-        path, cwd ? : "<unknown>");
-    free(cwd);
-    free(path);
-    goto end;
+	char *cwd = rpmGetCwd();
+	pr_err("Failed to open %s (cwd: %s)\n",
+		path, cwd ? : "<unknown>");
+	free(cwd);
+	free(path);
+	goto end;
     }
     free(path);
 
@@ -57,31 +57,31 @@ static int test(const struct test *test)
     rc = ferror(f);
     if (rc) {
 	pr_err("%s: Read error: %s\n", filename, strerror(rc));
-    goto end;
+	goto end;
     }
 
     rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
     if (rc) {
-	if (! fpr) {
+	if (!fpr) {
 	    // This test expects the parser to fail.
 	    ret = 0;
 	    goto end;
 	}
 	pr_err("pgpPubkeyFingerprint failed on %s\n", filename);
-    goto end;
+	goto end;
     }
 
     // We expect success now.
     got = rpmhex(fp, fplen);
-    if (! got) {
+    if (!got) {
 	pr_err("%s: rpmhex failed\n", filename);
-    goto end;
+	goto end;
     }
 
     if (!fpr || strcmp(got, fpr) != 0) {
 	pr_err("%s:\n     got '%s'\nexpected '%s'\n",
-                filename, got, fpr ? fpr : "<none>");
-    goto end;
+		filename, got, fpr ? fpr : "<none>");
+	goto end;
     }
 
     ret = 0;
@@ -91,7 +91,7 @@ end:
     free(fp);
 
     if (f)
-        fclose(f);
+	fclose(f);
 
     return ret;
 }
@@ -102,23 +102,23 @@ int main(void)
     int ec = 0;
 
     const struct test tests[] = {
-      // Make sure this fails.
-      { "RPMS/hello-1.0-1.i386.rpm", NULL },
-      // ASCII-armor
-      { "keys/rpm.org-rsa-2048-test.pub",
-	NULL },
-      { "keys/CVE-2021-3521-badbind.asc",
-	NULL },
-      // Binary.
-      { "keys/rpm.org-rsa-2048-test.pgp",
-	"771b18d3d7baa28734333c424344591e1964c5fc" },
+	// Make sure this fails.
+	{ "RPMS/hello-1.0-1.i386.rpm", NULL },
+	// ASCII-armor
+	{ "keys/rpm.org-rsa-2048-test.pub",
+      NULL },
+	{ "keys/CVE-2021-3521-badbind.asc",
+      NULL },
+	// Binary.
+	{ "keys/rpm.org-rsa-2048-test.pgp",
+      "771b18d3d7baa28734333c424344591e1964c5fc" },
     };
 
     for (i = 0; i < (int) ARRAY_SIZE(tests); i++) {
 	if (test(&tests[i])) {
 	    pr_err("%s failed\n", tests[i].filename);
-        if (!ec)
-	        ec = 1;
+	    if (!ec)
+		ec = 1;
 	}
     }
 
