@@ -15,6 +15,7 @@ struct test {
 
 static int test(const struct test *test)
 {
+    int ret = 1;
     char *path = NULL;
 
     const char *filename = test->filename;
@@ -30,7 +31,7 @@ static int test(const struct test *test)
 	fprintf(stderr, "Failed to open %s (cwd: %s)\n",
 		path, cwd ? : "<unknown>");
 	free(path);
-	return 1;
+	return ret;
     }
     free(path);
 
@@ -38,7 +39,7 @@ static int test(const struct test *test)
     uint8_t *data = malloc(len);
     if (!data) {
 	fprintf(stderr, "out of memory\n");
-	return 1;
+	return ret;
     }
 
     ssize_t bytes = fread((char *)data, 1, len, f);
@@ -47,7 +48,7 @@ static int test(const struct test *test)
 	fprintf(stderr, "%s: Read error: %s\n",
 		filename, strerror(err));
 	free(data);
-	return 1;
+	return ret;
     }
 
     uint8_t *fp = NULL;
@@ -57,29 +58,33 @@ static int test(const struct test *test)
     if (rc) {
 	if (! fpr) {
 	    // This test expects the parser to fail.
-	    return 0;
+	    ret = 0;
+	    goto end;
 	}
 	fprintf(stderr, "pgpPubkeyFingerprint failed on %s\n", filename);
-	return 1;
+    goto end;
     }
 
     // We expect success now.
     char *got = rpmhex(fp, fplen);
     if (! got) {
 	fprintf(stderr, "%s: rpmhex failed\n", filename);
-	return 1;
+	return ret;
     }
 
     if (!fpr || strcmp(got, fpr) != 0) {
 	fprintf(stderr, "%s:\n     got '%s'\nexpected '%s'\n",
                 filename, got, fpr ? fpr : "<none>");
 	free(got);
-	return 1;
+	return ret;
     }
     free(got);
     free(fp);
 
-    return 0;
+    ret = 0;
+
+end:
+    return ret;
 }
 
 int main(void)
