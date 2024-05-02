@@ -24,8 +24,8 @@ static int test(const struct test *test)
 {
     int ret = 1;
     char *path = NULL;
-    char *got;
-    FILE *f;
+    char *got = NULL;
+    FILE *f = NULL;
     uint8_t data[LEN] = {};
     ssize_t bytes;
     int rc;
@@ -34,7 +34,7 @@ static int test(const struct test *test)
 
     if (!test) {
     pr_err("Invalid arg\n");
-    return ret;
+    goto end;
     }
 
     const char *filename = test->filename;
@@ -56,9 +56,8 @@ static int test(const struct test *test)
     bytes = fread((char *)data, 1, LEN, f);
     rc = ferror(f);
     if (rc) {
-	pr_err("%s: Read error: %s\n",
-		filename, strerror(rc));
-	return ret;
+	pr_err("%s: Read error: %s\n", filename, strerror(rc));
+    goto end;
     }
 
     rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
@@ -76,21 +75,24 @@ static int test(const struct test *test)
     got = rpmhex(fp, fplen);
     if (! got) {
 	pr_err("%s: rpmhex failed\n", filename);
-	return ret;
+    goto end;
     }
 
     if (!fpr || strcmp(got, fpr) != 0) {
 	pr_err("%s:\n     got '%s'\nexpected '%s'\n",
                 filename, got, fpr ? fpr : "<none>");
-	free(got);
-	return ret;
+    goto end;
     }
-    free(got);
-    free(fp);
 
     ret = 0;
 
 end:
+    free(got);
+    free(fp);
+
+    if (f)
+        fclose(f);
+
     return ret;
 }
 
