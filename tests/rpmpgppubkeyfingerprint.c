@@ -16,6 +16,8 @@ struct test {
 
 #define LEN     102400 // 100 * 1024
 
+#define pr_err(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
+
 static int test(const struct test *test)
 {
     int ret = 1;
@@ -29,7 +31,7 @@ static int test(const struct test *test)
     size_t fplen = 0;
 
     if (!test) {
-    fprintf(stderr, "Invalid arg\n");
+    pr_err("Invalid arg\n");
     return ret;
     }
 
@@ -41,7 +43,7 @@ static int test(const struct test *test)
     f = fopen(path, "r");
     if (!f) {
     char *cwd = rpmGetCwd();
-    fprintf(stderr, "Failed to open %s (cwd: %s)\n",
+    pr_err("Failed to open %s (cwd: %s)\n",
         path, cwd ? : "<unknown>");
     free(cwd);
     free(path);
@@ -52,7 +54,7 @@ static int test(const struct test *test)
     bytes = fread((char *)data, 1, LEN, f);
     rc = ferror(f);
     if (rc) {
-	fprintf(stderr, "%s: Read error: %s\n",
+	pr_err("%s: Read error: %s\n",
 		filename, strerror(rc));
 	return ret;
     }
@@ -64,19 +66,19 @@ static int test(const struct test *test)
 	    ret = 0;
 	    goto end;
 	}
-	fprintf(stderr, "pgpPubkeyFingerprint failed on %s\n", filename);
+	pr_err("pgpPubkeyFingerprint failed on %s\n", filename);
     goto end;
     }
 
     // We expect success now.
     got = rpmhex(fp, fplen);
     if (! got) {
-	fprintf(stderr, "%s: rpmhex failed\n", filename);
+	pr_err("%s: rpmhex failed\n", filename);
 	return ret;
     }
 
     if (!fpr || strcmp(got, fpr) != 0) {
-	fprintf(stderr, "%s:\n     got '%s'\nexpected '%s'\n",
+	pr_err("%s:\n     got '%s'\nexpected '%s'\n",
                 filename, got, fpr ? fpr : "<none>");
 	free(got);
 	return ret;
@@ -112,11 +114,11 @@ int main(void)
     for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
 	rt = test(&tests[i]);
 	if (rt != 0) {
-	    fprintf(stderr, "%s failed\n", tests[i].filename);
+	    pr_err("%s failed\n", tests[i].filename);
 	    ec = 1;
 	}
     }
 
-    fprintf(stderr, "Exit code: %d\n", ec);
+    pr_err("Exit code: %d\n", ec);
     return ec;
 }
