@@ -20,10 +20,13 @@ static int test(const struct test *test)
 {
     int ret = 1;
     char *path = NULL;
+    char *got;
     FILE *f;
     uint8_t data[LEN] = {};
     ssize_t bytes;
     int rc;
+    uint8_t *fp = NULL;
+    size_t fplen = 0;
 
     if (!test) {
     fprintf(stderr, "Invalid arg\n");
@@ -54,8 +57,6 @@ static int test(const struct test *test)
 	return ret;
     }
 
-    uint8_t *fp = NULL;
-    size_t fplen = 0;
     rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
     if (rc) {
 	if (! fpr) {
@@ -68,7 +69,7 @@ static int test(const struct test *test)
     }
 
     // We expect success now.
-    char *got = rpmhex(fp, fplen);
+    got = rpmhex(fp, fplen);
     if (! got) {
 	fprintf(stderr, "%s: rpmhex failed\n", filename);
 	return ret;
