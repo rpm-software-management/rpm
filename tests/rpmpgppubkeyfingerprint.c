@@ -14,11 +14,16 @@ struct test {
 // This program is run from a container, the data is in /data.
 #define DIR     "/data"
 
+#define LEN     102400 // 100 * 1024
+
 static int test(const struct test *test)
 {
     int ret = 1;
     char *path = NULL;
     FILE *f;
+    uint8_t data[LEN] = {};
+    ssize_t bytes;
+    int rc;
 
     if (!test) {
     fprintf(stderr, "Invalid arg\n");
@@ -41,26 +46,17 @@ static int test(const struct test *test)
     }
     free(path);
 
-    const int len = 100 * 1024;
-    uint8_t *data = malloc(len);
-    if (!data) {
-	fprintf(stderr, "out of memory\n");
-	return ret;
-    }
-
-    ssize_t bytes = fread((char *)data, 1, len, f);
-    int err = ferror(f);
-    if (err) {
+    bytes = fread((char *)data, 1, LEN, f);
+    rc = ferror(f);
+    if (rc) {
 	fprintf(stderr, "%s: Read error: %s\n",
-		filename, strerror(err));
-	free(data);
+		filename, strerror(rc));
 	return ret;
     }
 
     uint8_t *fp = NULL;
     size_t fplen = 0;
-    int rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
-    free(data);
+    rc = pgpPubkeyFingerprint(data, bytes, &fp, &fplen);
     if (rc) {
 	if (! fpr) {
 	    // This test expects the parser to fail.
