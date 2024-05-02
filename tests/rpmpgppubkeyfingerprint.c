@@ -10,21 +10,17 @@ struct test {
   char *fingerprint;
 };
 
+// This program is run from a container, the data is in /data.
+#define DIR     "/data"
+
 static int test(const struct test *test)
 {
-    // This program is run from a container, the data is in /data.
-    const char *dir = "/data/";
+    char *path = NULL;
 
     const char *filename = test->filename;
     const char *fpr = test->fingerprint;
 
-    char *path = malloc(strlen(dir) + 1 + strlen(filename) + 1);
-    if (!path) {
-	fprintf(stderr, "out of memory\n");
-	return 1;
-    }
-    sprintf(path, "%s/%s", dir, filename);
-
+    rasprintf(&path, "%s/%s", DIR, filename);
 
     FILE *f = fopen(path, "r");
     if (!f) {
