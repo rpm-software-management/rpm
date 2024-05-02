@@ -11,6 +11,8 @@ struct test {
   char *fingerprint;
 };
 
+#define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
+
 // This program is run from a container, the data is in /data.
 #define DIR     "/data"
 
@@ -111,7 +113,7 @@ int main(void)
     };
 
     int i;
-    for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
+    for (i = 0; i < (int) ARRAY_SIZE(tests); i++) {
 	rt = test(&tests[i]);
 	if (rt != 0) {
 	    pr_err("%s failed\n", tests[i].filename);
