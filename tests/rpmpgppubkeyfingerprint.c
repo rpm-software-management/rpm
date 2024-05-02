@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include <rpm/rpmpgp.h>
+#include <rpm/rpmfileutil.h>
 
 struct test {
   char *filename;
@@ -17,6 +18,7 @@ static int test(const struct test *test)
 {
     int ret = 1;
     char *path = NULL;
+    FILE *f;
 
     if (!test) {
     fprintf(stderr, "Invalid arg\n");
@@ -28,15 +30,14 @@ static int test(const struct test *test)
 
     rasprintf(&path, "%s/%s", DIR, filename);
 
-    FILE *f = fopen(path, "r");
+    f = fopen(path, "r");
     if (!f) {
-	char buffer[PATH_MAX];
-	char *cwd = getcwd(buffer, sizeof(buffer));
-
-	fprintf(stderr, "Failed to open %s (cwd: %s)\n",
-		path, cwd ? : "<unknown>");
-	free(path);
-	return ret;
+    char *cwd = rpmGetCwd();
+    fprintf(stderr, "Failed to open %s (cwd: %s)\n",
+        path, cwd ? : "<unknown>");
+    free(cwd);
+    free(path);
+    goto end;
     }
     free(path);
 
