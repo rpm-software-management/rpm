@@ -18,6 +18,11 @@ static int test(const struct test *test)
     int ret = 1;
     char *path = NULL;
 
+    if (!test) {
+    fprintf(stderr, "Invalid arg\n");
+    return ret;
+    }
+
     const char *filename = test->filename;
     const char *fpr = test->fingerprint;
 
