@@ -96,7 +96,7 @@ end:
 
 int main(void)
 {
-    int rt;
+    int i;
     int ec = 0;
 
     const struct test tests[] = {
@@ -112,12 +112,11 @@ int main(void)
 	"771b18d3d7baa28734333c424344591e1964c5fc" },
     };
 
-    int i;
     for (i = 0; i < (int) ARRAY_SIZE(tests); i++) {
-	rt = test(&tests[i]);
-	if (rt != 0) {
+	if (test(&tests[i])) {
 	    pr_err("%s failed\n", tests[i].filename);
-	    ec = 1;
+        if (!ec)
+	        ec = 1;
 	}
     }
 
