@@ -34,10 +34,6 @@ enum addOp_e {
   RPMTE_RESTORE       = 3,
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmte
  * Create a transaction element.
  * @param ts		transaction set
@@ -121,10 +117,6 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
 
 RPM_GNUC_INTERNAL
 int rpmteAddOp(rpmte te);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* _RPMTE_INTERNAL_H */
 

@@ -13,10 +13,6 @@
 
 typedef const struct headerFmt_s * headerFmt;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* known arch? */
 RPM_GNUC_INTERNAL
 int rpmIsKnownArch(const char *name);
@@ -61,9 +57,5 @@ int rpmRelocateSrpmFileList(Header h, const char *rootDir);
 RPM_GNUC_INTERNAL
 void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_MISC */

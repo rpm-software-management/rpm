@@ -4,10 +4,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * Block size used to generate the Merkle tree for fsverity. For now
  * we only support 4K blocks, if we ever decide to support different
@@ -28,9 +24,5 @@ extern "C" {
 RPM_GNUC_INTERNAL
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 		    char *keypass, char *cert, uint16_t algo);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* H_RPMSIGNVERITY */

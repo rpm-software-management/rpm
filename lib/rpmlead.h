@@ -5,10 +5,6 @@
  * \file rpmlead.h
  * Routines to read and write an rpm lead structure for a a package.
  */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define RPMLEAD_BINARY 0
 #define RPMLEAD_SOURCE 1
 
@@ -34,9 +30,5 @@ rpmRC rpmLeadWrite(FD_t fd, Header h);
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
 rpmRC rpmLeadRead(FD_t fd, char **emsg);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* _H_RPMLEAD */

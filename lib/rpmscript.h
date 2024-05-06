@@ -47,10 +47,6 @@ typedef struct rpmScript_s * rpmScript;
 
 typedef const char *(*nextfilefunc)(void *);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 RPM_GNUC_INTERNAL
 rpmTagVal triggerDsTag(rpmscriptTriggerModes tm);
 
@@ -96,7 +92,4 @@ int rpmScriptChrootIn(rpmScript script);
 RPM_GNUC_INTERNAL
 int rpmScriptChrootOut(rpmScript script);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* _RPMSCRIPT_H */

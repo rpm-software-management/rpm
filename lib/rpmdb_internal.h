@@ -8,10 +8,6 @@
 #include <rpm/rpmutil.h>
 #include "backend/dbi.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define HASHTYPE packageHash
 #define HTKEYTYPE unsigned int
 #define HTDATATYPE struct rpmte_s *
@@ -213,9 +209,5 @@ unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix);
  */
 RPM_GNUC_INTERNAL
 Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
