@@ -11,10 +11,6 @@ enum {
     RPMLOCK_WAIT   = 1 << 2,
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 RPM_GNUC_INTERNAL
 rpmlock rpmlockNew(const char *lock_path, const char *descr);
 
@@ -29,9 +25,5 @@ void rpmlockRelease(rpmlock lock);
 
 RPM_GNUC_INTERNAL
 rpmlock rpmlockFree(rpmlock lock);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

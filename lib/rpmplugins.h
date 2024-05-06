@@ -5,10 +5,6 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmplugin.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmplugins
  * Create a new plugins structure
  * @param ts		transaction set
@@ -168,7 +164,4 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);
 
-#ifdef __cplusplus
-}
-#endif
 #endif	/* _PLUGINS_H */

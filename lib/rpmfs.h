@@ -18,10 +18,6 @@ struct sharedFileInfo_s {
     char rstate;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 RPM_GNUC_INTERNAL
 rpmfs rpmfsNew(rpm_count_t fc, int initState);
 
@@ -56,9 +52,5 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
 RPM_GNUC_INTERNAL
 void rpmfsResetActions(rpmfs fs);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _RPMFS_H */

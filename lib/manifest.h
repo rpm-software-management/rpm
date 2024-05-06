@@ -6,10 +6,6 @@
  * Routines to expand a manifest containing glob expressions into an argv list.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Return ls(1)-like formatted mode string.
  * @param mode		file mode
@@ -26,9 +22,5 @@ char * rpmPermsString(int mode)
  * @return		RPMRC_OK on success
  */
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_MANIFEST */

@@ -8,10 +8,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmgi
  */
 enum rpmgiFlags_e {
@@ -57,9 +53,5 @@ Header rpmgiNext(rpmgi gi);
  */
 RPM_GNUC_INTERNAL
 int rpmgiNumErrors(rpmgi gi);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_RPMGI */

@@ -7,10 +7,6 @@
  */
 #include <rpm/rpmtypes.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup signature
  * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
@@ -42,9 +38,5 @@ int rpmWriteSignature(FD_t fd, Header h);
 rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,
 			int rpmver);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_SIGNATURE */

@@ -11,6 +11,10 @@ extern "C" {
 /* This doesn't have c++ guards on its own */
 #include <imaevm.h>
 
+#ifdef __cplusplus
+}
+#endif
+
 /**
  * Sign file digests in header into signature header
  * @param sigh		package signature header
@@ -21,9 +25,5 @@ extern "C" {
  */
 RPM_GNUC_INTERNAL
 rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* H_RPMSIGNFILES */

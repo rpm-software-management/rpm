@@ -8,10 +8,6 @@
 #include <rpm/rpmio.h>
 #include <rpm/rpmpgp.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle);
 rpmDigestBundle fdGetBundle(FD_t fd, int create);
 
@@ -68,10 +64,6 @@ extern const FDIO_t lzdio;
 #ifdef HAVE_ZSTD
 RPM_GNUC_INTERNAL
 extern const FDIO_t zstdio;
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif	/* H_RPMIO_INTERNAL */

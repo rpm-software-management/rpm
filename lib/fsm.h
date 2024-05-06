@@ -9,10 +9,6 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmcallback.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct rpmpsm_s * rpmpsm;
 
 /**
@@ -36,8 +32,5 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
 
 RPM_GNUC_INTERNAL
 void rpmpsmNotify(rpmpsm psm, rpmCallbackType what, rpm_loff_t amount);
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_FSM */

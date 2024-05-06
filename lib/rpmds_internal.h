@@ -3,10 +3,6 @@
 
 #include <rpm/rpmds.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmds
  * Swiss army knife dependency matching function.
  * @param pool		string pool (or NULL for private pool)
@@ -86,8 +82,5 @@ int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix);
  */
 RPM_GNUC_INTERNAL
 rpmds rpmdsFilterTi(rpmds ds, int ti);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _RPMDS_INTERNAL_H */

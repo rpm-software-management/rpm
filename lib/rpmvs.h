@@ -45,10 +45,6 @@ struct rpmsinfo_s {
  */
 typedef int (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, void *cbdata);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo);
 
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
@@ -74,9 +70,5 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _RPMVS_H */
