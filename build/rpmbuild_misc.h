@@ -5,10 +5,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmds.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmbuild
  * Truncate comment lines.
  * @param s		skip white space, truncate line at '#'
@@ -65,9 +61,5 @@ void appendStringBufAux(StringBuf sb, const char * s, int nl);
  */
 RPM_GNUC_INTERNAL
 int parseUnsignedNum(const char * line, uint32_t * res);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _RPMBUILD_MISC_H */

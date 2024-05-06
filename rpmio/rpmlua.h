@@ -15,6 +15,10 @@ extern "C" {
 #include <lualib.h>
 #include <lauxlib.h>
 
+#ifdef __cplusplus
+}
+#endif
+
 typedef char * (*rpmluarl)(const char *);
 
 rpmlua rpmluaNew(void);
@@ -33,9 +37,5 @@ char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);
 
 char *rpmluaCallStringFunction(rpmlua lua, const char *function, struct rpmhookArgs_s *args);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* RPMLUA_H */

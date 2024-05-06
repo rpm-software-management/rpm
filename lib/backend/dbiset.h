@@ -16,10 +16,6 @@ typedef struct dbiIndexSet_s {
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Create an empty index set, optionally with sizehint reservation for recs */
 RPM_GNUC_INTERNAL
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint);
@@ -124,7 +120,4 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno);
 RPM_GNUC_INTERNAL
 dbiIndexSet dbiIndexSetFree(dbiIndexSet set);
 
-#ifdef __cplusplus
-}
-#endif
 #endif

@@ -22,10 +22,6 @@ struct rpmffi_s {
   int   fileno;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Create finger print cache.
  * @param sizeHint	number of elements expected
@@ -116,9 +112,5 @@ RPM_GNUC_INTERNAL
 fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 			   rpmsid * dirNames, rpmsid * baseNames,
 			   const uint32_t * dirIndexes, int fileCount);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
