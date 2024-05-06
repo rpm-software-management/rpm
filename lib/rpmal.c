@@ -96,7 +96,7 @@ static void rpmalFreeIndex(rpmal al)
 
 rpmal rpmalCreate(rpmts ts, int delta)
 {
-    rpmal al = (rpmal)xcalloc(1, sizeof(*al));
+    rpmal al = new rpmal_s {};
 
     al->pool = rpmstrPoolLink(rpmtsPool(ts));
     al->delta = delta;
@@ -133,7 +133,7 @@ rpmal rpmalFree(rpmal al)
     al->alloced = 0;
 
     rpmalFreeIndex(al);
-    al = _free(al);
+    delete al;
     return NULL;
 }
 
