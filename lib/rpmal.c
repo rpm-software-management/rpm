@@ -329,9 +329,9 @@ static void rpmalMakeObsoletesIndex(rpmal al)
     }
 }
 
-rpmte * rpmalAllObsoletes(rpmal al, rpmds ds)
+std::vector<rpmte> rpmalAllObsoletes(rpmal al, rpmds ds)
 {
-    rpmte * ret = NULL;
+    std::vector<rpmte> ret;
     rpmsid nameId;
     availableIndexEntry result;
     int resultCnt;
@@ -346,41 +346,32 @@ rpmte * rpmalAllObsoletes(rpmal al, rpmds ds)
 
     if (resultCnt > 0) {
 	availablePackage alp;
-	int rc, found = 0;
-
-	ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
 
 	for (int i = 0; i < resultCnt; i++) {
 	    alp = al->list + result[i].pkgNum;
 	    if (alp->p == NULL) // deleted
 		continue;
 
-	    rc = rpmdsCompareIndex(alp->obsoletes, result[i].entryIx,
+	    int rc = rpmdsCompareIndex(alp->obsoletes, result[i].entryIx,
 				   ds, rpmdsIx(ds));
 
 	    if (rc) {
 		rpmdsNotify(ds, "(added obsolete)", 0);
-		ret[found] = alp->p;
-		found++;
+		ret.push_back(alp->p);
 	    }
 	}
-
-	if (found)
-	    ret[found] = NULL;
-	else
-	    ret = _free(ret);
     }
 
     return ret;
 }
 
-static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName, const rpmds filterds)
+static std::vector<rpmte> rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName, const rpmds filterds)
 {
     const char *slash; 
-    rpmte * ret = NULL;
+    std::vector<rpmte> ret;
 
     if (al == NULL || fileName == NULL || *fileName != '/')
-	return NULL;
+	return ret;
 
     /* Split path into dirname and basename components for lookup */
     if ((slash = strrchr(fileName, '/')) != NULL) {
@@ -394,17 +385,15 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 
 	baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
 	if (!baseName)
-	    return NULL;	/* no match possible */
+	    return ret;	/* no match possible */
 
 	rpmalFileHashGetEntry(al->fileHash, baseName, &result, &resultCnt, NULL);
 
 	if (resultCnt > 0) {
-	    int i, found;
-	    ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
 	    fingerPrint * fp = NULL;
 	    rpmsid dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 1);
 
-	    for (found = i = 0; i < resultCnt; i++) {
+	    for (int i = 0; i < resultCnt; i++) {
 		availablePackage alp = al->list + result[i].pkgNum;
 		if (alp->p == NULL) /* deleted */
 		    continue;
@@ -420,21 +409,18 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName,
 		    if (!fpLookupEqualsId(al->fpc, fp, result[i].dirName, baseName))
 			continue;
 		}
-		ret[found] = alp->p;
-		found++;
+		ret.push_back(alp->p);
 	    }
 	    _free(fp);
-	    ret[found] = NULL;
 	}
     }
 
     return ret;
 }
 
-rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
+std::vector<rpmte> rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
-    rpmte * ret = NULL;
-    int i, ix, found;
+    std::vector<rpmte> ret;
     rpmsid nameId;
     const char *name;
     availableIndexEntry result;
@@ -457,12 +443,11 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, name, filterds);
-	if (ret != NULL && *ret != NULL) {
+	if (!ret.empty()) {
 	    rpmdsNotify(ds, "(added files)", 0);
 	    return ret;
 	}
 	/* ... then, look for files "provided" by package. */
-	ret = _free(ret);
     }
 
     if (al->providesHash == NULL)
@@ -471,18 +456,14 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     rpmalDepHashGetEntry(al->providesHash, nameId, &result,
 			      &resultCnt, NULL);
 
-    if (resultCnt==0) return NULL;
-
-    ret = (rpmte *)xmalloc((resultCnt+1) * sizeof(*ret));
-
-    for (found=i=0; i<resultCnt; i++) {
+    for (int i=0; i<resultCnt; i++) {
 	alp = al->list + result[i].pkgNum;
 	if (alp->p == NULL) /* deleted */
 	    continue;
 	/* ignore self-conflicts/obsoletes */
 	if (filterds && rpmteDS(alp->p, rpmdsTagN(filterds)) == filterds)
 	    continue;
-	ix = result[i].entryIx;
+	int ix = result[i].entryIx;
 
 	if (obsolete) {
 	    /* Obsoletes are on package NEVR only */
@@ -496,14 +477,11 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	}
 
 	if (rc)
-	    ret[found++] = alp->p;
+	    ret.push_back(alp->p);
     }
 
-    if (found) {
+    if (!ret.empty()) {
 	rpmdsNotify(ds, "(added provide)", 0);
-	ret[found] = NULL;
-    } else {
-	ret = _free(ret);
     }
 
     return ret;
@@ -512,13 +490,13 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 rpmte
 rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds)
 {
-    rpmte *providers = rpmalAllSatisfiesDepend(al, ds);
+    auto const providers = rpmalAllSatisfiesDepend(al, ds);
     rpmte best = NULL;
     int bestscore = 0;
 
-    if (providers) {
+    if (!providers.empty()) {
 	rpm_color_t dscolor = rpmdsColor(ds);
-	for (rpmte *p = providers; *p; p++) {
+	for (rpmte const p : providers) {
 	    int score = 0;
 
 	    /*
@@ -526,7 +504,7 @@ rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds)
 	     * Otherwise prefer provider of ts preferred color.
 	     */
 	    if (al->tscolor) {
-		rpm_color_t tecolor = rpmteColor(*p);
+		rpm_color_t tecolor = rpmteColor(p);
 		if (dscolor) {
 		    if (dscolor == tecolor) score += 2;
 		} else if (al->prefcolor) {
@@ -535,17 +513,17 @@ rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds)
 	    }
 
 	    /* Being self-provided is a bonus */
-	    if (*p == te)
+	    if (p == te)
 		score += 1;
 
 	    if (score > bestscore) {
 		bestscore = score;
-		best = *p;
+		best = p;
 	    }
 	}
 	/* if not decided by now, just pick first match */
-	if (!best) best = providers[0];
-	free(providers);
+	if (!best)
+	    best = providers[0];
     }
     return best;
 }

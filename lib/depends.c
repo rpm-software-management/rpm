@@ -269,12 +269,9 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 static rpmte checkObsoleted(rpmal addedPackages, rpmds thisds)
 {
     rpmte p = NULL;
-    rpmte *matches = NULL;
-
-    matches = rpmalAllObsoletes(addedPackages, thisds);
-    if (matches) {
+    auto matches = rpmalAllObsoletes(addedPackages, thisds);
+    if (!matches.empty()) {
 	p = matches[0];
-	free(matches);
     }
     return p;
 }
@@ -289,27 +286,24 @@ static rpmte checkAdded(rpmal addedPackages, rpm_color_t tscolor,
 			rpmte te, rpmds ds)
 {
     rpmte p = NULL;
-    rpmte *matches = NULL;
+    auto const matches = rpmalAllSatisfiesDepend(addedPackages, ds);
 
-    matches = rpmalAllSatisfiesDepend(addedPackages, ds);
-    if (matches) {
+    if (!matches.empty()) {
 	const char * arch = rpmteA(te);
 	const char * os = rpmteO(te);
-
-	for (rpmte *m = matches; m && *m; m++) {
+	for (rpmte const m : matches) {
 	    if (tscolor) {
-		const char * parch = rpmteA(*m);
-		const char * pos = rpmteO(*m);
+		const char * parch = rpmteA(m);
+		const char * pos = rpmteO(m);
 
 		if (arch == NULL || parch == NULL || os == NULL || pos == NULL)
 		    continue;
 		if (!rstreq(arch, parch) || !rstreq(os, pos))
 		    continue;
 	    }
-	    p = *m;
+	    p = m;
 	    break;
-  	}
-	free(matches);
+	}
     }
     return p;
 }
@@ -667,12 +661,10 @@ exit_rich:
 
     /* Pretrans dependencies can't be satisfied by added packages. */
     if (!(dsflags & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS))) {
-	rpmte *matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
-	if (matches) {
-	    for (rpmte *p = matches; *p; p++)
-		dbiIndexSetAppendOne(set1, rpmalLookupTE(tsmem->addedPackages, *p), 1, 0);
+	auto matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
+	for (rpmte const p : matches) {
+	    dbiIndexSetAppendOne(set1, rpmalLookupTE(tsmem->addedPackages, p), 1, 0);
 	}
-	_free(matches);
     }
 
 exit:
@@ -781,10 +773,8 @@ exitrich:
 
     /* Pretrans dependencies can't be satisfied by added packages. */
     if (!(dsflags & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS))) {
-	rpmte *matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
-	int match = matches && *matches;
-	_free(matches);
-	if (match)
+	auto const matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
+	if (!matches.empty())
 	    goto exit;
     }
 
