@@ -282,10 +282,6 @@ typedef enum rpmParseState_e {
 
 #define ALLOW_EMPTY         (1 << 16)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmbuild
  * Create and initialize rpmSpec structure.
  * @return spec		spec file control structure
@@ -671,9 +667,5 @@ void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 /* Return section number, -1 on error */
 RPM_GNUC_INTERNAL
 const struct sectname_s *getSection(const char *name, int part);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _RPMBUILD_INTERNAL_H */

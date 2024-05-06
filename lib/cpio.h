@@ -14,10 +14,6 @@
 
 typedef struct rpmcpio_s * rpmcpio_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Create CPIO file object
  * @param fd		file
@@ -71,9 +67,5 @@ RPM_GNUC_INTERNAL
 void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
 
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_CPIO */

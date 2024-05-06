@@ -16,11 +16,6 @@ typedef struct rpmtriggers_s {
     int alloced;
 } *rpmtriggers;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 RPM_GNUC_INTERNAL
 rpmtriggers rpmtriggersCreate(unsigned int hint);
 
@@ -78,8 +73,5 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 RPM_GNUC_INTERNAL
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int priorityClass);
-#ifdef __cplusplus
-}
-#endif
 #endif /* _RPMTRIGGERS_H */
 

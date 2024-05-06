@@ -9,10 +9,6 @@
 
 #define	RPMFIMAGIC	0x09697923
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmfi
  * Callback on file iterator directory changes
  * @param fi		file info
@@ -124,9 +120,6 @@ rpmfiles rpmfiFiles(rpmfi fi);
  */
 RPM_GNUC_INTERNAL
 rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx);
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* _RPMFI_INTERNAL_H */
 

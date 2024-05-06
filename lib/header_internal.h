@@ -24,10 +24,6 @@ struct hdrblob_s {
     uint32_t rdl;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 RPM_GNUC_INTERNAL
 hdrblob hdrblobCreate(void);
 
@@ -65,8 +61,5 @@ ssize_t Freadall(FD_t fd, void * buf, ssize_t size);
 
 RPM_GNUC_INTERNAL
 int headerIsSourceHeuristic(Header h);
-#ifdef __cplusplus
-}   
-#endif
 
 #endif  /* H_HEADER_INTERNAL */

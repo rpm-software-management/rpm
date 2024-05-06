@@ -121,10 +121,6 @@ union _dbswap {
 typedef rpmRC (*idxfunc)(dbiIndex dbi, dbiCursor dbc,
 			const char *keyp, size_t keylen, dbiIndexItem rec);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 RPM_GNUC_INTERNAL
 rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h,
 		idxfunc idxupdate);
@@ -283,9 +279,5 @@ extern struct rpmdbOps_s sqlite_dbops;
 
 RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s dummydb_dbops;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _DBI_H */

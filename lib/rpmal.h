@@ -9,10 +9,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmts.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct rpmal_s * rpmal;
 
 /**
@@ -84,9 +80,5 @@ rpmte rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds);
  */
 RPM_GNUC_INTERNAL
 unsigned int rpmalLookupTE(const rpmal al, const rpmte te);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* H_RPMAL */

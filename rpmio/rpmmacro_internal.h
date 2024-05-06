@@ -10,10 +10,6 @@
  * Internal Macro API
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /** \ingroup rpmmacro
  * Find the end of a macro call
  * @param str           pointer to the character after the initial '%'
@@ -33,9 +29,5 @@ void splitQuoted(ARGV_t *av, const char * str, const char * seps);
 
 RPM_GNUC_INTERNAL
 char *unsplitQuoted(ARGV_const_t av, const char *sep);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* _H_ MACRO_INTERNAL */

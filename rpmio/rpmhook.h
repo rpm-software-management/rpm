@@ -16,10 +16,6 @@ typedef struct rpmhookArgs_s {
 
 typedef int (*rpmhookFunc) (rpmhookArgs args, void *data);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
- 
 rpmhookArgs rpmhookArgsNew(int argc);
 rpmhookArgs rpmhookArgsFree(rpmhookArgs args);
 
@@ -29,9 +25,5 @@ void rpmhookUnregisterAny(const char *name, rpmhookFunc func);
 void rpmhookUnregisterAll(const char *name);
 void rpmhookCall(const char *name, const char *argt, ...);
 void rpmhookCallArgs(const char *name, rpmhookArgs args);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
