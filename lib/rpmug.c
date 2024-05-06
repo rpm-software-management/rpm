@@ -1,5 +1,8 @@
 #include "system.h"
 
+#include <unordered_map>
+#include <string>
+
 #include <errno.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
@@ -9,13 +12,16 @@
 #include "rpmug.h"
 #include "debug.h"
 
+using std::unordered_map;
+using std::string;
+
 struct rpmug_s {
     char *pwpath;
     char *grppath;
-    char *lastGname;
-    char *lastUname;
-    uid_t lastUid;
-    gid_t lastGid;
+    unordered_map<uid_t,string> uidMap;
+    unordered_map<gid_t,string> gidMap;
+    unordered_map<string,uid_t> unameMap;
+    unordered_map<string,gid_t> gnameMap;
 };
 
 static __thread struct rpmug_s *rpmug = NULL;
@@ -130,16 +136,8 @@ static int lookup_str(const char *path, long val, int vcol, int rcol,
 static void rpmugInit(void)
 {
     if (rpmug == NULL)
-	rpmug = (struct rpmug_s *)xcalloc(1, sizeof(*rpmug));
+	rpmug = new rpmug_s {};
 }
-
-/* 
- * These really ought to use hash tables. I just made the
- * guess that most files would be owned by root or the same person/group
- * who owned the last file. Those two values are cached, everything else
- * is looked up via getpw() and getgr() functions.  If this performs
- * too poorly I'll have to implement it properly :-(
- */
 
 int rpmugUid(const char * thisUname, uid_t * uid)
 {
@@ -150,16 +148,16 @@ int rpmugUid(const char * thisUname, uid_t * uid)
 
     rpmugInit();
 
-    if (rpmug->lastUname == NULL || !rstreq(thisUname, rpmug->lastUname)) {
+    auto it = rpmug->unameMap.find(thisUname);
+    if (it == rpmug->unameMap.end()) {
 	long id;
 	if (lookup_num(pwfile(), thisUname, 0, 2, &id))
 	    return -1;
-	free(rpmug->lastUname);
-	rpmug->lastUname = xstrdup(thisUname);
-	rpmug->lastUid = id;
+	rpmug->unameMap.insert({thisUname, id});
+	*uid = id;
+    } else {
+	*uid = it->second;
     }
-
-    *uid = rpmug->lastUid;
 
     return 0;
 }
@@ -173,16 +171,16 @@ int rpmugGid(const char * thisGname, gid_t * gid)
 
     rpmugInit();
 
-    if (rpmug->lastGname == NULL || !rstreq(thisGname, rpmug->lastGname)) {
+    auto it = rpmug->gnameMap.find(thisGname);
+    if (it == rpmug->gnameMap.end()) {
 	long id;
 	if (lookup_num(grpfile(), thisGname, 0, 2, &id))
 	    return -1;
-	free(rpmug->lastGname);
-	rpmug->lastGname = xstrdup(thisGname);
-	rpmug->lastGid = id;
+	rpmug->gnameMap.insert({thisGname, id});
+	*gid = id;
+    } else {
+	*gid = it->second;
     }
-
-    *gid = rpmug->lastGid;
 
     return 0;
 }
@@ -194,17 +192,20 @@ const char * rpmugUname(uid_t uid)
 
     rpmugInit();
 
-    if (uid != rpmug->lastUid) {
+    const char *retname = NULL;
+    auto it = rpmug->uidMap.find(uid);
+    if (it == rpmug->uidMap.end()) {
 	char *uname = NULL;
 
 	if (lookup_str(pwfile(), uid, 2, 0, &uname))
 	    return NULL;
 
-	rpmug->lastUid = uid;
-	free(rpmug->lastUname);
-	rpmug->lastUname = uname;
+	auto res = rpmug->uidMap.insert({uid, uname}).first;
+	retname = res->second.c_str();
+    } else {
+	retname = it->second.c_str();
     }
-    return rpmug->lastUname;
+    return retname;
 }
 
 const char * rpmugGname(gid_t gid)
@@ -214,26 +215,28 @@ const char * rpmugGname(gid_t gid)
 
     rpmugInit();
 
-    if (gid != rpmug->lastGid) {
+    const char *retname = NULL;
+    auto it = rpmug->gidMap.find(gid);
+    if (it == rpmug->gidMap.end()) {
 	char *gname = NULL;
 
-	if (lookup_str(grpfile(), gid, 2, 0, &gname))
+	if (lookup_str(pwfile(), gid, 2, 0, &gname))
 	    return NULL;
 
-	rpmug->lastGid = gid;
-	free(rpmug->lastGname);
-	rpmug->lastGname = gname;
+	auto res = rpmug->gidMap.insert({gid, gname}).first;
+	retname = res->second.c_str();
+    } else {
+	retname = it->second.c_str();
     }
-    return rpmug->lastGname;
+    return retname;
 }
 
 void rpmugFree(void)
 {
     if (rpmug) {
-	free(rpmug->lastUname);
-	free(rpmug->lastGname);
 	free(rpmug->pwpath);
 	free(rpmug->grppath);
-	rpmug = _free(rpmug);
+	delete rpmug;
+	rpmug = NULL;
     }
 }
