@@ -647,6 +647,8 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     krc = rpmKeyringAddKey(keyring, pubkey);
     if (krc < 0)
 	goto exit;
+    for (i = 0; i < subkeysCount; i++)
+	rpmKeyringAddKey(keyring, subkeys[i]);
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
