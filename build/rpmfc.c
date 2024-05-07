@@ -195,7 +195,7 @@ static regex_t *rpmfcAttrReg(const char *arg, ...)
 
 static rpmfcAttr rpmfcAttrNew(const char *name)
 {
-    rpmfcAttr attr = (rpmfcAttr)xcalloc(1, sizeof(*attr));
+    rpmfcAttr attr = new rpmfcAttr_s {};
     struct matchRule *rules[] = { &attr->incl, &attr->excl, NULL };
 
     attr->name = xstrdup(name);
@@ -240,7 +240,7 @@ static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 	ruleFree(&attr->excl);
 	rfree(attr->name);
 	rfree(attr->proto);
-	rfree(attr);
+	delete attr;
     }
     return NULL;
 }
@@ -920,15 +920,14 @@ rpmfc rpmfcFree(rpmfc fc)
 	rpmstrPoolFree(fc->cdict);
 
 	rpmstrPoolFree(fc->pool);
-	memset(fc, 0, sizeof(*fc)); /* trash and burn */
-	free(fc);
+	delete fc;
     }
     return NULL;
 }
 
 rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
 {
-    rpmfc fc = (rpmfc)xcalloc(1, sizeof(*fc));
+    rpmfc fc = new rpmfc_s {};
     if (buildRoot) {
 	fc->buildRoot = xstrdup(buildRoot);
 	fc->brlen = strlen(buildRoot);
