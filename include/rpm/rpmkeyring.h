@@ -15,6 +15,19 @@ extern "C" {
 #endif
 
 /** \ingroup rpmkeyring
+  * Operation mode definitions for rpmKeyringModify
+  *   ADD: add a new key, do nothing if the key is already present
+  *   REPLACE: add a key, replace if already present
+  *   DELETE: delete an existing key
+  */
+typedef enum rpmKeyringModifyMode_e {
+    RPMKEYRING_ADD	= 1,
+    RPMKEYRING_REPLACE	= 2,
+    RPMKEYRING_DELETE	= 3
+} rpmKeyringModifyMode;
+
+
+/** \ingroup rpmkeyring
  * Create a new, empty keyring
  * @return	new keyring handle
  */
@@ -100,6 +113,17 @@ char * rpmPubkeyBase64(rpmPubkey key);
  * @return		pgp params, NULL on error
  */
 pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Modify the keys in the keyring
+ * @param key		Pubkey
+ * @param key		pubkey handle
+ * @param mode          mode of operation
+ * @return		0 on success, -1 on error, 1 if the operation did not
+ *                      change anything (key already present for RPMKEYRING_ADD,
+ *                      key not found for RPMKEYRING_DELETE)
+ */
+int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode);
 
 #ifdef __cplusplus
 }

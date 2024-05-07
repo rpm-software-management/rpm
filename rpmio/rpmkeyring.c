@@ -61,21 +61,37 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
-int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
+int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode)
 {
     int rc = 1; /* assume already seen key */
     if (keyring == NULL || key == NULL)
 	return -1;
+    if (mode != RPMKEYRING_ADD && mode != RPMKEYRING_DELETE && mode != RPMKEYRING_REPLACE)
+	return -1;
 
     /* check if we already have this key, but always wrlock for simplicity */
     pthread_rwlock_wrlock(&keyring->lock);
-    if (keyring->keys.find(key->keyid) == keyring->keys.end()) {
+    auto item = keyring->keys.find(key->keyid);
+    if (item != keyring->keys.end() && mode == RPMKEYRING_DELETE) {
+	rpmPubkeyFree(item->second);
+	keyring->keys.erase(item);
+	rc = 0;
+    } else if (item != keyring->keys.end() && mode == RPMKEYRING_REPLACE) {
+	rpmPubkeyFree(item->second);
+	item->second = rpmPubkeyLink(key);
+	rc = 0;
+    } else if (item == keyring->keys.end() && (mode == RPMKEYRING_ADD ||mode == RPMKEYRING_REPLACE) ) {
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
 	rc = 0;
     }
     pthread_rwlock_unlock(&keyring->lock);
 
     return rc;
+}
+
+int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
+{
+    return rpmKeyringModify(keyring, key, RPMKEYRING_ADD);
 }
 
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
