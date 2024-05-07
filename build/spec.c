@@ -102,7 +102,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
 Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
 {
-    Package p = (Package)xcalloc(1, sizeof(*p));
+    Package p = new Package_s {};
     p->header = headerNew();
     p->autoProv = 1;
     p->autoReq = 1;
@@ -171,7 +171,7 @@ Package freePackage(Package pkg)
     pkg->transFileTriggerFiles = freeTriggerFiles(pkg->transFileTriggerFiles);
     pkg->pool = rpmstrPoolFree(pkg->pool);
 
-    free(pkg);
+    delete pkg;
     return NULL;
 }
 
@@ -203,7 +203,7 @@ rpmds * packageDependencies(Package pkg, rpmTagVal tag)
 
 rpmSpec newSpec(void)
 {
-    rpmSpec spec = (rpmSpec)xcalloc(1, sizeof(*spec));
+    rpmSpec spec = new rpmSpec_s {};
     
     spec->specFile = NULL;
 
@@ -308,9 +308,8 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
     spec->buildHost = _free(spec->buildHost);
 
-    spec = _free(spec);
-
-    return spec;
+    delete spec;
+    return NULL;
 }
 
 Header rpmSpecSourceHeader(rpmSpec spec)
