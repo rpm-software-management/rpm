@@ -131,6 +131,17 @@ exit:
     return key;
 }
 
+static rpmPubkey rpmPubkeyNewSubkey(pgpDigParams pgpkey)
+{
+    rpmPubkey key = new rpmPubkey_s {};
+    /* Packets with all subkeys already stored in main key */
+    key->pgpkey = pgpkey;
+    key->keyid = key2str(pgpDigParamsSignID(pgpkey));
+    key->nrefs = 1;
+    pthread_rwlock_init(&key->lock, NULL);
+    return key;
+}
+
 rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
 {
     rpmPubkey *subkeys = NULL;
@@ -143,18 +154,8 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
 
 	/* Returned to C, can't use new */
 	subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
-
-	for (i = 0; i < pgpsubkeysCount; i++) {
-	    rpmPubkey subkey = new rpmPubkey_s {};
-	    subkeys[i] = subkey;
-
-	    /* Packets with all subkeys already stored in main key */
-
-	    subkey->pgpkey = pgpsubkeys[i];
-	    subkey->keyid = key2str(pgpDigParamsSignID(pgpsubkeys[i]));
-	    subkey->nrefs = 1;
-	    pthread_rwlock_init(&subkey->lock, NULL);
-	}
+	for (i = 0; i < pgpsubkeysCount; i++)
+	    subkeys[i] = rpmPubkeyNewSubkey(pgpsubkeys[i]);
 	free(pgpsubkeys);
     }
     *count = pgpsubkeysCount;
