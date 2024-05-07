@@ -1,6 +1,8 @@
 #ifndef _RPMTS_INTERNAL_H
 #define _RPMTS_INTERNAL_H
 
+#include <vector>
+
 #include <rpm/rpmts.h>
 #include <rpm/rpmstrpool.h>
 
@@ -21,10 +23,7 @@ typedef struct tsMembers_s {
     rpmal addedPackages;	/*!< Set of packages being installed. */
 
     rpmds rpmlib;		/*!< rpmlib() dependency set. */
-    rpmte * order;		/*!< Packages sorted by dependencies. */
-    int orderCount;		/*!< No. of transaction elements. */
-    int orderAlloced;		/*!< No. of allocated transaction elements. */
-    int delta;			/*!< Delta for reallocation. */
+    std::vector<rpmte> order;	/*!< Packages sorted by dependencies. */
 } * tsMembers;
 
 typedef struct tsTrigger_s {

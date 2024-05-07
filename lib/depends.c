@@ -84,16 +84,10 @@ static rpmRC headerCheckPayloadFormat(Header h) {
 
 static void addElement(tsMembers tsmem, rpmte te, int oc)
 {
-    if (oc >= tsmem->orderAlloced) {
-	tsmem->orderAlloced += (oc - tsmem->orderAlloced) + tsmem->delta;
-	tsmem->order = xrealloc(tsmem->order,
-	tsmem->orderAlloced * sizeof(*tsmem->order));
-    }
-
-    tsmem->order[oc] = te;
-    if (oc == tsmem->orderCount) {
-	tsmem->orderCount++;
-    }
+    if (oc >= 0 && oc < tsmem->order.size())
+	tsmem->order[oc] = te;
+    else
+	tsmem->order.push_back(te);
 }
 
 
@@ -128,7 +122,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     tsmem->removedPackages.insert({dboffset, p});
     rpmteSetDependsOn(p, depends);
 
-    addElement(tsmem, p, tsmem->orderCount);
+    addElement(tsmem, p, -1);
     rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, depends);
 
     return 0;
@@ -307,7 +301,7 @@ static rpmte checkAdded(rpmal addedPackages, rpm_color_t tscolor,
 static int findPos(rpmts ts, rpm_color_t tscolor, rpmte te, int upgrade)
 {
     tsMembers tsmem = rpmtsMembers(ts);
-    int oc = tsmem->orderCount;
+    int oc = tsmem->order.size();
     int skip = 0;
     const char * name = rpmteN(te);
     const char * evr = rpmteEVR(te);
@@ -367,7 +361,7 @@ exit:
 
     /* If replacing a previous element, find out where it is. Pooh. */
     if (!skip && p != NULL) {
-	for (oc = 0; oc < tsmem->orderCount; oc++) {
+	for (oc = 0; oc < tsmem->order.size(); oc++) {
 	    if (p == tsmem->order[oc])
 		break;
 	}
@@ -403,7 +397,7 @@ static int addPackage(rpmts ts, Header h,
     rpmte p = NULL;
     int isSource = headerIsSource(h);
     int ec = 0;
-    int oc = tsmem->orderCount;
+    int oc = tsmem->order.size();
 
     /* Check for supported payload format if it's a package */
     if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
@@ -431,7 +425,7 @@ static int addPackage(rpmts ts, Header h,
     if (!isSource) {
 	oc = findPos(ts, tscolor, p, (op == RPMTE_UPGRADE));
 	/* If we're replacing a previously added element, free the old one */
-	if (oc >= 0 && oc < tsmem->orderCount) {
+	if (oc >= 0 && oc < tsmem->order.size()) {
 	    rpmtsNotifyChange(ts, RPMTS_EVENT_DEL, tsmem->order[oc], p);
 	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
 	    tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
@@ -490,7 +484,7 @@ int rpmtsAddRestoreElement(rpmts ts, Header h)
     if (p == NULL)
 	return 1;
 
-    addElement(tsmem, p, tsmem->orderCount);
+    addElement(tsmem, p, -1);
     rpmtsNotifyChange(ts, RPMTS_EVENT_ADD, p, NULL);
 
     return 0;

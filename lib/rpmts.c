@@ -760,12 +760,12 @@ void rpmtsEmpty(rpmts ts)
 
     rpmtsClean(ts);
 
-    for (int oc = 0; oc < tsmem->orderCount; oc++) {
-	rpmtsNotifyChange(ts, RPMTS_EVENT_DEL, tsmem->order[oc], NULL);
-	tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
+    for (auto & te : tsmem->order) {
+	rpmtsNotifyChange(ts, RPMTS_EVENT_DEL, te, NULL);
+	rpmteFree(te);
     }
+    tsmem->order.clear();
 
-    tsmem->orderCount = 0;
     /* The pool cannot be emptied, there might be references to its contents */
     tsmem->pool = rpmstrPoolFree(tsmem->pool);
     tsmem->removedPackages.clear();
@@ -807,7 +807,6 @@ static void rpmtsPrintStats(rpmts ts)
 
 rpmts rpmtsFree(rpmts ts)
 {
-    tsMembers tsmem = rpmtsMembers(ts);
     if (ts == NULL)
 	return NULL;
 
@@ -820,7 +819,6 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    tsmem->order = _free(tsmem->order);
     delete ts->members;
 
     ts->dsi = _free(ts->dsi);
@@ -1013,8 +1011,8 @@ int rpmtsNElements(rpmts ts)
 {
     int nelements = 0;
     tsMembers tsmem = rpmtsMembers(ts);
-    if (tsmem != NULL && tsmem->order != NULL) {
-	nelements = tsmem->orderCount;
+    if (tsmem != NULL) {
+	nelements = tsmem->order.size();
     }
     return nelements;
 }
@@ -1023,8 +1021,8 @@ rpmte rpmtsElement(rpmts ts, int ix)
 {
     rpmte te = NULL;
     tsMembers tsmem = rpmtsMembers(ts);
-    if (tsmem != NULL && tsmem->order != NULL) {
-	if (ix >= 0 && ix < tsmem->orderCount)
+    if (tsmem != NULL) {
+	if (ix >= 0 && ix < tsmem->order.size())
 	    te = tsmem->order[ix];
     }
     return te;
@@ -1228,11 +1226,7 @@ rpmts rpmtsCreate(void)
 
     tsmem = new tsMembers_s {};
     tsmem->pool = NULL;
-    tsmem->delta = 5;
     tsmem->addedPackages = NULL;
-    tsmem->orderAlloced = 0;
-    tsmem->orderCount = 0;
-    tsmem->order = NULL;
     ts->members = tsmem;
 
     ts->rootDir = NULL;
