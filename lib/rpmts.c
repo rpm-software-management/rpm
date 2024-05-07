@@ -575,29 +575,79 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
     return rc;
 }
 
-static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags)
+static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
     char *keyfmt = headerFormat(h, "%{nvr}.key", NULL);
     char *keyval = headerGetAsString(h, RPMTAG_DESCRIPTION);
     char *path = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyfmt);
+    char *tmppath = NULL;
 
-    FD_t fd = Fopen(path, "wx");
+    if (replace) {
+	rasprintf(&tmppath, "%s.new", path);
+	unlink(tmppath);
+    }
+
+    FD_t fd = Fopen(tmppath ? tmppath : path, "wx");
     if (fd) {
 	size_t keylen = strlen(keyval);
 	if (Fwrite(keyval, 1, keylen, fd) == keylen)
 	    rc = RPMRC_OK;
 	Fclose(fd);
     }
+    if (!rc && tmppath && rename(tmppath, path) != 0)
+	rc = RPMRC_FAIL;
 
     if (rc) {
 	rpmlog(RPMLOG_ERR, _("failed to import key: %s: %s\n"),
-		path, strerror(errno));
+		tmppath ? tmppath : path, strerror(errno));
+	if (tmppath)
+	    unlink(tmppath);
+    }
+    
+    if (!rc && replace) {
+	/* find and delete the old pubkey entry */
+	char *keyglob = headerFormat(h, "%{name}-%{version}-*.key", NULL);
+	ARGV_t files = NULL;
+	char *pkpath = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyglob);
+	if (rpmGlob(pkpath, NULL, &files) == 0) {
+	    char **f;
+	    for (f = files; *f; f++) {
+		char *bf = strrchr(*f, '/');
+		if (bf && strcmp(bf + 1, keyfmt) != 0)
+		    unlink(*f);
+	    }
+	}
+	free(pkpath);
+	argvFree(files);
+	free(keyglob);
     }
 
     free(path);
     free(keyval);
     free(keyfmt);
+    free(tmppath);
+    return rc;
+}
+
+static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
+{
+    rpmRC rc = rpmtsImportHeader(txn, h, 0);
+
+    if (!rc && replace) {
+	/* find and delete the old pubkey entry */
+	unsigned int newinstance = headerGetInstance(h), otherinstance = 0;
+	char *label = headerFormat(h, "%{name}-%{version}", NULL);
+	Header oh;
+	rpmdbMatchIterator mi = rpmtsInitIterator(txn->ts, RPMDBI_LABEL, label, 0);
+	while (otherinstance == 0 && (oh = rpmdbNextIterator(mi)) != NULL)
+	    if (headerGetInstance(oh) != newinstance)
+		otherinstance = headerGetInstance(oh);
+	rpmdbFreeIterator(mi);
+	if (otherinstance)
+	    rpmdbRemove(rpmtsGetRdb(txn->ts), otherinstance);
+    }
+
     return rc;
 }
 
@@ -642,17 +692,24 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     oldkey = rpmKeyringLookupKey(keyring, pubkey);
     if (oldkey) {
-	rc = RPMRC_OK;		/* already have key */
-	goto exit;
+	rpmPubkey mergedkey = NULL;
+	if (rpmPubkeyMerge(oldkey, pubkey, &mergedkey) != RPMRC_OK)
+	    goto exit;
+	if (!mergedkey) {
+	    rc = RPMRC_OK;		/* already have key */
+	    goto exit;
+	}
+	rpmPubkeyFree(pubkey);
+	pubkey = mergedkey;
     }
     if ((subkeys = rpmGetSubkeys(pubkey, &subkeysCount)) == NULL)
 	goto exit;
 
-    krc = rpmKeyringAddKey(keyring, pubkey);
+    krc = rpmKeyringModify(keyring, pubkey, oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
     if (krc < 0)
 	goto exit;
     for (i = 0; i < subkeysCount; i++)
-	rpmKeyringAddKey(keyring, subkeys[i]);
+	rpmKeyringModify(keyring, subkeys[i], oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
@@ -668,9 +725,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	    if (ts->keyringtype == KEYRING_FS)
-		rc = rpmtsImportFSKey(txn, h, 0);
+		rc = rpmtsImportFSKey(txn, h, 0, oldkey ? 1 : 0);
 	    else
-		rc = rpmtsImportHeader(txn, h, 0);
+		rc = rpmtsImportDBKey(txn, h, 0, oldkey ? 1 : 0);
 	}
     } else {
 	rc = RPMRC_OK;		/* already have key */
