@@ -115,6 +115,13 @@ char * rpmPubkeyBase64(rpmPubkey key);
 pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
 
 /** \ingroup rpmkeyring
+ * Lookup a pubkey in the keyring
+ * @param key          Pubkey to find in keyring
+ * @return             pubkey handle, NULL if not found
+ */
+rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key);
+
+/** \ingroup rpmkeyring
  * Modify the keys in the keyring
  * @param key		Pubkey
  * @param key		pubkey handle

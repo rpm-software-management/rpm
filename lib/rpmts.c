@@ -610,6 +610,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
     rpmPubkey *subkeys = NULL;
+    rpmPubkey oldkey = NULL;
     int subkeysCount = 0;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
     rpmKeyring keyring = NULL;
@@ -641,6 +642,11 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
 
+    oldkey = rpmKeyringLookupKey(keyring, pubkey);
+    if (oldkey) {
+	rc = RPMRC_OK;		/* already have key */
+	goto exit;
+    }
     if ((subkeys = rpmGetSubkeys(pubkey, &subkeysCount)) == NULL)
 	goto exit;
 
@@ -679,6 +685,7 @@ exit:
     for (i = 0; i < subkeysCount; i++)
 	rpmPubkeyFree(subkeys[i]);
     free(subkeys);
+    rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);
     rpmtxnEnd(txn);

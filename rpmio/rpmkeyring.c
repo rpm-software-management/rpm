@@ -94,6 +94,17 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
     return rpmKeyringModify(keyring, key, RPMKEYRING_ADD);
 }
 
+rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key)
+{
+    if (keyring == NULL || key == NULL)
+	return NULL;
+    pthread_rwlock_rdlock(&keyring->lock);
+    auto item = keyring->keys.find(key->keyid);
+    rpmPubkey rkey = item == keyring->keys.end() ? NULL : rpmPubkeyLink(item->second);
+    pthread_rwlock_unlock(&keyring->lock);
+    return rkey;
+}
+
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
 {
     if (keyring) {
