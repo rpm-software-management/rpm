@@ -617,19 +617,18 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     if (txn == NULL)
 	return rc;
 
-    rc = pgpPubKeyLint(pkt, pktlen, &lints);
-    if (lints) {
-        if (rc != RPMRC_OK) {
+    if (pgpPubKeyLint(pkt, pktlen, &lints) != RPMRC_OK) {
+	if (lints) {
             rpmlog(RPMLOG_ERR, "%s\n", lints);
-        } else {
-	    /* XXX Hack to ease testing between different backends */
-	    if (rpmIsNormal())
-		rpmlog(RPMLOG_WARNING, "%s\n", lints);
-        }
-        free(lints);
+	    free(lints);
+	}
+	goto exit;
     }
-    if (rc != RPMRC_OK) {
-        goto exit;
+    if (lints) {
+	/* XXX Hack to ease testing between different backends */
+	if (rpmIsNormal())
+	    rpmlog(RPMLOG_WARNING, "%s\n", lints);
+        free(lints);
     }
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
@@ -658,14 +657,16 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 
 	/* Add header to database. */
+	rc = RPMRC_OK;
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	    if (ts->keyringtype == KEYRING_FS)
 		rc = rpmtsImportFSKey(txn, h, 0);
 	    else
 		rc = rpmtsImportHeader(txn, h, 0);
 	}
+    } else {
+	rc = RPMRC_OK;		/* already have key */
     }
-    rc = RPMRC_OK;
 
 exit:
     /* Clean up. */
