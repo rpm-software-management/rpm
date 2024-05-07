@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <set>
+
 #include <inttypes.h>
 #include <libgen.h>
 #include <errno.h>
@@ -1001,23 +1003,6 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     rpmfiFree(fi);
 }
 
-#define HASHTYPE rpmStringSet
-#define HTKEYTYPE rpmsid
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-
-static unsigned int sidHash(rpmsid sid)
-{
-    return sid;
-}
-
-static int sidCmp(rpmsid a, rpmsid b)
-{
-    return (a != b);
-}
-
 /* Get a rpmdbMatchIterator containing all files in
  * the rpmdb that share the basename with one from
  * the transaction.
@@ -1037,9 +1022,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     int oc = 0;
     const char * baseName;
     rpmsid baseNameId;
-
-    rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
-					sidHash, sidCmp, NULL);
+    std::set<rpmsid> baseNames;
 
     mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_BASENAMES);
 
@@ -1054,8 +1037,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	    size_t keylen;
 
 	    baseNameId = rpmfiBNId(fi);
-
-	    if (rpmStringSetHasEntry(baseNames, baseNameId))
+	    if (baseNames.find(baseNameId) != baseNames.end())
 		continue;
 
 	    keylen = rpmstrPoolStrlen(tspool, baseNameId);
@@ -1063,13 +1045,12 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	    if (keylen == 0)
 		keylen++;	/* XXX "/" fixup. */
 	    rpmdbExtendIterator(mi, baseName, keylen);
-	    rpmStringSetAddEntry(baseNames, baseNameId);
+	    baseNames.insert(baseNameId);
 	}
 	rpmfiFree(fi);
 	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
-    rpmStringSetFree(baseNames);
 
     rpmdbSortIterator(mi);
     /* iterator is now sorted by (recnum, filenum) */
