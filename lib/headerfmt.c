@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <unordered_map>
+
 #include <stdarg.h>
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
@@ -61,15 +63,6 @@ struct sprintfToken_s {
     } u;
 };
 
-#define HASHTYPE tagCache
-#define HTKEYTYPE rpmTagVal
-#define HTDATATYPE rpmtd
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
 typedef struct headerSprintfArgs_s *headerSprintfArgs;
 
 struct xformat_s {
@@ -87,7 +80,7 @@ struct headerSprintfArgs_s {
     Header h;
     char * fmt;
     const char * errmsg;
-    tagCache cache;
+    std::unordered_map<rpmTagVal,rpmtd_s> cache;
     sprintfToken format;
     HeaderIterator hi;
     char * val;
@@ -723,12 +716,6 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
-static rpmtd getCached(tagCache cache, rpmTagVal tag)
-{
-    rpmtd *res = NULL;
-    return tagCacheGetEntry(cache, tag, &res, NULL, NULL) ? res[0] : NULL;
-}
-
 /**
  * Do headerGet() just once for given tag, cache results.
  * @param hsa		headerSprintf args
@@ -742,13 +729,15 @@ static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)
 {
     rpmtd td = NULL;
 
-    if (!(td = getCached(hsa->cache, tag))) {
-	td = rpmtdNew();
-	if (!headerGet(hsa->h, tag, td, hsa->hgflags)) {
-	    rpmtdFree(td);
+    auto it = hsa->cache.find(tag);
+    if (it == hsa->cache.end()) {
+	struct rpmtd_s tds;
+	if (!headerGet(hsa->h, tag, &tds, hsa->hgflags))
 	    return NULL;
-	}
-	tagCacheAddEntry(hsa->cache, tag, td);
+	auto val = hsa->cache.insert({tag, tds}).first;
+	td = &val->second;
+    } else {
+	td = &it->second;
     }
 
     return td;
@@ -910,23 +899,12 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     return (hsa->val + hsa->vallen);
 }
 
-static int tagCmp(rpmTagVal a, rpmTagVal b)
-{
-    return (a != b);
-}
-
-static unsigned int tagId(rpmTagVal tag)
-{
-    return tag;
-}
-
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
 {
-    struct headerSprintfArgs_s hsa;
+    struct headerSprintfArgs_s hsa {};
     sprintfToken nextfmt;
     sprintfTag tag;
  
-    memset(&hsa, 0, sizeof(hsa));
     hsa.h = headerLink(h);
     hsa.fmt = xstrdup(fmt);
     hsa.errmsg = NULL;
@@ -934,7 +912,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa.cache = tagCacheCreate(128, tagId, tagCmp, NULL, rpmtdFree);
     hsa.val = xstrdup("");
 
     tag =
@@ -968,7 +945,8 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (hsa.val != NULL && hsa.vallen < hsa.alloced)
 	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
 
-    hsa.cache = tagCacheFree(hsa.cache);
+    for (auto & val : hsa.cache)
+	rpmtdFreeData(&val.second);
     hsa.format = freeFormat(hsa.format, hsa.numTokens);
 
 exit:
