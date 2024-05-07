@@ -1499,15 +1499,15 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
     return rc;
 }
 
-int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash hdrNums, int neg)
+int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int neg)
 {
-    if (mi == NULL || hdrNums == NULL)
+    if (mi == NULL)
 	return 1;
 
     if (!mi->mi_set)
 	return 0;
 
-    if (packageHashNumKeys(hdrNums) == 0) {
+    if (hdrNums.empty()) {
 	if (!neg)
 	    mi->mi_set->count = 0;
 	return 0;
@@ -1521,7 +1521,8 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash hdrNums, int neg)
     assert(mi->mi_set->count > 0);
 
     for (from = 0; from < num; from++) {
-	cond = !packageHashHasEntry(hdrNums, mi->mi_set->recs[from].hdrNum);
+	auto it = hdrNums.find(mi->mi_set->recs[from].hdrNum);
+	cond = (it == hdrNums.end());
 	cond = neg ? !cond : cond;
 	if (cond) {
 	    mi->mi_set->count--;
@@ -1534,9 +1535,9 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash hdrNums, int neg)
     return 0;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash hdrNums)
+int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash const & hdrNums)
 {
-    if (packageHashNumKeys(hdrNums) <= 0)
+    if (hdrNums.empty())
 	return 1;
 
     return rpmdbFilterIterator(mi, hdrNums, 1);

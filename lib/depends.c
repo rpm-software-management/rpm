@@ -39,14 +39,6 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE packageHash
-#define HTKEYTYPE unsigned int
-#define HTDATATYPE struct rpmte_s *
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
 #define HASHTYPE filedepHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE rpmsid
@@ -119,16 +111,17 @@ static void addElement(tsMembers tsmem, rpmte te, int oc)
 static int removePackage(rpmts ts, Header h, rpmte depends)
 {
     tsMembers tsmem = rpmtsMembers(ts);
-    rpmte p, *pp;
+    rpmte p;
     unsigned int dboffset = headerGetInstance(h);
 
     /* Can't remove what's not installed */
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (packageHashGetEntry(tsmem->removedPackages, dboffset, &pp, NULL, NULL)) {
+    auto it = tsmem->removedPackages.find(dboffset);
+    if (it != tsmem->removedPackages.end()) {
 	if (depends)
-	    rpmteSetDependsOn(pp[0], depends);
+	    rpmteSetDependsOn(it->second, depends);
 	return 0;
     }
 
@@ -136,7 +129,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (p == NULL)
 	return 1;
 
-    packageHashAddEntry(tsmem->removedPackages, dboffset, p);
+    tsmem->removedPackages.insert({dboffset, p});
     rpmteSetDependsOn(p, depends);
 
     addElement(tsmem, p, tsmem->orderCount);

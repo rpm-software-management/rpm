@@ -737,8 +737,7 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
 
     if (rc == RPMRC_OK) {
 	rpmteSetDBInstance(te, headerGetInstance(h));
-	packageHashAddEntry(ts->members->installedPackages,
-			    headerGetInstance(h), te);
+	ts->members->installedPackages.insert({headerGetInstance(h), te});
     }
     headerFree(h);
     return rc;

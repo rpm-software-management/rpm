@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <string.h>
+
 #include <rpm/rpmtag.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
