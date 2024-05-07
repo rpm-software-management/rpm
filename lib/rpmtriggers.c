@@ -18,7 +18,7 @@
 
 rpmtriggers rpmtriggersCreate(unsigned int hint)
 {
-    rpmtriggers triggers = (rpmtriggers)xmalloc(sizeof(struct rpmtriggers_s));
+    rpmtriggers triggers = new rpmtriggers_s {};
     triggers->count = 0;
     triggers->alloced = hint;
     triggers->triggerInfo = (struct triggerInfo_s *)xmalloc(sizeof(struct triggerInfo_s) *
@@ -29,7 +29,7 @@ rpmtriggers rpmtriggersCreate(unsigned int hint)
 rpmtriggers rpmtriggersFree(rpmtriggers triggers)
 {
     _free(triggers->triggerInfo);
-    _free(triggers);
+    delete triggers;
 
     return NULL;
 }
@@ -261,7 +261,7 @@ static rpmfiles rpmtsNextFiles(matchFilesIter mfi)
 
 static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te)
 {
-    matchFilesIter mfi = (matchFilesIter)xcalloc(1, sizeof(*mfi));
+    matchFilesIter mfi = new matchFilesIter_s {};
     rpmdsInit(trigger);
     mfi->rpmdsTrigger = trigger;
     mfi->files = rpmfilesLink(files);
@@ -272,7 +272,7 @@ static matchFilesIter matchFilesIterator(rpmds trigger, rpmfiles files, rpmte te
 static matchFilesIter matchDBFilesIterator(rpmds trigger, rpmts ts,
 					    int inTransaction)
 {
-    matchFilesIter mfi = (matchFilesIter)xcalloc(1, sizeof(*mfi));
+    matchFilesIter mfi = new matchFilesIter_s {};
     rpmsenseFlags sense;
 
     rpmdsSetIx(trigger, 0);
@@ -375,7 +375,7 @@ static matchFilesIter matchFilesIteratorFree(matchFilesIter mfi)
     rpmfiFree(mfi->fi);
     rpmfilesFree(mfi->files);
     rpmdbFreeIterator(mfi->pi);
-    free(mfi);
+    delete mfi;
     return NULL;
 }
 
