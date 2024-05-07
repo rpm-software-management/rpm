@@ -85,6 +85,14 @@ W(int, rpmDigestFinal,
   (DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii),
   (ctx, datap, lenp, asAscii))
 
+rpmRC pgpPubkeyMerge(const uint8_t *pkts1, size_t pkts1len, const uint8_t *pkts2, size_t pkts2len, uint8_t **pktsm, size_t *pktsmlen, int flags) {
+    /* just merge nothing for now */
+    *pktsm = memcpy(rmalloc(pkts1len), pkts1, pkts1len);
+    *pktsmlen = pkts1len;
+    return RPMRC_OK;
+}
+
+
 #ifdef __cplusplus
 }
 #endif
