@@ -2610,7 +2610,7 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int didInstall, int test)
 {
-    struct FileList_s fl;
+    struct FileList_s fl {};
     specialDir specialDoc = NULL;
     specialDir specialLic = NULL;
 
@@ -2621,8 +2621,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    return RPMRC_FAIL;
     }
     /* Init the file list structure */
-    memset(&fl, 0, sizeof(fl));
-
     fl.pool = rpmstrPoolLink(spec->pool);
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
@@ -2689,7 +2687,7 @@ exit:
 rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
-    struct FileList_s fl;
+    struct FileList_s fl {};
     ARGV_t files = NULL;
     Package pkg;
     Package sourcePkg = spec->sourcePackage;
@@ -2725,7 +2723,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     sourcePkg->cpioList = NULL;
 
     /* Init the file list structure */
-    memset(&fl, 0, sizeof(fl));
     fl.pool = rpmstrPoolLink(spec->pool);
     if (_srcdefattr) {
 	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
