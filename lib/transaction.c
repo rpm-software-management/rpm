@@ -1028,7 +1028,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, tsmem->orderCount);
+	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, tsmem->order.size());
 
 	/* Gather all installed headers with matching basename's. */
 	files = rpmteFiles(p);
@@ -1534,7 +1534,7 @@ static int rpmtsPrepare(rpmts ts)
 	goto exit;
     }
     
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->orderCount);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->order.size());
     /* Add fingerprint for each file not skipped. */
     fpCachePopulate(fpc, ts, fileCount);
     /* check against files in the rpmdb */
@@ -1575,7 +1575,7 @@ static int rpmtsPrepare(rpmts ts)
 	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->orderCount);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->order.size());
 
     /* return from chroot if done earlier */
     if (rpmChrootOut())

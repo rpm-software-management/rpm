@@ -812,7 +812,7 @@ int rpmteProcess(rpmte te, pkgGoal goal, int num)
     if (rpmteOpen(te, reset_fi)) {
 	if (!scriptstage) {
 	    rpmtsNotify(te->ts, te, RPMCALLBACK_ELEM_PROGRESS, num,
-			rpmtsMembers(te->ts)->orderCount);
+			rpmtsMembers(te->ts)->order.size());
 	}
 
 	failed = rpmpsmRun(te->ts, te, goal);

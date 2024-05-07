@@ -409,7 +409,7 @@ static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
 }
 
 static void collectTE(rpm_color_t prefcolor, tsortInfo q,
-		      rpmte * newOrder, int * newOrderCount,
+		      std::vector<rpmte> & newOrder,
 		      scc SCCs,
 		      tsortInfo * queue_end,
 		      tsortInfo * outer_queue,
@@ -421,14 +421,13 @@ static void collectTE(rpm_color_t prefcolor, tsortInfo q,
 	int depth = 1;
 	/* figure depth in tree for nice formatting */
 	for (rpmte p = q->te; (p = rpmteParent(p)); depth++) {}
-	rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
-	       *newOrderCount, q->tsi_count, q->tsi_qcnt,
+	rpmlog(RPMLOG_DEBUG, "%5zd%5d%5d%5d %*s%c%s\n",
+	       newOrder.size(), q->tsi_count, q->tsi_qcnt,
 	       depth, (2 * depth), "",
 	       deptypechar, rpmteNEVRA(q->te));
     }
 
-    newOrder[*newOrderCount] = q->te;
-    (*newOrderCount)++;
+    newOrder.push_back(q->te);
 
     /* T6. Erase relations. */
     for (relation rel = q->tsi_relations; rel != NULL; rel = rel->rel_next) {
@@ -519,7 +518,7 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
 }
 
 static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
-		       rpmte * newOrder, int * newOrderCount,
+		       std::vector<rpmte> & newOrder,
 		       scc SCCs, tsortInfo * queue_end)
 {
     int sccNr = p_tsi->tsi_SccIdx;
@@ -565,7 +564,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 	     inner_queue_start = inner_queue_start->tsi_suc) {
 	    /* Mark the package as unqueued. */
 	    inner_queue_start->tsi_reqx = 0;
-	    collectTE(prefcolor, inner_queue_start, newOrder, newOrderCount,
+	    collectTE(prefcolor, inner_queue_start, newOrder,
 		      SCCs, &inner_queue_end, &outer_queue_start, queue_end);
 	}
     }
@@ -580,8 +579,6 @@ int rpmtsOrder(rpmts ts)
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     tsortInfo q, r;
-    rpmte * newOrder;
-    int newOrderCount = 0;
     int rc;
     rpmal erasedPackages;
     scc SCCs;
@@ -623,7 +620,7 @@ int rpmtsOrder(rpmts ts)
 
     rpmtsiFree(pi);
 
-    newOrder = (rpmte*)xcalloc(tsmem->orderCount, sizeof(*newOrder));
+    std::vector<rpmte> newOrder;
     SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
@@ -632,7 +629,7 @@ int rpmtsOrder(rpmts ts)
     for (int e = 0; e < nelem; e++) {
 	tsortInfo p = &sortInfo[e];
 	if (rpmteType(p->te) == TR_RESTORED) {
-	    newOrder[newOrderCount++] = p->te;
+	    newOrder.push_back(p->te);
 	}
     }
 
@@ -662,9 +659,9 @@ int rpmtsOrder(rpmts ts)
 	    /* Mark the package as unqueued. */
 	    q->tsi_reqx = 0;
 	    if (q->tsi_SccIdx > 1) {
-		collectSCC(prefcolor, q, newOrder, &newOrderCount, SCCs, &r);
+		collectSCC(prefcolor, q, newOrder, SCCs, &r);
 	    } else {
-		collectTE(prefcolor, q, newOrder, &newOrderCount, SCCs, &r,
+		collectTE(prefcolor, q, newOrder, SCCs, &r,
 			  NULL, NULL);
 	    }
 	    q = q->tsi_suc;
@@ -678,11 +675,9 @@ int rpmtsOrder(rpmts ts)
     }
     free(sortInfo);
 
-    assert(newOrderCount == tsmem->orderCount);
+    assert(newOrder.size() == tsmem->order.size());
 
-    tsmem->order = _free(tsmem->order);
     tsmem->order = newOrder;
-    tsmem->orderAlloced = tsmem->orderCount;
     rc = 0;
 
     for (int i = 2; SCCs[i].members != NULL; i++) {
