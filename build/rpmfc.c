@@ -933,7 +933,7 @@ rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
 	fc->brlen = strlen(buildRoot);
     }
     fc->pool = rpmstrPoolCreate();
-    fc->pkg = (Package)xcalloc(1, sizeof(*fc->pkg));
+    fc->pkg = new Package_s {};
     fc->fileDeps.alloced = 10;
     fc->fileDeps.data = (rpmfcFileDep *)xmalloc(fc->fileDeps.alloced *
 	sizeof(fc->fileDeps.data[0]));
