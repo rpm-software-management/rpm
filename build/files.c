@@ -6,6 +6,8 @@
 
 #include "system.h"
 
+#include <vector>
+
 #define	MYALLPERMS	07777
 
 #include <errno.h>
@@ -152,10 +154,7 @@ typedef struct specialDir_s {
     struct AttrRec_s def_ar;
     rpmFlags sdtype;
 
-    int entriesCount;
-    int entriesAlloced;
-
-    struct FileEntries_s *entries;
+    std::vector<FileEntries_s> entries;
 } * specialDir;
 
 typedef struct FileRecords_s {
@@ -2360,12 +2359,7 @@ static char * getSpecialDocDir(Header h, rpmFlags sdtype)
 
 static specialDir specialDirNew(Header h, rpmFlags sdtype)
 {
-    specialDir sd = (specialDir)xcalloc(1, sizeof(*sd));
-
-    sd->entriesCount = 0;
-    sd->entriesAlloced = 10;
-    sd->entries = (struct FileEntries_s *)xcalloc(sd->entriesAlloced, sizeof(*(sd->entries)));
-
+    specialDir sd = new specialDir_s {};
     sd->dirname = getSpecialDocDir(h, sdtype);
     sd->sdtype = sdtype;
     return sd;
@@ -2376,30 +2370,23 @@ static void addSpecialFile(specialDir sd, const char *path, FileEntry cur,
 {
     argvAdd(&sd->files, path);
 
-    if (sd->entriesCount >= sd->entriesAlloced) {
-	sd->entriesAlloced <<= 1;
-	sd->entries = xrealloc(sd->entries, sd->entriesAlloced *
-	    sizeof(sd->entries[0]));
-    }
+    sd->entries.push_back({});
+    auto & entry = sd->entries.back();
 
-    copyFileEntry(cur, &sd->entries[sd->entriesCount].curEntry);
-    copyFileEntry(def, &sd->entries[sd->entriesCount].defEntry);
-    sd->entriesCount++;
+    copyFileEntry(cur, &entry.curEntry);
+    copyFileEntry(def, &entry.defEntry);
 }
 
 static specialDir specialDirFree(specialDir sd)
 {
-    int i = 0;
-
     if (sd) {
 	argvFree(sd->files);
 	free(sd->dirname);
-	for (i = 0; i < sd->entriesCount; i++) {
-	    FileEntryFree(&sd->entries[i].curEntry);
-	    FileEntryFree(&sd->entries[i].defEntry);
+	for (auto & entry : sd->entries) {
+	    FileEntryFree(&entry.curEntry);
+	    FileEntryFree(&entry.defEntry);
 	}
-	free(sd->entries);
-	free(sd);
+	delete sd;
     }
     return NULL;
 }
@@ -2411,7 +2398,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
     char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
-    int count = sd->entriesCount;
+    int count = sd->entries.size();
     char *basepath = rpmGenPath(spec->rootDir, "%{builddir}", "%{?buildsubdir}");
     ARGV_t *files = (ARGV_t *)xmalloc(sizeof(*files) * count);
     int i, j;
