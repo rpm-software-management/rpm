@@ -364,18 +364,17 @@ static void tarjan(sccData sd, tsortInfo tsi)
 }
 
 /* Search for SCCs and return an array last entry has a .size of 0 */
-static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
+static scc detectSCCs(std::vector<tsortInfo_s> & orderInfo, int debugloops)
 {
     /* Set up data structures needed for the tarjan algorithm */
-    scc SCCs = (scc)xcalloc(nelem+3, sizeof(*SCCs));
-    tsortInfo *stack = (tsortInfo *)xcalloc(nelem, sizeof(*stack));
+    scc SCCs = (scc)xcalloc(orderInfo.size()+3, sizeof(*SCCs));
+    tsortInfo *stack = (tsortInfo *)xcalloc(orderInfo.size(), sizeof(*stack));
     struct sccData_s sd = { 0, stack, 0, SCCs, 2 };
 
-    for (int i = 0; i < nelem; i++) {
-	tsortInfo tsi = &orderInfo[i];
+    for (auto & tsi : orderInfo) {
 	/* Start a DFS at each node */
-	if (tsi->tsi_SccIdx == 0)
-	    tarjan(&sd, tsi);
+	if (tsi.tsi_SccIdx == 0)
+	    tarjan(&sd, &tsi);
     }
 
     free(stack);
@@ -583,7 +582,7 @@ int rpmtsOrder(rpmts ts)
     rpmal erasedPackages;
     scc SCCs;
     int nelem = rpmtsNElements(ts);
-    tsortInfo sortInfo = (tsortInfo)xcalloc(nelem, sizeof(struct tsortInfo_s));
+    std::vector<tsortInfo_s> sortInfo(nelem);
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -621,7 +620,7 @@ int rpmtsOrder(rpmts ts)
     rpmtsiFree(pi);
 
     std::vector<rpmte> newOrder;
-    SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
+    SCCs = detectSCCs(sortInfo, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
 
@@ -673,7 +672,6 @@ int rpmtsOrder(rpmts ts)
 	rpmteSetTSI(tsmem->order[i], NULL);
 	rpmTSIFree(&sortInfo[i]);
     }
-    free(sortInfo);
 
     assert(newOrder.size() == tsmem->order.size());
 
