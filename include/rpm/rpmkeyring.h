@@ -132,6 +132,15 @@ rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key);
  */
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode);
 
+/** \ingroup rpmkeyring
+ * Merge the data of two pubkeys describing the same key
+ * @param oldkey       old Pubkey
+ * @param newkey       new Pubkey
+ * @param mergedkeyp   merged Pubkey, NULL if identical to old Pubkey
+ * @return             RPMRC_OK / RPMRC_FAIL
+ */
+rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp);
+
 #ifdef __cplusplus
 }
 #endif

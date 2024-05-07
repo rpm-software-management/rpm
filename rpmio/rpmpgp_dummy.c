@@ -116,3 +116,8 @@ rpmRC pgpPubKeyLint(const uint8_t *pkts, size_t pktslen, char **explanation)
     *explanation = not_supported();
     return RPMRC_FAIL;
 }
+
+rpmRC pgpPubkeyMerge(const uint8_t *pkts1, size_t pkts1len, const uint8_t *pkts2, size_t pkts2len, uint8_t **pktsm, size_t *pktsmlen, int flags)
+{
+    return RPMRC_FAIL;
+}

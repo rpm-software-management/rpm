@@ -509,6 +509,23 @@ int pgpSignatureType(pgpDigParams sig);
  */
 char *pgpIdentItem(pgpDigParams digp);
 
+/** \ingroup rpmpgp
+ * Merge the PGP packets of two certificates
+ *
+ * The certificates must describe the same public key. The call should merge
+ * important pgp packets (self-signatures, new subkeys, ...) and remove duplicates.
+ * 
+ * @param pkts1		OpenPGP pointer to a buffer with the first certificate
+ * @param pkts1len	length of the buffer with the first certificate
+ * @param pkts2		OpenPGP pointer to a buffer with the second certificate
+ * @param pkts2len	length of the buffer with the second certificate
+ * @param pktsm[out]	merged certificate (malloced)
+ * @param pktsmlen[out]	length of merged certificate
+ * @param flags		merge flags (currently not used, must be zero)
+ * @return 		RPMRC_OK on success 
+ */
+rpmRC pgpPubkeyMerge(const uint8_t *pkts1, size_t pkts1len, const uint8_t *pkts2, size_t pkts2len, uint8_t **pktsm, size_t *pktsmlen, int flags);
+
 #ifdef __cplusplus
 }
 #endif

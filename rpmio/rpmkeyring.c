@@ -229,6 +229,28 @@ char * rpmPubkeyBase64(rpmPubkey key)
     return enc;
 }
 
+rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp)
+{
+    rpmPubkey mergedkey = NULL;
+    uint8_t *mergedpkt = NULL;
+    size_t mergedpktlen = 0;
+    rpmRC rc;
+
+    pthread_rwlock_rdlock(&oldkey->lock);
+    pthread_rwlock_rdlock(&newkey->lock);
+    rc = pgpPubkeyMerge(oldkey->pkt.data(), oldkey->pkt.size(), newkey->pkt.data(), newkey->pkt.size(), &mergedpkt, &mergedpktlen, 0);
+    if (rc == RPMRC_OK && (mergedpktlen != oldkey->pkt.size() || memcmp(mergedpkt, oldkey->pkt.data(), mergedpktlen) != 0)) {
+	mergedkey = rpmPubkeyNew(mergedpkt, mergedpktlen);
+	if (!mergedkey)
+	    rc = RPMRC_FAIL;
+    }
+    *mergedkeyp = mergedkey;
+    free(mergedpkt);
+    pthread_rwlock_unlock(&newkey->lock);
+    pthread_rwlock_unlock(&oldkey->lock);
+    return rc;
+}
+
 pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key)
 {
     pgpDigParams params= NULL;
