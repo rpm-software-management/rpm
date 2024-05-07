@@ -4,6 +4,9 @@
 
 #include "system.h"
 
+#include <string>
+#include <unordered_map>
+
 #include <rpm/rpmlib.h>		/* rpmVersionCompare, rpmlib provides */
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
@@ -30,14 +33,7 @@ const char * const rpmEVR = VERSION;
 
 const int rpmFLAGS = RPMSENSE_EQUAL;
 
-#define HASHTYPE depCache
-#define HTKEYTYPE const char *
-#define HTDATATYPE int
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
+typedef std::unordered_map<std::string,int> depCache;
 
 #define HASHTYPE filedepHash
 #define HTKEYTYPE rpmsid
@@ -508,24 +504,22 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 }
 
 /* Cached rpmdb provide lookup, returns 0 if satisfied, 1 otherwise */
-static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep, dbiIndexSet *matches)
+static int rpmdbProvides(rpmts ts, depCache *dcache, rpmds dep, dbiIndexSet *matches)
 {
     const char * Name = rpmdsN(dep);
     const char * DNEVR = rpmdsDNEVR(dep);
     rpmTagVal deptag = rpmdsTagN(dep);
-    int *cachedrc = NULL;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
     int rc = 0;
     /* pretrans deps are provided by current packages, don't prune erasures */
     int prune = (rpmdsFlags(dep) & (RPMSENSE_PRETRANS|RPMSENSE_PREUNTRANS)) ? 0 : 1;
-    unsigned int keyhash = 0;
 
     /* See if we already looked this up */
     if (prune && !matches) {
-	keyhash = depCacheKeyHash(dcache, DNEVR);
-	if (depCacheGetHEntry(dcache, DNEVR, keyhash, &cachedrc, NULL, NULL)) {
-	    rc = *cachedrc;
+	auto ret = dcache->find(DNEVR);
+	if (ret != dcache->end()) {
+	    rc = ret->second;
 	    rpmdsNotify(dep, "(cached)", rc);
 	    return rc;
 	}
@@ -600,7 +594,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep, dbiIndexSet *matc
     /* Cache the relatively expensive rpmdb lookup results */
     /* Caching the oddball non-pruned case would mess up other results */
     if (prune && !matches)
-	depCacheAddHEntry(dcache, xstrdup(DNEVR), keyhash, rc);
+	dcache->insert({DNEVR, rc});
     return rc;
 }
 
@@ -672,7 +666,7 @@ exit:
  * @param dep		dependency
  * @return		0 if satisfied, 1 if not satisfied
  */
-static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep)
+static int unsatisfiedDepend(rpmts ts, depCache *dcache, rpmds dep)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     int rc;
@@ -801,7 +795,7 @@ exit:
 }
 
 /* Check a dependency set for problems */
-static void checkDS(rpmts ts, depCache dcache, rpmte te,
+static void checkDS(rpmts ts, depCache *dcache, rpmte te,
 		const char * pkgNEVRA, rpmds ds,
 		rpm_color_t tscolor)
 {
@@ -822,7 +816,7 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 }
 
 /* Check a given dependency against installed packages */
-static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
+static void checkInstDeps(rpmts ts, depCache *dcache, rpmte te,
 			  rpmTag depTag, const char *dep, rpmds depds, int neg)
 {
     Header h;
@@ -872,7 +866,7 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
     free(ndep);
 }
 
-static void checkInstFileDeps(rpmts ts, depCache dcache, rpmte te,
+static void checkInstFileDeps(rpmts ts, depCache *dcache, rpmte te,
 			      rpmTag depTag, rpmfi fi, int is_not,
 			      filedepHash cache, fingerPrintCache *fpcp)
 {
@@ -979,7 +973,7 @@ int rpmtsCheck(rpmts ts)
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
     int rc = 0;
-    depCache dcache = NULL;
+    depCache _dcache, *dcache = &_dcache;
     filedepHash confilehash = NULL;	/* file conflicts of installed packages */
     filedepHash connotfilehash = NULL;	/* file conflicts of installed packages */
     depexistsHash connothash = NULL;
@@ -1002,10 +996,6 @@ int rpmtsCheck(rpmts ts)
 
     if (rdb)
 	rpmdbCtrl(rdb, RPMDB_CTRL_LOCK_RO);
-
-    /* XXX FIXME: figure some kind of heuristic for the cache size */
-    dcache = depCacheCreate(5001, rstrhash, strcmp,
-				     (depCacheFreeKey)rfree, NULL);
 
     /* build hashes of all confilict sdependencies */
     confilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
@@ -1117,7 +1107,6 @@ int rpmtsCheck(rpmts ts)
 	rpmdbCtrl(rdb, RPMDB_CTRL_UNLOCK_RO);
 
 exit:
-    depCacheFree(dcache);
     filedepHashFree(confilehash);
     filedepHashFree(connotfilehash);
     depexistsHashFree(connothash);
