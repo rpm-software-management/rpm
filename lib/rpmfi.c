@@ -125,8 +125,7 @@ struct rpmfiles_s {
     unsigned char * veritysigs; /*!< Verity signatures in binary. */
 
     struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
-    rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
-    rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
+    rpm_loff_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
     int nrefs;		/*!< Reference count. */
 };
@@ -1283,7 +1282,6 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     }
 
     fi->replacedSizes = _free(fi->replacedSizes);
-    fi->replacedLSizes = _free(fi->replacedLSizes);
 
     fi->h = headerFree(fi->h);
     fi->pool = rpmstrPoolFree(fi->pool);
@@ -1864,22 +1862,9 @@ void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	/* Switch over to 64 bit variant */
 	int fc = rpmfilesFC(fi);
-	if (newsize > UINT32_MAX && fi->replacedLSizes == NULL) {
-	    fi->replacedLSizes = (rpm_loff_t *)xcalloc(fc, sizeof(*fi->replacedLSizes));
-	    /* copy 32 bit data */
-	    if (fi->replacedSizes) {
-		for (int i=0; i < fc; i++)
-		    fi->replacedLSizes[i] = fi->replacedSizes[i];
-		fi->replacedSizes = _free(fi->replacedSizes);
-	    }
-	}
-	if (fi->replacedLSizes != NULL) {
-	    fi->replacedLSizes[ix] = newsize;
-	} else {
-	    if (fi->replacedSizes == NULL)
-		fi->replacedSizes = (rpm_off_t *)xcalloc(fc, sizeof(*fi->replacedSizes));
-	    fi->replacedSizes[ix] = (rpm_off_t) newsize;
-	}
+	if (fi->replacedSizes == NULL)
+	    fi->replacedSizes = (rpm_loff_t *)xcalloc(fc, sizeof(*fi->replacedSizes));
+	fi->replacedSizes[ix] = newsize;
     }
 }
 
@@ -1889,8 +1874,6 @@ rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix)
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->replacedSizes) {
 	    rsize = fi->replacedSizes[ix];
-	} else if (fi->replacedLSizes) {
-	    rsize = fi->replacedLSizes[ix];
 	}
     }
     return rsize;
