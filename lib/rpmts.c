@@ -752,18 +752,6 @@ void rpmtsClean(rpmts ts)
     rpmtsCleanProblems(ts);
 }
 
-/* hash comparison function */
-static int uintCmp(unsigned int a, unsigned int b)
-{
-    return (a != b);
-}
-
-/* "hash"function*/ 
-static unsigned int uintId(unsigned int a)
-{
-    return a;
-}
-
 void rpmtsEmpty(rpmts ts)
 {
     tsMembers tsmem = rpmtsMembers(ts);
@@ -780,7 +768,7 @@ void rpmtsEmpty(rpmts ts)
     tsmem->orderCount = 0;
     /* The pool cannot be emptied, there might be references to its contents */
     tsmem->pool = rpmstrPoolFree(tsmem->pool);
-    packageHashEmpty(tsmem->removedPackages);
+    tsmem->removedPackages.clear();
     return;
 }
 
@@ -832,8 +820,6 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    tsmem->removedPackages = packageHashFree(tsmem->removedPackages);
-    tsmem->installedPackages = packageHashFree(tsmem->installedPackages);
     tsmem->order = _free(tsmem->order);
     delete ts->members;
 
@@ -1244,8 +1230,6 @@ rpmts rpmtsCreate(void)
     tsmem->pool = NULL;
     tsmem->delta = 5;
     tsmem->addedPackages = NULL;
-    tsmem->removedPackages = packageHashCreate(128, uintId, uintCmp, NULL, NULL);
-    tsmem->installedPackages = packageHashCreate(128, uintId, uintCmp, NULL, NULL);
     tsmem->orderAlloced = 0;
     tsmem->orderCount = 0;
     tsmem->order = NULL;

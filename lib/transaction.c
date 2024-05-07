@@ -1117,14 +1117,13 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	unsigned int installedPkg;
 	int beingRemoved = 0;
 	rpmfiles otherFi = NULL;
-	rpmte *removedPkg = NULL;
 
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
-	if (packageHashGetEntry(tsmem->removedPackages, installedPkg,
-				&removedPkg, NULL, NULL)) {
+	auto it = tsmem->removedPackages.find(installedPkg);
+	if (it != tsmem->removedPackages.end()) {
 	    beingRemoved = 1;
-	    otherFi = rpmteFiles(removedPkg[0]);
+	    otherFi = rpmteFiles(it->second);
 	}
 
 	h = headerLink(h);
