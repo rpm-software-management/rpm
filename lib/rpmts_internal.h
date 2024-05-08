@@ -27,17 +27,6 @@ typedef struct tsMembers_s {
     int delta;			/*!< Delta for reallocation. */
 } * tsMembers;
 
-typedef struct tsTrigger_s {
-    unsigned int hdrNum;
-    int index;
-} tsTrigger;
-
-typedef struct tsTriggers_s {
-    tsTrigger *trigger;
-    int count;
-    int alloced;
-} tsTriggers;
-
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
