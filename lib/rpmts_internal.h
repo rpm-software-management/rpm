@@ -26,17 +26,6 @@ typedef struct tsMembers_s {
     std::vector<rpmte> order;	/*!< Packages sorted by dependencies. */
 } * tsMembers;
 
-typedef struct tsTrigger_s {
-    unsigned int hdrNum;
-    int index;
-} tsTrigger;
-
-typedef struct tsTriggers_s {
-    tsTrigger *trigger;
-    int count;
-    int alloced;
-} tsTriggers;
-
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
