@@ -278,6 +278,7 @@ runroot_other find /build/BUILD|sort
 /build/BUILD/simple-1.0-build/BUILDROOT/opt
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/SPECPARTS
 /build/BUILD/simple-1.0-build/simple
 ],
 [ignore])
