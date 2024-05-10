@@ -276,16 +276,6 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	free(buf);
     }
 
-    /* mkdir for dynamic specparts */
-    if (rpmMacroIsDefined(spec->macros, "specpartsdir")) {
-	buf = rpmExpand("rm -rf '%{specpartsdir}'", NULL);
-	appendMb(mb, buf, 1);
-	free(buf);
-	buf = rpmExpand("%{__mkdir_p} '%{specpartsdir}'", NULL);
-	appendMb(mb, buf, 1);
-	free(buf);
-    }
-
     appendMb(mb, getStringBuf(after), 0);
 
     /* Fix the permissions of the setup build tree */

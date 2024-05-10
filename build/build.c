@@ -325,6 +325,7 @@ static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
 			   "%{_fixperms} '", spec->buildDir, "'\n",
 			   "%{__rm} -rf '", spec->buildDir, "'\n",
 			   "%{__mkdir_p} '", spec->buildDir, "'\n",
+			   "%{__mkdir_p} '%{specpartsdir}'\n",
 			   NULL);
 
     rpmRC rc = doScript(spec, RPMBUILD_MKBUILDDIR, "%mkbuilddir",
