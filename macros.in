@@ -195,11 +195,9 @@ package or when debugging this package.\
 %{nil}
 
 %debug_package \
-%ifnarch noarch\
 %global __debug_package 1\
 %_debuginfo_template\
 %{?_debugsource_packages:%_debugsource_template}\
-%endif\
 %{nil}
 
 %_langpack_template() \

@@ -48,6 +48,8 @@
 
 %_defaultdocdir		%{_datadir}/doc
 
+%_enable_debug_packages =RPMDEBUGINFO=
+
 #==============================================================================
 # ---- Build policy macros.
 #
@@ -86,6 +88,7 @@
 %{nil}
 
 %__spec_install_post\
+    %[ 0%{?_enable_debug_packages} > 0 ? "%(echo "%{debug_package}" > %{specpartsdir}/rpm-debuginfo.specpart)" : "" ]\
     %{?__debug_package:%{__debug_install_post}}\
     %{__arch_install_post}\
     %{__os_install_post}\

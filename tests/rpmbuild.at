@@ -3022,6 +3022,15 @@ runroot rpmbuild --quiet -bb /data/SPECS/caps.spec
 [])
 
 RPMTEST_CHECK([
+runroot rpm -qp --qf "%{name}\n" /build/RPMS/*/*.rpm|sort
+],
+[0],
+[caps
+caps-debuginfo
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -q --filecaps /build/RPMS/*/caps-1.0-1.*.rpm | grep -v build-id
 ],
 [0],
