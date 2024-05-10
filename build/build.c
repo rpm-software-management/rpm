@@ -321,12 +321,10 @@ static int doCheckBuildRequires(rpmts ts, rpmSpec spec, int test)
 
 static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
 {
-    char *fix = rpmExpand("%{_fixperms}", NULL);
-    char *doDir = rstrscat(NULL,
-			   "test -d '", spec->buildDir, "' && ",
-			   fix, " '", spec->buildDir, "'\n",
-			   "rm -rf '", spec->buildDir, "'\n",
-			   "mkdir -p '", spec->buildDir, "'\n",
+    char *doDir = rpmExpand("test -d '", spec->buildDir, "' && ",
+			   "%{_fixperms} '", spec->buildDir, "'\n",
+			   "%{__rm} -rf '", spec->buildDir, "'\n",
+			   "%{__mkdir_p} '", spec->buildDir, "'\n",
 			   NULL);
 
     rpmRC rc = doScript(spec, RPMBUILD_MKBUILDDIR, "%mkbuilddir",
@@ -337,7 +335,6 @@ static rpmRC doBuildDir(rpmSpec spec, int test, StringBuf *sbp)
 		spec->buildDir, strerror(errno));
     }
     free(doDir);
-    free(fix);
     return rc;
 }
 
