@@ -28,6 +28,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+cu
   ISABITS=
   CANONARCH=
   CANONCOLOR=
+  DEBUGINFO=0
   FILTER=cat
   case "${ARCH}" in
     custom)
@@ -207,6 +208,10 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+cu
       LIB=${LIB}64
   fi
 
+  if [ "$OS" = "linux" ] && [ "$CANONARCH" != "noarch" ]; then
+      DEBUGINFO=1
+  fi
+
   PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
   [ -d $PPD ] || mkdir -p $PPD
 
@@ -215,6 +220,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+cu
 	-e "s,=RPMCANONARCH=,$CANONARCH,g" \
 	-e "s,=RPMCANONCOLOR=,$CANONCOLOR," \
 	-e "s,=RPMRC_GNU=,$RPMRC_GNU," \
+	-e "s,=RPMDEBUGINFO=,$DEBUGINFO," \
 	-e "s,=LIB=,$LIB," \
 	-e "s,=ARCH_INSTALL_POST=,$ARCH_INSTALL_POST," \
 	-e '/\${\w*:-/!s,\${,%{_,' \

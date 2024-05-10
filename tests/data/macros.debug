@@ -20,16 +20,6 @@
     %{_rpmconfigdir}/brp-strip-static-archive %{__strip} \
 %{nil}
 
-%__spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-%{nil}
-
-%install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
-%%install\
-%{nil}
-
 # Should missing buildids terminate a build?
 %_missing_build_ids_terminate_build    1
 
