@@ -472,6 +472,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Create and add the cookie */
     if (cookie) {
+	free(*cookie);
 	rasprintf(cookie, "%s %d", buildHost, buildTime);
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
