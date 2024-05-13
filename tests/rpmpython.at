@@ -683,7 +683,7 @@ for f in archive:
     if not f.fflags & rpm.RPMFILE_SPECFILE:
         continue
     spec = archive.read()
-    hash = hashlib.md5(spec)
+    hash = hashlib.sha256(spec)
     if f.digest != hash.hexdigest():
         myprint('%s should be %s' % (hash.hexdigest(), f.digest))
     break
