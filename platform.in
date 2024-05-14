@@ -57,6 +57,11 @@
 #	Expanded at beginning of %install scriptlet.
 #
 
+%__spec_install_template\
+%{__spec_install_pre}\
+%[ 0%{?_enable_debug_packages} > 0 ? "%(echo "%{debug_package}" > %{specpartsdir}/rpm-debuginfo.specpart)" : "" ]\
+%{nil}
+
 %__spec_install_pre %{___build_pre}\
     %{__rm} -rf "%{buildroot}"\
     %{__mkdir_p} "%{dirname:%{buildroot}}"\
@@ -88,7 +93,6 @@
 %{nil}
 
 %__spec_install_post\
-    %[ 0%{?_enable_debug_packages} > 0 ? "%(echo "%{debug_package}" > %{specpartsdir}/rpm-debuginfo.specpart)" : "" ]\
     %{?__debug_package:%{__debug_install_post}}\
     %{__arch_install_post}\
     %{__os_install_post}\
