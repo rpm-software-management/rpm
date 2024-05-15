@@ -160,7 +160,7 @@ static void ofilineMacro(rpmMacroBuf mb,
 /* Push a file to spec's file stack, return the newly pushed entry */
 static OFI_t * pushOFI(rpmSpec spec, const char *fn)
 {
-    OFI_t *ofi = (OFI_t *)xcalloc(1, sizeof(*ofi));
+    OFI_t *ofi = new OpenFileInfo {};
 
     ofi->fp = NULL;
     ofi->fileName = xstrdup(fn);
@@ -189,7 +189,7 @@ static OFI_t * popOFI(rpmSpec spec)
 	    fclose(ofi->fp);
 	free(ofi->fileName);
 	free(ofi->readBuf);
-	free(ofi);
+	delete ofi;
 	rpmPopMacro(spec->macros, "__file_name");
 	rpmPopMacro(spec->macros, "__file_lineno");
     }
@@ -543,7 +543,7 @@ retry:
     } else if (lineType->id == LINE_ENDIF) {
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
-	free(rl);
+	delete rl;
 	spec->line[0] = '\0';
     } else if (spec->readStack->reading && (lineType->id == LINE_INCLUDE)) {
 	char *fileName, *endFileName, *p;
@@ -569,7 +569,7 @@ retry:
     }
 
     if (lineType->id & LINE_IFANY) {
-	rl = (struct ReadLevelEntry *)xmalloc(sizeof(*rl));
+	rl = new ReadLevelEntry {};
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	rl->lineNum = ofi->lineNum;

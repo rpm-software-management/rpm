@@ -215,7 +215,7 @@ rpmSpec newSpec(void)
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
     spec->lineNum = 0;
-    spec->readStack = (struct ReadLevelEntry*)xcalloc(1, sizeof(*spec->readStack));
+    spec->readStack = new ReadLevelEntry {};
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
     spec->readStack->lastConditional = lineTypes;
@@ -271,7 +271,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 	struct ReadLevelEntry *rl = spec->readStack;
 	spec->readStack = rl->next;
 	rl->next = NULL;
-	free(rl);
+	delete rl;
     }
     spec->lbuf = _free(spec->lbuf);
     
