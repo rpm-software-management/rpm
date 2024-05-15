@@ -343,7 +343,7 @@ struct rpmSpecIter_s {
 #define SPEC_LISTITER_INIT(_itertype, _iteritem)	\
     _itertype iter = NULL;				\
     if (spec) {						\
-	iter = (_itertype)xcalloc(1, sizeof(*iter));		\
+	iter = new rpmSpecIter_s {};			\
 	iter->next = spec->_iteritem;			\
     }							\
     return iter
@@ -357,7 +357,7 @@ struct rpmSpecIter_s {
     return item
 
 #define SPEC_LISTITER_FREE()				\
-    free(iter);						\
+    delete iter;					\
     return NULL
 
 
