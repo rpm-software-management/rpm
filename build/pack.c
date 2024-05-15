@@ -139,13 +139,14 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 
 static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 {
-    struct TriggerFileEntry *p;
     int addflags = 0;
     rpmRC rc = RPMRC_FAIL;
     Header h = pkg->header;
-    struct TriggerFileEntry *tfa[] = {pkg->triggerFiles,
-				      pkg->fileTriggerFiles,
-				      pkg->transFileTriggerFiles};
+    std::vector<std::vector<TriggerFileEntry>*> tfa {
+	&pkg->triggerFiles,
+	&pkg->fileTriggerFiles,
+	&pkg->transFileTriggerFiles
+    };
 
     rpmTagVal progTags[] = {RPMTAG_TRIGGERSCRIPTPROG,
 			    RPMTAG_FILETRIGGERSCRIPTPROG,
@@ -161,7 +162,6 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     rpmTagVal priorityTags[] = {0,
 				RPMTAG_FILETRIGGERPRIORITIES,
 				RPMTAG_TRANSFILETRIGGERPRIORITIES};
-    int i;
     
     if (addFileToTag(spec, pkg->preInFile, h, RPMTAG_PREIN, 1) ||
 	addFileToTag(spec, pkg->preUnFile, h, RPMTAG_PREUN, 1) ||
@@ -176,32 +176,32 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	goto exit;
     }
 
-
-    for (i = 0; i < sizeof(tfa)/sizeof(tfa[0]); i++) {
+    /* we need the index number for accessing the other associated arrays */
+    for (size_t i = 0; i < tfa.size(); ++i) {
 	addflags = 0;
 	/* if any trigger has flags, we need to add flags entry for all of them */
-	for (p = tfa[i]; p != NULL; p = p->next) {
-	    if (p->flags) {
+	for (auto const & p : *tfa[i]) {
+	    if (p.flags) {
 		addflags = 1;
 		break;
 	    }
 	}
 
-	for (p = tfa[i]; p != NULL; p = p->next) {
-	    headerPutString(h, progTags[i], p->prog);
+	for (auto const & p : *tfa[i]) {
+	    headerPutString(h, progTags[i], p.prog);
 
 	    if (priorityTags[i]) {
-		headerPutUint32(h, priorityTags[i], &p->priority, 1);
+		headerPutUint32(h, priorityTags[i], &p.priority, 1);
 	    }
 
 	    if (addflags) {
-		headerPutUint32(h, flagTags[i], &p->flags, 1);
+		headerPutUint32(h, flagTags[i], &p.flags, 1);
 	    }
 
-	    if (p->script) {
-		headerPutString(h, scriptTags[i], p->script);
-	    } else if (p->fileName) {
-		if (addFileToTag(spec, p->fileName, h, scriptTags[i], 0)) {
+	    if (p.script) {
+		headerPutString(h, scriptTags[i], p.script);
+	    } else if (p.fileName) {
+		if (addFileToTag(spec, p.fileName, h, scriptTags[i], 0)) {
 		    goto exit;
 		}
 	    } else {

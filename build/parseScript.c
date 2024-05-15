@@ -24,10 +24,7 @@ static int addTriggerIndex(Package pkg, const char *file,
 	rpmTagVal tag, uint32_t priority)
 {
     struct TriggerFileEntry *tfe;
-    struct TriggerFileEntry *list;
-    struct TriggerFileEntry *last = NULL;
-    int index = 0;
-    struct TriggerFileEntry **tfp;
+    std::vector<TriggerFileEntry> *tfp;
 
     if (tag == RPMTAG_FILETRIGGERSCRIPTS) {
 	tfp = &pkg->fileTriggerFiles;
@@ -37,32 +34,17 @@ static int addTriggerIndex(Package pkg, const char *file,
 	tfp = &pkg->triggerFiles;
     }
 
-    list = *tfp;
-
-    while (list) {
-	last = list;
-	list = list->next;
-    }
-
-    if (last)
-	index = last->index + 1;
-
-    tfe = (struct TriggerFileEntry *)xcalloc(1, sizeof(*tfe));
+    tfp->push_back({});
+    tfe = &tfp->back();
 
     tfe->fileName = (file) ? xstrdup(file) : NULL;
     tfe->script = (script && *script != '\0') ? xstrdup(script) : NULL;
     tfe->prog = xstrdup(prog);
     tfe->flags = flags;
-    tfe->index = index;
+    tfe->index = tfp->size() - 1;
     tfe->priority = priority;
-    tfe->next = NULL;
 
-    if (last)
-	last->next = tfe;
-    else
-	*tfp = tfe;
-
-    return index;
+    return tfe->index;
 }
 
 /* %trigger is a strange combination of %pre and Requires: behavior */
