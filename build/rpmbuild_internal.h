@@ -1,6 +1,8 @@
 #ifndef _RPMBUILD_INTERNAL_H
 #define _RPMBUILD_INTERNAL_H
 
+#include <vector>
+
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmutil.h>
 #include <rpm/rpmstrpool.h>
@@ -208,9 +210,9 @@ struct Package_s {
     char * postunTransFile;	/*!< %postuntrans scriptlet. */
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
-    struct TriggerFileEntry * triggerFiles;
-    struct TriggerFileEntry * fileTriggerFiles;
-    struct TriggerFileEntry * transFileTriggerFiles;
+    std::vector<TriggerFileEntry> triggerFiles;
+    std::vector<TriggerFileEntry> fileTriggerFiles;
+    std::vector<TriggerFileEntry> transFileTriggerFiles;
 
     ARGV_t fileFile;
     ARGV_t fileList;		/* If NULL, package will not be written */

@@ -20,24 +20,14 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 
-/**
- * @param p		trigger entry chain
- * @return		NULL always
- */
-static inline
-struct TriggerFileEntry * freeTriggerFiles(struct TriggerFileEntry * p)
+static void freeTriggerFiles(std::vector<TriggerFileEntry> &triggers)
 {
-    struct TriggerFileEntry *o, *q = p;
-    
-    while (q != NULL) {
-	o = q;
-	q = q->next;
-	o->fileName = _free(o->fileName);
-	o->script = _free(o->script);
-	o->prog = _free(o->prog);
-	free(o);
+    for (auto & e : triggers) {
+	free(e.fileName);
+	free(e.script);
+	free(e.prog);
     }
-    return NULL;
+    triggers.clear();
 }
 
 struct Source * freeSources(struct Source * s)
@@ -166,9 +156,9 @@ Package freePackage(Package pkg)
     pkg->dpaths = argvFree(pkg->dpaths);
 
     pkg->icon = freeSources(pkg->icon);
-    pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
-    pkg->fileTriggerFiles = freeTriggerFiles(pkg->fileTriggerFiles);
-    pkg->transFileTriggerFiles = freeTriggerFiles(pkg->transFileTriggerFiles);
+    freeTriggerFiles(pkg->triggerFiles);
+    freeTriggerFiles(pkg->fileTriggerFiles);
+    freeTriggerFiles(pkg->transFileTriggerFiles);
     pkg->pool = rpmstrPoolFree(pkg->pool);
 
     delete pkg;
