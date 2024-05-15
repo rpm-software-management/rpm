@@ -135,7 +135,7 @@ static inline int parseYesNo(const char * s)
 
 static struct Source *newSource(uint32_t num, const char *path, int flags)
 {
-    struct Source *p = (struct Source *)xmalloc(sizeof(*p));
+    struct Source *p = new Source {};
     p->num = num;
     p->fullSource = xstrdup(path);
     p->flags = flags;

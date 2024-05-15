@@ -143,7 +143,7 @@ static ModuleRec freeModule(ModuleRec mod)
 	_free(mod->data);
 	_free(mod->name);
 	argvFree(mod->types);
-	_free(mod);
+	delete mod;
     }
 
     return NULL;
@@ -162,7 +162,7 @@ static ModuleRec newModule(const char *path, const char *name,
 	return NULL;
     }
 
-    mod = (ModuleRec)xcalloc(1, sizeof(*mod));
+    mod = new ModuleRec_s {};
 
     mod->path = rpmGenPath(buildDir, NULL, path);
 
