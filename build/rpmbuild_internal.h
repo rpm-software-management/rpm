@@ -1,6 +1,8 @@
 #ifndef _RPMBUILD_INTERNAL_H
 #define _RPMBUILD_INTERNAL_H
 
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <rpm/rpmbuild.h>
@@ -9,13 +11,7 @@
 #include "rpmbuild_misc.h"
 #include "rpmlua.h"
 
-#define HASHTYPE fileRenameHash
-#define HTKEYTYPE const char *
-#define HTDATATYPE const char *
-#include "rpmhash.H"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
+typedef std::unordered_multimap<std::string,std::string> fileRenameHash;
 
 #define ALLOWED_CHARS_NAME ".-_+%{}"
 #define ALLOWED_FIRSTCHARS_NAME "_%"

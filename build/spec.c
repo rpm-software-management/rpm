@@ -100,7 +100,6 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->fileExcludeList = NULL;
     p->fileFile = NULL;
     p->policyList = NULL;
-    p->fileRenameMap = NULL;
     p->pool = rpmstrPoolLink(pool);
     p->dpaths = NULL;
     p->rpmver = rpmExpandNumeric("%_rpmfilever");
@@ -151,7 +150,6 @@ Package freePackage(Package pkg)
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
     pkg->removePostfixes = argvFree(pkg->removePostfixes);
-    pkg->fileRenameMap = fileRenameHashFree(pkg->fileRenameMap);
     pkg->cpioList = rpmfilesFree(pkg->cpioList);
     pkg->dpaths = argvFree(pkg->dpaths);
 
