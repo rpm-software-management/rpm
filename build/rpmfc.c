@@ -1627,20 +1627,18 @@ rpmRC rpmfcApply(rpmfc fc)
 
 rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
-    rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
     rpmfc fc = NULL;
-    rpm_mode_t * fmode = NULL;
-    int ac = rpmfiFC(fi);
+    int ac = rpmfilesFC(pkg->cpioList);
     int genConfigDeps = 0;
     rpmRC rc = RPMRC_OK;
     int idx;
 
     /* Skip packages with no files. */
-    if (ac <= 0)
-	goto exit;
+    if (ac == 0)
+	return rc;
 
     /* Extract absolute file paths in argv format. */
-    fmode = (rpm_mode_t *)xcalloc(ac+1, sizeof(*fmode));
+    vector<rpm_mode_t> fmode(ac+1, 0);
 
     fc = rpmfcCreate(spec->buildRoot, 0);
     freePackage(fc->pkg);
@@ -1648,7 +1646,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
 
-    fi = rpmfiInit(fi, 0);
+    rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
     while ((idx = rpmfiNext(fi)) >= 0) {
 	/* Does package have any %config files? */
 	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
@@ -1696,7 +1694,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Build file class dictionary. */
-    rc = rpmfcClassify(fc, pkg->dpaths, fmode);
+    rc = rpmfcClassify(fc, pkg->dpaths, fmode.data());
     if ( rc != RPMRC_OK )
 	goto exit;
 
@@ -1744,7 +1742,6 @@ exit:
     /* Clean up. */
     if (fc)
 	fc->pkg = NULL;
-    free(fmode);
     rpmfcFree(fc);
     rpmfiFree(fi);
 
