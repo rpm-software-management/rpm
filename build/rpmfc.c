@@ -63,8 +63,7 @@ struct rpmfc_s {
     int fwhite;		/*!< no. of "white" files */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
-    char *buildRoot;	/*!< (Build) root dir */
-    size_t brlen;	/*!< rootDir length */
+    string buildRoot;	/*!< (Build) root dir */
 
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
@@ -265,7 +264,7 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
 static int getOutputFrom(ARGV_t argv,
 			 const char * writePtr, size_t writeBytesLeft,
 			 StringBuf sb_stdout,
-			 int failNonZero, const char *buildRoot)
+			 int failNonZero, const string & buildRoot)
 {
     pid_t child, reaped;
     int toProg[2] = { -1, -1 };
@@ -320,8 +319,8 @@ static int getOutputFrom(ARGV_t argv,
                         argv[0], (unsigned)getpid());
 
 	unsetenv("DEBUGINFOD_URLS");
-	if (buildRoot)
-	    setenv("RPM_BUILD_ROOT", buildRoot, 1);
+	if (!buildRoot.empty())
+	    setenv("RPM_BUILD_ROOT", buildRoot.c_str(), 1);
 
 	execvp(argv[0], (char *const *)argv);
 	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
@@ -440,7 +439,7 @@ exit:
 }
 
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot)
+		int failnonzero, const string & buildRoot)
 {
     char * s = NULL;
     ARGV_t xav = NULL;
@@ -526,7 +525,7 @@ static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
     fileDeps->data[fileDeps->size++].dep = ds;
 }
 
-static ARGV_t runCmd(const char *name, const char *buildRoot, ARGV_t fns)
+static ARGV_t runCmd(const char *name, const string & buildRoot, ARGV_t fns)
 {
     ARGV_t output = NULL;
     ARGV_t av = NULL;
@@ -550,7 +549,7 @@ static ARGV_t runCmd(const char *name, const char *buildRoot, ARGV_t fns)
     return output;
 }
 
-static ARGV_t runCall(const char *name, const char *buildRoot, ARGV_t fns)
+static ARGV_t runCall(const char *name, const string & buildRoot, ARGV_t fns)
 {
     ARGV_t output = NULL;
     ARGV_t args = NULL;
@@ -775,7 +774,7 @@ static int matches(const struct matchRule *rule,
 
 static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmime, const char *fullpath)
 {
-    const char *path = fullpath + fc->brlen;
+    const char *path = fullpath + fc->buildRoot.size();
     int is_executable = 0;
     struct stat st;
     if (stat(fullpath, &st) == 0) {
@@ -880,7 +879,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++)
 	    rpmfcAttrFree(*attr);
 	free(fc->atypes);
-	free(fc->buildRoot);
 	for (int i = 0; i < fc->nfiles; i++) {
 	    argvFree(fc->fattrs[i]);
 	}
@@ -909,8 +907,7 @@ rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
 {
     rpmfc fc = new rpmfc_s {};
     if (buildRoot) {
-	fc->buildRoot = xstrdup(buildRoot);
-	fc->brlen = strlen(buildRoot);
+	fc->buildRoot = buildRoot;
     }
     fc->pool = rpmstrPoolCreate();
     fc->pkg = new Package_s {};
@@ -1080,7 +1077,7 @@ static int applyAttr(rpmfc fc, int aix,
 
 	for (auto it = range.first; it != range.second; ++it) {
 	    int fx = it->second;
-	    const char *fn = fc->fn[fx].c_str()+fc->brlen;
+	    const char *fn = fc->fn[fx].c_str()+fc->buildRoot.size();
 	    /* If the entire path is filtered out, there's nothing more to do */
 	    if (regMatch(excl->exclude_from, fn))
 		continue;
@@ -1347,7 +1344,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    }
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
-	    if (slen >= fc->brlen+sizeof("/dev/") && rstreqn(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
+	    size_t brlen = fc->buildRoot.size();
+	    if (slen >= brlen+sizeof("/dev/") && rstreqn(s+brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
 	    else if (ftype == NULL) {
 		ftype = magic_file(ms, s);

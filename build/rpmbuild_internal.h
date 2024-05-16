@@ -519,7 +519,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
  */
 RPM_GNUC_INTERNAL
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero, const char *buildRoot);
+		int failnonzero, const std::string & buildRoot);
 
 /** \ingroup rpmbuild
  * Post-build processing for policies in binary package(s).
