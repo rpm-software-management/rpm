@@ -72,9 +72,9 @@ struct rpmfc_s {
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     vector<rpm_color_t> fcolor; /*!< (no. files) file colors */
     vector<rpmsid> fcdictx;/*!< (no. files) file class dictionary indices */
-    ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
-    ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
-    ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
+    vector<uint32_t> fddictx;/*!< (no. files) file depends dictionary start */
+    vector<uint32_t> fddictn;/*!< (no. files) file depends dictionary no. entries */
+    vector<uint32_t> ddictx;	/*!< (no. dependencies) file->dependency mapping */
     rpmstrPool cdict;	/*!< file class dictionary */
     rpmfcFileDeps fileDeps; /*!< file dependency mapping */
 
@@ -847,13 +847,13 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 	}
 	fprintf(fp, "\n");
 
-	if (fc->fddictx == NULL || fc->fddictn == NULL)
+	if (fc->fddictx.empty() || fc->fddictn.empty())
 	    continue;
 
-assert(fx < fc->fddictx->nvals);
-	dx = fc->fddictx->vals[fx];
-assert(fx < fc->fddictn->nvals);
-	ndx = fc->fddictn->vals[fx];
+assert(fx < fc->fddictx.size());
+	dx = fc->fddictx[fx];
+assert(fx < fc->fddictn.size());
+	ndx = fc->fddictn[fx];
 
 	while (ndx-- > 0) {
 	    const char * depval;
@@ -861,7 +861,7 @@ assert(fx < fc->fddictn->nvals);
 	    unsigned ix;
 	    rpmds ds;
 
-	    ix = fc->ddictx->vals[dx++];
+	    ix = fc->ddictx[dx++];
 	    deptype = ((ix >> 24) & 0xff);
 	    ix &= 0x00ffffff;
 	    ds = rpmfcDependencies(fc, rpmdsDToTagN(deptype));
@@ -884,9 +884,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	}
 	free(fc->fattrs);
 	freePackage(fc->pkg);
-	argiFree(fc->fddictx);
-	argiFree(fc->fddictn);
-	argiFree(fc->ddictx);
 
 	for (int i = 0; i < fc->fileDeps.size; i++) {
 	    rpmdsFree(fc->fileDeps.data[i].dep);
@@ -1149,15 +1146,15 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	    continue;
 
 	val = (rpmdsD(ds) << 24) | (dix & 0x00ffffff);
-	argiAdd(&fc->ddictx, -1, val);
+	fc->ddictx.push_back(val);
 
 	if (previx != ix) {
 	    previx = ix;
-	    argiAdd(&fc->fddictx, ix, argiCount(fc->ddictx)-1);
+	    if (fc->fddictx.size() < ix)
+		fc->fddictx.resize(ix);
+	    fc->fddictx.insert(fc->fddictx.begin() + ix, fc->ddictx.size() - 1);
 	}
-	if (fc->fddictn && fc->fddictn->vals)
-	    fc->fddictn->vals[ix]++;
-
+	fc->fddictn[ix]++;
     }
     return rc;
 }
@@ -1284,8 +1281,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fcdictx.assign(fc->nfiles, 0);
 
     /* Initialize the per-file dictionary indices. */
-    argiAdd(&fc->fddictx, fc->nfiles-1, 0);
-    argiAdd(&fc->fddictn, fc->nfiles-1, 0);
+    fc->fddictx.assign(fc->nfiles, 0);
+    fc->fddictn.assign(fc->nfiles, 0);
 
     /* Build (sorted) file class dictionary. */
     fc->cdict = rpmstrPoolCreate();
@@ -1665,7 +1662,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     int genConfigDeps = 0;
     rpmRC rc = RPMRC_OK;
     int idx;
-    struct rpmtd_s td;
 
     /* Skip packages with no files. */
     if (ac <= 0)
@@ -1750,25 +1746,23 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx.data(), fc->nfiles);
 
     /* Add dependency dictionary(#dependencies) */
-    if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    if (!fc->ddictx.empty()) {
+	headerPutUint32(pkg->header, RPMTAG_DEPENDSDICT,
+			fc->ddictx.data(), fc->ddictx.size());
 
 	/* Add per-file dependency (start,number) pairs (#files) */
-	if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	}
-
-	if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	}
+	headerPutUint32(pkg->header, RPMTAG_FILEDEPENDSX,
+			fc->fddictx.data(), fc->fddictx.size());
+	headerPutUint32(pkg->header, RPMTAG_FILEDEPENDSN,
+			fc->fddictn.data(), fc->fddictn.size());
     }
 
 
     if (_rpmfc_debug) {
 	char *msg = NULL;
-	rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]",
+	rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%zu]",
 		  fc->nfiles, rpmstrPoolNumStr(fc->cdict),
-		  ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+		  ((100 * fc->fknown)/fc->nfiles), fc->ddictx.size());
 	rpmfcPrint(msg, fc, NULL);
 	free(msg);
     }
