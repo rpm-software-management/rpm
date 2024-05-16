@@ -51,14 +51,7 @@ typedef struct {
     int alloced;
 } rpmfcFileDeps;
 
-#define HASHTYPE fattrHash
-#define HTKEYTYPE int
-#define HTDATATYPE int
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
+typedef std::unordered_multimap<int,int> fattrHash;
 
 struct rpmfc_s {
     Package pkg;
@@ -92,17 +85,6 @@ struct rpmfcTokens_s {
     rpm_color_t colors;
 };  
 typedef const struct rpmfcTokens_s * rpmfcToken;
-
-static int intCmp(int a, int b)
-{
-    return (a != b);
-}
-
-static unsigned int intId(int a)
-{
-    return a;
-}
-
 
 static int regMatch(regex_t *reg, const char *val)
 {
@@ -807,7 +789,7 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmi
 	if (matches(&(*attr)->incl, ftype, fmime, path, is_executable)) {
 	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
 	    #pragma omp critical(fahash)
-	    fattrHashAddEntry(fc->fahash, attr-fc->atypes, ix);
+	    fc->fahash.insert({attr-fc->atypes, ix});
 	}
     }
 }
@@ -916,7 +898,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	}
 	free(fc->fileDeps.data);
 
-	fattrHashFree(fc->fahash);
 	rpmstrPoolFree(fc->cdict);
 
 	rpmstrPoolFree(fc->pool);
@@ -1091,17 +1072,15 @@ static int applyAttr(rpmfc fc, int aix,
 			const struct applyDep_s *dep)
 {
     int rc = 0;
-    int n, *ixs;
 
-    if (fattrHashGetEntry(fc->fahash, aix, &ixs, &n, NULL)) {
+    auto range = fc->fahash.equal_range(aix);
+    if (range.first != range.second) {
 	const char *aname = attr->name;
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
+	std::vector<int> fnx;
 
-	int *fnx = (int *)xmalloc(n * sizeof(*fnx));
-	int nfn = 0;
-
-	for (int i = 0; i < n; i++) {
-	    int fx = ixs[i];
+	for (auto it = range.first; it != range.second; ++it) {
+	    int fx = it->second;
 	    const char *fn = fc->fn[fx]+fc->brlen;
 	    /* If the entire path is filtered out, there's nothing more to do */
 	    if (regMatch(excl->exclude_from, fn))
@@ -1110,18 +1089,16 @@ static int applyAttr(rpmfc fc, int aix,
 	    if (regMatch(excl->global_exclude_from, fn))
 		continue;
 
-	    fnx[nfn] = fx;
-	    nfn++;
+	    fnx.push_back(fx);
 	}
 
 	if (rpmMacroIsDefined(NULL, mname)) {
 	    char *ns = rpmfcAttrMacro(aname, "namespc", NULL);
-	    rc = rpmfcHelper(fc, fnx, nfn, attr->proto,
+	    rc = rpmfcHelper(fc, fnx.data(), fnx.size(), attr->proto,
 			    excl, dep->type, dep->tag, ns, mname);
 	    free(ns);
 	}
 	free(mname);
-	free(fnx);
     }
     return rc;
 }
@@ -1311,7 +1288,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fattrs = (ARGV_t *)xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = (rpm_color_t *)xcalloc(fc->nfiles, sizeof(*fc->fcolor));
     fc->fcdictx = (rpmsid *)xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
-    fc->fahash = fattrHashCreate(fc->nfiles / 3, intId, intCmp, NULL, NULL);
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
