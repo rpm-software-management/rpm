@@ -680,40 +680,25 @@ static int genDeps(const char *mname, int multifile, rpmTagVal tagN,
     return rc;
 }
 
-static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
+static int rpmfcHelper(rpmfc fc, int *fnx, int nfn, const char *proto,
 		       const struct exclreg_s *excl,
 		       rpmsenseFlags dsContext, rpmTagVal tagN,
 		       const char *namespc, const char *mname)
 {
     int rc = 0;
-    const char **paths = (const char **)xcalloc(n + 1, sizeof(*paths));
-    int *fnx = (int *)xmalloc(n * sizeof(*fnx));
-    int nfn = 0;
-
-    for (int i = 0; i < n; i++) {
-	int fx = ixs[i];
-	const char *fn = fc->fn[fx];
-	/* If the entire path is filtered out, there's nothing more to do */
-	if (regMatch(excl->exclude_from, fn+fc->brlen))
-	    continue;
-
-	if (regMatch(excl->global_exclude_from, fn+fc->brlen))
-	    continue;
-
-	paths[nfn] = fn;
-	fnx[nfn] = fx;
-	nfn++;
-    }
-    paths[nfn] = NULL;
-
     struct addReqProvDataFc data;
     data.fc = fc;
     data.namespc = namespc;
     data.exclude = excl->exclude;
 
     if (proto && rstreq(proto, "multifile")) {
+	const char **paths = (const char **)xcalloc(nfn + 1, sizeof(*paths));
+	for (int i = 0; i < nfn; i++)
+	    paths[i] = fc->fn[fnx[i]];
+	paths[nfn] = NULL;
 	rc = genDeps(mname, 1, tagN, dsContext, &data,
 			fnx, nfn, -1, (ARGV_t) paths);
+	free(paths);
     } else {
 	for (int i = 0; i < nfn; i++) {
 	    const char *fn = fc->fn[fnx[i]];
@@ -723,8 +708,6 @@ static int rpmfcHelper(rpmfc fc, int *ixs, int n, const char *proto,
 			fnx, nfn, i, (ARGV_t) paths);
 	}
     }
-    free(fnx);
-    free(paths);
 
     return rc;
 }
@@ -1115,13 +1098,31 @@ static int applyAttr(rpmfc fc, int aix,
 	const char *aname = attr->name;
 	char *mname = rstrscat(NULL, "__", aname, "_", dep->name, NULL);
 
+	int *fnx = (int *)xmalloc(n * sizeof(*fnx));
+	int nfn = 0;
+
+	for (int i = 0; i < n; i++) {
+	    int fx = ixs[i];
+	    const char *fn = fc->fn[fx]+fc->brlen;
+	    /* If the entire path is filtered out, there's nothing more to do */
+	    if (regMatch(excl->exclude_from, fn))
+		continue;
+
+	    if (regMatch(excl->global_exclude_from, fn))
+		continue;
+
+	    fnx[nfn] = fx;
+	    nfn++;
+	}
+
 	if (rpmMacroIsDefined(NULL, mname)) {
 	    char *ns = rpmfcAttrMacro(aname, "namespc", NULL);
-	    rc = rpmfcHelper(fc, ixs, n, attr->proto,
+	    rc = rpmfcHelper(fc, fnx, nfn, attr->proto,
 			    excl, dep->type, dep->tag, ns, mname);
 	    free(ns);
 	}
 	free(mname);
+	free(fnx);
     }
     return rc;
 }
