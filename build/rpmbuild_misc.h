@@ -1,6 +1,8 @@
 #ifndef _RPMBUILD_MISC_H
 #define _RPMBUILD_MISC_H
 
+#include <string>
+
 #include <sys/types.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmds.h>
@@ -51,7 +53,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb);
 /** \ingroup rpmstring
  */
 RPM_GNUC_INTERNAL
-void appendStringBufAux(StringBuf sb, const char * s, int nl);
+void appendStringBufAux(StringBuf sb, const std::string & s, int nl);
 
 /** \ingroup rpmbuild
  * Parse an unsigned number.

@@ -40,7 +40,7 @@ const char * getStringBuf(StringBuf sb)
     return (sb != NULL) ? sb->buf.c_str() : NULL;
 }
 
-void appendStringBufAux(StringBuf sb, const char *s, int nl)
+void appendStringBufAux(StringBuf sb, const std::string & s, int nl)
 {
     sb->buf += s;
     if (nl)
