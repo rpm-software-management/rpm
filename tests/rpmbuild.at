@@ -1089,12 +1089,25 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpmbuild -bb --quiet \
-		--define '__script_requires() foo(%{basename:%{1}})' \
+		--define '__script_requires() \
+					foo(%{basename:%{1}})\
+					many(%{basename:%{1}}) = 55\
+					many(%{basename:%{1}}) = 99\
+					many(%{basename:%{1}})\
+					bar(%{basename:%{1}}) = 33\
+					bar(%{basename:%{1}})\
+					bar(%{basename:%{1}}) = 66\
+					one(%{basename:%{1}}) = 77'\
 		/data/SPECS/shebang.spec
 runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
 ],
 [0],
-[foo(shebang)
+[bar(shebang) = 33
+bar(shebang) = 66
+foo(shebang)
+many(shebang) = 55
+many(shebang) = 99
+one(shebang) = 77
 ],
 [])
 RPMTEST_CLEANUP
