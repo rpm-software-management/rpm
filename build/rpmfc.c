@@ -70,8 +70,8 @@ struct rpmfc_s {
     vector<string> fn;	/*!< (no. files) file names */
     vector<string> ftype;/*!< (no. files) file types */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
-    rpm_color_t *fcolor;/*!< (no. files) file colors */
-    rpmsid *fcdictx;	/*!< (no. files) file class dictionary indices */
+    vector<rpm_color_t> fcolor; /*!< (no. files) file colors */
+    vector<rpmsid> fcdictx;/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
@@ -883,8 +883,6 @@ rpmfc rpmfcFree(rpmfc fc)
 	    argvFree(fc->fattrs[i]);
 	}
 	free(fc->fattrs);
-	free(fc->fcolor);
-	free(fc->fcdictx);
 	freePackage(fc->pkg);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
@@ -1282,8 +1280,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fn.assign(fc->nfiles, "");
     fc->ftype.assign(fc->nfiles, "");
     fc->fattrs = (ARGV_t *)xcalloc(fc->nfiles, sizeof(*fc->fattrs));
-    fc->fcolor = (rpm_color_t *)xcalloc(fc->nfiles, sizeof(*fc->fcolor));
-    fc->fcdictx = (rpmsid *)xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
+    fc->fcolor.assign(fc->nfiles, 0);
+    fc->fcdictx.assign(fc->nfiles, 0);
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
@@ -1740,7 +1738,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Add per-file colors(#files) */
-    headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor, fc->nfiles);
+    headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor.data(), fc->nfiles);
     
     /* Add classes(#classes) */
     for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
@@ -1749,7 +1747,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add per-file classes(#files) */
-    headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx, fc->nfiles);
+    headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx.data(), fc->nfiles);
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
