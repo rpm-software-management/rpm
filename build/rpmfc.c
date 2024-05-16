@@ -26,6 +26,9 @@
 
 #include "debug.h"
 
+using std::string;
+using std::vector;
+
 struct matchRule {
     regex_t *path;
     regex_t *magic;
@@ -65,8 +68,8 @@ struct rpmfc_s {
 
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
-    char ** fn;		/*!< (no. files) file names */
-    char ** ftype;	/*!< (no. files) file types */
+    vector<string> fn;	/*!< (no. files) file names */
+    vector<string> ftype;/*!< (no. files) file types */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     rpm_color_t *fcolor;/*!< (no. files) file colors */
     rpmsid *fcdictx;	/*!< (no. files) file class dictionary indices */
@@ -676,14 +679,14 @@ static int rpmfcHelper(rpmfc fc, int *fnx, int nfn, const char *proto,
     if (proto && rstreq(proto, "multifile")) {
 	const char **paths = (const char **)xcalloc(nfn + 1, sizeof(*paths));
 	for (int i = 0; i < nfn; i++)
-	    paths[i] = fc->fn[fnx[i]];
+	    paths[i] = fc->fn[fnx[i]].c_str();
 	paths[nfn] = NULL;
 	rc = genDeps(mname, 1, tagN, dsContext, &data,
 			fnx, nfn, -1, (ARGV_t) paths);
 	free(paths);
     } else {
 	for (int i = 0; i < nfn; i++) {
-	    const char *fn = fc->fn[fnx[i]];
+	    const char *fn = fc->fn[fnx[i]].c_str();
 	    const char *paths[] = { fn, NULL };
 
 	    rc += genDeps(mname, 0, tagN, dsContext, &data,
@@ -825,7 +828,7 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 
     if (fc)
     for (fx = 0; fx < fc->nfiles; fx++) {
-	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
+	fprintf(fp, "%3d %s", fx, fc->fn[fx].c_str());
 	if (_rpmfc_debug) {
 	    rpmsid cx = fc->fcdictx[fx] + 1; /* id's are one off */
 	    rpm_color_t fcolor = fc->fcolor[fx];
@@ -879,12 +882,8 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->atypes);
 	free(fc->buildRoot);
 	for (int i = 0; i < fc->nfiles; i++) {
-	    free(fc->fn[i]);
-	    free(fc->ftype[i]);
 	    argvFree(fc->fattrs[i]);
 	}
-	free(fc->fn);
-	free(fc->ftype);
 	free(fc->fattrs);
 	free(fc->fcolor);
 	free(fc->fcdictx);
@@ -1081,7 +1080,7 @@ static int applyAttr(rpmfc fc, int aix,
 
 	for (auto it = range.first; it != range.second; ++it) {
 	    int fx = it->second;
-	    const char *fn = fc->fn[fx]+fc->brlen;
+	    const char *fn = fc->fn[fx].c_str()+fc->brlen;
 	    /* If the entire path is filtered out, there's nothing more to do */
 	    if (regMatch(excl->exclude_from, fn))
 		continue;
@@ -1283,8 +1282,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     }
 
     fc->nfiles = argvCount(argv);
-    fc->fn = (char **)xcalloc(fc->nfiles, sizeof(*fc->fn));
-    fc->ftype = (char **)xcalloc(fc->nfiles, sizeof(*fc->ftype));
+    fc->fn.assign(fc->nfiles, "");
+    fc->ftype.assign(fc->nfiles, "");
     fc->fattrs = (ARGV_t *)xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = (rpm_color_t *)xcalloc(fc->nfiles, sizeof(*fc->fcolor));
     fc->fcdictx = (rpmsid *)xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
@@ -1390,7 +1389,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmlog(RPMLOG_DEBUG, "%s: %s (%s)\n", s, fmime, ftype);
 
 	/* Save the path. */
-	fc->fn[ix] = xstrdup(s);
+	fc->fn[ix] = s;
 
 	/* Add (filtered) file coloring */
 	fcolor |= rpmfcColor(ftype);
@@ -1399,7 +1398,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmfcAttributes(fc, ix, ftype, fmime, s);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    fc->ftype[ix] = xstrdup(ftype);
+	    fc->ftype[ix] = ftype;
 
 	/* Add ELF colors */
 	if (S_ISREG(mode) && is_executable)
@@ -1415,14 +1414,14 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     /* Add to file class dictionary and index array */
     for (int ix = 0; ix < fc->nfiles; ix++) {
-	const char *ftype = fc->ftype[ix] ? fc->ftype[ix] : "";
+	const string & ftype = fc->ftype[ix].c_str();
 	/* Pool id's start from 1, for headers we want it from 0 */
-	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype, 1) - 1;
+	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype.c_str(), 1) - 1;
 
-	if (*ftype)
-	    fc->fknown++;
-	else
+	if (ftype.empty())
 	    fc->fwhite++;
+	else
+	    fc->fknown++;
     }
 
     if (nerrors == 0)
