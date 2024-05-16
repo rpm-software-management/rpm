@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <algorithm>
+
 #include <errno.h>
 #include <libgen.h>
 #include <sys/select.h>
@@ -43,16 +45,16 @@ typedef struct rpmfcAttr_s {
     char *proto;
 } * rpmfcAttr;
 
-typedef struct {
+struct rpmfcFileDep {
     int fileIx;
     rpmds dep;
-} rpmfcFileDep;
 
-typedef struct {
-    rpmfcFileDep *data;
-    int size;
-    int alloced;
-} rpmfcFileDeps;
+    bool operator < (const rpmfcFileDep & other) {
+	return fileIx < other.fileIx;
+    }
+};
+
+typedef vector<rpmfcFileDep> rpmfcFileDeps;
 
 typedef std::unordered_multimap<int,int> fattrHash;
 
@@ -514,15 +516,10 @@ static void argvAddUniq(ARGV_t * argvp, const char * key)
 
 #define hasAttr(_a, _n) (argvSearch((_a), (_n), NULL) != NULL)
 
-static void rpmfcAddFileDep(rpmfcFileDeps *fileDeps, rpmds ds, int ix)
+static void rpmfcAddFileDep(rpmfcFileDeps & fileDeps, rpmds ds, int ix)
 {
-    if (fileDeps->size == fileDeps->alloced) {
-	fileDeps->alloced <<= 2;
-	fileDeps->data  = xrealloc(fileDeps->data,
-	    fileDeps->alloced * sizeof(fileDeps->data[0]));
-    }
-    fileDeps->data[fileDeps->size].fileIx = ix;
-    fileDeps->data[fileDeps->size++].dep = ds;
+    rpmfcFileDep dep { ix, ds };
+    fileDeps.push_back(dep);
 }
 
 static ARGV_t runCmd(const char *name, const string & buildRoot, ARGV_t fns)
@@ -594,7 +591,7 @@ static rpmRC addReqProvFc(void *cbdata, rpmTagVal tagN,
     rpmds ds = rpmdsSingleNS(fc->pool, tagN, namespc, N, EVR, Flags);
     /* Add to package and file dependencies unless filtered */
     if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0)
-	rpmfcAddFileDep(&fc->fileDeps, ds, index);
+	rpmfcAddFileDep(fc->fileDeps, ds, index);
 
     return RPMRC_OK;
 }
@@ -885,10 +882,8 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->fattrs);
 	freePackage(fc->pkg);
 
-	for (int i = 0; i < fc->fileDeps.size; i++) {
-	    rpmdsFree(fc->fileDeps.data[i].dep);
-	}
-	free(fc->fileDeps.data);
+	for (auto & fd : fc->fileDeps)
+	    rpmdsFree(fd.dep);
 
 	rpmstrPoolFree(fc->cdict);
 
@@ -906,9 +901,6 @@ rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
     }
     fc->pool = rpmstrPoolCreate();
     fc->pkg = new Package_s {};
-    fc->fileDeps.alloced = 10;
-    fc->fileDeps.data = (rpmfcFileDep *)xmalloc(fc->fileDeps.alloced *
-	sizeof(fc->fileDeps.data[0]));
     return fc;
 }
 
@@ -967,24 +959,12 @@ rpmds rpmfcOrderWithRequires(rpmfc fc)
 
 
 /* Versioned deps are less than unversioned deps */
-static int cmpVerDeps(const void *a, const void *b)
+static bool verdepLess(const rpmfcFileDep & fDepA, const rpmfcFileDep & fDepB)
 {
-    rpmfcFileDep *fDepA = (rpmfcFileDep *) a;
-    rpmfcFileDep *fDepB = (rpmfcFileDep *) b;
+    int aIsVersioned = rpmdsFlags(fDepA.dep) & RPMSENSE_SENSEMASK ? 1 : 0;
+    int bIsVersioned = rpmdsFlags(fDepB.dep) & RPMSENSE_SENSEMASK ? 1 : 0;
 
-    int aIsVersioned = rpmdsFlags(fDepA->dep) & RPMSENSE_SENSEMASK ? 1 : 0;
-    int bIsVersioned = rpmdsFlags(fDepB->dep) & RPMSENSE_SENSEMASK ? 1 : 0;
-
-    return bIsVersioned - aIsVersioned;
-}
-
-/* Sort by index */
-static int cmpIndexDeps(const void *a, const void *b)
-{
-    rpmfcFileDep *fDepA = (rpmfcFileDep *) a;
-    rpmfcFileDep *fDepB = (rpmfcFileDep *) b;
-
-    return fDepA->fileIx - fDepB->fileIx;
+    return bIsVersioned < aIsVersioned;
 }
 
 /*
@@ -994,48 +974,43 @@ static int cmpIndexDeps(const void *a, const void *b)
 static void rpmfcNormalizeFDeps(rpmfc fc)
 {
     rpmstrPool versionedDeps = rpmstrPoolCreate();
-    rpmfcFileDep *normalizedFDeps = (rpmfcFileDep *)xmalloc(fc->fileDeps.size *
-	sizeof(normalizedFDeps[0]));
-    int ix = 0;
+    rpmfcFileDeps normalizedFDeps;
     char *depStr;
 
     /* Sort. Versioned dependencies first */
-    qsort(fc->fileDeps.data, fc->fileDeps.size, sizeof(fc->fileDeps.data[0]),
-	cmpVerDeps);
+    std::sort(fc->fileDeps.begin(), fc->fileDeps.end(), &verdepLess);
 
-    for (int i = 0; i < fc->fileDeps.size; i++) {
-	switch (rpmdsTagN(fc->fileDeps.data[i].dep)) {
+    for (auto const & fdep : fc->fileDeps) {
+	switch (rpmdsTagN(fdep.dep)) {
 	case RPMTAG_REQUIRENAME:
 	case RPMTAG_RECOMMENDNAME:
 	case RPMTAG_SUGGESTNAME:
 	    rasprintf(&depStr, "%08x_%c_%s",
-		fc->fcolor[fc->fileDeps.data[i].fileIx],
-		rpmdsD(fc->fileDeps.data[i].dep),
-		rpmdsN(fc->fileDeps.data[i].dep));
+		fc->fcolor[fdep.fileIx],
+		rpmdsD(fdep.dep),
+		rpmdsN(fdep.dep));
 
-	    if (rpmdsFlags(fc->fileDeps.data[i].dep) & RPMSENSE_SENSEMASK) {
+	    if (rpmdsFlags(fdep.dep) & RPMSENSE_SENSEMASK) {
 		/* preserve versioned require dependency */
-		normalizedFDeps[ix++] = fc->fileDeps.data[i];
+		normalizedFDeps.push_back(fdep);
 		rpmstrPoolId(versionedDeps, depStr, 1);
 	    } else if (!rpmstrPoolId(versionedDeps, depStr, 0)) {
 		/* preserve unversioned require dep only if versioned dep doesn't exist */
-		    normalizedFDeps[ix++] =fc-> fileDeps.data[i];
+		    normalizedFDeps.push_back(fdep);
 	    } else {
-		rpmdsFree(fc->fileDeps.data[i].dep);
+		rpmdsFree(fdep.dep);
 	    }
 	    free(depStr);
 	    break;
 	default:
 	    /* Preserve all non-require dependencies */
-	    normalizedFDeps[ix++] = fc->fileDeps.data[i];
+	    normalizedFDeps.push_back(fdep);
 	    break;
 	}
     }
     rpmstrPoolFree(versionedDeps);
 
-    free(fc->fileDeps.data);
-    fc->fileDeps.data = normalizedFDeps;
-    fc->fileDeps.size = ix;
+    fc->fileDeps = normalizedFDeps; /* vector assignment */
 }
 
 struct applyDep_s {
@@ -1097,7 +1072,6 @@ static int applyAttr(rpmfc fc, int aix,
 static rpmRC rpmfcApplyInternal(rpmfc fc)
 {
     rpmRC rc = RPMRC_OK;
-    rpmds ds, * dsp;
     int previx;
     unsigned int val;
     int dix;
@@ -1126,21 +1100,20 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
     /* No more additions after this, freeze pool to minimize memory use */
 
     rpmfcNormalizeFDeps(fc);
-    for (int i = 0; i < fc->fileDeps.size; i++) {
-	ds = fc->fileDeps.data[i].dep;
+    for (auto const & fdep : fc->fileDeps) {
+	rpmds ds = fdep.dep;
 	rpmdsMerge(packageDependencies(fc->pkg, rpmdsTagN(ds)), ds);
     }
 
     /* Sort by index */
-    qsort(fc->fileDeps.data, fc->fileDeps.size,
-	sizeof(fc->fileDeps.data[0]), cmpIndexDeps);
+    std::sort(fc->fileDeps.begin(), fc->fileDeps.end());
 
     /* Generate per-file indices into package dependencies. */
     previx = -1;
-    for (int i = 0; i < fc->fileDeps.size; i++) {
-	ds = fc->fileDeps.data[i].dep;
-	ix = fc->fileDeps.data[i].fileIx;
-	dsp = packageDependencies(fc->pkg, rpmdsTagN(ds));
+    for (auto const & fdep : fc->fileDeps) {
+	rpmds ds = fdep.dep;
+	ix = fdep.fileIx;
+	rpmds *dsp = packageDependencies(fc->pkg, rpmdsTagN(ds));
 	dix = rpmdsFind(*dsp, ds);
 	if (dix < 0)
 	    continue;
