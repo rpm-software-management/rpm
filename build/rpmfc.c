@@ -67,7 +67,7 @@ struct rpmfc_s {
     int skipReq;	/*!< Don't auto-generate Requires:? */
     string buildRoot;	/*!< (Build) root dir */
 
-    rpmfcAttr *atypes;	/*!< known file attribute types */
+    vector<rpmfcAttr> atypes;	/*!< known file attribute types */
 
     vector<string> fn;	/*!< (no. files) file names */
     vector<string> ftype;/*!< (no. files) file types */
@@ -779,16 +779,18 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmi
 			(st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
-    for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
+    for (int i = 0; i < fc->atypes.size(); ++i) {
+	rpmfcAttr attr = fc->atypes[i];
+
 	/* Filter out excludes */
-	if (matches(&(*attr)->excl, ftype, fmime, path, is_executable))
+	if (matches(&(attr)->excl, ftype, fmime, path, is_executable))
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
-	if (matches(&(*attr)->incl, ftype, fmime, path, is_executable)) {
-	    argvAddTokens(&fc->fattrs[ix], (*attr)->name);
+	if (matches(&(attr)->incl, ftype, fmime, path, is_executable)) {
+	    argvAddTokens(&fc->fattrs[ix], (attr)->name);
 	    #pragma omp critical(fahash)
-	    fc->fahash.insert({attr-fc->atypes, ix});
+	    fc->fahash.insert({i, ix});
 	}
     }
 }
@@ -873,9 +875,8 @@ assert(fx < fc->fddictn.size());
 rpmfc rpmfcFree(rpmfc fc)
 {
     if (fc) {
-	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++)
-	    rpmfcAttrFree(*attr);
-	free(fc->atypes);
+	for (auto const & attr : fc->atypes)
+	    rpmfcAttrFree(attr);
 	for (int i = 0; i < fc->nfiles; i++) {
 	    argvFree(fc->fattrs[i]);
 	}
@@ -1091,8 +1092,8 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 	if (skip & dep->type)
 	    continue;
 	exclInit(dep->name, &excl);
-	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++, aix++) {
-	    if (applyAttr(fc, aix, (*attr), &excl, dep))
+	for (auto const & attr : fc->atypes) {
+	    if (applyAttr(fc, aix++, attr, &excl, dep))
 		rc = RPMRC_FAIL;
 	}
 	exclFini(&excl);
@@ -1160,12 +1161,10 @@ static int initAttrs(rpmfc fc)
 
     /* Initialize attr objects */
     nattrs = argvCount(all_attrs);
-    fc->atypes = (rpmfcAttr*)xcalloc(nattrs + 1, sizeof(*fc->atypes));
 
     for (int i = 0; i < nattrs; i++) {
-	fc->atypes[i] = rpmfcAttrNew(all_attrs[i]);
+	fc->atypes.push_back(rpmfcAttrNew(all_attrs[i]));
     }
-    fc->atypes[nattrs] = NULL;
 
     free(attrPath);
     free(local_attr_names);
