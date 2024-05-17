@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <rpm/rpmlib.h>		/* rpmVersionCompare, rpmlib provides */
 #include <rpm/rpmtag.h>
@@ -34,22 +35,8 @@ const char * const rpmEVR = VERSION;
 const int rpmFLAGS = RPMSENSE_EQUAL;
 
 typedef std::unordered_map<std::string,int> depCache;
-
-#define HASHTYPE filedepHash
-#define HTKEYTYPE rpmsid
-#define HTDATATYPE rpmsid
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
-#define HASHTYPE depexistsHash
-#define HTKEYTYPE rpmsid
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
+typedef std::unordered_set<rpmsid> depexistsHash;
+typedef std::unordered_map<rpmsid,rpmsid> filedepHash;
 
 /**
  * Check for supported payload format in header.
@@ -862,34 +849,31 @@ static void checkInstDeps(rpmts ts, depCache *dcache, rpmte te,
 
 static void checkInstFileDeps(rpmts ts, depCache *dcache, rpmte te,
 			      rpmTag depTag, rpmfi fi, int is_not,
-			      filedepHash cache, fingerPrintCache *fpcp)
+			      filedepHash *cache, fingerPrintCache *fpcp)
 {
     rpmstrPool pool = rpmtsPool(ts);
     fingerPrintCache fpc = *fpcp;
     fingerPrint * fp = NULL;
     rpmsid basename = rpmfiBNId(fi);
     rpmsid dirname;
-    rpmsid *dirnames = 0;
-    int ndirnames = 0;
-    int i;
 
-    filedepHashGetEntry(cache, basename, &dirnames, &ndirnames, NULL);
-    if (!ndirnames)
+    auto range = cache->equal_range(basename);
+    if (range.first == range.second)
 	return;
     dirname = rpmfiDNId(fi);
-    for (i = 0; i < ndirnames; i++) {
+    for (auto it = range.first; it != range.second; ++it) {
 	char *fpdep = 0;
 	const char *dep;
-	if (dirnames[i] == dirname) {
+	if (it->second == dirname) {
 	    dep = rpmfiFN(fi);
 	} else {
 	    if (!fpc)
 		*fpcp = fpc = fpCacheCreate(1001, pool);
 	    if (!fp)
 		fpLookupId(fpc, dirname, basename, &fp);
-	    if (!fpLookupEqualsId(fpc, fp, dirnames[i], basename))
+	    if (!fpLookupEqualsId(fpc, fp, it->second, basename))
 		continue;
-	    rstrscat(&fpdep, rpmstrPoolStr(pool, dirnames[i]),
+	    rstrscat(&fpdep, rpmstrPoolStr(pool, it->second),
                              rpmstrPoolStr(pool, basename), NULL);
 	    dep = fpdep;
 	}
@@ -899,7 +883,7 @@ static void checkInstFileDeps(rpmts ts, depCache *dcache, rpmte te,
     _free(fp);
 }
 
-static void addFileDepToHash(rpmstrPool pool, filedepHash hash, char *key, size_t keylen)
+static void addFileDepToHash(rpmstrPool pool, filedepHash *hash, char *key, size_t keylen)
 {
     int i;
     rpmsid basename, dirname;
@@ -910,18 +894,18 @@ static void addFileDepToHash(rpmstrPool pool, filedepHash hash, char *key, size_
     i++;	/* include '/' in dirname */
     dirname = rpmstrPoolIdn(pool, key, i, 1);
     basename = rpmstrPoolIdn(pool, key + i, keylen - i, 1);
-    filedepHashAddEntry(hash, basename, dirname);
+    hash->insert({basename, dirname});
 }
 
-static void addDepToHash(rpmstrPool pool, depexistsHash hash, char *key, size_t keylen)
+static void addDepToHash(rpmstrPool pool, depexistsHash *hash, char *key, size_t keylen)
 {
     if (keylen)
-	depexistsHashAddEntry(hash, rpmstrPoolIdn(pool, key, keylen, 1));
+	hash->insert(rpmstrPoolIdn(pool, key, keylen, 1));
 }
 
 static void addIndexToDepHashes(rpmts ts, rpmDbiTag tag,
-				depexistsHash dephash, filedepHash filehash,
-				depexistsHash depnothash, filedepHash filenothash)
+				depexistsHash *dephash, filedepHash *filehash,
+				depexistsHash *depnothash, filedepHash *filenothash)
 {
     rpmstrPool pool = rpmtsPool(ts);
     char *key;
@@ -950,16 +934,17 @@ static void addIndexToDepHashes(rpmts ts, rpmDbiTag tag,
     rpmdbIndexIteratorFree(ii);
 }
 
-static unsigned int sidHash(rpmsid sid)
+static depexistsHash *depexistsHashFree(depexistsHash *hash)
 {
-    return sid;
+    delete hash;
+    return NULL;
 }
 
-static int sidCmp(rpmsid a, rpmsid b)
+static filedepHash *filedepHashFree(filedepHash *hash)
 {
-    return (a != b);
+    delete hash;
+    return NULL;
 }
-
 
 int rpmtsCheck(rpmts ts)
 {
@@ -968,12 +953,12 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int rc = 0;
     depCache _dcache, *dcache = &_dcache;
-    filedepHash confilehash = NULL;	/* file conflicts of installed packages */
-    filedepHash connotfilehash = NULL;	/* file conflicts of installed packages */
-    depexistsHash connothash = NULL;
-    filedepHash reqfilehash = NULL;	/* file requires of installed packages */
-    filedepHash reqnotfilehash = NULL;	/* file requires of installed packages */
-    depexistsHash reqnothash = NULL;
+    filedepHash *confilehash = NULL;	/* file conflicts of installed packages */
+    filedepHash *connotfilehash = NULL;	/* file conflicts of installed packages */
+    depexistsHash *connothash = NULL;
+    filedepHash *reqfilehash = NULL;	/* file requires of installed packages */
+    filedepHash *reqnotfilehash = NULL;	/* file requires of installed packages */
+    depexistsHash *reqnothash = NULL;
     fingerPrintCache fpc = NULL;
     rpmdb rdb = NULL;
     
@@ -992,27 +977,27 @@ int rpmtsCheck(rpmts ts)
 	rpmdbCtrl(rdb, RPMDB_CTRL_LOCK_RO);
 
     /* build hashes of all confilict sdependencies */
-    confilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
-    connothash = depexistsHashCreate(257, sidHash, sidCmp, NULL);
-    connotfilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
+    confilehash = new filedepHash {};
+    connothash = new depexistsHash {};
+    connotfilehash = new filedepHash {};
     addIndexToDepHashes(ts, RPMDBI_CONFLICTNAME, NULL, confilehash, connothash, connotfilehash);
-    if (!filedepHashNumKeys(confilehash))
+    if (confilehash->empty())
 	confilehash = filedepHashFree(confilehash);
-    if (!depexistsHashNumKeys(connothash))
-	connothash= depexistsHashFree(connothash);
-    if (!filedepHashNumKeys(connotfilehash))
+    if (connothash->empty())
+	connothash = depexistsHashFree(connothash);
+    if (connotfilehash->empty())
 	connotfilehash = filedepHashFree(connotfilehash);
 
     /* build hashes of all requires dependencies */
-    reqfilehash = filedepHashCreate(8191, sidHash, sidCmp, NULL, NULL);
-    reqnothash = depexistsHashCreate(257, sidHash, sidCmp, NULL);
-    reqnotfilehash = filedepHashCreate(257, sidHash, sidCmp, NULL, NULL);
+    reqfilehash = new filedepHash {};
+    reqnothash = new depexistsHash {};
+    reqnotfilehash = new filedepHash {};
     addIndexToDepHashes(ts, RPMDBI_REQUIRENAME, NULL, reqfilehash, reqnothash, reqnotfilehash);
-    if (!filedepHashNumKeys(reqfilehash))
+    if (reqfilehash->empty())
 	reqfilehash = filedepHashFree(reqfilehash);
-    if (!depexistsHashNumKeys(reqnothash))
-	reqnothash= depexistsHashFree(reqnothash);
-    if (!filedepHashNumKeys(reqnotfilehash))
+    if (reqnothash->empty())
+	reqnothash = depexistsHashFree(reqnothash);
+    if (reqnotfilehash->empty())
 	reqnotfilehash = filedepHashFree(reqnotfilehash);
 
     /*
@@ -1040,7 +1025,7 @@ int rpmtsCheck(rpmts ts)
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
 	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, NULL, provides, 0);
-	    if (reqnothash && depexistsHashHasEntry(reqnothash, rpmdsNId(provides)))
+	    if (reqnothash && reqnothash->find(rpmdsNId(provides)) != reqnothash->end())
 		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, NULL, provides, 1);
 	}
 
@@ -1076,7 +1061,7 @@ int rpmtsCheck(rpmts ts)
 	/* Check provides and filenames against installed dependencies. */
 	while (rpmdsNext(provides) >= 0) {
 	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, NULL, provides, 0);
-	    if (connothash && depexistsHashHasEntry(connothash, rpmdsNId(provides)))
+	    if (connothash && connothash->find(rpmdsNId(provides)) != connothash->end())
 		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, NULL, provides, 1);
 	}
 
