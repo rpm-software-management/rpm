@@ -339,7 +339,7 @@ struct rpmSpecIter_s {
 #define SPEC_LISTITER_NEXT(_valuetype)			\
     _valuetype item = NULL;				\
     if (iter) {						\
-	item = (_valuetype)iter->next;				\
+	item = (_valuetype)iter->next;			\
 	iter->next = (item) ? item->next : NULL;	\
     }							\
     return item
