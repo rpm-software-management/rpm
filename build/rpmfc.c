@@ -1045,7 +1045,7 @@ static int applyAttr(rpmfc fc, int aix,
 	}
 
 	if (rpmMacroIsDefined(NULL, mname)) {
-	    char *ns = rpmfcAttrMacro(aname, "namespc", NULL);
+	    char *ns = rpmfcAttrMacro(aname, "namespace", NULL);
 	    rc = rpmfcHelper(fc, fnx.data(), fnx.size(), attr->proto,
 			    excl, dep->type, dep->tag, ns, mname);
 	    free(ns);
