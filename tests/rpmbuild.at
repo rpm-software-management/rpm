@@ -1120,11 +1120,12 @@ RPMDB_INIT
 runroot rpmbuild -bb --quiet \
 		--define '__script_mime text/plain' \
 		--define '__script_magic %{nil}' \
+		--define '__script_namespace mine' \
 		/data/SPECS/shebang.spec
 runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^rpmlib
 ],
 [0],
-[/bin/blabla
+[mine(/bin/blabla)
 ],
 [])
 RPMTEST_CLEANUP
