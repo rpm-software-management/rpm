@@ -114,38 +114,23 @@ static void ruleFree(struct matchRule *rule)
 
 static char *rpmfcAttrMacroV(const char *arg, va_list args)
 {
-    const char *s;
-    int blen;
-    char *buf = NULL, *obuf;
-    char *pe;
-    va_list args2;
 
     if (arg == NULL || rstreq(arg, ""))
 	return NULL;
 
-    va_copy(args2, args);
-    blen = sizeof("%{?_") - 1;
-    for (s = arg; s != NULL; s = va_arg(args, const char *)) {
-	blen += sizeof("_") - 1 + strlen(s);
+    string buf = "%{?__";
+    for (const char *s = arg; s != NULL; s = va_arg(args, const char *)) {
+	if (s != arg)
+	    buf += '_';
+	buf += s;
     }
-    blen += sizeof("}") - 1;
+    buf += "}";
 
-    buf = (char *)xmalloc(blen + 1);
+    char *obuf = rpmExpand(buf.c_str(), NULL);
+    if (rstreq(obuf, ""))
+	obuf = _free(obuf);
 
-    pe = buf;
-    pe = stpcpy(pe, "%{?_");
-    for (s = arg; s != NULL; s = va_arg(args2, const char *)) {
-	*pe++ = '_';
-	pe = stpcpy(pe, s);
-    }
-    va_end(args2);
-    *pe++ = '}';
-    *pe = '\0';
-
-    obuf = rpmExpand(buf, NULL);
-    free(buf);
-
-    return rstreq(obuf, "") ? _free(obuf) : obuf;
+    return obuf;
 }
 
 static char *rpmfcAttrMacro(const char *arg, ...)
