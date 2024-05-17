@@ -5,6 +5,10 @@
 
 #include "system.h"
 
+#include <unordered_map>
+#include <vector>
+#include <memory>
+
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>	/* XXX rpmDoDigest */
@@ -25,21 +29,8 @@
 
 #include "debug.h"
 
-struct hardlinks_s {
-    int nlink;
-    int files[];
-};
-
-typedef struct hardlinks_s * hardlinks_t;
-
-#define HASHTYPE nlinkHash
-#define HTKEYTYPE int
-#define HTDATATYPE struct hardlinks_s *
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
+typedef std::vector<int> hardlinks;
+typedef std::unordered_map<int,std::shared_ptr<hardlinks>> nlinkHash;
 
 typedef int (*iterfunc)(rpmfi fi);
 
@@ -124,7 +115,7 @@ struct rpmfiles_s {
     unsigned char * signatures; /*!< File signatures in binary. */
     unsigned char * veritysigs; /*!< Verity signatures in binary. */
 
-    struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
+    nlinkHash *nlinks;		/*!< Files connected by hardlinks */
     rpm_loff_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
     int nrefs;		/*!< Reference count. */
@@ -724,12 +715,11 @@ uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files)
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	nlink = 1;
 	if (fi->nlinks) {
-	    struct hardlinks_s ** hardlinks = NULL;
-	    nlinkHashGetEntry(fi->nlinks, ix, &hardlinks, NULL, NULL);
-	    if (hardlinks) {
-		nlink = hardlinks[0]->nlink;
+	    auto entry = fi->nlinks->find(ix);
+	    if (entry != fi->nlinks->end()) {
+		nlink = entry->second->size();
 		if (files) {
-		    *files = hardlinks[0]->files;
+		    *files = entry->second->data();
 		}
 	    } else if (files){
 		*files = NULL;
@@ -1286,7 +1276,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     fi->h = headerFree(fi->h);
     fi->pool = rpmstrPoolFree(fi->pool);
 
-    fi->nlinks = nlinkHashFree(fi->nlinks);
+    delete fi->nlinks;
 
     (void) rpmfilesUnlink(fi);
     delete fi;
@@ -1395,25 +1385,6 @@ static int fidCmp(struct fileid_s a, struct fileid_s b)
     return  !((a.id_dev == b.id_dev) && (a.id_ino == b.id_ino));
 }
 
-static unsigned int intHash(int a)
-{
-    return a < 0 ? UINT_MAX-a : a;
-}
-
-static int intCmp(int a, int b)
-{
-    return a != b;
-}
-
-static struct hardlinks_s * freeNLinks(struct hardlinks_s * nlinks)
-{
-    nlinks->nlink--;
-    if (!nlinks->nlink) {
-	nlinks = _free(nlinks);
-    }
-    return nlinks;
-}
-
 static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 {
     struct fileid_s f_id;
@@ -1444,8 +1415,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
     }
     if (fileidHashNumKeys(files) != fc) {
 	/* Hard links */
-	fi->nlinks = nlinkHashCreate(2*(totalfc - fileidHashNumKeys(files)),
-		intHash, intCmp, NULL, freeNLinks);
+	fi->nlinks = new nlinkHash {};
 	for (int i=0; i < totalfc; i++) {
 	    int fcnt;
 	    int * data;
@@ -1456,15 +1426,10 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	    f_id.id_dev = fdevs[i];
 	    f_id.id_ino = fi->finodes[i];
 	    fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
-	    if (fcnt > 1 && !nlinkHashHasEntry(fi->nlinks, i)) {
-		struct hardlinks_s * hlinks;
-		hlinks = (struct hardlinks_s *)xmalloc(sizeof(*hlinks) +
-			fcnt*sizeof(hlinks->files[0]));
-		hlinks->nlink = fcnt;
-		for (int j=0; j<fcnt; j++) {
-		    hlinks->files[j] = data[j];
-		    nlinkHashAddEntry(fi->nlinks, data[j], hlinks);
-		}
+	    if (fcnt > 1 && fi->nlinks->find(i) == fi->nlinks->end()) {
+		auto ixs = std::make_shared<hardlinks> (data, data+fcnt);
+		for (int j = 0; j < fcnt; j++)
+		    fi->nlinks->insert({data[j], ixs});
 	    }
 	}
     }
