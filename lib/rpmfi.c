@@ -1364,35 +1364,25 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 struct fileid_s {
     rpm_dev_t id_dev;
     rpm_ino_t id_ino;
+
+    bool operator == (const fileid_s & other) const {
+	return (id_dev == other.id_dev && id_ino == other.id_ino);
+    }
 };
 
-#define HASHTYPE fileidHash
-#define HTKEYTYPE struct fileid_s
-#define HTDATATYPE int
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
-static unsigned int fidHashFunc(struct fileid_s a)
-{
-    return  a.id_ino + (a.id_dev<<16) + (a.id_dev>>16);
-}
-
-static int fidCmp(struct fileid_s a, struct fileid_s b)
-{
-    return  !((a.id_dev == b.id_dev) && (a.id_ino == b.id_ino));
-}
+struct fidHash {
+    size_t operator() (const fileid_s & fid) const {
+	return fid.id_ino + (fid.id_dev<<16) + (fid.id_dev>>16);
+    }
+};
 
 static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 {
-    struct fileid_s f_id;
-    fileidHash files;
+    std::unordered_map<fileid_s,std::shared_ptr<hardlinks>,fidHash> files;
     rpm_dev_t * fdevs = NULL;
     struct rpmtd_s td;
-    int fc = 0;
     int totalfc = rpmfilesFC(fi);
+    bool havelinks = false;
 
     if (!fi->finodes)
 	return;
@@ -1401,40 +1391,44 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
     if (!fdevs)
 	return;
 
-    files = fileidHashCreate(totalfc, fidHashFunc, fidCmp, NULL, NULL);
+    /* Collect file indexes sharing the same dev:ino pair (if any) */
     for (int i=0; i < totalfc; i++) {
 	if (!S_ISREG(rpmfilesFMode(fi, i)) ||
 		(rpmfilesFFlags(fi, i) & RPMFILE_GHOST) ||
 		fi->finodes[i] <= 0) {
 	    continue;
 	}
-	fc++;
-	f_id.id_dev = fdevs[i];
-	f_id.id_ino = fi->finodes[i];
-	fileidHashAddEntry(files, f_id, i);
+	fileid_s f_id = { fdevs[i], fi->finodes[i] };
+	/* Shared pointer vector, this will be reused in the below */
+	auto entry = files.emplace(
+		std::make_pair(f_id, std::make_shared<hardlinks>())).first;
+	entry->second->push_back(i);
+	if (entry->second->size() > 1)
+	    havelinks = true;
     }
-    if (fileidHashNumKeys(files) != fc) {
-	/* Hard links */
+
+    /* Collect the hardlink sets to into a hash keyed by file index */
+    if (havelinks) {
 	fi->nlinks = new nlinkHash {};
 	for (int i=0; i < totalfc; i++) {
-	    int fcnt;
-	    int * data;
 	    if (!S_ISREG(rpmfilesFMode(fi, i)) ||
 		    (rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
 		continue;
 	    }
-	    f_id.id_dev = fdevs[i];
-	    f_id.id_ino = fi->finodes[i];
-	    fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
-	    if (fcnt > 1 && fi->nlinks->find(i) == fi->nlinks->end()) {
-		auto ixs = std::make_shared<hardlinks> (data, data+fcnt);
-		for (int j = 0; j < fcnt; j++)
-		    fi->nlinks->insert({data[j], ixs});
+
+	    /* Transfer the hardlink sets from above to the new hash */
+	    fileid_s f_id = { fdevs[i], fi->finodes[i] };
+	    auto entry = files.find(f_id);
+	    if (entry != files.end()) {
+		auto const & links = entry->second;
+		if (links->size() > 1) {
+		    for (int j : (*links))
+			fi->nlinks->insert({j, links});
+		}
 	    }
 	}
     }
     _free(fdevs);
-    files = fileidHashFree(files);
 err:
     return;
 }
