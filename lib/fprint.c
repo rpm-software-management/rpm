@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <unordered_map>
+
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
@@ -16,16 +18,6 @@
 #include "misc.h"
 #include "debug.h"
 #include <libgen.h>
-
-/* Create new hash table type rpmFpEntryHash */
-#define HASHTYPE rpmFpEntryHash
-#define HTKEYTYPE rpmsid
-#define HTDATATYPE const struct fprintCacheEntry_s *
-#include "rpmhash.H"
-#include "rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
 
 /* Create by-fingerprint hash table */
 #define HASHTYPE rpmFpHash
@@ -42,10 +34,6 @@ static unsigned int sidHash(rpmsid sid)
     return sid;
 }
 
-static int sidCmp(rpmsid a, rpmsid b)
-{
-    return (a != b);
-}
 
 /**
  * Finger print cache entry.
@@ -79,6 +67,8 @@ struct fingerPrint_s {
 	    ((a).subDirId == (b).subDirId) \
     )
 
+using rpmFpEntryHash = std::unordered_multimap<rpmsid,fprintCacheEntry_s>
+
 /**
  * Finger print cache.
  */
@@ -91,8 +81,6 @@ struct fprintCache_s {
 fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool)
 {
     fingerPrintCache fpc = new fprintCache_s {};
-    fpc->ht = rpmFpEntryHashCreate(sizeHint, sidHash, sidCmp,
-				   NULL, (rpmFpEntryHashFreeData)free);
     fpc->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
     return fpc;
 }
@@ -100,7 +88,6 @@ fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool)
 fingerPrintCache fpCacheFree(fingerPrintCache cache)
 {
     if (cache) {
-	cache->ht = rpmFpEntryHashFree(cache->ht);
 	cache->fp = rpmFpHashFree(cache->fp);
 	cache->pool = rpmstrPoolFree(cache->pool);
 	delete cache;
@@ -117,10 +104,9 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache, rpmsid dirId)
 {
-    const struct fprintCacheEntry_s ** data;
-
-    if (rpmFpEntryHashGetEntry(cache->ht, dirId, &data, NULL, NULL))
-	return data[0];
+    auto entry = cache->ht.find(dirId);
+    if (entry != cache->ht.end())
+	return &entry->second;
     return NULL;
 }
 
@@ -177,15 +163,13 @@ static int doLookupId(fingerPrintCache cache,
 	if (cacheHit != NULL) {
 	    fp->entry = cacheHit;
 	} else if (!stat(rpmstrPoolStr(cache->pool, fpId), &sb)) {
-	    struct fprintCacheEntry_s * newEntry =
-		(struct fprintCacheEntry_s *)xmalloc(sizeof(* newEntry));
-
-	    newEntry->ino = sb.st_ino;
-	    newEntry->dev = sb.st_dev;
-	    newEntry->dirId = fpId;
-	    fp->entry = newEntry;
-
-	    rpmFpEntryHashAddEntry(cache->ht, fpId, fp->entry);
+	    struct fprintCacheEntry_s newEntry = {
+		.dirId = fpId,
+		.dev = sb.st_dev,
+		.ino = sb.st_ino,
+	    };
+	    auto ret = cache->ht.insert({fpId, newEntry});
+	    fp->entry = &ret->second;
 	}
 
         if (fp->entry) {
