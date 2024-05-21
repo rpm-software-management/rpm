@@ -79,7 +79,7 @@ RPM_GNUC_INTERNAL
 rpmsid rpmfilesODNId(rpmfiles fi, int jx);
 
 RPM_GNUC_INTERNAL
-struct fingerPrint_s *rpmfilesFps(rpmfiles fi);
+struct fingerPrint *rpmfilesFps(rpmfiles fi);
 
 /** \ingroup rpmfi
  * Check if the file in new package, in old package and on the disk have the same contents.

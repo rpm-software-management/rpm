@@ -51,7 +51,7 @@ struct fprintCacheEntry_s {
  * Associates a trailing sub-directory and final base name with an existing
  * directory finger print.
  */
-struct fingerPrint_s {
+struct fingerPrint {
     /*! directory finger print entry (the directory path is stat(2)-able */
     const struct fprintCacheEntry_s * entry;
     /*! trailing sub-directory path (directories that are not stat(2)-able */
@@ -276,7 +276,7 @@ dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp)
 int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
 	          const char * dirName, const char * baseName)
 {
-    struct fingerPrint_s ofp;
+    struct fingerPrint ofp;
     doLookup(cache, dirName, baseName, &ofp);
     return FP_EQUAL(*fp, ofp);
 }
@@ -284,7 +284,7 @@ int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
 int fpLookupEqualsId(fingerPrintCache cache, fingerPrint *fp,
 	          rpmsid dirNameId, rpmsid baseNameId)
 {
-    struct fingerPrint_s ofp;
+    struct fingerPrint ofp;
     doLookupId(cache, dirNameId, baseNameId, &ofp);
     return FP_EQUAL(*fp, ofp);
 }
@@ -322,7 +322,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 /* Check file for to be installed symlinks in their path and correct their fp */
 static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint *fp)
 {
-    struct fingerPrint_s current_fp;
+    struct fingerPrint current_fp;
     const char *currentsubdir;
     size_t lensubDir, bnStart, bnEnd;
 
@@ -413,7 +413,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 }
 
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
-			     struct fingerPrint_s * fp, int ix,
+			     struct fingerPrint * fp, int ix,
 			     struct rpmffi_s ** recs, int * numRecs)
 {
     if (rpmFpHashGetEntry(cache->fp, fp + ix, recs, numRecs, NULL))
