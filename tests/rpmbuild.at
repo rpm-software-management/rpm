@@ -2224,7 +2224,19 @@ No hello.debug
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([explicit %_enable_debug_package on noarch])
+AT_KEYWORDS([build debuginfo])
+RPMTEST_CHECK([
+RPMDB_INIT
 
+runroot rpmbuild --quiet -bb \
+		--define "%_enable_debug_packages 1" \
+		/data/SPECS/hlinktest.spec
+],
+[0],
+[ignore],
+[ignore])
+RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
