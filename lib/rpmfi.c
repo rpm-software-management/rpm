@@ -105,7 +105,7 @@ struct rpmfiles_s {
 
     rpmfiFlags fiflags;		/*!< file info set control flags */
 
-    struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
+    struct fingerPrint * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
     uint32_t *signatureoffs;	/*!< File signature offsets */
@@ -829,7 +829,7 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb)
     return rc;
 }
 
-struct fingerPrint_s *rpmfilesFps(rpmfiles fi)
+struct fingerPrint *rpmfilesFps(rpmfiles fi)
 {
     return (fi != NULL) ? fi->fps : NULL;
 }

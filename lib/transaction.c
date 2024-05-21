@@ -504,7 +504,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
     fingerPrint * fpList = rpmfilesFps(fi);
 
     for (i = 0; i < fc; i++) {
-	struct fingerPrint_s * fiFps;
+	struct fingerPrint * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfiles otherFi;
 	rpmte otherTe;

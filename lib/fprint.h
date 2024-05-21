@@ -12,10 +12,7 @@
  */
 typedef struct fprintCache_s * fingerPrintCache;
 
-/**
- * @todo Convert to pointer and make abstract.
- */
-typedef struct fingerPrint_s fingerPrint;
+struct fingerPrint;
 
 struct rpmffi_s {
   rpmte p;
@@ -41,7 +38,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache);
 
 RPM_GNUC_INTERNAL
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
-			     struct fingerPrint_s * fp, int ix,
+			     struct fingerPrint * fp, int ix,
 			     struct rpmffi_s ** recs, int * numRecs);
 
 RPM_GNUC_INTERNAL
