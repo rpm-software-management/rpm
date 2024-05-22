@@ -15,6 +15,8 @@
 
 #include "debug.h"
 
+using std::string;
+
 #define PARSER_BEGIN 	0
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
@@ -203,7 +205,7 @@ static void hsaFini(headerSprintfArgs hsa)
     hsa->i = 0;
 }
 
-static void hsaAppend(headerSprintfArgs hsa, const char *str)
+static void hsaAppend(headerSprintfArgs hsa, const string & str)
 {
     hsa->val += str;
 }
@@ -227,16 +229,13 @@ static void hsaError(headerSprintfArgs hsa, const char *fmt, ...)
     }
 }
 
-static char *tagName(rpmTagVal tag)
+static string tagName(rpmTagVal tag)
 {
-    const char * tagN = rpmTagGetName(tag);
-    char *tagval = NULL;
+    string tagval = rpmTagGetName(tag);
 
-    if (rstreq(tagN, "(unknown)")) {
-	rasprintf(&tagval, "[%u]", tag);
-    } else {
-	tagval = xstrdup(tagN);
-    }
+    if (tagval == "(unknown)")
+	tagval = '[' + std::to_string(tag) + ']';
+
     return tagval;
 }
 
@@ -252,11 +251,9 @@ static void xmlFooter(headerSprintfArgs hsa)
 
 static void xmlTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
 {
-    char *tagname = tagName(tag);
     hsaAppend(hsa, "  <rpmTag name=\"");
-    hsaAppend(hsa, tagname);
+    hsaAppend(hsa, tagName(tag));
     hsaAppend(hsa, "\">\n");
-    free(tagname);
 }
 
 static void xmlTagFooter(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
@@ -291,13 +288,11 @@ static void jsonFooter(headerSprintfArgs hsa)
 
 static void jsonTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
 {
-    char *tagname = tagName(tag);
     hsaAppend(hsa, "    \"");
-    hsaAppend(hsa, tagname);
+    hsaAppend(hsa, tagName(tag));
     hsaAppend(hsa, "\": ");
     if (nelem > 1)
 	hsaAppend(hsa, "[\n");
-    free(tagname);
 }
 
 static void jsonTagFooter(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
