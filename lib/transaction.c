@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <set>
+#include <vector>
 
 #include <inttypes.h>
 #include <libgen.h>
@@ -46,6 +47,8 @@
 #include "rpmplugins.h"
 
 #include "debug.h"
+
+using std::vector;
 
 struct diskspaceInfo_s {
     char * mntPoint;	/*!< File system mount point */
@@ -838,9 +841,6 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     int noArtifacts = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOARTIFACTS);
-    int * drc;
-    uint8_t * dff;
-    int dc;
     int i, j, ix;
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 
@@ -848,9 +848,9 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
     /* Compute directory refcount, skip directory if now empty. */
-    dc = rpmfiDC(fi);
-    drc = (int *)xcalloc(dc, sizeof(*drc));
-    dff = (uint8_t *)xcalloc(dc, sizeof(*dff));
+    int dc = rpmfiDC(fi);
+    vector<int> drc(dc, 0);
+    vector<uint8_t> dff(dc, 0);
 
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
@@ -998,8 +998,6 @@ static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 	}
     }
 
-    free(drc);
-    free(dff);
     rpmfiFree(fi);
 }
 
