@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <string>
+
 #include <inttypes.h>
 
 #include <rpm/rpmtypes.h>
@@ -20,6 +22,8 @@
 #include "signature.h"
 
 #include "debug.h"
+
+using std::string;
 
 typedef char * (*headerTagFormatFunction) (rpmtd td, char **emsg);
 
@@ -339,8 +343,7 @@ exit:
 
 static char *jsonEscape(const char *s)
 {
-    char *es = NULL;
-    rstrcat(&es, "\"");
+    string es = "\"";
     for (const char *c = s; *c != '\0'; c++) {
 	const char *ec = NULL;
 	switch (*c) {
@@ -370,20 +373,20 @@ static char *jsonEscape(const char *s)
 	}
 
 	if (ec) {
-	    rstrcat(&es, ec);
+	    es += ec;
 	} else if (*c > 0 && *c < 0x20) {
 	    char *uc = NULL;
 	    rasprintf(&uc, "\\u%04x", *c);
-	    rstrcat(&es, uc);
+	    es += uc;
 	    free(uc);
 	} else {
 	    char t[2] = " ";
 	    *t = *c;
-	    rstrcat(&es, t);
+	    es += t;
 	}
     }
-    rstrcat(&es, "\"");
-    return es;
+    es += "\"";
+    return xstrdup(es.c_str());
 }
 
 static char *jsonFormat(rpmtd td, char **emsg)
