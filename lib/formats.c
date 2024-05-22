@@ -286,7 +286,7 @@ static char * base64Format(rpmtd td, char **emsg)
 static char * xmlFormat(rpmtd td, char **emsg)
 {
     const char *xtag = NULL;
-    char *val = NULL;
+    string val;
     char *s = NULL;
     headerTagFormatFunction fmt = stringFormat;
 
@@ -304,41 +304,44 @@ static char * xmlFormat(rpmtd td, char **emsg)
     case RPM_NULL_TYPE:
     default:
 	*emsg = xstrdup(_("(invalid xml type)"));
-	goto exit;
-	break;
+	return NULL;
     }
 
     s = fmt(td, emsg);
     if (s == NULL)
-	goto exit;
+	return NULL;
 
     if (s[0] == '\0') {
-	val = rstrscat(NULL, "\t<", xtag, "/>", NULL);
+	val = "\t<";
+	val += xtag;
+	val += "/>";
     } else {
-	char *new_s = NULL;
-	size_t i, s_size = strlen(s);
-	
-	for (i=0; i<s_size; i++) {
-	    switch (s[i]) {
-		case '<':	rstrcat(&new_s, "&lt;");	break;
-		case '>':	rstrcat(&new_s, "&gt;");	break;
-		case '&':	rstrcat(&new_s, "&amp;");	break;
-		default: {
-		    char c[2] = " ";
-		    *c = s[i];
-		    rstrcat(&new_s, c);
-		    break;
-		}
+	val = "\t<";
+	val += xtag;
+	val += ">";
+	for (const char *c = s; *c != '\0'; c++) {
+	    switch (*c) {
+	    case '<':
+		val += "&lt;";
+		break;
+	    case '>':
+		val += "&gt;";
+		break;
+	    case '&':
+		val += "&amp;";
+		break;
+	    default:
+		val += *c;
+		break;
 	    }
 	}
-
-	val = rstrscat(NULL, "\t<", xtag, ">", new_s, "</", xtag, ">", NULL);
-	free(new_s);
+	val += "</";
+	val += xtag;
+	val += ">";
     }
     free(s);
 
-exit:
-    return val;
+    return xstrdup(val.c_str());
 }
 
 static char *jsonEscape(const char *s)
