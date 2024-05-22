@@ -422,7 +422,7 @@ exit:
  */
 static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 			Header sourceH, Header trigH, int countCorrection,
-			int arg2, unsigned char * triggersAlreadyRun)
+			int arg2, uint8_t * triggersAlreadyRun)
 {
     rpmds trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     struct rpmtd_s pfx;
@@ -528,7 +528,6 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 {
     const rpmts ts = psm->ts;
-    uint8_t * triggersRun;
     struct rpmtd_s tnames, tindexes;
     Header h = rpmteHeader(psm->te);
     int nerrors = 0;
@@ -538,10 +537,10 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	goto exit;
     }
 
-    triggersRun = (uint8_t *)xcalloc(rpmtdCount(&tindexes), sizeof(*triggersRun));
     {	Header sourceH = NULL;
 	const char *trigName;
 	rpm_count_t *triggerIndices = (rpm_count_t *)tindexes.data;
+	std::vector<uint8_t> triggersRun(rpmtdCount(&tindexes), 0);
 
 	while ((trigName = rpmtdNextString(&tnames))) {
 	    rpmdbMatchIterator mi;
@@ -556,7 +555,7 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 				sense, sourceH, h,
 				psm->countCorrection,
 				rpmdbGetIteratorCount(mi),
-				triggersRun);
+				triggersRun.data());
 	    }
 
 	    rpmdbFreeIterator(mi);
@@ -564,7 +563,6 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
     }
     rpmtdFreeData(&tnames);
     rpmtdFreeData(&tindexes);
-    free(triggersRun);
 
 exit:
     headerFree(h);
