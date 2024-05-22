@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <string>
 #include <unordered_map>
 
 #include <stdarg.h>
@@ -83,9 +84,7 @@ struct headerSprintfArgs_s {
     std::unordered_map<rpmTagVal,rpmtd_s> cache;
     sprintfToken format;
     HeaderIterator hi;
-    char * val;
-    size_t vallen;
-    size_t alloced;
+    std::string val;
     int numTokens;
     int i;
     headerGetFlags hgflags;
@@ -204,31 +203,9 @@ static void hsaFini(headerSprintfArgs hsa)
     hsa->i = 0;
 }
 
-/**
- * Reserve sufficient buffer space for next output value.
- * @param hsa		headerSprintf args
- * @param need		no. of bytes to reserve
- * @return		pointer to reserved space
- */
-static char * hsaReserve(headerSprintfArgs hsa, size_t need)
-{
-    if ((hsa->vallen + need) >= hsa->alloced) {
-	if (hsa->alloced <= need)
-	    hsa->alloced += need;
-	hsa->alloced <<= 1;
-	hsa->val = xrealloc(hsa->val, hsa->alloced+1);	
-    }
-    return hsa->val + hsa->vallen;
-}
-
 static void hsaAppend(headerSprintfArgs hsa, const char *str)
 {
-    size_t len = strlen(str);
-    if (len > 0) {
-	char *t = hsaReserve(hsa, len);
-	stpcpy(t, str);
-	hsa->vallen += len;
-    }
+    hsa->val += str;
 }
 
 RPM_GNUC_PRINTF(2, 3)
@@ -306,8 +283,10 @@ static void jsonFooter(headerSprintfArgs hsa)
      * which element will be the last one. We have to emit ',' for each
      * tag we process and then delete the last one here.
      */
-    hsa->vallen -= 2;
-    hsaAppend(hsa, "\n}\n");
+    if (hsa->val.size() > 2) {
+	hsa->val.resize(hsa->val.size() - 2);
+	hsaAppend(hsa, "\n}\n");
+    }
 }
 
 static void jsonTagHeader(headerSprintfArgs hsa, rpmTagVal tag, int nelem)
@@ -748,12 +727,13 @@ static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)
  * @param hsa		headerSprintf args
  * @param tag
  * @param element
- * @return		end of formatted string (NULL on error)
+ * @return		true on error
  */
-static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
+static bool formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 {
     char * val = NULL;
     rpmtd td;
+    bool ret = true;
 
     if ((td = getData(hsa, tag->tag)) && td->count > element) {
 	td->ix = element; /* Ick, use iterators instead */
@@ -776,10 +756,11 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	
     if (val) {
 	hsaAppend(hsa, val);
+	free(val);
+	ret = false;
     }
-    free(val);
 
-    return (hsa->val + hsa->vallen);
+    return ret;
 }
 
 /**
@@ -787,12 +768,11 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
  * @param hsa		headerSprintf args
  * @param token
  * @param element
- * @return		end of formatted string (NULL on error)
+ * @return		true on error
  */
-static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
+static bool singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 {
-    char * te;
     int i, j, found;
     rpm_count_t count, numElements;
     sprintfToken spft;
@@ -812,10 +792,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_TAG:
-	te = formatValue(hsa, &token->u.tag,
-			(token->u.tag.justOne ? 0 : element));
-	if (te == NULL)
-	    return NULL;
+	if (formatValue(hsa, &token->u.tag,
+			(token->u.tag.justOne ? 0 : element)))
+	    return true;
 	break;
 
     case PTOK_COND:
@@ -832,8 +811,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	if (spft == NULL || need == 0) break;
 
 	for (i = 0; i < condNumFormats; i++, spft++) {
-	    if (singleSprintf(hsa, spft, element) == NULL)
-		return NULL;
+	    if (singleSprintf(hsa, spft, element))
+		return true;
 	}
 	break;
 
@@ -857,7 +836,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    if (numElements > 0 && count != numElements) {
 		hsaError(hsa,
 			_("array iterator used with different sized arrays"));
-		return NULL;
+		return true;
 	    }
 	    if (count > numElements)
 		numElements = count;
@@ -879,13 +858,13 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 			hsa->xfmt.xItemHeader(hsa, spft->u.tag.tag,
 						j, numElements);
 		    }
-		    te = singleSprintf(hsa, spft, j);
+		    bool ret = singleSprintf(hsa, spft, j);
 		    if (hsa->xfmt.xItemFooter) {
 			hsa->xfmt.xItemFooter(hsa, spft->u.tag.tag,
 						j, numElements);
 		    }
-		    if (te == NULL)
-			return NULL;
+		    if (ret)
+			return true;
 		}
 	    }
 
@@ -896,7 +875,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
     }
 
-    return (hsa->val + hsa->vallen);
+    return false;
 }
 
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
@@ -911,8 +890,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
-
-    hsa.val = xstrdup("");
 
     tag =
 	(hsa.format->type == PTOK_TAG
@@ -932,8 +909,8 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 
     hsaInit(&hsa);
     while ((nextfmt = hsaNext(&hsa)) != NULL) {
-	if (singleSprintf(&hsa, nextfmt, 0) == NULL) {
-	    hsa.val = _free(hsa.val);
+	if (singleSprintf(&hsa, nextfmt, 0)) {
+	    hsa.val = "";
 	    break;
 	}
     }
@@ -941,9 +918,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 
     if (hsa.xfmt.xFooter)
 	hsa.xfmt.xFooter(&hsa);
-
-    if (hsa.val != NULL && hsa.vallen < hsa.alloced)
-	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
 
     for (auto & val : hsa.cache)
 	rpmtdFreeData(&val.second);
@@ -954,6 +928,6 @@ exit:
 	*errmsg = hsa.errmsg;
     hsa.h = headerFree(hsa.h);
     hsa.fmt = _free(hsa.fmt);
-    return hsa.val;
+    return hsa.errmsg ? NULL : xstrdup(hsa.val.c_str());
 }
 
