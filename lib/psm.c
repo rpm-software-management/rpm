@@ -63,37 +63,25 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     rpmfs fs = rpmteGetFileStates(psm->te);
     sharedFileInfo replaced = rpmfsGetReplaced(fs);
     sharedFileInfo sfi;
-    rpmdbMatchIterator mi;
     Header h;
-    unsigned int * offsets;
-    unsigned int prev;
-    unsigned int num;
 
     if (!replaced)
 	return RPMRC_OK;
 
-    num = prev = 0;
+    std::vector<unsigned int> offsets;
+    unsigned int prev = 0;
+
     for (sfi = replaced; sfi; sfi=rpmfsNextReplaced(fs, sfi)) {
 	if (prev && prev == sfi->otherPkg)
 	    continue;
 	prev = sfi->otherPkg;
-	num++;
+	offsets.push_back(sfi->otherPkg);
     }
-    if (num == 0)
+    if (offsets.empty())
 	return RPMRC_OK;
 
-    offsets = (unsigned int *)xmalloc(num * sizeof(*offsets));
-    offsets[0] = 0;
-    num = prev = 0;
-    for (sfi = replaced; sfi; sfi=rpmfsNextReplaced(fs, sfi)) {
-	if (prev && prev == sfi->otherPkg)
-	    continue;
-	prev = sfi->otherPkg;
-	offsets[num++] = sfi->otherPkg;
-    }
-
-    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-    rpmdbAppendIterator(mi, offsets, num);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+    rpmdbAppendIterator(mi, offsets.data(), offsets.size());
     rpmdbSetIteratorRewrite(mi, 1);
 
     sfi = replaced;
@@ -106,7 +94,6 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	    continue;
 	
 	prev = rpmdbGetIteratorOffset(mi);
-	num = 0;
 	while (sfi && sfi->otherPkg == prev) {
 	    int ix = rpmtdSetIndex(&secStates, sfi->otherFileNum);
 	    assert(ix != -1);
@@ -119,14 +106,12 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 		    modified = 1;
 		    rpmdbSetIteratorModified(mi, modified);
 		}
-		num++;
 	    }
 	    sfi=rpmfsNextReplaced(fs, sfi);
 	}
 	rpmtdFreeData(&secStates);
     }
     rpmdbFreeIterator(mi);
-    free(offsets);
 
     return RPMRC_OK;
 }
