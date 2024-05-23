@@ -136,6 +136,7 @@ static void buildArgCallback( poptContext con,
     case POPT_BUILDINPLACE:
 	rpmDefineMacro(NULL, "_build_in_place 1", 0);
 	buildInPlace = 1;
+	nobuildAmount |= RPMBUILD_RMBUILD;
 	break;
     }
 }
@@ -431,13 +432,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba,
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
     rpmSpecFlags specFlags = spec_flags;
-
-    /* Override default BUILD value for _builddir */
-    if (buildInPlace) {
-	char *cwd = rpmGetCwd();
-	rpmPushMacro(NULL, "_builddir", NULL, cwd, 0);
-	free(cwd);
-    }
 
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);

@@ -321,6 +321,61 @@ run rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild --build-in-place])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot_other mv hello-2.0/hello.spec .
+runroot_other find hello-2.0 | sort
+],
+[0],
+[hello-2.0
+hello-2.0/COPYING
+hello-2.0/FAQ
+hello-2.0/Makefile
+hello-2.0/README
+hello-2.0/hello.c
+],
+[])
+
+RPMTEST_CHECK([
+runroot --chdir hello-2.0 rpmbuild -bb --build-in-place ../hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf "%{name}-%{version}-%{release}\n" /build/RPMS/*/*.rpm
+],
+[0],
+[hello-2.0-1
+hello-debuginfo-2.0-1
+],
+[])
+
+# finally, see that we left the tree intact 
+RPMTEST_CHECK([
+runroot_other find hello-2.0 | sort
+],
+[0],
+[hello-2.0
+hello-2.0/COPYING
+hello-2.0/FAQ
+hello-2.0/Makefile
+hello-2.0/README
+hello-2.0/debugfiles.list
+hello-2.0/debuglinks.list
+hello-2.0/debugsources.list
+hello-2.0/elfbins.list
+hello-2.0/hello
+hello-2.0/hello.c
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild with %autosetup -C])
 AT_KEYWORDS([build])
 RPMDB_INIT
