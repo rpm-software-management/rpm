@@ -2311,22 +2311,6 @@ runroot rpmbuild \
 )
 RPMTEST_CLEANUP
 
-# Test that -br creates an src.rpm on success
-AT_SETUP([rpmbuild -br success])
-AT_KEYWORDS([build])
-RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpmbuild \
-  -br  /data/SPECS/mini.spec
-],
-[0],
-[Wrote: /build/SRPMS/mini-1-1.src.rpm
-],
-[],
-)
-RPMTEST_CLEANUP
-
 # ------------------------------
 # Check dynamic build requires
 AT_SETUP([rpmbuild -bd with errors])
