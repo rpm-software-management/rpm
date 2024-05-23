@@ -2259,6 +2259,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
+# Mimick what mock does: repeat build with --noprep --noclean
+# until -br succeeds, and finally build the package.
 AT_SETUP([rpmbuild -br])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
@@ -2275,6 +2277,22 @@ runroot rpmbuild \
 	foo-bar = 2.0 is needed by buildrequires-1.0-1.noarch
 ],
 )
+
+RPMTEST_CHECK([
+runroot rpmbuild \
+    --define "provs bar foo foo-bar" \
+    --define "pkg foo" \
+    -bb --quiet /data/SPECS/deptest.spec
+
+runroot rpm -U /build/RPMS/noarch/deptest-foo-1.0-1.noarch.rpm
+
+runroot rpmbuild \
+    -br --noprep --noclean\
+    --quiet /data/SPECS/buildrequires.spec
+],
+[0],
+[],
+[])
 RPMTEST_CLEANUP
 
 # Test that -br creates an src.rpm on success
