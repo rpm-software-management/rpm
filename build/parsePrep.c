@@ -171,6 +171,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
     int leaveDirs = 0, skipDefaultAction = 0;
     int createDir = 0, quietly = 0, autoPath = 0;
     char * dirName = NULL;
+    int buildInPlace = rpmExpandNumeric("%{?_build_in_place}");
     struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
@@ -190,10 +191,6 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	goto exit;
     }
 
-    if (rpmExpandNumeric("%{_build_in_place}")) {
-	goto exit;
-    }
-
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	char *optArg = poptGetOptArg(optCon);
@@ -206,7 +203,8 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	    goto exit;
 	}
 
-	{   char *chptr = doUntar(spec, num, quietly, 0);
+	if (!buildInPlace) {
+	    char *chptr = doUntar(spec, num, quietly, 0);
 	    if (chptr == NULL)
 		goto exit;
 
@@ -235,6 +233,15 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	free(buildSubdir);
     }
     
+    if (buildInPlace) {
+	skipDefaultAction = 1;
+	leaveDirs = 1;
+	/* note that pwd needs to be from parse, not build time */
+	char *buf = rpmExpand("ln -s %(pwd) %{buildsubdir}", NULL);
+	appendMb(mb, buf, 1);
+	free(buf);
+    }
+
     /* cd to the build dir */
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
 
