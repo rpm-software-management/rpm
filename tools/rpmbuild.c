@@ -261,7 +261,7 @@ static struct poptOption rpmBuildPoptTable[] = {
 
  { "noclean", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_CLEAN|RPMBUILD_RMBUILD,
 	N_("do not execute %clean stage of the build"), NULL },
- { "noprep", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_PREP,
+ { "noprep", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_PREP|RPMBUILD_MKBUILDDIR,
 	N_("do not execute %prep stage of the build"), NULL },
  { "nocheck", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_CHECK,
 	N_("do not execute %check stage of the build"), NULL },
