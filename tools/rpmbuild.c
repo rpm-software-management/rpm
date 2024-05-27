@@ -79,6 +79,14 @@ static void buildArgCallback( poptContext con,
     BTA_t rba = &rpmBTArgs;
 
     switch (opt->val) {
+    case POPT_BS:
+    case POPT_RS:
+    case POPT_TS:
+    case POPT_BR:
+    case POPT_RR:
+    case POPT_TR:
+	/* If only building src.rpm, there are no dynamic parts to include */
+	spec_flags &= ~RPMSPEC_NOFINALIZE;
     case POPT_REBUILD:
     case POPT_RECOMPILE:
     case POPT_BA:
@@ -89,8 +97,6 @@ static void buildArgCallback( poptContext con,
     case POPT_BI:
     case POPT_BL:
     case POPT_BP:
-    case POPT_BS:
-    case POPT_BR:
     case POPT_RA:
     /* case POPT_RB: same value as POPT_REBUILD */
     case POPT_RC:
@@ -99,8 +105,6 @@ static void buildArgCallback( poptContext con,
     case POPT_RI:
     case POPT_RL:
     case POPT_RP:
-    case POPT_RS:
-    case POPT_RR:
     case POPT_TA:
     case POPT_TB:
     case POPT_TC:
@@ -109,8 +113,6 @@ static void buildArgCallback( poptContext con,
     case POPT_TI:
     case POPT_TL:
     case POPT_TP:
-    case POPT_TS:
-    case POPT_TR:
 	if (opt->val == POPT_BS || opt->val == POPT_TS)
 	    noDeps = 1;
 	if (buildMode == '\0' && buildChar == '\0') {
