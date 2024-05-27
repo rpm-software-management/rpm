@@ -26,6 +26,7 @@ RPMDB_INIT
 RPMTEST_CHECK([
 
 run rpmbuild \
+  --define "packager Iam" \
   -ba ${RPMDATA}/SPECS/hello.spec
 ],
 [0],
@@ -40,6 +41,38 @@ runroot rpm -qp --qf "%{license}\n" /build/RPMS/*/hello-1.0-1.*.rpm
 [0],
 [GPL, ASL 1.0
 GPL
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -qp --qf "%{packager}\n" /build/RPMS/*/hello-1.0-1.*.rpm
+],
+[0],
+[Iam
+Iam
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild -bs spec])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot rpmbuild -bs \
+	--define "packager Iam" \
+	${RPMDATA}/SPECS/hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
+],
+[0],
+[Iam
 ],
 [])
 RPMTEST_CLEANUP
@@ -471,11 +504,20 @@ RPMDB_INIT
 RPMTEST_CHECK([
 
 run rpmbuild \
+  --define "packager Iam" \
   --rebuild ${RPMDATA}/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf "%{packager}\n" /build/RPMS/*/hello-1.0-1.*.rpm
+],
+[0],
+[Iam
+],
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild --short-circuit -bl])
@@ -512,12 +554,22 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-runroot rpmbuild --quiet -ts /data/SOURCES/hello-2.0.tar.gz
+runroot rpmbuild --quiet \
+	--define "packager Iam" \
+	-ts /data/SOURCES/hello-2.0.tar.gz
 runroot rpm -qpl /build/SRPMS/hello-2.0-1.src.rpm
 ],
 [0],
 [hello-2.0.tar.gz
 hello.spec
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-2.0-1.src.rpm
+],
+[0],
+[Iam
 ],
 [])
 RPMTEST_CLEANUP
