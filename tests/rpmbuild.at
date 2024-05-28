@@ -2343,6 +2343,18 @@ runroot rpmbuild --quiet -bb \
 [0],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+# mock uses --target <hostarch> everywhere, even noarch packages
+target=$(runroot rpm --eval "%{_host_cpu}")
+runroot rpmbuild --quiet -bb \
+		--target ${target} \
+		--define "%_enable_debug_packages 1" \
+		/data/SPECS/hlinktest.spec
+],
+[0],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 # ------------------------------
