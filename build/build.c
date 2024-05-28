@@ -386,6 +386,11 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
     spec->buildTime = getBuildTime();
     spec->buildHost = buildHost();
 
+    /* Don't generate debug packages on noarch no matter what --target says */
+    const char *arch = headerGetString(spec->packages->header, RPMTAG_ARCH);
+    if (rstreq(arch, "noarch"))
+	rpmPushMacro(spec->macros, "_enable_debug_packages", NULL, "0", RMIL_SPEC);
+
     /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
     spec->rootDir = buildArgs->rootdir;
     if (!spec->recursing && spec->BACount) {
