@@ -409,11 +409,16 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL));
 	int sourceOnly = ((what & RPMBUILD_PACKAGESOURCE) &&
 	   !(what & (RPMBUILD_CONF|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)));
+	int inPlace = (rpmExpandNumeric("%{?_build_in_place}") > 0);
 
 	if (!rpmSpecGetSection(spec, RPMBUILD_BUILDREQUIRES) && sourceOnly) {
 		/* don't run prep if not needed for source build */
 		/* with(out) dynamic build requires*/
 	    what &= ~(RPMBUILD_PREP|RPMBUILD_MKBUILDDIR);
+	}
+
+	if (inPlace) {
+	    what &= ~(RPMBUILD_RMBUILD);
 	}
 
 	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
