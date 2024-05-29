@@ -26,7 +26,6 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_NOBUILD		-1017
 #define	POPT_RMSPEC		-1019
 #define POPT_NODIRTOKENS	-1020
-#define POPT_BUILDINPLACE	-1021
 
 #define	POPT_REBUILD		0x4262 /* Bb */
 #define	POPT_RECOMPILE		0x4369 /* Ci */
@@ -70,7 +69,6 @@ static char buildMode = 0;		/*!< Build mode (one of "btBC") */
 static char buildChar = 0;		/*!< Build stage (one of "abcdfilps ") */
 static rpmBuildFlags nobuildAmount = 0;	/*!< Build stage disablers */
 static ARGV_t build_targets = NULL;	/*!< Target platform(s) */
-static int buildInPlace = 0;		/*!< from --build-in-place */
 
 static void buildArgCallback( poptContext con,
 	enum poptCallbackReason reason,
@@ -141,12 +139,6 @@ static void buildArgCallback( poptContext con,
 
     case RPMCLI_POPT_FORCE:
 	spec_flags |= RPMSPEC_FORCE;
-	break;
-
-    case POPT_BUILDINPLACE:
-	rpmDefineMacro(NULL, "_build_in_place 1", 0);
-	buildInPlace = 1;
-	nobuildAmount |= RPMBUILD_RMBUILD;
 	break;
     }
 }
@@ -256,8 +248,6 @@ static struct poptOption rpmBuildPoptTable[] = {
 
  { "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
 	N_("override build root (DEPRECATED)"), "DIRECTORY" },
- { "build-in-place", '\0', 0, 0, POPT_BUILDINPLACE,
-	N_("run build in current directory"), NULL },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_FORCE,
@@ -587,10 +577,6 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
-	if (buildInPlace) {
-		/* Need to redefine this after freeing all the macros */
-		rpmDefineMacro(NULL, "_build_in_place 1", 0);
-	}
 	rpmFreeRpmrc();
 	(void) rpmReadConfigFiles(rcfile, *target);
 	rc = buildForTarget(ts, arg, ba, NULL);
