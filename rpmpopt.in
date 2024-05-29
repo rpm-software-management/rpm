@@ -211,6 +211,8 @@ rpmbuild alias --trace		--eval '%trace' \
 	--POPTdesc=$"trace macro expansion"
 rpmbuild alias --nodebuginfo	--define 'debug_package %{nil}' \
 	--POPTdesc=$"do not generate debuginfo for this package"
+rpmbuild alias --build-in-place --define '_build_in_place 1' \
+	--POPTdesc=$"run build in current directory on checked out sources"
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \
 	--POPTdesc=$"key id/name to sign with" \
