@@ -2851,6 +2851,7 @@ static rpmTagVal copyTagsFromMainDebug[] = {
     RPMTAG_OS,
     RPMTAG_PLATFORM,
     RPMTAG_OPTFLAGS,
+    RPMTAG_SOURCERPM,
     0
 };
 
