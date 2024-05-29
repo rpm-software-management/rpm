@@ -354,7 +354,7 @@ run rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild --build-in-place])
+AT_SETUP([rpmbuild --build-in-place 1])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -374,6 +374,14 @@ hello-2.0/hello.c
 [])
 
 RPMTEST_CHECK([
+runroot --chdir hello-2.0 rpmbuild -bb --build-in-place ../hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot_other sed -i -e "/%setup.*/d" hello.spec
 runroot --chdir hello-2.0 rpmbuild -bb --build-in-place ../hello.spec
 ],
 [0],
@@ -405,6 +413,29 @@ hello-2.0/debugsources.list
 hello-2.0/elfbins.list
 hello-2.0/hello
 hello-2.0/hello.c
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild --build-in-place --short-circuit])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot --chdir hello-2.0 rpmbuild -bi --build-in-place hello.spec
+runroot --chdir hello-2.0 rpmbuild -bb --build-in-place --short-circuit hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf "%{name}-%{version}-%{release}\n" /build/RPMS/*/*.rpm
+],
+[0],
+[hello-2.0-1
+hello-debuginfo-2.0-1
 ],
 [])
 RPMTEST_CLEANUP
