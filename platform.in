@@ -59,7 +59,7 @@
 
 %__spec_install_template\
 %{__spec_install_pre}\
-%[ 0%{?_enable_debug_packages} > 0 ? "%(echo "%{debug_package}" > %{specpartsdir}/rpm-debuginfo.specpart)" : "" ]\
+%[ 0%{?_enable_debug_packages} > 0 ? "%{?buildsubdir:%(echo "%{debug_package}" > %{specpartsdir}/rpm-debuginfo.specpart)}" : "" ]\
 %{nil}
 
 %__spec_install_pre %{___build_pre}\
