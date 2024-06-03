@@ -3289,3 +3289,28 @@ runroot rpmbuild -bb /data/SPECS/install-hack.spec
 [ignore])
 RPMTEST_CLEANUP
 
+# Mimick what cpack does. It's not how rpmbuild wants to be used, so
+# please don't copy this to any new usages.
+AT_SETUP([rpmbuild --buildroot])
+AT_KEYWORDS([build])
+
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot_other mkdir -p /tmp/buildroot/out
+runroot_other touch /tmp/buildroot/out/sider
+runroot rpmbuild -bb --quiet \
+	--buildroot /tmp/buildroot \
+	/data/SPECS/brtest.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qpl /build/RPMS/noarch/brtest-1.0-1.noarch.rpm
+],
+[0],
+[/out/sider
+],
+[])
+RPMTEST_CLEANUP
