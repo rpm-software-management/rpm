@@ -3173,10 +3173,24 @@ runroot rpm -qp --qf "%{name}\n" /build/RPMS/*/*.rpm|sort
 ],
 [0],
 [caps
-caps-debuginfo
 ],
 [])
 
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bb --define "buildsubdir ." /data/SPECS/caps.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --qf "%{name}\n" /build/RPMS/*/*.rpm|sort
+],
+[0],
+[caps
+caps-debuginfo
+],
+[])
 RPMTEST_CHECK([
 runroot rpm -q --filecaps /build/RPMS/*/caps-1.0-1.*.rpm | grep -v build-id
 ],
