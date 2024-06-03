@@ -1304,15 +1304,27 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 	    rpmPushMacroFlags(spec->macros, "builddir", NULL, spec->buildDir,
 				RMIL_SPEC, RPMMACRO_LITERAL);
 
-	    spec->buildRoot = rpmGetPath(spec->buildDir, "/BUILDROOT", NULL);
-	    rpmPushMacroFlags(spec->macros, "buildroot", NULL, spec->buildRoot,
-				RMIL_SPEC, RPMMACRO_LITERAL);
-
 	    char *specparts = rpmGetPath(spec->buildDir, "/SPECPARTS", NULL);
 	    rpmPushMacroFlags(spec->macros, "specpartsdir", NULL, specparts,
 				RMIL_SPEC, RPMMACRO_LITERAL);
 	    free(specparts);
 	}
+
+	if (!spec->buildRoot) {
+	    spec->buildRoot = rpmGetPath(spec->buildDir, "/BUILDROOT", NULL);
+	} else {
+	    char *buildRoot = rpmGetPath(spec->buildRoot, NULL);
+	    free(spec->buildRoot);
+	    spec->buildRoot = buildRoot;
+	}
+
+	if (rstreq(spec->buildRoot, "") || rstreq(spec->buildRoot, "/")) {
+	    rpmlog(RPMLOG_ERR, _("Invalid buildroot: '%s'\n"), spec->buildRoot);
+	    goto exit;
+	}
+
+	rpmPushMacroFlags(spec->macros, "buildroot", NULL, spec->buildRoot,
+			    RMIL_SPEC, RPMMACRO_LITERAL);
     }
 
     /* if we get down here nextPart has been set to non-error */
