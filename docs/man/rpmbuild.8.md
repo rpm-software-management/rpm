@@ -211,10 +211,11 @@ all the stages preceding it), and is one of:
 
 The following options may also be used:
 
-**\--buildroot ***DIRECTORY*
+**\--buildroot ***DIRECTORY* (DEPRECATED)
 
-:   When building a package, override the BuildRoot tag with directory
-    *DIRECTORY*.
+:   When building a package, override rpm's buildroot to *DIRECTORY*.
+    This option is deprecated and will be removed in the future, do
+    not introduce new usages.
 
 **\--clean**
 

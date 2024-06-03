@@ -21,6 +21,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_NOLANG		-1012
 #define	POPT_RMSOURCE		-1013
 #define	POPT_RMBUILD		-1014
+#define	POPT_BUILDROOT		-1015
 #define	POPT_TARGETPLATFORM	-1016
 #define	POPT_NOBUILD		-1017
 #define	POPT_RMSPEC		-1019
@@ -127,6 +128,13 @@ static void buildArgCallback( poptContext con,
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
+    case POPT_BUILDROOT:
+	if (rba->buildRootOverride) {
+	    rpmlog(RPMLOG_ERR, _("buildroot already specified, ignoring %s\n"), arg);
+	    break;
+	}
+	rba->buildRootOverride = xstrdup(arg);
+	break;
     case POPT_TARGETPLATFORM:
 	argvSplit(&build_targets, arg, ",");
 	break;
@@ -246,6 +254,8 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("build through %install (%prep, %build, then install) from <source package>"),
 	N_("<source package>") },
 
+ { "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
+	N_("override build root (DEPRECATED)"), "DIRECTORY" },
  { "build-in-place", '\0', 0, 0, POPT_BUILDINPLACE,
 	N_("run build in current directory"), NULL },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
