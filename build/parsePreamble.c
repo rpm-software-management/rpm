@@ -1325,6 +1325,10 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 
 	rpmPushMacroFlags(spec->macros, "buildroot", NULL, spec->buildRoot,
 			    RMIL_SPEC, RPMMACRO_LITERAL);
+
+	/* Silly compat thing, but many specs use %_buildrootdir */
+	rpmPushMacroFlags(spec->macros, "_buildrootdir", NULL,
+			    "%{dirname:%{buildroot}}", RMIL_GLOBAL, 0);
     }
 
     /* if we get down here nextPart has been set to non-error */
