@@ -416,6 +416,7 @@ expandThis(rpmMacroBuf mb, const char * src, size_t slen, char **target, int *fl
     umb = *mb;
     umb.buf = "";
     umb.error = 0;
+    umb.flags &= ~(RPMEXPAND_HAVE_QUOTED | RPMEXPAND_KEEP_QUOTED);
     if (flagsp)
 	umb.flags = *flagsp;
     /* In case of error, flag it in the "parent"... */
