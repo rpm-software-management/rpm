@@ -260,6 +260,20 @@ runroot rpm \
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([parametrized macro 8])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+runroot rpm \
+    --define 'foo(e:) %global bar %(/bin/echo %**)' \
+    --eval '%{foo arg}' \
+    --eval '%bar'
+],
+[0],
+[
+arg
+])
+RPMTEST_CLEANUP
+
 AT_SETUP([uncompress macro 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
