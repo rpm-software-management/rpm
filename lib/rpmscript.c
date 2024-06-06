@@ -316,7 +316,7 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     char * fn = NULL;
     pid_t pid, reaped;
     int status;
-    int inpipe[2];
+    int inpipe[2] = { -1, -1 };
     FILE *in = NULL;
     const char *line;
     char *mline = NULL;
