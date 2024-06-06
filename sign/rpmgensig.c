@@ -376,12 +376,20 @@ static int haveSignature(rpmtd sigtd, Header h)
     if (!headerGet(h, rpmtdTag(sigtd), &oldtd, HEADERGET_DEFAULT))
 	return rc;
 
-    pgpPrtParams((uint8_t *)sigtd->data, sigtd->count, PGPTAG_SIGNATURE, &sig1);
+    if (pgpPrtParams((uint8_t *)sigtd->data, sigtd->count, PGPTAG_SIGNATURE, &sig1)) {
+        /* Unsupported pgp signature, sig1 is not set */
+        return rc;
+    }
+
     while (rpmtdNext(&oldtd) >= 0 && rc == 0) {
-	pgpPrtParams((uint8_t *)oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2);
-	if (pgpDigParamsCmp(sig1, sig2) == 0)
-	    rc = 1;
-	sig2 = pgpDigParamsFree(sig2);
+        if (pgpPrtParams((uint8_t *)oldtd.data, oldtd.count, PGPTAG_SIGNATURE, &sig2)) {
+            /* Unsupported pgp signature, sig2 is not set */
+            break;
+        }
+
+        if (pgpDigParamsCmp(sig1, sig2) == 0)
+            rc = 1;
+        sig2 = pgpDigParamsFree(sig2);
     }
     pgpDigParamsFree(sig1);
     rpmtdFreeData(&oldtd);
