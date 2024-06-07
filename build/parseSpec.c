@@ -1298,6 +1298,19 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     /* If explicit --buildroot was passed, grab hold of it */
     if (buildRoot)
 	spec->buildRoot = xstrdup(buildRoot);
+
+    /* Grab top builddir on first entry as we'll override _builddir */
+    if (!rpmMacroIsDefined(spec->macros, "_top_builddir")) {
+	char *top_builddir = rpmExpand("%{_builddir}", NULL);
+	rpmPushMacroFlags(spec->macros, "_top_builddir", NULL,
+			top_builddir, RMIL_GLOBAL, RPMMACRO_LITERAL);
+
+	/* Undefine (!!) %_builddir so %global misuses fall through */
+	while (rpmMacroIsDefined(spec->macros, "_builddir"))
+	    rpmPopMacro(spec->macros, "_builddir");
+	free(top_builddir);
+    }
+
     rpmPushMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     rpmPushMacro(NULL, "_licensedir", NULL, "%{_defaultlicensedir}", RMIL_SPEC);
     spec->recursing = recursing;

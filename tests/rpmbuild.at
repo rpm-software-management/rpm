@@ -3328,3 +3328,27 @@ runroot rpm -qpl /build/RPMS/noarch/brtest-1.0-1.noarch.rpm
 ],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([builddir])
+AT_KEYWORDS([build builddir])
+
+RPMDB_INIT
+# Trick for compatibly getting the builddir out of old and new rpm
+RPMTEST_CHECK([
+runroot rpmbuild -bc --short-circuit --define '__spec_build_pre echo builddir=%{_builddir}; exit 0' /data/SPECS/hello.spec | awk /^builddir/
+],
+[0],
+[builddir=/build/BUILD/hello-1.0-build
+],
+[])
+
+# Test for %{_builddir} related %global misuse workaround
+RPMTEST_CHECK([
+runroot rpmbuild -bc /data/SPECS/mydir.spec 2>&1 | awk /^mydir/
+],
+[0],
+[mydir1=/build/BUILD/mydir-1.0-build/mydir-1.0
+mydir2=/build/BUILD/mydir-1.0-build/mydir-1.0
+],
+[])
+RPMTEST_CLEANUP
