@@ -50,6 +50,16 @@ runroot rpm --define "this that" --eval '%{this}' --eval '%not_defined' --eval '
 %{not_defined}
 %{}
 ])
+
+# This behavior is relied on by countless specs and various rpm internals
+# too, and most likely can never be changed.
+RPMTEST_CHECK([
+runroot rpm --eval '%{not_defined}'
+],
+[0],
+[%{not_defined}
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
