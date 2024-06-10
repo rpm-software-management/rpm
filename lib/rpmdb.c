@@ -1511,29 +1511,27 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int 
 
     if (hdrNums.empty()) {
 	if (!neg)
-	    mi->mi_set->count = 0;
+	    dbiIndexSetClear(mi->mi_set);
 	return 0;
     }
 
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int num = mi->mi_set->count;
-    int cond;
+    unsigned int num = dbiIndexSetCount(mi->mi_set);
+    dbiIndexSet newset = dbiIndexSetNew(num / 2);
 
-    assert(mi->mi_set->count > 0);
-
-    for (from = 0; from < num; from++) {
-	auto it = hdrNums.find(mi->mi_set->recs[from].hdrNum);
-	cond = (it == hdrNums.end());
+    for (unsigned int from = 0; from < num; from++) {
+	unsigned int recoff = dbiIndexRecordOffset(mi->mi_set, from);
+	auto it = hdrNums.find(recoff);
+	int cond = (it == hdrNums.end());
 	cond = neg ? !cond : cond;
-	if (cond) {
-	    mi->mi_set->count--;
+	if (cond)
 	    continue;
-	}
-	if (from != to)
-	    mi->mi_set->recs[to] = mi->mi_set->recs[from]; /* structure assignment */
-	to++;
+
+	unsigned int tagnum = dbiIndexRecordFileNumber(mi->mi_set, from);
+	dbiIndexSetAppendOne(newset, recoff, tagnum, 0);
     }
+    dbiIndexSetSort(newset);
+    dbiIndexSetFree(mi->mi_set);
+    mi->mi_set = newset;
     return 0;
 }
 
