@@ -113,7 +113,7 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
     set->count += 1;
 
     if (sortset && set->count > 1)
-	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
+	dbiIndexSetSort(set);
 
     return 0;
 }
