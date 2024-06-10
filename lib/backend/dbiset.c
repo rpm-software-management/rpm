@@ -118,7 +118,8 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
     return 0;
 }
 
-int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
+/* op 0 to prune, 1 to filter */
+static int dbiIndexSetPrune(dbiIndexSet set, dbiIndexSet oset, int op)
 {
     unsigned int from;
     unsigned int to = 0;
@@ -126,14 +127,8 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
     unsigned int numCopied = 0;
     size_t recsize = sizeof(*oset->recs);
 
-    if (num == 0 || oset->count == 0)
-	return 1;
-
-    if (oset->count > 1 && !sorted)
-	dbiIndexSetSort(oset);
-
     for (from = 0; from < num; from++) {
-	if (bsearch(&set->recs[from], oset->recs, oset->count, recsize, hdrNumCmp)) {
+	if ((bsearch(&set->recs[from], oset->recs, oset->count, recsize, hdrNumCmp) != NULL) == op) {
 	    set->count--;
 	    continue;
 	}
@@ -145,31 +140,30 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
     return (numCopied == num);
 }
 
-int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
+int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
 {
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int num = set->count;
-    unsigned int numCopied = 0;
-    size_t recsize = sizeof(*oset->recs);
 
-    if (num == 0 || oset->count == 0) {
-	set->count = 0;
-	return num ? 0 : 1;
-    }
+    if (set->count == 0 || oset->count == 0)
+	return 1;
+
     if (oset->count > 1 && !sorted)
 	dbiIndexSetSort(oset);
-    for (from = 0; from < num; from++) {
-	if (!bsearch(&set->recs[from], oset->recs, oset->count, recsize, hdrNumCmp)) {
-	    set->count--;
-	    continue;
-	}
-	if (from != to)
-	    set->recs[to] = set->recs[from]; /* structure assignment */
-	to++;
-	numCopied++;
+
+    return dbiIndexSetPrune(set, oset, 1);
+}
+
+int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
+{
+    if (set->count == 0 || oset->count == 0) {
+	unsigned int num = set->count;
+	dbiIndexSetClear(set);
+	return num ? 0 : 1;
     }
-    return (numCopied == num);
+
+    if (oset->count > 1 && !sorted)
+	dbiIndexSetSort(oset);
+
+    return dbiIndexSetPrune(set, oset, 0);
 }
 
 unsigned int dbiIndexSetCount(dbiIndexSet set)
