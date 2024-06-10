@@ -4,6 +4,13 @@
 #include "dbiset.h"
 #include "debug.h"
 
+/* Items retrieved from the index database.*/
+struct dbiIndexSet_s {
+    dbiIndexItem recs;			/*!< array of records */
+    unsigned int count;			/*!< number of records */
+    size_t alloced;			/*!< alloced size */
+};
+
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
 {
     dbiIndexSet set = (dbiIndexSet)xcalloc(1, sizeof(*set));
