@@ -682,7 +682,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 		const char * arch,
 		dbiIndexSet * matches)
 {
-    unsigned int gotMatches = 0;
+    dbiIndexSet prune = NULL;
     rpmRC rc;
     unsigned int i;
 
@@ -736,21 +736,25 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 		h = NULL;
 	    rpmtdFreeData(&td);
 	}
-	if (h)
-	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
-	else
-	    (*matches)->recs[i].hdrNum = 0;
+	if (h == NULL) {
+	    if (prune == NULL)
+		prune = dbiIndexSetNew(1);
+	    unsigned int tagnum = dbiIndexRecordFileNumber(*matches, i);
+	    dbiIndexSetAppendOne(prune, recoff, tagnum, 0);
+	}
 	rpmdbFreeIterator(mi);
     }
 
-    if (gotMatches) {
-	(*matches)->count = gotMatches;
+    if (*matches && prune)
+	dbiIndexSetPruneSet(*matches, prune, 0);
+
+    if (dbiIndexSetCount(*matches)) {
 	rc = RPMRC_OK;
     } else
 	rc = RPMRC_NOTFOUND;
 
 exit:
-/* FIX: double indirection */
+    dbiIndexSetFree(prune);
     if (rc && matches && *matches)
 	*matches = dbiIndexSetFree(*matches);
     return rc;
