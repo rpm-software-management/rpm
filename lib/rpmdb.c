@@ -542,6 +542,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     fingerPrintCache fpc = NULL;
     fingerPrint * fp1 = NULL;
     dbiIndexSet allMatches = NULL;
+    unsigned int nmatches = 0;
     unsigned int i;
     rpmRC rc = RPMRC_FAIL; /* assume error */
 
@@ -563,12 +564,13 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     if (rc || allMatches == NULL) goto exit;
 
+    nmatches = dbiIndexSetCount(allMatches);
     *matches = dbiIndexSetNew(0);
-    fpc = fpCacheCreate(allMatches->count, NULL);
+    fpc = fpCacheCreate(nmatches, NULL);
     fpLookup(fpc, dirName, baseName, &fp1);
 
     i = 0;
-    while (i < allMatches->count) {
+    while (i < nmatches) {
 	struct rpmtd_s bn, dn, di, fs;
 	const char ** baseNames, ** dirNames;
 	const uint32_t * dirIndexes;
@@ -611,9 +613,9 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
 	    prevoff = offset;
 	    i++;
-	    if (i < allMatches->count)
+	    if (i < nmatches)
 		offset = dbiIndexRecordOffset(allMatches, i);
-	} while (i < allMatches->count && offset == prevoff);
+	} while (i < nmatches && offset == prevoff);
 
 	rpmtdFreeData(&bn);
 	rpmtdFreeData(&dn);
@@ -626,7 +628,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     free(fp1);
     fpCacheFree(fpc);
 
-    if ((*matches)->count == 0) {
+    if (dbiIndexSetCount(*matches) == 0) {
 	*matches = dbiIndexSetFree(*matches);
 	rc = RPMRC_NOTFOUND;
     } else {
