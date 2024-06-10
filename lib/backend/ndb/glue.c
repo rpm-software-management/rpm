@@ -402,14 +402,11 @@ static unsigned int ndb_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 
 static void addtoset(dbiIndexSet *set, unsigned int *pkglist, unsigned int pkglistn)
 {
-    unsigned int i, j;
+    unsigned int i;
     dbiIndexSet newset = dbiIndexSetNew(pkglistn / 2);
-    for (i = j = 0; i < pkglistn; i += 2) {
-	newset->recs[j].hdrNum = pkglist[i];
-	newset->recs[j].tagNum = pkglist[i + 1];
-	j++;
+    for (i = 0; i < pkglistn; i += 2) {
+	dbiIndexSetAppendOne(newset, pkglist[i], pkglist[i + 1], 0);
     }
-    newset->count = j;
     if (pkglist)
 	free(pkglist);
     if (*set) {
