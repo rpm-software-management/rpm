@@ -977,7 +977,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
 
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi)
 {
-    return (mi && mi->mi_set ?  mi->mi_set->count : 0);
+    return (mi ? dbiIndexSetCount(mi->mi_set) : 0);
 }
 
 int rpmdbGetIteratorIndex(rpmdbMatchIterator mi)
@@ -993,8 +993,8 @@ void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix)
 
 unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix)
 {
-    if (mi && mi->mi_set && ix < mi->mi_set->count)
-	return mi->mi_set->recs[ix].hdrNum;
+    if (mi && mi->mi_set && ix < dbiIndexSetCount(mi->mi_set))
+	return dbiIndexRecordOffset(mi->mi_set, ix);
     return 0;
 }
 
@@ -1393,7 +1393,7 @@ top:
 
     do {
 	if (mi->mi_set) {
-	    if (!(mi->mi_setx < mi->mi_set->count))
+	    if (!(mi->mi_setx < dbiIndexSetCount(mi->mi_set)))
 		return NULL;
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
