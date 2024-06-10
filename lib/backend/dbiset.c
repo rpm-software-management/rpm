@@ -84,30 +84,21 @@ void dbiIndexSetUniq(dbiIndexSet set, int sorted)
     }
 }
 
-static
-int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
-		      unsigned int nrecs, int sortset)
+int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
 {
-    if (set == NULL || recs == NULL)
+    if (set == NULL || oset == NULL)
 	return 1;
 
-    if (nrecs) {
-	dbiIndexSetGrow(set, nrecs);
-	memcpy(set->recs + set->count, recs, nrecs * sizeof(*(set->recs)));
-	set->count += nrecs;
+    if (oset->count) {
+	dbiIndexSetGrow(set, oset->count);
+	memcpy(set->recs + set->count, oset->recs, oset->count * sizeof(*(set->recs)));
+	set->count += oset->count;
     }
     
     if (sortset && set->count > 1)
-	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
+	dbiIndexSetSort(set);
 
     return 0;
-}
-
-int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
-{
-    if (oset == NULL)
-	return 1;
-    return dbiIndexSetAppend(set, oset->recs, oset->count, sortset);
 }
 
 int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
