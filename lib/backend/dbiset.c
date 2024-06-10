@@ -145,24 +145,22 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
     return (numCopied == num);
 }
 
-static
-int dbiIndexSetFilter(dbiIndexSet set, dbiIndexItem recs,
-                        unsigned int nrecs, int sorted)
+int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
 {
     unsigned int from;
     unsigned int to = 0;
     unsigned int num = set->count;
     unsigned int numCopied = 0;
-    size_t recsize = sizeof(*recs);
+    size_t recsize = sizeof(*oset->recs);
 
-    if (num == 0 || nrecs == 0) {
+    if (num == 0 || oset->count == 0) {
 	set->count = 0;
 	return num ? 0 : 1;
     }
-    if (nrecs > 1 && !sorted)
-	qsort(recs, nrecs, recsize, hdrNumCmp);
+    if (oset->count > 1 && !sorted)
+	dbiIndexSetSort(oset);
     for (from = 0; from < num; from++) {
-	if (!bsearch(&set->recs[from], recs, nrecs, recsize, hdrNumCmp)) {
+	if (!bsearch(&set->recs[from], oset->recs, oset->count, recsize, hdrNumCmp)) {
 	    set->count--;
 	    continue;
 	}
@@ -172,11 +170,6 @@ int dbiIndexSetFilter(dbiIndexSet set, dbiIndexItem recs,
 	numCopied++;
     }
     return (numCopied == num);
-}
-
-int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
-{
-    return dbiIndexSetFilter(set, oset->recs, oset->count, sorted);
 }
 
 unsigned int dbiIndexSetCount(dbiIndexSet set)
