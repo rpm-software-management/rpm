@@ -9,12 +9,7 @@ typedef struct dbiIndexItem_s {
     unsigned int tagNum;		/*!< tag index in header */
 } * dbiIndexItem;
 
-/* Items retrieved from the index database.*/
-typedef struct dbiIndexSet_s {
-    dbiIndexItem recs;			/*!< array of records */
-    unsigned int count;			/*!< number of records */
-    size_t alloced;			/*!< alloced size */
-} * dbiIndexSet;
+typedef struct dbiIndexSet_s * dbiIndexSet;
 
 /* Create an empty index set, optionally with sizehint reservation for recs */
 RPM_GNUC_INTERNAL
