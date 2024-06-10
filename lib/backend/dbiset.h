@@ -37,18 +37,6 @@ RPM_GNUC_INTERNAL
 int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
 
 /**
- * Append element(s) to set of index database items.
- * @param set		set of index database items
- * @param recs		array of items to append to set
- * @param nrecs		number of items
- * @param sortset	should resulting set be sorted?
- * @return		0 success, 1 failure (bad args)
- */
-RPM_GNUC_INTERNAL
-int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
-		      unsigned int nrecs, int sortset);
-
-/**
   * Append a single element to a set of index database items.
   * @param set          set of index database items
   * @param hdrNum       header instance in db
@@ -61,18 +49,6 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
 			 unsigned int tagNum, int sortset);
 
 /**
- * Remove element(s) from set of index database items.
- * @param set		set of index database items
- * @param recs		array of items to remove from set
- * @param nrecs		number of items
- * @param sorted	array is already sorted?
- * @return		0 success, 1 failure (no items found)
- */
-RPM_GNUC_INTERNAL
-int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
-		     unsigned int nrecs, int sorted);
-
-/**
  * Remove an index set from another.
  * @param set          set of index database items
  * @param oset         set of entries that should be removed
@@ -81,18 +57,6 @@ int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
  */
 RPM_GNUC_INTERNAL
 int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
-
-/**
- * Filter element(s) from set of index database items.
- * @param set          set of index database items
- * @param recs         array of items to remove from set
- * @param nrecs                number of items
- * @param sorted       recs array is already sorted?
- * @return             0 success, 1 failure (no items removed)
- */
-RPM_GNUC_INTERNAL
-int dbiIndexSetFilter(dbiIndexSet set, dbiIndexItem recs,
-		      unsigned int nrecs, int sorted);
 
 /**
  * Filter (intersect) an index set with another.

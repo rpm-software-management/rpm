@@ -78,6 +78,7 @@ void dbiIndexSetUniq(dbiIndexSet set, int sorted)
     }
 }
 
+static
 int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
 		      unsigned int nrecs, int sortset)
 {
@@ -120,6 +121,7 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
     return 0;
 }
 
+static
 int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 		     unsigned int nrecs, int sorted)
 {
@@ -155,6 +157,7 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
     return dbiIndexSetPrune(set, oset->recs, oset->count, sortset);
 }
 
+static
 int dbiIndexSetFilter(dbiIndexSet set, dbiIndexItem recs,
                         unsigned int nrecs, int sorted)
 {
