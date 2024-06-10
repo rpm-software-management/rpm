@@ -665,13 +665,14 @@ static void appenddbt(dbiCursor dbc, unsigned char *val, unsigned int vallen, db
     struct bdb_cur *cur = (struct bdb_cur *)dbc;
     dbiIndexSet set;
     unsigned int i;
+    unsigned int nrecs = vallen / (2 * sizeof(uint32_t));
 
-    set = dbiIndexSetNew(vallen / (2 * sizeof(uint32_t)));
-    set->count = vallen / (2 * sizeof(uint32_t));
+    set = dbiIndexSetNew(nrecs);
 
-    for (i = 0; i < set->count; i++, val += 8) {
-	set->recs[i].hdrNum = getui32(val, cur->db->swapped);
-	set->recs[i].tagNum = getui32(val + 4, cur->db->swapped);
+    for (i = 0; i < nrecs; i++, val += 8) {
+	unsigned int hdrNum = getui32(val, cur->db->swapped);
+	unsigned int tagNum = getui32(val + 4, cur->db->swapped);
+	dbiIndexSetAppendOne(set, hdrNum, tagNum, 0);
     }
     if (*setp == NULL) {
 	*setp = set;
