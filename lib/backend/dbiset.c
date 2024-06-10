@@ -31,6 +31,12 @@ void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
     }
 }
 
+void dbiIndexSetClear(dbiIndexSet set)
+{
+    if (set)
+	set->count = 0;
+}
+
 static int hdrNumCmp(const void * one, const void * two)
 {
     const struct dbiIndexItem_s *a = (const struct dbiIndexItem_s *)one;
@@ -215,4 +221,3 @@ dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
     }
     return NULL;
 }
-

@@ -24,6 +24,9 @@ dbiIndexSet dbiIndexSetNew(unsigned int sizehint);
 RPM_GNUC_INTERNAL
 void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs);
 
+RPM_GNUC_INTERNAL
+void dbiIndexSetClear(dbiIndexSet set);
+
 /* Sort an index set */
 RPM_GNUC_INTERNAL
 void dbiIndexSetSort(dbiIndexSet set);
@@ -83,5 +86,4 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno);
 /* Destroy set of index database items */
 RPM_GNUC_INTERNAL
 dbiIndexSet dbiIndexSetFree(dbiIndexSet set);
-
 #endif
