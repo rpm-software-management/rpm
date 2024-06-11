@@ -7,6 +7,9 @@
 typedef struct dbiIndexItem_s {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
+
+    bool operator < (const dbiIndexItem_s & other) const;
+    bool operator == (const dbiIndexItem_s & other) const;
 } * dbiIndexItem;
 
 typedef struct dbiIndexSet_s * dbiIndexSet;

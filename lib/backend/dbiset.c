@@ -1,14 +1,30 @@
 #include "system.h"
+
+#include <vector>
+#include <algorithm>
+
 #include <string.h>
 #include <stdlib.h>
 #include "dbiset.h"
 #include "debug.h"
 
+using std::vector;
+
+bool dbiIndexItem_s::operator < (const dbiIndexItem_s & other) const
+{
+    if (hdrNum < other.hdrNum)
+	return true;
+    return tagNum < other.tagNum;
+}
+
+bool dbiIndexItem_s::operator == (const dbiIndexItem_s & other) const
+{
+    return (hdrNum == other.hdrNum && tagNum == other.tagNum);
+}
+
 /* Items retrieved from the index database.*/
 struct dbiIndexSet_s {
-    dbiIndexItem recs;			/*!< array of records */
-    unsigned int count;			/*!< number of records */
-    size_t alloced;			/*!< alloced size */
+    vector<dbiIndexItem_s> recs;	/*!< array of records */
 };
 
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
@@ -19,76 +35,38 @@ dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
     return set;
 }
 
-/* 
- * Ensure sufficient memory for nrecs of new records in dbiIndexSet.
- * Allocate in power of two sizes to avoid memory fragmentation, so
- * realloc is not always needed.
- */
 void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
 {
-    size_t need = (set->count + nrecs) * sizeof(*(set->recs));
-    size_t alloced = set->alloced ? set->alloced : 1 << 4;
-
-    while (alloced < need)
-	alloced <<= 1;
-
-    if (alloced != set->alloced) {
-	set->recs = xrealloc(set->recs, alloced);
-	set->alloced = alloced;
-    }
+    set->recs.reserve(nrecs);
 }
 
 void dbiIndexSetClear(dbiIndexSet set)
 {
     if (set)
-	set->count = 0;
-}
-
-static int hdrNumCmp(const void * one, const void * two)
-{
-    const struct dbiIndexItem_s *a = (const struct dbiIndexItem_s *)one;
-    const struct dbiIndexItem_s *b = (const struct dbiIndexItem_s *)two;
-    if (a->hdrNum - b->hdrNum != 0)
-	return a->hdrNum - b->hdrNum;
-    return a->tagNum - b->tagNum;
+	set->recs.clear();
 }
 
 void dbiIndexSetSort(dbiIndexSet set)
 {
-    /*
-     * mergesort is much (~10x with lots of identical basenames) faster
-     * than pure quicksort, but glibc uses msort_with_tmp() on stack.
-     */
-    if (set && set->recs && set->count > 1) {
-#ifdef HAVE_MERGESORT
-	mergesort(set->recs, set->count, sizeof(*set->recs), hdrNumCmp);
-#else
-	qsort(set->recs, set->count, sizeof(*set->recs), hdrNumCmp);
-#endif
-    }
+    if (set)
+	std::sort(set->recs.begin(), set->recs.end());
+}
+
+static bool hdrNumCmp(const dbiIndexItem_s & a, const dbiIndexItem_s & b)
+{
+    return (a.hdrNum == b.hdrNum);
 }
 
 void dbiIndexSetUniq(dbiIndexSet set, int sorted)
 {
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int num = set->count;
-
-    if (set->count < 2)
+    if (set->recs.size() < 2)
 	return;
 
     if (!sorted)
 	dbiIndexSetSort(set);
 
-    for (from = 0; from < num; from++) {
-	if (from > 0 && set->recs[from - 1].hdrNum == set->recs[from].hdrNum) {
-	    set->count--;
-	    continue;
-	}
-	if (from != to)
-	    set->recs[to] = set->recs[from]; /* structure assignment */
-	to++;
-    }
+    auto it = std::unique(set->recs.begin(), set->recs.end(), hdrNumCmp);
+    set->recs.resize(std::distance(set->recs.begin(), it));
 }
 
 int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
@@ -96,13 +74,9 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset)
     if (set == NULL || oset == NULL)
 	return 1;
 
-    if (oset->count) {
-	dbiIndexSetGrow(set, oset->count);
-	memcpy(set->recs + set->count, oset->recs, oset->count * sizeof(*(set->recs)));
-	set->count += oset->count;
-    }
+    set->recs.insert(set->recs.end(), oset->recs.begin(), oset->recs.end());
     
-    if (sortset && set->count > 1)
+    if (sortset && set->recs.size() > 1)
 	dbiIndexSetSort(set);
 
     return 0;
@@ -113,69 +87,53 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
 {
     if (set == NULL)
 	return 1;
-    dbiIndexSetGrow(set, 1);
 
-    set->recs[set->count].hdrNum = hdrNum;
-    set->recs[set->count].tagNum = tagNum;
-    set->count += 1;
+    set->recs.emplace_back() = { hdrNum, tagNum };
 
-    if (sortset && set->count > 1)
+    if (sortset && set->recs.size() > 1)
 	dbiIndexSetSort(set);
 
     return 0;
 }
 
-/* op 0 to prune, 1 to filter */
-static int dbiIndexSetPrune(dbiIndexSet set, dbiIndexSet oset, int op)
-{
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int num = set->count;
-    unsigned int numCopied = 0;
-    size_t recsize = sizeof(*oset->recs);
-
-    for (from = 0; from < num; from++) {
-	if ((bsearch(&set->recs[from], oset->recs, oset->count, recsize, hdrNumCmp) != NULL) == op) {
-	    set->count--;
-	    continue;
-	}
-	if (from != to)
-	    set->recs[to] = set->recs[from]; /* structure assignment */
-	to++;
-	numCopied++;
-    }
-    return (numCopied == num);
-}
-
 int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
 {
-
-    if (set->count == 0 || oset->count == 0)
+    if (set->recs.empty() || oset == NULL || oset->recs.empty())
 	return 1;
 
-    if (oset->count > 1 && !sorted)
+    if (oset->recs.size() > 1 && !sorted)
 	dbiIndexSetSort(oset);
 
-    return dbiIndexSetPrune(set, oset, 1);
+    vector<dbiIndexItem_s> diff;
+    std::set_difference(set->recs.begin(), set->recs.end(),
+			  oset->recs.begin(), oset->recs.end(),
+			  std::back_inserter(diff));
+    set->recs = diff;
+    return 0;
 }
 
 int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
 {
-    if (set->count == 0 || oset->count == 0) {
-	unsigned int num = set->count;
+    if (set->recs.empty() || oset == NULL || oset->recs.empty()) {
+	unsigned int num = set->recs.size();
 	dbiIndexSetClear(set);
 	return num ? 0 : 1;
     }
 
-    if (oset->count > 1 && !sorted)
+    if (oset->recs.size() > 1 && !sorted)
 	dbiIndexSetSort(oset);
 
-    return dbiIndexSetPrune(set, oset, 0);
+    vector<dbiIndexItem_s> isect;
+    std::set_intersection(set->recs.begin(), set->recs.end(),
+		      oset->recs.begin(), oset->recs.end(),
+		      std::back_inserter(isect));
+    set->recs = isect;
+    return 0;
 }
 
 unsigned int dbiIndexSetCount(dbiIndexSet set)
 {
-    return (set != NULL) ? set->count : 0;
+    return (set != NULL) ? set->recs.size() : 0;
 }
 
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
@@ -191,7 +149,6 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno)
 dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
 {
     if (set) {
-	free(set->recs);
 	delete set;
     }
     return NULL;
