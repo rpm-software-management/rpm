@@ -2959,8 +2959,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if dynamic spec generation works for main package, too
+# Fails now as feature is disbled
 AT_SETUP([rpmbuild with dynamic spec generation for main package])
 AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_INIT
 RPMTEST_CHECK([
 
@@ -2970,6 +2972,7 @@ runroot rpmbuild --define "_prefix /usr/local" -D "FULLDYNAMIC 1" -ba /data/SPEC
 [ignore],
 [ignore])
 
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMTEST_CHECK([
 
 runroot rpm -qp --qf "%{Summary}\n" /build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
@@ -2981,6 +2984,37 @@ runroot rpm -ql /build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
 /usr/local/share/doc/dynamic-docs-1.0/FAQ
 ],
 [])
+RPMTEST_CLEANUP
+
+# ------------------------------
+# Check if dynamic spec generation works for main package, too
+# Check for failure as feature is disabled. Remove tests when enabled
+AT_SETUP([rpmbuild with dynamic spec generation for main package])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+runroot rpmbuild --define "_prefix /usr/local" -D "FULLDYNAMIC 1" -ba /data/SPECS/dynamic.spec
+],
+[1],
+[],
+[error: Summary field must be present in package: dynamic
+error: License field must be present in package: dynamic
+])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmbuild with dynamic spec generation for main package])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+runroot rpmbuild --define "_prefix /usr/local" -D "FULLDYNAMIC 1" -bs /data/SPECS/dynamic.spec
+],
+[1],
+[],
+[error: Summary field must be present in package: dynamic
+error: License field must be present in package: dynamic
+])
 RPMTEST_CLEANUP
 
 # ------------------------------
@@ -3007,11 +3041,11 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "DOUBLESUMMARY 1" -ba /data/SPECS/dynamic.spec
+runroot rpmbuild --quiet -D "DOUBLESUMMARY 1" -ba /data/SPECS/dynamic.spec
 ],
 [0],
 [],
-[warning: line 6: second Summary
+[warning: line 1: second Summary
 ])
 
 RPMTEST_CLEANUP
@@ -3023,11 +3057,11 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "WRONGTAG 1" -ba /data/SPECS/dynamic.spec
+runroot rpmbuild --quiet -D "WRONGTAG 1" -ba /data/SPECS/dynamic.spec
 ],
 [1],
 [],
-[error: line 6: Unknown tag: LicenseToKill: True
+[error: line 1: Unknown tag: LicenseToKill: True
 error: parsing failed
 ])
 
@@ -3040,7 +3074,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "FORBIDDENSECTION 1" -ba /data/SPECS/dynamic.spec
+runroot rpmbuild --quiet -D "FORBIDDENSECTION 1" -ba /data/SPECS/dynamic.spec
 ],
 [1],
 [],
@@ -3057,7 +3091,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-runroot rpmbuild --quiet -D "FULLDYNAMIC 1" -D "FORBIDDENTAG 1" -ba /data/SPECS/dynamic.spec
+runroot rpmbuild --quiet -D "FORBIDDENTAG 1" -ba /data/SPECS/dynamic.spec
 ],
 [1],
 [],

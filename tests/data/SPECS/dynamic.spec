@@ -29,6 +29,7 @@ echo "License: GPL" >> %{specpartsdir}/mainpkg.specpart
 echo "Distribution: RPM test suite." >> %{specpartsdir}/mainpkg.specpart
 echo "URL: http://rpm.org" >> %{specpartsdir}/mainpkg.specpart
 echo "Summary: dynamic hello -- hello, world rpm" >> %{specpartsdir}/mainpkg.specpart
+}
 %{?DOUBLESUMMARY:
 echo "Summary: dynamic hello -- hello, world again" >> %{specpartsdir}/mainpkg.specpart
 }
@@ -36,7 +37,6 @@ echo "Summary: dynamic hello -- hello, world again" >> %{specpartsdir}/mainpkg.s
 echo "LicenseToKill: True" >> %{specpartsdir}/mainpkg.specpart
 }
 
-}
 
 echo "%package docs" >> %{specpartsdir}/docs.specpart
 %{?!FAIL:echo "Summary: Documentation for dynamic spec" >> %{specpartsdir}/docs.specpart}
