@@ -23,6 +23,7 @@ static const char *hash_algo_name[] = {
     "md5", 	/* RPM_HASH_MD5 */
     "sha1", 	/* RPM_HASH_SHA1 */
     "rmd160",	/* RPM_HASH_RIPEMD160 */
+    "reserved1",/* reserved */
     "md2",	/* RPM_HASH_MD2 */
     "tgr192", 	/* RPM_HASH_TIGER192 */
     "haval5160",/* RPM_HASH_HAVAL_5_160 */
