@@ -13,7 +13,7 @@ struct dbiIndexSet_s {
 
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
 {
-    dbiIndexSet set = (dbiIndexSet)xcalloc(1, sizeof(*set));
+    dbiIndexSet set = new dbiIndexSet_s {};
     if (sizehint > 0)
 	dbiIndexSetGrow(set, sizehint);
     return set;
@@ -192,8 +192,7 @@ dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
 {
     if (set) {
 	free(set->recs);
-	memset(set, 0, sizeof(*set)); /* trash and burn */
-	free(set);
+	delete set;
     }
     return NULL;
 }
