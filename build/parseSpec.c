@@ -677,13 +677,14 @@ static const rpmTagVal sourceTags[] = {
     0
 };
 
-static void initSourceHeader(rpmSpec spec)
+static int initSourceHeader(rpmSpec spec)
 {
     Package sourcePkg = spec->sourcePackage;
     struct Source *srcPtr;
+    int rc = 0;
 
     if (headerIsEntry(sourcePkg->header, RPMTAG_NAME))
-	return;
+	return rc;
 
     char *os = rpmExpand("%{_target_os}", NULL);
     headerPutString(sourcePkg->header, RPMTAG_OS, os);
@@ -739,6 +740,10 @@ static void initSourceHeader(rpmSpec spec)
 		spec->noSource ? "no" : "");
 	free(nvr);
     }
+
+    rc = checkForRequired(spec->sourcePackage->header);
+
+    return rc;
 }
 
 static void finalizeSourceHeader(rpmSpec spec)
@@ -1320,7 +1325,8 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	goto errxit;
 
     /* Assemble source header from parsed components */
-    initSourceHeader(spec);
+    if (initSourceHeader(spec))
+	goto errxit;
     return spec;
 
 errxit:
