@@ -2869,6 +2869,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmbuild spec tag])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
+RPMDB_INIT
 RPMTEST_SETUP
 runroot rpmbuild -bs --quiet /data/SPECS/foo.spec
 runroot rpm -qp --qf "%{spec}" /build/SRPMS/foo-1.0-1.src.rpm
