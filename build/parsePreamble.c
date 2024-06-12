@@ -1287,7 +1287,15 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 
 	if (!spec->buildDir) {
 	    /* Using release here causes a buildid no-recompute test to fail */
-	    spec->buildDir = rpmExpand("%{_top_builddir}/%{NAME}-%{VERSION}-build", NULL);
+	    char *bn = rpmExpand("%{NAME}-%{VERSION}-build", NULL);
+	    /* Tilde and caret in paths are evil, convert to underscores */
+	    for (char *t = bn; *t; t++) {
+		if (*t == '^' || *t == '~')
+		    *t = '_';
+	    }
+	    spec->buildDir = rpmExpand("%{_top_builddir}/", bn, NULL);
+	    free(bn);
+
 	    /* Override toplevel _builddir for backwards compatibility */
 	    rpmPushMacroFlags(spec->macros, "_builddir", NULL, spec->buildDir,
 				RMIL_SPEC, RPMMACRO_LITERAL);
