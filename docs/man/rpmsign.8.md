@@ -15,12 +15,12 @@ SYNOPSIS
 SIGNING PACKAGES:
 -----------------
 
-**rpm** **\--addsign\|\--resign** \[**rpmsign-options**\] *PACKAGE\_FILE
+**rpmsign** **\--addsign\|\--resign** \[**rpmsign-options**\] *PACKAGE\_FILE
 \...*
 
-**rpm** **\--delsign** *PACKAGE\_FILE \...*
+**rpmsign** **\--delsign** *PACKAGE\_FILE \...*
 
-**rpm** **\--delfilesign** *PACKAGE\_FILE \...*
+**rpmsign** **\--delfilesign** *PACKAGE\_FILE \...*
 
 rpmsign-options
 ---------------
@@ -35,14 +35,14 @@ new signatures for each package *PACKAGE\_FILE* given, replacing any
 existing signatures. There are two options for historical reasons, there
 is no difference in behavior currently.
 
-To create a signature rpm needs to verify the package\'s checksum. As a
+To create a signature rpmsign needs to verify the package\'s checksum. As a
 result packages with a MD5/SHA1 checksums cannot be signed in FIPS mode.
 
-**rpm** **\--delsign** *PACKAGE\_FILE \...*
+**rpmsign** **\--delsign** *PACKAGE\_FILE \...*
 
 Delete all signatures from each package *PACKAGE\_FILE* given.
 
-**rpm** **\--delfilesign** *PACKAGE\_FILE \...*
+**rpmsign** **\--delfilesign** *PACKAGE\_FILE \...*
 
 Delete all IMA and fsverity file signatures from each package
 *PACKAGE\_FILE* given.
@@ -54,7 +54,7 @@ SIGN OPTIONS
 
 :   Force RPM V3 header+payload signature addition. These are expensive
     and redundant baggage on packages where a separate payload digest
-    exists (packages built with rpm \>= 4.14). Rpm will automatically
+    exists (packages built with rpm \>= 4.14). Rpmsign will automatically
     detect the need for V3 signatures, but this option can be used to
     force their creation if the packages must be fully signature
     verifiable with rpm \< 4.14 or other interoperability reasons.
