@@ -3370,10 +3370,12 @@ AT_KEYWORDS([build builddir])
 RPMDB_INIT
 # Trick for compatibly getting the builddir out of old and new rpm
 RPMTEST_CHECK([
-runroot rpmbuild -bc --short-circuit --define '__spec_build_pre echo builddir=%{_builddir}; exit 0' /data/SPECS/hello.spec | awk /^builddir/
+runroot rpmbuild \
+	--with weirdver \
+	-bc --short-circuit --define '__spec_build_pre echo builddir=%{_builddir}; exit 0' /data/SPECS/weirdnames.spec 2>&1 | awk /^builddir/
 ],
 [0],
-[builddir=/build/BUILD/hello-1.0-build
+[builddir=/build/BUILD/weirdnames-1.0_aa_bb-build
 ],
 [])
 

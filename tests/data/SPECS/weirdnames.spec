@@ -1,7 +1,12 @@
 %bcond_with illegal
+%bcond_with weirdver
 
 Name:		weirdnames
+%if %{with weirdver}
+Version:	1.0~aa^bb
+%else
 Version:	1.0
+%endif
 Release:	1
 Summary:	Testing weird filename behavior
 License:	GPL
@@ -9,6 +14,8 @@ BuildArch:	noarch
 
 %description
 %{summary}
+
+%build
 
 %install
 mkdir -p %{buildroot}/opt
