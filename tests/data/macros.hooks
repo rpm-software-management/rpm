@@ -1,0 +1,17 @@
+
+# This is not a real-world useful example obviously, but since unregistering
+# needs to be passed the data we got from register() things get clumsy.
+%hook_this() %{lua:
+hooks = {}
+
+function myhook(args)
+   for i, p in ipairs(args) do
+     print(string.format('%d: %s(%s)\\n', i, type(p), p))
+   end
+end
+
+h = rpm.register('myhook', myhook, '%s%i%p%f')
+rpm.call('myhook', 'whee', 3, nil, 1.2)
+rpm.unregister('myhook', h)
+rpm.call('myhook', 'aa', 'bb')
+}
