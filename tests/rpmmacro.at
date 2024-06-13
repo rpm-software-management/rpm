@@ -1450,3 +1450,20 @@ warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprec
 warning: runaway fork() in Lua script]
 )
 RPMTEST_CLEANUP
+
+AT_SETUP([rpmlua hooks])
+AT_KEYWORDS([lua])
+
+RPMTEST_CHECK([
+run rpm --load /data/macros.hooks \
+	--eval "%hook_this"
+],
+[0],
+[1: string(whee)
+2: number(3)
+3: userdata(userdata: (nil))
+4: number(1.2)
+
+],
+[])
+RPMTEST_CLEANUP
