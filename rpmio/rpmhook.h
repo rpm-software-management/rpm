@@ -1,6 +1,8 @@
 #ifndef RPMHOOK_H
 #define RPMHOOK_H
 
+#include <vector>
+
 typedef union {
     const char * s;
     int i;
@@ -11,7 +13,7 @@ typedef union {
 typedef struct rpmhookArgs_s {
     int argc;
     const char * argt;
-    rpmhookArgv argv[1];
+    std::vector<rpmhookArgv> argv;
 } * rpmhookArgs;
 
 typedef int (*rpmhookFunc) (rpmhookArgs args, void *data);

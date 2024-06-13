@@ -430,7 +430,7 @@ char *rpmluaCallStringFunction(rpmlua lua, const char *function, rpmhookArgs arg
 
     /* convert the arguments */
     for (i = 0; i < args->argc; i++) {
-	if (rpmluaHookPushArg(L, args->argt[i], args->argv + i)) {
+	if (rpmluaHookPushArg(L, args->argt[i], &args->argv[i])) {
 	    rpmlog(RPMLOG_ERR, "%s: cannot convert argment type %c\n", function, args->argt[i]);
 	    lua_pop(L, i + 1);
 	    return NULL;
@@ -647,7 +647,7 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
     lua_rawgeti(L, LUA_REGISTRYINDEX, hookdata->funcRef);
     lua_newtable(L);
     for (i = 0; i != args->argc; i++) {
-	if (rpmluaHookPushArg(L, args->argt[i], args->argv + i)) {
+	if (rpmluaHookPushArg(L, args->argt[i], &args->argv[i])) {
 	    (void) luaL_error(L, "unsupported type '%c' as "
 			  "a hook argument\n", args->argt[i]);
 	    continue;
@@ -711,7 +711,7 @@ static int rpm_call(lua_State *L)
 	std::vector<char> argt(args->argc+1);
 	int i;
 	for (i = 0; i != args->argc; i++) {
-	    argt[i] = rpmluaHookGetArg(L, i + 2, args->argv + i);
+	    argt[i] = rpmluaHookGetArg(L, i + 2, &args->argv[i]);
 	    if (!argt[i]) {
 		(void) luaL_error(L, "unsupported Lua type passed to hook");
 		argt[i] = 'p';
