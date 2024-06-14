@@ -12,9 +12,9 @@ using std::vector;
 
 bool dbiIndexItem_s::operator < (const dbiIndexItem_s & other) const
 {
-    if (hdrNum < other.hdrNum)
-	return true;
-    return tagNum < other.tagNum;
+    if (hdrNum == other.hdrNum)
+	return tagNum < other.tagNum;
+    return hdrNum < other.hdrNum;
 }
 
 bool dbiIndexItem_s::operator == (const dbiIndexItem_s & other) const
