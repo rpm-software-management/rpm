@@ -84,6 +84,7 @@ RUN cmake \
 	-DENABLE_BDB_RO=ON \
 	-DWITH_FSVERITY=ON \
 	-DWITH_IMAEVM=ON \
+	-DWITH_DOXYGEN=ON \
 	-DMKTREE_BACKEND=rootfs \
 	../rpm
 RUN make -j$(nproc) tree
