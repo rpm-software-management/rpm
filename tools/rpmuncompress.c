@@ -40,19 +40,20 @@ struct archiveType_s {
     const char *cmd;
     const char *unpack;
     const char *quiet;
+    int setTZ;
 } archiveTypes[] = {
-    { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"" },
-    { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		""  },
-    { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"" },
-    { COMPRESSED_ZIP,	1,	"%{__unzip}",	"",		"-qq" },
-    { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"" },
-    { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"" },
-    { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"" },
-    { COMPRESSED_LRZIP,	0,	"%{__lrzip}",	"-dqo-",	"" },
-    { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x",		"" },
-    { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"" },
-    { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"" },
-    { -1,		0,	NULL,		NULL,		NULL },
+    { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"", 0 },
+    { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		"", 0 },
+    { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"", 0 },
+    { COMPRESSED_ZIP,	1,	"%{__unzip}",	"",		"-qq", 1 },
+    { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"", 0 },
+    { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"", 0 },
+    { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"", 0 },
+    { COMPRESSED_LRZIP,	0,	"%{__lrzip}",	"-dqo-",	"", 0 },
+    { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x",		"", 0 },
+    { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"", 0 },
+    { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"", 0 },
+    { -1,		0,	NULL,		NULL,		NULL, 0 },
 };
 
 static const struct archiveType_s *getArchiver(const char *fn)
@@ -77,7 +78,8 @@ static char *doUncompress(const char *fn)
     char *cmd = NULL;
     const struct archiveType_s *at = getArchiver(fn);
     if (at) {
-	cmd = rpmExpand(at->cmd, " ", at->unpack, NULL);
+	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
+			at->cmd, " ", at->unpack, NULL);
 	/* path must not be expanded */
 	cmd = rstrscat(&cmd, " ", fn, NULL);
     }
@@ -161,7 +163,8 @@ static char *doUntar(const char *fn)
 	char *zipper = NULL;
 	int needtar = (at->extractable == 0);
 
-	zipper = rpmExpand(at->cmd, " ", at->unpack, " ",
+	zipper = rpmExpand(at->setTZ ? "TZ=UTC " : "",
+			   at->cmd, " ", at->unpack, " ",
 			   verbose ? "" : at->quiet, NULL);
 	if (needtar) {
 	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir ?: "", zipper, fn, tar, taropts, stripcd ?: "");
