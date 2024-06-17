@@ -519,8 +519,8 @@ char *pgpIdentItem(pgpDigParams digp);
  * @param pkts1len	length of the buffer with the first certificate
  * @param pkts2		OpenPGP pointer to a buffer with the second certificate
  * @param pkts2len	length of the buffer with the second certificate
- * @param pktsm[out]	merged certificate (malloced)
- * @param pktsmlen[out]	length of merged certificate
+ * @param pktsm         [out] merged certificate (malloced)
+ * @param pktsmlen      [out] length of merged certificate
  * @param flags		merge flags (currently not used, must be zero)
  * @return 		RPMRC_OK on success 
  */
