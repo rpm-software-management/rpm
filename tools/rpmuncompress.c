@@ -235,10 +235,10 @@ int main(int argc, char *argv[])
 	    if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		ec = EXIT_SUCCESS;
 	}
-	free(cmd);
     }
 
 exit:
+    free(cmd);
     rpmcliFini(optCon);
     return ec;
 }
