@@ -414,11 +414,15 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint
 
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
 			     struct fingerPrint * fp, int ix,
-			     struct rpmffi_s ** recs, int * numRecs)
+			     std::vector<struct rpmffi_s> & recs)
 {
-    if (rpmFpHashGetEntry(cache->fp, fp + ix, recs, numRecs, NULL))
+    struct rpmffi_s * rrecs = NULL;
+    int numRecs = 0;
+    if (rpmFpHashGetEntry(cache->fp, fp + ix, &rrecs, &numRecs, NULL)) {
+	for (int i = 0; i < numRecs; ++i)
+	    recs.push_back(rrecs[i]);
 	return fp + ix;
-    else
+    } else
 	return NULL;
 }
 

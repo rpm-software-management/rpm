@@ -6,6 +6,7 @@
  * Identify a file name path by a unique "finger print".
  */
 
+#include <vector>
 #include <rpm/rpmtypes.h>
 
 /**
@@ -39,7 +40,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache);
 RPM_GNUC_INTERNAL
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
 			     struct fingerPrint * fp, int ix,
-			     struct rpmffi_s ** recs, int * numRecs);
+			     std::vector<struct rpmffi_s> & recs);
 
 RPM_GNUC_INTERNAL
 void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);

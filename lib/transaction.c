@@ -509,8 +509,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	rpmfiles otherFi;
 	rpmte otherTe;
 	rpmfileAttrs FFlags;
-	struct rpmffi_s * recs;
-	int numRecs;
+	vector<struct rpmffi_s> recs;
 	rpm_loff_t fileSize;
 	int nlink;
 	const int *links;
@@ -528,7 +527,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	fiFps = fpCacheGetByFp(fpc, fpList, i, &recs, &numRecs);
+	fiFps = fpCacheGetByFp(fpc, fpList, i, recs);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -557,7 +556,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	 * files when directory symlinks are present. Don't compare a file
 	 * with itself though...
 	 */
-	for (j = 0; j < numRecs && !(recs[j].p == p && recs[j].fileno == i); j++)
+	for (j = 0; j < recs.size() && !(recs[j].p == p && recs[j].fileno == i); j++)
 	    {};
 
 	/* Find what the previous disposition of this file was. */
@@ -1087,8 +1086,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	/* loop over all interesting files in that package */
 	do {
 	    int fpIx;
-	    struct rpmffi_s * recs;
-	    int numRecs;
+	    vector<struct rpmffi_s> recs;
 	    const char * dirName;
 	    const char * baseName;
 
@@ -1111,9 +1109,9 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	    }
 
 	    /* search for files in the transaction with same finger print */
-	    fpCacheGetByFp(fpc, fpp, fpIx, &recs, &numRecs);
+	    fpCacheGetByFp(fpc, fpp, fpIx, recs);
 
-	    for (j = 0; j < numRecs; j++) {
+	    for (j = 0; j < recs.size(); j++) {
 	        p = recs[j].p;
 		fi = rpmteFiles(p);
 		fs = rpmteGetFileStates(p);
