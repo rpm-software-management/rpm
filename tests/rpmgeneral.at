@@ -402,11 +402,11 @@ AT_SETUP([urlhelper fails])
 AT_KEYWORDS([urlhelper])
 RPMDB_INIT
 RPMTEST_CHECK([
-runroot rpm --define "_urlhelper /bin/false" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm 2> >(sed 's|rpm-tmp.* https|rpm-tmp https|' >&2)
+runroot rpm --define "_urlhelper /bin/false" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm 2> >(sed 's| /.*rpm-tmp.* https| rpm-tmp https|' >&2)
 ],
 [1],
 [],
-[error: Executing url helper "/bin/false /usr/local/var/tmp/rpm-tmp https://example.com/foo-0.1-1.noarch.rpm" failed with status 1
+[error: Executing url helper "/bin/false rpm-tmp https://example.com/foo-0.1-1.noarch.rpm" failed with status 1
 error: open of https://example.com/foo-0.1-1.noarch.rpm failed: No such file or directory
 ])
 RPMTEST_CLEANUP
