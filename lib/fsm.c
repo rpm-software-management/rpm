@@ -408,16 +408,17 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 	if (fd >= 0) {
 	    dirfd = fd;
 	} else {
+	    rc = RPMERR_OPEN_FAILED;
 	    if (!quiet) {
 		if (errno == EPERM) {
 		    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
 			   bn, p, _("Unsave symlink"));
+		    rc = RPMERR_ILLEGAL_SYMLINK;
 		} else {
 		    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
 			   bn, p, strerror(errno));
 		}
 	    }
-	    rc = RPMERR_OPEN_FAILED;
 	    break;
 	}
 
