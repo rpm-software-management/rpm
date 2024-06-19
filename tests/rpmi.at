@@ -1690,8 +1690,8 @@ runroot --setenv SOURCE_DATE_EPOCH 1699955855 rpm -U /build/RPMS/noarch/replacet
 ],
 [1],
 [],
-[error: failed to open dir opt of /opt/: Not a directory
-error: unpacking of archive failed on file /opt/foo;6553448f: cpio: open failed - Not a directory
+[error: failed to open dir opt of /opt/: cpio: Unsave symlink
+error: unpacking of archive failed on file /opt/foo;6553448f: cpio: Unsave symlink
 error: replacetest-1.0-1.noarch: install failed
 ])
 RPMTEST_CLEANUP

@@ -65,7 +65,7 @@ struct filedata_s {
  * things around needlessly 
  */ 
 static const char * fileActionString(rpmFileAction a);
-static int fsmOpenat(int dirfd, const char *path, int flags, int dir);
+static int fsmOpenat(int dirfd, const char *path, int flags, int dir, int *rc);
 static int fsmClose(int *wfdp);
 
 /** \ingroup payload
@@ -99,7 +99,7 @@ static int fsmLink(int odirfd, const char *opath, int dirfd, const char *path)
 static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
 {
     int rc = -1;
-    int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW, 0);
+    int fd = fsmOpenat(dirfd, path, O_RDONLY|O_NOFOLLOW, 0, NULL);
     if (fd >= 0) {
 	rc = cap_set_fd(fd, fcaps);
 	fsmClose(&fd);
@@ -299,12 +299,13 @@ static int fsmMkdir(int dirfd, const char *path, mode_t mode)
     return rc;
 }
 
-static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
+static int fsmOpenat(int dirfd, const char *path, int flags, int dir, int *rcp)
 {
     struct stat lsb, sb;
     int sflags = flags | O_NOFOLLOW;
     int fd = openat(dirfd, path, sflags);
     int ffd = fd;
+    int rc = 0;
 
     /*
      * Only ever follow symlinks by root or target owner. Since we can't
@@ -327,11 +328,22 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
 	}
     }
 
+    if (fd < 0)
+	rc = RPMERR_OPEN_FAILED;
+
     /* O_DIRECTORY equivalent */
-    if (dir && ((fd != ffd) || (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)))) {
-	errno = ENOTDIR;
+    if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
+	rc = RPMERR_ENOTDIR;
 	fsmClose(&fd);
     }
+    /* Symlink with non matching owners */
+    if (dir && (fd != ffd)) {
+	rc = RPMERR_INVALID_SYMLINK;
+	fsmClose(&fd);
+    }
+
+    if (rcp)
+	*rcp = rc;
     return fd;
 }
 
@@ -351,9 +363,7 @@ static int fsmDoMkDir(rpmPlugins plugins, int dirfd, const char *dn,
 	rc = fsmMkdir(dirfd, dn, mode);
 
     if (!rc) {
-	*fdp = fsmOpenat(dirfd, dn, O_RDONLY|O_NOFOLLOW, 1);
-	if (*fdp == -1)
-	    rc = RPMERR_ENOTDIR;
+	*fdp = fsmOpenat(dirfd, dn, O_RDONLY|O_NOFOLLOW, 1, &rc);
     }
 
     if (!rc) {
@@ -383,14 +393,14 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
     if (*dirfdp >= 0)
 	return rc;
 
-    int dirfd = fsmOpenat(-1, "/", oflags, 1);
+    int dirfd = fsmOpenat(-1, "/", oflags, 1, NULL);
     int fd = dirfd; /* special case of "/" */
 
     char *path = xstrdup(p);
     char *dp = path;
 
     while ((bn = strtok_r(dp, "/", &sp)) != NULL) {
-	fd = fsmOpenat(dirfd, bn, oflags, 1);
+	fd = fsmOpenat(dirfd, bn, oflags, 1, &rc);
 	/* assemble absolute path for plugins benefit, sigh */
 	apath = rstrscat(&apath, "/", bn, NULL);
 
@@ -404,10 +414,11 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 	    dirfd = fd;
 	} else {
 	    if (!quiet) {
+		char *msg = rpmfileStrerror(rc);
 		rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
-			bn, p, strerror(errno));
+		       bn, p, msg);
+		free(msg);
 	    }
-	    rc = RPMERR_OPEN_FAILED;
 	    break;
 	}
 
@@ -1027,7 +1038,7 @@ setmeta:
 		if (fp->suffix)
 		    flags |= AT_SYMLINK_NOFOLLOW;
 		fd = fsmOpenat(di.dirfd, fp->fpath, flags,
-				S_ISDIR(fp->sb.st_mode));
+			       S_ISDIR(fp->sb.st_mode), &rc);
 		if (fd < 0)
 		    rc = RPMERR_OPEN_FAILED;
 	    }
