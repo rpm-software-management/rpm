@@ -328,8 +328,13 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
     }
 
     /* O_DIRECTORY equivalent */
-    if (dir && ((fd != ffd) || (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)))) {
+    if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
 	errno = ENOTDIR;
+	fsmClose(&fd);
+    }
+    /* Symlink with non matching owners */
+    if (dir && (fd != ffd)) {
+	errno = EPERM;
 	fsmClose(&fd);
     }
     return fd;
