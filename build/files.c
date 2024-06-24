@@ -6,6 +6,7 @@
 
 #include "system.h"
 
+#include <string>
 #include <vector>
 #include <algorithm>
 
@@ -1827,10 +1828,8 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
     int rc = 0;
     int i;
     FileListRec flp;
-    char **ids = NULL;
-    char **paths = NULL;
-    size_t nr_ids, allocated;
-    nr_ids = allocated = 0;
+    std::vector<std::string> ids;
+    std::vector<std::string> paths;
 
     /* How are we supposed to create the build-id links?  */
     char *build_id_links_macro = rpmExpand("%{?_build_id_links}", NULL);
@@ -1917,18 +1916,10 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			    addid = 1;
 			}
 			if (addid) {
-			    const unsigned char *p = (const unsigned char *)build_id;
-			    if (allocated <= nr_ids) {
-				allocated += 16;
-				paths = xrealloc (paths,
-						  allocated * sizeof(char *));
-				ids = xrealloc (ids,
-						allocated * sizeof(char *));
-			    }
-
-			    paths[nr_ids] = xstrdup(flp->cpioPath);
-			    ids[nr_ids] = rpmhex(p, len);
-			    nr_ids++;
+			    char *x = rpmhex((const uint8_t *)build_id, len);
+			    paths.push_back(flp->cpioPath);
+			    ids.push_back(x);
+			    free(x);
 			}
 		    } else {
 			if (len < 0) {
@@ -1957,7 +1948,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
     }
 
     /* Process and clean up all build-ids.  */
-    if (nr_ids > 0) {
+    if (ids.size() > 0) {
 	const char *errdir = _("failed to create directory");
 	char *mainiddir = NULL;
 	char *debugiddir = NULL;
@@ -2006,11 +1997,11 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 	}
 
 	/* Now add a subdir and symlink for each buildid found.  */
-	for (i = 0; i < nr_ids; i++) {
+	for (i = 0; i < ids.size(); i++) {
 	    /* Don't add anything more when an error occurred. But do
 	       cleanup.  */
 	    if (rc == 0) {
-		int isDbg = strncmp (paths[i], DEBUG_LIB_PREFIX,
+		int isDbg = strncmp (paths[i].c_str(), DEBUG_LIB_PREFIX,
 				     strlen (DEBUG_LIB_PREFIX)) == 0;
 
 		char *buildidsubdir;
@@ -2044,7 +2035,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			}
 			rasprintf(&linkpath, linkpattern,
 				  buildidsubdir, &ids[i][2]);
-			rasprintf(&targetpath, targetpattern, paths[i]);
+			rasprintf(&targetpath, targetpattern, paths[i].c_str());
 			rc = addNewIDSymlink(files, targetpath, linkpath,
 					     isDbg, &dups);
 
@@ -2111,16 +2102,16 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			       using ALLDEBUG in the first place.
 			       Also ignore things like .dwz multifiles
 			       which don't end in ".debug". */
-			    int pathlen = strlen(paths[i]);
+			    int pathlen = paths[i].size();
 			    int debuglen = strlen(".debug");
 			    int prefixlen = strlen(DEBUG_LIB_DIR);
 			    int vralen = vra == NULL ? 0 : strlen(vra);
 			    if (pathlen > prefixlen + debuglen + vralen
-				&& strcmp ((paths[i] + pathlen - debuglen),
+				&& strcmp ((paths[i].c_str() + pathlen - debuglen),
 					   ".debug") == 0) {
 				free(linkpath);
 				free(targetpath);
-				char *targetstr = xstrdup (paths[i]
+				char *targetstr = xstrdup (paths[i].c_str()
 							   + prefixlen);
 				int targetlen = pathlen - prefixlen;
 				int targetend = targetlen - debuglen - vralen;
@@ -2140,14 +2131,10 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 		}
 		free(buildidsubdir);
 	    }
-	    free(paths[i]);
-	    free(ids[i]);
 	}
 	free(mainiddir);
 	free(debugiddir);
 	free(vra);
-	free(paths);
-	free(ids);
     }
     return rc;
 }
