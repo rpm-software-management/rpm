@@ -1918,8 +1918,6 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			}
 			if (addid) {
 			    const unsigned char *p = (const unsigned char *)build_id;
-			    const unsigned char *end = p + len;
-			    char *id_str;
 			    if (allocated <= nr_ids) {
 				allocated += 16;
 				paths = xrealloc (paths,
@@ -1929,11 +1927,7 @@ static int generateBuildIDs(FileList fl, ARGV_t *files)
 			    }
 
 			    paths[nr_ids] = xstrdup(flp->cpioPath);
-			    id_str = ids[nr_ids] = (char *)xmalloc(2 * len + 1);
-			    while (p < end)
-				id_str += sprintf(id_str, "%02x",
-						  (unsigned)*p++);
-			    *id_str = '\0';
+			    ids[nr_ids] = rpmhex(p, len);
 			    nr_ids++;
 			}
 		    } else {
