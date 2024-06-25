@@ -52,7 +52,7 @@ static void closeEnv(rpmdb rdb)
 	}
 	if (ndbenv->data)
 	    free(ndbenv->data);
-	free(ndbenv);
+	delete ndbenv;
 	rdb->db_dbenv = 0;
     }
 }
@@ -61,7 +61,7 @@ static struct ndbEnv_s *openEnv(rpmdb rdb)
 {
     struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)rdb->db_dbenv;
     if (!ndbenv) {
-	rdb->db_dbenv = ndbenv = (struct ndbEnv_s *)xcalloc(1, sizeof(struct ndbEnv_s));
+	rdb->db_dbenv = ndbenv = new ndbEnv_s {};
 	ndbenv->dofsync = 1;
     }
     ndbenv->refs++;
@@ -280,7 +280,7 @@ static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 
 static dbiCursor ndb_CursorInit(dbiIndex dbi, unsigned int flags)
 {
-    dbiCursor dbc = (dbiCursor)xcalloc(1, sizeof(*dbc));
+    dbiCursor dbc = new dbiCursor_s {};
     dbc->dbi = dbi;
     dbc->flags = flags;
     return dbc;
@@ -293,7 +293,7 @@ static dbiCursor ndb_CursorFree(dbiIndex dbi, dbiCursor dbc)
 	    free(dbc->list);
 	if (dbc->listdata)
 	    free(dbc->listdata);
-	free(dbc);
+	delete dbc;
     }
     return NULL;
 }

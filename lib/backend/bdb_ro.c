@@ -150,7 +150,7 @@ static void bdb_close(struct bdb_db *db)
 {
     if (db->fd >= 0)
 	close(db->fd);
-    free(db);
+    delete db;
 }
 
 static struct bdb_db *bdb_open(const char *name)
@@ -163,7 +163,7 @@ static struct bdb_db *bdb_open(const char *name)
     if (fd == -1) {
 	return NULL;
     }
-    db = (struct bdb_db *)xcalloc(1, sizeof(*db));
+    db = new bdb_db {};
     db->fd = fd;
     if (pread(fd, meta, 512, 0) != 512) {
 	rpmlog(RPMLOG_ERR, "%s: pread: %s\n", name, strerror(errno));
@@ -485,7 +485,7 @@ static int btree_getval(struct bdb_cur *cur)
 
 static struct bdb_cur *cur_open(struct bdb_db *db)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)xcalloc(1, sizeof(*cur));
+    struct bdb_cur *cur = new bdb_cur {};
     cur->db = db;
     cur->page = (unsigned char *)xmalloc(db->pagesize);
     return cur;
@@ -501,7 +501,7 @@ static void cur_close(struct bdb_cur *cur)
 	free(cur->keyov.kv);
     if (cur->valov.kv)
 	free(cur->valov.kv);
-    free(cur);
+    delete cur;
 }
 
 static int cur_next(struct bdb_cur *cur)
