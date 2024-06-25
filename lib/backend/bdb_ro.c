@@ -16,6 +16,19 @@
 #define BDB_HASH 0
 #define BDB_BTREE 1
 
+union _dbswap {
+    unsigned int ui;
+    unsigned char uc[4];
+};
+
+#define	_DBSWAP(_a) \
+\
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+\
+  }
+
 struct dbiCursor_s;
 
 struct bdb_kv {
