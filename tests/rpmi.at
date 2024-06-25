@@ -1635,3 +1635,17 @@ error: unpacking of archive failed on file /opt/foo;6553448f: cpio: open failed 
 error: replacetest-1.0-1.noarch: install failed
 ])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpm -U diskspace])
+AT_KEYWORDS([install diskspace])
+RPMTEST_CHECK([
+
+# Skip RPMDB_INIT to leave the fs read-only for a reproducible result
+runroot rpm -U --nodb --test --ignorearch --ignoreos --nodeps \
+	/data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[	installing package hello-2.0-1.x86_64 needs 36KB more space on the / filesystem
+])
+RPMTEST_CLEANUP
