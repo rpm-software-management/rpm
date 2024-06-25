@@ -406,7 +406,7 @@ static int sqlite_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 
 static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
 {
-    dbiCursor dbc = (dbiCursor)xcalloc(1, sizeof(*dbc));
+    dbiCursor dbc = new dbiCursor_s {};
     dbc->sdb = (sqlite3 *)dbi->dbi_db;
     dbc->flags = flags;
     dbc->tag = rpmTagGetValue(dbi->dbi_file);
@@ -428,7 +428,7 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
 	    dbiCursorFree(dbi, dbc->subc);
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
-	free(dbc);
+	delete dbc;
     }
     return NULL;
 }

@@ -30,14 +30,14 @@ const struct rpmdbOps_s *backends[] = {
 dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
-	free(dbi);
+	delete dbi;
     }
     return NULL;
 }
 
 dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 {
-    dbiIndex dbi = (dbiIndex)xcalloc(1, sizeof(*dbi));
+    dbiIndex dbi = new dbiIndex_s {};
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);
