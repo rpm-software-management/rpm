@@ -50,22 +50,6 @@
 
 using std::vector;
 
-struct diskspaceInfo_s {
-    char * mntPoint;	/*!< File system mount point */
-    dev_t dev;		/*!< File system device number. */
-    int64_t bneeded;	/*!< No. of blocks needed. */
-    int64_t ineeded;	/*!< No. of inodes needed. */
-    int64_t bsize;	/*!< File system block size. */
-    int64_t bavail;	/*!< No. of blocks available. */
-    int64_t iavail;	/*!< No. of inodes available. */
-    int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
-    int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
-    int64_t bdelta;	/*!< Delta for temporary space need on updates */
-    int64_t idelta;	/*!< Delta for temporary inode need on updates */
-
-    int rotational;	/*!< Rotational media? */
-};
-
 /* Adjust for root only reserved space. On linux e2fs, this is 5%. */
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
