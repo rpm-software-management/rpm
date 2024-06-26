@@ -158,7 +158,7 @@ typedef struct specialDir_s {
     std::vector<FileEntries_s> entries;
 } * specialDir;
 
-typedef std::vector<FileListRec_s> FileRecords;
+using FileRecords = std::vector<FileListRec_s>;
 
 /**
  * Package file tree walk data.

@@ -17,7 +17,7 @@ struct rpmhookItem {
     void *data;
 };
 
-typedef std::multimap<std::string,rpmhookItem> rpmhookTable;
+using rpmhookTable = std::multimap<std::string,rpmhookItem>;
 
 rpmhookArgs rpmhookArgsNew(int argc)
 {

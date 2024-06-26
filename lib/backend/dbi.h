@@ -33,7 +33,7 @@ struct dbConfig_s {
     int	db_no_fsync;	/*!< no-op fsync for db */
 };
 
-typedef std::unordered_map<unsigned int,rpmRC> dbChk;
+using dbChk = std::unordered_map<unsigned int,rpmRC>;
 
 struct rpmdbOps_s;
 
