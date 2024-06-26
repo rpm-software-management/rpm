@@ -46,8 +46,8 @@ typedef struct availableIndexFileEntry_s {
     unsigned int entryIx;	/*!< Dependency index. */
 } * availableIndexFileEntry;
 
-typedef std::unordered_multimap<rpmsid,availableIndexEntry_s> rpmalDepHash;
-typedef std::unordered_multimap<rpmsid,availableIndexFileEntry_s> rpmalFileHash;
+using rpmalDepHash = std::unordered_multimap<rpmsid,availableIndexEntry_s>;
+using rpmalFileHash = std::unordered_multimap<rpmsid,availableIndexFileEntry_s>;
 
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.

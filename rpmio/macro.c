@@ -65,7 +65,7 @@ struct rpmMacroEntry_s {
     string sopts;
 };
 
-typedef std::map<string,std::stack<rpmMacroEntry_s>> macroTable;
+using macroTable = std::map<string,std::stack<rpmMacroEntry_s>>;
 
 /*! The structure used to store the set of macros in a context. */
 struct rpmMacroContext_s {

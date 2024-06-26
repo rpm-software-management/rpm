@@ -34,9 +34,9 @@ const char * const rpmEVR = VERSION;
 
 const int rpmFLAGS = RPMSENSE_EQUAL;
 
-typedef std::unordered_map<std::string,int> depCache;
-typedef std::unordered_set<rpmsid> depexistsHash;
-typedef std::unordered_map<rpmsid,rpmsid> filedepHash;
+using depCache = std::unordered_map<std::string,int>;
+using depexistsHash = std::unordered_set<rpmsid>;
+using filedepHash = std::unordered_map<rpmsid,rpmsid>;
 
 /**
  * Check for supported payload format in header.

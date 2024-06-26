@@ -11,7 +11,7 @@
 #include "rpmbuild_misc.h"
 #include "rpmlua.h"
 
-typedef std::unordered_multimap<std::string,std::string> fileRenameHash;
+using fileRenameHash = std::unordered_multimap<std::string,std::string>;
 
 #define ALLOWED_CHARS_NAME ".-_+%{}"
 #define ALLOWED_FIRSTCHARS_NAME "_%"

@@ -54,9 +54,8 @@ struct rpmfcFileDep {
     }
 };
 
-typedef vector<rpmfcFileDep> rpmfcFileDeps;
-
-typedef std::unordered_multimap<int,int> fattrHash;
+using rpmfcFileDeps = vector<rpmfcFileDep>;
+using fattrHash = std::unordered_multimap<int,int>;
 
 struct rpmfc_s {
     Package pkg;

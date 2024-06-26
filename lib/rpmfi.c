@@ -29,8 +29,8 @@
 
 #include "debug.h"
 
-typedef std::vector<int> hardlinks;
-typedef std::unordered_map<int,std::shared_ptr<hardlinks>> nlinkHash;
+using hardlinks = std::vector<int>;
+using nlinkHash = std::unordered_map<int,std::shared_ptr<hardlinks>>;
 
 typedef int (*iterfunc)(rpmfi fi);
 

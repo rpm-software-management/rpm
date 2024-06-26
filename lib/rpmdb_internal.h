@@ -9,7 +9,7 @@
 #include <rpm/rpmutil.h>
 #include "backend/dbi.h"
 
-typedef std::unordered_map<unsigned int,rpmte> packageHash;
+using packageHash = std::unordered_map<unsigned int,rpmte>;
 
 enum rpmdbRebuildFlags_e {
     RPMDB_REBUILD_FLAG_SALVAGE	= (1 << 0),
