@@ -890,8 +890,6 @@ rpmts rpmtsFree(rpmts ts)
 
     delete ts->members;
 
-    ts->dsi = _free(ts->dsi);
-
     if (ts->scriptFd != NULL) {
 	ts->scriptFd = fdFree(ts->scriptFd);
 	ts->scriptFd = NULL;
@@ -1248,7 +1246,6 @@ rpmts rpmtsCreate(void)
 
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
-    ts->dsi = NULL;
 
     ts->solve = NULL;
     ts->solveData = NULL;

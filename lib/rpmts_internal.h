@@ -1,6 +1,8 @@
 #ifndef _RPMTS_INTERNAL_H
 #define _RPMTS_INTERNAL_H
 
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <rpm/rpmts.h>
@@ -13,8 +15,8 @@
 #include "rpmscript.h"
 #include "rpmtriggers.h"
 
-struct diskspaceInfo_s {
-    char * mntPoint;	/*!< File system mount point */
+struct diskspaceInfo {
+    std::string mntPoint;/*!< File system mount point */
     dev_t dev;		/*!< File system device number. */
     int64_t bneeded;	/*!< No. of blocks needed. */
     int64_t ineeded;	/*!< No. of inodes needed. */
@@ -28,8 +30,6 @@ struct diskspaceInfo_s {
 
     int rotational;	/*!< Rotational media? */
 };
-
-typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
 /* Transaction set elements information */
 typedef struct tsMembers_s {
@@ -62,7 +62,8 @@ struct rpmts_s {
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
-    rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
+    std::unordered_map<dev_t,diskspaceInfo> dsi;
+				/*!< Per filesystem disk/inode usage. */
 
     rpmdb rdb;			/*!< Install database handle. */
     int dbmode;			/*!< Install database open mode. */
