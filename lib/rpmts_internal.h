@@ -13,6 +13,22 @@
 #include "rpmscript.h"
 #include "rpmtriggers.h"
 
+struct diskspaceInfo_s {
+    char * mntPoint;	/*!< File system mount point */
+    dev_t dev;		/*!< File system device number. */
+    int64_t bneeded;	/*!< No. of blocks needed. */
+    int64_t ineeded;	/*!< No. of inodes needed. */
+    int64_t bsize;	/*!< File system block size. */
+    int64_t bavail;	/*!< No. of blocks available. */
+    int64_t iavail;	/*!< No. of inodes available. */
+    int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
+    int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
+    int64_t bdelta;	/*!< Delta for temporary space need on updates */
+    int64_t idelta;	/*!< Delta for temporary inode need on updates */
+
+    int rotational;	/*!< Rotational media? */
+};
+
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
 /* Transaction set elements information */
