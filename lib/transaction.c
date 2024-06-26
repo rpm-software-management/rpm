@@ -48,18 +48,19 @@
 
 #include "debug.h"
 
+using std::string;
 using std::vector;
 
 /* Adjust for root only reserved space. On linux e2fs, this is 5%. */
 #define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
-static char *getMntPoint(const char *dirName, dev_t dev)
+static string getMntPoint(const char *dirName, dev_t dev)
 {
     char *mntPoint = realpath(dirName, NULL);
     char *end = NULL;
     struct stat sb;
-    char *res = NULL;
+    string res;
 
     if (!mntPoint)
 	mntPoint = xstrdup(dirName);
@@ -69,21 +70,21 @@ static char *getMntPoint(const char *dirName, dev_t dev)
 	if (end == mntPoint) { /* reached "/" */
 	    stat("/", &sb);
 	    if (dev != sb.st_dev) {
-		res = xstrdup(mntPoint);
+		res = mntPoint;
 	    } else {
-		res = xstrdup("/");
+		res = "/";
 	    }
 	    break;
 	} else if (end) {
 	    *end = '\0';
 	} else { /* dirName doesn't start with / - should not happen */
-	    res = xstrdup(dirName);
+	    res = dirName;
 	    break;
 	}
 	stat(mntPoint, &sb);
 	if (dev != sb.st_dev) {
 	    *end = '/';
-	    res = xstrdup(mntPoint);
+	    res = mntPoint;
 	    break;
 	}
     }
@@ -91,7 +92,7 @@ static char *getMntPoint(const char *dirName, dev_t dev)
     return res;
 }
 
-static int getRotational(const char *dirName, dev_t dev)
+static int getRotational(const string dirName, dev_t dev)
 {
     int rotational = 1;	/* Be a good pessimist, assume the worst */
 #if defined(__linux__)
@@ -114,15 +115,13 @@ static int getRotational(const char *dirName, dev_t dev)
 
 static int rpmtsInitDSI(const rpmts ts)
 {
-    ts->dsi = _free(ts->dsi);
-    ts->dsi = (rpmDiskSpaceInfo)xcalloc(1, sizeof(*ts->dsi));
+    ts->dsi.clear();
     return 0;
 }
 
-static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
-				       const char * dirName, int count)
+static diskspaceInfo *rpmtsCreateDSI(const rpmts ts, dev_t dev,
+				       const char * dirName)
 {
-    rpmDiskSpaceInfo dsi;
     struct stat sb;
     int rc;
     struct statvfs sfb;
@@ -138,9 +137,9 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     if (sb.st_dev != dev)
 	return NULL;
 
-    ts->dsi = xrealloc(ts->dsi, (count + 2) * sizeof(*ts->dsi));
-    dsi = ts->dsi + count;
-    memset(dsi, 0, 2 * sizeof(*dsi));
+    auto entry = ts->dsi.insert({ dev, {}}).first;
+    diskspaceInfo *dsi = &entry->second;
+
 
     dsi->dev = sb.st_dev;
     dsi->bsize = sfb.f_bsize;
@@ -166,7 +165,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 	uint64_t old_size = dsi->bavail * dsi->bsize;
 	rpmlog(RPMLOG_DEBUG,
 		"dubious blocksize % " PRId64 " on %s, normalizing to 4096\n",
-		dsi->bsize, dsi->mntPoint);
+		dsi->bsize, dsi->mntPoint.c_str());
 	dsi->bsize = 4096; /* Assume 4k block size */
 	dsi->bavail = old_size / dsi->bsize;
     }
@@ -175,22 +174,21 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" rotational:%d %s\n",
 	   (unsigned) dsi->dev, dsi->bsize,
 	   dsi->bavail, dsi->iavail, dsi->rotational,
-	   dsi->mntPoint);
+	   dsi->mntPoint.c_str());
     return dsi;
 }
 
-static rpmDiskSpaceInfo rpmtsGetDSI(const rpmts ts, dev_t dev,
+static diskspaceInfo *rpmtsGetDSI(const rpmts ts, dev_t dev,
 				    const char *dirName) {
-    rpmDiskSpaceInfo dsi;
-    dsi = ts->dsi;
-    if (dsi) {
-	while (dsi->bsize && dsi->dev != dev)
-	    dsi++;
-	if (dsi->bsize == 0) {
-	    /* create new entry */
-	    dsi = rpmtsCreateDSI(ts, dev, dirName, dsi - ts->dsi);
-	}
+    diskspaceInfo *dsi = NULL;
+    auto ret = ts->dsi.find(dev);
+
+    if (ret != ts->dsi.end()) {
+	dsi = &ret->second;
+    } else {
+	dsi = rpmtsCreateDSI(ts, dev, dirName);
     }
+
     return dsi;
 }
 
@@ -198,14 +196,13 @@ static int rpmtsGetDSIRotational(rpmts ts)
 {
     int rc = 1;
     int nrot = 0;
-    rpmDiskSpaceInfo dsi = ts->dsi;
-    while (dsi && dsi->bsize != 0) {
+    for (auto & entry : ts->dsi) {
+	diskspaceInfo *dsi = &entry.second;
 	if (dsi->rotational < 0)
 	    dsi->rotational = getRotational(dsi->mntPoint, dsi->dev);
 	nrot += dsi->rotational;
-	dsi++;
     }
-    if (dsi != ts->dsi && nrot == 0)
+    if (ts->dsi.empty() == false && nrot == 0)
 	rc = 0;
     return rc;
 }
@@ -215,7 +212,7 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 		rpmFileAction action)
 {
     int64_t bneeded;
-    rpmDiskSpaceInfo dsi = rpmtsGetDSI(ts, dev, dirName);
+    diskspaceInfo *dsi = rpmtsGetDSI(ts, dev, dirName);
     if (dsi == NULL)
 	return;
 
@@ -259,16 +256,12 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 
 static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 {
-    rpmDiskSpaceInfo dsi = ts->dsi;
-
-    if (dsi == NULL || !dsi->bsize)
-	return;
-
-    for (; dsi->bsize; dsi++) {
+    for (auto & entry : ts->dsi) {
+	diskspaceInfo *dsi = &entry.second;
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    if (dsi->bneeded > dsi->obneeded) {
-		rpmteAddProblem(te, RPMPROB_DISKSPACE, NULL, dsi->mntPoint,
+		rpmteAddProblem(te, RPMPROB_DISKSPACE, NULL, dsi->mntPoint.c_str(),
 		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
 		dsi->obneeded = dsi->bneeded;
 	    }
@@ -276,7 +269,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
 	    if (dsi->ineeded > dsi->oineeded) {
-		rpmteAddProblem(te, RPMPROB_DISKNODES, NULL, dsi->mntPoint,
+		rpmteAddProblem(te, RPMPROB_DISKNODES, NULL, dsi->mntPoint.c_str(),
 			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
 		dsi->oineeded = dsi->ineeded;
 	    }
@@ -292,16 +285,9 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 static void rpmtsFreeDSI(rpmts ts)
 {
-    rpmDiskSpaceInfo dsi;
     if (ts == NULL)
 	return;
-    dsi = ts->dsi;
-    while (dsi && dsi->bsize != 0) {
-	dsi->mntPoint = _free(dsi->mntPoint);
-	dsi++;
-    }
-
-    ts->dsi = _free(ts->dsi);
+    ts->dsi.clear();
 }
 
 
@@ -1710,10 +1696,11 @@ static void rpmtsSync(rpmts ts)
 	return;
 
 #ifdef HAVE_SYNCFS
-    for (rpmDiskSpaceInfo dsi = ts->dsi; dsi->bsize; dsi++) {
-	int fd = open(dsi->mntPoint, O_RDONLY);
+    for (auto & entry : ts->dsi) {
+	const diskspaceInfo *dsi = &entry.second;
+	int fd = open(dsi->mntPoint.c_str(), O_RDONLY);
 	if (fd != -1) {
-	    rpmlog(RPMLOG_DEBUG, "syncing fs %s\n", dsi->mntPoint);
+	    rpmlog(RPMLOG_DEBUG, "syncing fs %s\n", dsi->mntPoint.c_str());
 	    syncfs(fd);
 	    close(fd);
 	}
