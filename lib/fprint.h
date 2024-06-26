@@ -87,16 +87,6 @@ int fpLookupId(fingerPrintCache cache,
 	       fingerPrint **fp);
 
 /**
- * Compare two finger print entries.
- * This routine is exactly equivalent to the FP_EQUAL macro.
- * @param key1		finger print 1
- * @param key2		finger print 2
- * @return result of comparing key1 and key2
- */
-RPM_GNUC_INTERNAL
-int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
-
-/**
  * Return finger prints of an array of file paths.
  * @param cache		pointer to fingerprint cache
  * @param pool		pointer to file name pool
