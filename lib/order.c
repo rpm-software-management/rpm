@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <forward_list>
+#include <queue>
 
 #include <string.h>
 
@@ -432,16 +433,13 @@ static void collectTE(rpm_color_t prefcolor, tsortInfo q,
 
 static void dijkstra(const struct scc_s *SCC, int sccNr)
 {
-    int start, end;
-
     /* can use a simple queue as edge weights are always 1 */
-    tsortInfo * queue = (tsortInfo *)xmalloc((SCC->size+1) * sizeof(*queue));
+    std::queue<tsortInfo> queue;
 
     /*
      * Find packages that are prerequired and use them as
      * starting points for the Dijkstra algorithm
      */
-    start = end = 0;
     for (int i = 0; i < SCC->size; i++) {
 	tsortInfo tsi = SCC->members[i];
 	tsi->tsi_SccLowlink = INT_MAX;
@@ -449,7 +447,7 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
 	    if (rel.rel_flags && rel.rel_suc->tsi_SccIdx == sccNr) {
 		if (rel.rel_suc != tsi) {
 		    tsi->tsi_SccLowlink =  0;
-		    queue[end++] = tsi;
+		    queue.push(tsi);
 		} else {
 		    tsi->tsi_SccLowlink =  INT_MAX/2;
 		}
@@ -458,28 +456,28 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
 	}
     }
 
-    if (start == end) { /* no regular prereqs; add self prereqs to queue */
+    if (queue.empty()) { /* no regular prereqs; add self prereqs to queue */
 	for (int i = 0; i < SCC->size; i++) {
 	    tsortInfo tsi = SCC->members[i];
 	    if (tsi->tsi_SccLowlink != INT_MAX) {
-		queue[end++] = tsi;
+		queue.push(tsi);
 	    }
 	}
     }
 
     /* Do Dijkstra */
-    while (start != end) {
-	tsortInfo tsi = queue[start++];
+    while (!queue.empty()) {
+	tsortInfo tsi = queue.front();
+	queue.pop();
 	for (auto & rel : tsi->tsi_forward_relations) {
 	    tsortInfo next_tsi = rel.rel_suc;
 	    if (next_tsi->tsi_SccIdx != sccNr) continue;
 	    if (next_tsi->tsi_SccLowlink > tsi->tsi_SccLowlink+1) {
 		next_tsi->tsi_SccLowlink = tsi->tsi_SccLowlink + 1;
-		queue[end++] = rel.rel_suc;
+		queue.push(rel.rel_suc);
 	    }
 	}
     }
-    free(queue);
 }
 
 static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
