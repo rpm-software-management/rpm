@@ -30,7 +30,7 @@ struct scc_s {
     tsortInfo * members;
 };
 
-typedef struct scc_s * scc;
+using scc = std::vector<scc_s>;
 
 struct relation_s {
     tsortInfo   rel_suc;  // pkg requiring this package
@@ -259,11 +259,10 @@ typedef struct sccData_s {
     int index;			/* DFS node number counter */
     tsortInfo *stack;		/* Stack of nodes */
     int stackcnt;		/* Stack top counter */
-    scc SCCs;			/* Array of SCC's found */
     int sccCnt;			/* Number of SCC's found */
 } * sccData;
 
-static void tarjan(sccData sd, tsortInfo tsi)
+static void tarjan(sccData sd, scc & SCCs, tsortInfo tsi)
 {
     tsortInfo tsi_q;
 
@@ -282,7 +281,7 @@ static void tarjan(sccData sd, tsortInfo tsi)
 	    continue;
 	if (tsi_q->tsi_SccIdx == 0){
 	    /* Was successor q not yet visited? */
-	    tarjan(sd, tsi_q);                       /* Recurse */
+	    tarjan(sd, SCCs, tsi_q);                       /* Recurse */
 	    /* negative index numers: use max as it is closer to 0 */
 	    tsi->tsi_SccLowlink = (
 		tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink
@@ -311,21 +310,21 @@ static void tarjan(sccData sd, tsortInfo tsi)
 	    do {
 		tsi_q = sd->stack[--stackIdx];
 		/* Calculate count for the SCC */
-		sd->SCCs[sd->sccCnt].count += tsi_q->tsi_count;
+		SCCs[sd->sccCnt].count += tsi_q->tsi_count;
 		/* Subtract internal relations */
 		for (auto const & rel : tsi_q->tsi_relations) {
 		    if (rel.rel_suc != tsi_q &&
 			    rel.rel_suc->tsi_SccIdx == sd->sccCnt)
-			sd->SCCs[sd->sccCnt].count--;
+			SCCs[sd->sccCnt].count--;
 		}
 	    } while (tsi_q != tsi);
-	    sd->SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
+	    SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
-	    sd->SCCs[sd->sccCnt].members =
-				(tsortInfo *)xcalloc(sd->SCCs[sd->sccCnt].size,
+	    SCCs[sd->sccCnt].members =
+				(tsortInfo *)xcalloc(SCCs[sd->sccCnt].size,
 					   sizeof(tsortInfo));
-	    memcpy(sd->SCCs[sd->sccCnt].members, sd->stack + stackIdx,
-		   sd->SCCs[sd->sccCnt].size * sizeof(tsortInfo));
+	    memcpy(SCCs[sd->sccCnt].members, sd->stack + stackIdx,
+		   SCCs[sd->sccCnt].size * sizeof(tsortInfo));
 	    sd->stackcnt = stackIdx;
 	    sd->sccCnt++;
 	}
@@ -336,19 +335,17 @@ static void tarjan(sccData sd, tsortInfo tsi)
 static scc detectSCCs(std::vector<tsortInfo_s> & orderInfo, int debugloops)
 {
     /* Set up data structures needed for the tarjan algorithm */
-    scc SCCs = (scc)xcalloc(orderInfo.size()+3, sizeof(*SCCs));
+    scc SCCs(orderInfo.size()+3);
     tsortInfo *stack = (tsortInfo *)xcalloc(orderInfo.size(), sizeof(*stack));
-    struct sccData_s sd = { 0, stack, 0, SCCs, 2 };
+    struct sccData_s sd = { 0, stack, 0, 2 };
 
     for (auto & tsi : orderInfo) {
 	/* Start a DFS at each node */
 	if (tsi.tsi_SccIdx == 0)
-	    tarjan(&sd, &tsi);
+	    tarjan(&sd, SCCs, &tsi);
     }
 
     free(stack);
-
-    SCCs = xrealloc(SCCs, (sd.sccCnt+1)*sizeof(struct scc_s));
 
     /* Debug output */
     if (sd.sccCnt > 2) {
@@ -377,7 +374,7 @@ static scc detectSCCs(std::vector<tsortInfo_s> & orderInfo, int debugloops)
 
 static void collectTE(rpm_color_t prefcolor, tsortInfo q,
 		      std::vector<rpmte> & newOrder,
-		      scc SCCs,
+		      scc & SCCs,
 		      tsortInfo * queue_end,
 		      tsortInfo * outer_queue,
 		      tsortInfo * outer_queue_end)
@@ -482,10 +479,10 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
 
 static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 		       std::vector<rpmte> & newOrder,
-		       scc SCCs, tsortInfo * queue_end)
+		       scc & SCCs, tsortInfo * queue_end)
 {
     int sccNr = p_tsi->tsi_SccIdx;
-    const struct scc_s * SCC = SCCs+sccNr;
+    const struct scc_s * SCC = &SCCs[sccNr];
 
     /* remove p from the outer queue */
     tsortInfo outer_queue_start = p_tsi->tsi_suc;
@@ -544,7 +541,6 @@ int rpmtsOrder(rpmts ts)
     tsortInfo q, r;
     int rc;
     rpmal erasedPackages;
-    scc SCCs;
     int nelem = rpmtsNElements(ts);
     std::vector<tsortInfo_s> sortInfo(nelem);
 
@@ -584,7 +580,7 @@ int rpmtsOrder(rpmts ts)
     rpmtsiFree(pi);
 
     std::vector<rpmte> newOrder;
-    SCCs = detectSCCs(sortInfo, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
+    scc SCCs = detectSCCs(sortInfo, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
 
@@ -644,7 +640,6 @@ int rpmtsOrder(rpmts ts)
     for (int i = 2; SCCs[i].members != NULL; i++) {
 	free(SCCs[i].members);
     }
-    free(SCCs);
     rpmalFree(erasedPackages);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
