@@ -1283,6 +1283,9 @@ if #arg == 0 then
         end
     end
 end
+if #arg == 0 then
+   macros.warn({"autopatch: no matching patches in range"})
+end
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")
 local bynum = {}
 for i, p in ipairs(patches) do
