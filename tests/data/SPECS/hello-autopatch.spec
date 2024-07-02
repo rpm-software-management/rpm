@@ -19,6 +19,7 @@ Simple rpm demonstration.
 %autosetup -N
 %autopatch 0
 %autopatch -m 1
+%autopatch -m 2
 
 %build
 %make_build CFLAGS="$RPM_OPT_FLAGS"
