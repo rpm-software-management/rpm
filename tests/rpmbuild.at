@@ -468,11 +468,13 @@ RPMDB_INIT
 RPMTEST_CHECK([
 
 run rpmbuild \
-  -ba ${RPMDATA}/SPECS/hello-autopatch.spec
+  -ba ${RPMDATA}/SPECS/hello-autopatch.spec 2> >(grep warning >&2) | grep warning
 ],
 [0],
-[ignore],
-[ignore])
+[RPM build warnings:
+],
+[warning: autopatch: no matching patches in range
+])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -ba find-lang])
