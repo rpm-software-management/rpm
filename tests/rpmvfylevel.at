@@ -332,8 +332,8 @@ noplds
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
-    RSA signature: NOTFOUND
     DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
     MD5 digest: OK
 1
 nohdrs
@@ -346,13 +346,13 @@ nohdrs
 0
 nosig
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header RSA signature: NOTFOUND
     Header DSA signature: NOTFOUND
+    Header RSA signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    RSA signature: NOTFOUND
     DSA signature: NOTFOUND
+    RSA signature: NOTFOUND
     MD5 digest: OK
 1
 ],
