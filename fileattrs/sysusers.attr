@@ -31,7 +31,7 @@
             table.insert(fields, w)
         end
         if #fields >= 3 and fields[1] == 'm' then
-	    print(string.format('user(%s)\\ngroup(%s)', fields[2], fields[3]))
+	    print(string.format('user(%s)\\ngroup(%s)\\n', fields[2], fields[3]))
         end
         ::continue::
     end
