@@ -958,21 +958,31 @@ int checkBuildsystem(rpmSpec spec, const char *name)
 	return -1;
 
     int rc = 0;
-    for (struct sectname_s *sc = sectList; rc == 0 && sc->name; sc++) {
-	if (!sc->required)
-	    continue;
+    int found = 0;
+    char * mmn = NULL;
+    for (struct sectname_s *sc = sectList; sc->name; sc++) {
 	char *mn = rstrscat(NULL, "buildsystem_", name, "_", sc->name, NULL);
 	if (!rpmMacroIsParametric(NULL, mn)) {
-	    rpmlog(RPMLOG_DEBUG,
-		"required parametric macro %%%s not defined buildsystem %s\n",
-		mn, name);
-
-	    rpmlog(RPMLOG_ERR, _("line %d: Unknown buildsystem: %s\n"),
-		    spec->lineNum, name);
-	    rc = -1;
+	    if (sc->required) {
+		if (!mmn)
+		    mmn = xstrdup(mn);
+		rc = -1;
+	    }
+	} else {
+	    found = 1;
 	}
 	free(mn);
     }
+
+    if (!found) {
+	rpmlog(RPMLOG_ERR, _("line %d: Unknown buildsystem: %s\n"),
+	       spec->lineNum, name);
+    } else if (mmn) {
+	rpmlog(RPMLOG_ERR,
+	       _("line %d: Required parametric macro %%%s not defined for buildsystem %s\n"),
+		spec->lineNum, mmn, name);
+    }
+    free(mmn);
     return rc;
 }
 
