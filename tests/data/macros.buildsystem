@@ -2,6 +2,7 @@
 %buildsystem_autotools_conf() %configure %*
 %buildsystem_autotools_build() %make_build %*
 %buildsystem_autotools_install() %make_install %*
+%buildsystem_autotools_check() echo Not checking, sorry!
 
 # Example buildsystem for cmake
 %buildsystem_cmake_conf() cmake %* -B __rpmbuild -S .
