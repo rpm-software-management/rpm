@@ -18,7 +18,7 @@ if (EXISTS ${CMAKE_SOURCE_DIR}/rpmio/rpmpgp_legacy/CMakeLists.txt)
 endif()
 
 if (WITH_SEQUOIA)
-	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia>=1.4.0)
+	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia>=1.7.0)
 	target_sources(librpmio PRIVATE rpmpgp_sequoia.c)
 	target_link_libraries(librpmio PRIVATE PkgConfig::RPMSEQUOIA)
 else()
