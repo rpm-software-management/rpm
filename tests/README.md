@@ -146,5 +146,12 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
       environment with only a handful of variables preset.  To pass your own
       variable(s), use `--setenv` (once for each variable), e.g. `runroot
       --setenv FOO "foo" rpm ...`
+* Use `RPMTEST_USER` to create a regular UNIX user in a mutable snapshot
+    * The username is stored in the `$RPMUSER` environment variable
+    * To run a binary as `$RPMUSER` inside the snapshot, use `runroot_user`
+      (this calls `sudo(8)` underneath)
+    * You can create a custom user (or users) by supplying a list of usernames
+      to the macro, e.g. `RPMTEST_USER([user1, user2])`.  Then, use
+      `runroot_user -n <name>` to run a binary as a specific user
 * If no snapshot was used, just call the RPM binaries normally
 * Store any working files in the current directory (it's always writable)

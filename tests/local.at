@@ -66,6 +66,12 @@ RPMPY_CHECK([$2], [$3], [$4])
 RPMTEST_CLEANUP
 ])
 
+m4_define([RPMTEST_USER],[
+RPMTEST_SETUP
+[[ $# != 0 ]] && export RPMUSER=$1
+useradd -m -R $RPMTEST $RPMUSER
+])
+
 # Enable colored test output if available
 m4_ifdef([AT_COLOR_TESTS], [AT_COLOR_TESTS])
 

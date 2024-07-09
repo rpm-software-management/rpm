@@ -9,6 +9,9 @@ RPMTREE=${RPMTREE:-/}
 RPMTEST=/
 RPMDATA="/data/"
 
+# Default UNIX username for use in tests
+RPMUSER=klang
+
 RPM_CONFIGDIR_PATH="@RPM_CONFIGDIR@"
 
 DBFORMAT=$(awk '/^%_db_backend/{print $2}' \
@@ -138,6 +141,18 @@ runroot_other()
 {
     setup_env
     snapshot exec "$@"
+}
+
+runroot_user()
+{
+    case $1 in
+        -n|--name)
+            RPMUSER=$2
+            shift 2
+        ;;
+    esac
+    setup_env
+    runroot_other --new-session sudo -iu $RPMUSER "$@"
 }
 
 snapshot prune rpmtests.dir/*/tree
