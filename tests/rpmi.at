@@ -309,7 +309,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-	package hello-2.0-1.x86_64 does not verify: no signature
+	package hello-2.0-1.x86_64 does not verify: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
 ])
 RPMTEST_CLEANUP
 
@@ -442,9 +442,9 @@ error: unpacking of archive failed: cpio: Bad magic
 error: hello-2.0-1.x86_64: install failed
 INSTALL 3
 warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
-	package hello-2.0-1.x86_64 does not verify: no signature
+	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 3129d507d00b1dc60745d9637010b5d82059ebeff2318b2db75b26272b823586)
 INSTALL 4
-	package hello-2.0-1.x86_64 does not verify: no signature
+	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 3129d507d00b1dc60745d9637010b5d82059ebeff2318b2db75b26272b823586)
 INSTALL 5
 warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 1964c5fc: NOKEY
 error: unpacking of archive failed: cpio: Bad magic

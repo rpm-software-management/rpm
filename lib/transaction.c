@@ -1177,38 +1177,75 @@ struct vfydata_s {
     int vfylevel;
 };
 
+/* order rpmRC codes by severity */
+static int rpmRCseverity(rpmRC rc)
+{
+    switch (rc) {
+    case RPMRC_OK:
+	return 0;
+    case RPMRC_NOTFOUND:
+	return 1;
+    case RPMRC_NOKEY:
+	return 2;
+    case RPMRC_NOTTRUSTED:
+	return 3;
+    case RPMRC_FAIL:
+	return 4;
+    }
+    return rc;
+}
+
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = (struct vfydata_s *)cbdata;
+    int newerror = 0;
+
+
+    int severity = rpmRCseverity(sinfo->rc);
 
     if (sinfo->type & RPMSIG_VERIFIABLE_TYPE && sinfo->rc != RPMRC_NOTFOUND) {
-	int res = (sinfo->rc != RPMRC_OK);
 	/* Take care not to override a previous failure with success */
-	if (res > vd->type[sinfo->type])
-	    vd->type[sinfo->type] = res;
+	if (severity > vd->type[sinfo->type]) {
+	    vd->type[sinfo->type] = severity;
+	    newerror = 1;
+	}
+    }
+
+    /*
+     * Legacy compat: if signatures are not required, install must
+     * succeed despite missing key.
+     */
+    if (sinfo->rc == RPMRC_NOKEY && !(vd->vfylevel & RPMSIG_SIGNATURE_TYPE)) {
+	sinfo->rc = RPMRC_OK;
+	severity = rpmRCseverity(sinfo->rc);
+	newerror = 0;
+    }
+    
+    /* Nothing new */
+    if (!newerror && !(sinfo->rc == RPMRC_NOTFOUND))
+	return 1;
+
+    /* Don't overwrite more important errors */
+    for (int type=0; type < (sizeof(vd->type)/sizeof(vd->type[0])); type++) {
+	if ((type != sinfo->type || sinfo->rc == RPMRC_NOTFOUND) && vd->type[type] >= severity) {
+	    return 1;
+	}
     }
 
     switch (sinfo->rc) {
     case RPMRC_OK:
 	break;
     case RPMRC_NOTFOUND:
+	vd->msg = _free(vd->msg);
 	vd->msg = xstrdup((sinfo->type == RPMSIG_SIGNATURE_TYPE) ?
 			  _("no signature") : _("no digest"));
 	break;
-    case RPMRC_NOKEY:
-	/*
-	 * Legacy compat: if signatures are not required, install must
-	 * succeed despite missing key.
-	 */
-	if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
-	    sinfo->rc = RPMRC_OK;
-	/* fallthrough */
     default:
-	if (sinfo->rc)
-	    vd->msg = rpmsinfoMsg(sinfo);
+	vd->msg = _free(vd->msg);
+	vd->msg = rpmsinfoMsg(sinfo);
 	break;
     }
-    return (sinfo->rc == 0);
+    return 1;
 }
 
 static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
