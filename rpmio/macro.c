@@ -489,9 +489,11 @@ static int mbInit(rpmMacroBuf mb, MacroExpansionData *med, size_t slen)
     if (mb->buf == NULL)
 	mbAllocBuf(mb, slen);
     if (++mb->depth > max_macro_depth) {
+	mb->depth--;
+	/* ensure error message can be rendered */
+	mb->mc->depth = 0;
 	rpmMacroBufErr(mb, 1,
 		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
-	mb->depth--;
 	return -1;
     }
     med->tpos = mb->tpos; /* save expansion pointer for printExpand */
