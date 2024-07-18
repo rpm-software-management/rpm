@@ -133,6 +133,28 @@ runroot rpm --define "this that" --define "that_that foo" --eval '%{expand:%{%{t
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([recursive macro])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+runroot rpm --define 'aaa %aaa' --eval '%aaa'
+],
+[1],
+[],
+[error: Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.
+])
+RPMTEST_CLEANUP
+
+AT_SETUP([recursive expression])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+runroot rpm --define 'aaa %\\[%aaa\\]' --eval '%aaa'
+],
+[1],
+[],
+[error: Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.
+])
+RPMTEST_CLEANUP
+
 AT_SETUP([parametrized macro 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
