@@ -3,7 +3,7 @@
 # - /usr/lib/rpm/lua/fedora/common.lua -> rpm_lua(fedora.common)
 # - /usr/lib/rpm/lua/fedora/srpm/python.lua -> rpm_lua(fedora.srpm.python)
 
-%__rpm_lua_path ^%{_rpmluadir}/.+\.lua$
+%__rpm_lua_path ^%{_rpmluadir}/.+\\.lua$
 %__rpm_lua_provides() %{lua:
 -- Strip BUILDROOT + /usr/lib/rpm/lua/
 local idx = macros.buildroot:len() + macros._rpmluadir:len() + 2
