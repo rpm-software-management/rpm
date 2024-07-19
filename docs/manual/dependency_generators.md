@@ -33,7 +33,7 @@ A file attribute is represented by a macro file in `%{_fileattrsdir}` (typically
 %__NAME_protocol
 ```
 
-NAME needs to be replaced by the name choosen for the file attribute and needs to be the same as the file name of the macro file itself (without the `.attr` suffix). While technically all of them are optional, typically two or more of them are present to form a meaningul attribute. All the values are further macro-expanded on use, and additionally, the path and magic related values are interpreted as extended regular expressions.
+NAME needs to be replaced by the name choosen for the file attribute and needs to be the same as the file name of the macro file itself (without the `.attr` suffix). While technically all of them are optional, typically at least two of them are present to form a meaningful attribute: `*_path` and/or `*_magic` to match any files at all and at least one generator. All the values are further macro-expanded on use, and additionally, the path and magic related values are interpreted as extended regular expressions.
 
 The path REs are matched against the packaged path, without `%buildroot` - e.g. `/bin/bash`. The magic REs are matched against the result of libmagic (see `man file` and `man magic`), and some of them are also stored in the `FILECLASS` tag (try `rpm -q --fileclass PACKAGENAME` for example). To get compatible results with rpm, use `file -z -e tokens <file>` when determining appropriate file attribute magic REs. Matching is inclusive unless changed by flags: if path, magic or both match, the file is considered to have the attribute in question, unless there is a matching exclude pattern (also inclusive by default) or a flag which prevents the match.
 
