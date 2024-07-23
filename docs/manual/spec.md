@@ -578,12 +578,11 @@ are recognized:
 
 1. `%patch 1` (since rpm >= 4.18)
 2. `%patch -P1` (all rpm versions)
-3. `%patch1` (deprecated, do not use)
+3. `%patch1` (removed since rpm >= 4.20)
 
 For new packages, the positional argument form 1) is preferred. For maximal
 compatibility use 2). Both forms can be used to apply several patches at once,
-in the order they appear on the line. The third form where the number is
-a part of the directive is deprecated and should not be used anymore.
+in the order they appear on the line.
 
 It accepts a number of options. With the exception of `-P`, they are merely
 passed down to the `patch` command.
