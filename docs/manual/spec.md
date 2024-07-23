@@ -578,6 +578,7 @@ are recognized:
 
 1. `%patch 1` (since rpm >= 4.18)
 2. `%patch -P1` (all rpm versions)
+3. `%patch1` (removed since rpm >= 4.20)
 
 For new packages, the positional argument form 1) is preferred. For maximal
 compatibility use 2). Both forms can be used to apply several patches at once,
