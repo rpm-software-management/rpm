@@ -1135,6 +1135,41 @@ runroot rpm -U --relocate /opt/bin=/bin \
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpm -i relocatable package 2])
+AT_KEYWORDS([install relocate])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/reloc.spec
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
+runroot rpm -U \
+  --relocate /opt/bin=/opt/bin/foo/bar \
+  --relocate /opt/etc=/opt/etc/foo/bar \
+  --relocate /opt/lib=/opt/lib/foo/bar \
+  /build/RPMS/noarch/reloc-1.0-1.noarch.rpm
+runroot rpm -ql reloc
+],
+[0],
+[1: /opt/bin/foo/bar
+2: /opt/etc/foo/bar
+3: /opt/lib/foo/bar
+0: /opt/bin/foo/bar
+1: /opt/etc/foo/bar
+2: /opt/lib/foo/bar
+/opt
+/opt/bin/foo/bar
+/opt/bin/foo/bar/typo
+/opt/etc/foo/bar
+/opt/etc/foo/bar/conf
+/opt/lib/foo/bar
+/opt/lib/foo/bar/notlib
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm -i with/without --excludedocs])
 AT_KEYWORDS([install excludedocs])
 RPMTEST_CHECK([
