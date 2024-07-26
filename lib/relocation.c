@@ -181,8 +181,9 @@ void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations,
 	rpmFileTypes ft;
 	int fnlen;
 
+	size_t baselen = strlen(baseNames[i]);
 	size_t len = maxlen +
-		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
+		strlen(dirNames[dirIndexes[i]]) + baselen + 1;
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
 	    fn = xrealloc(fn, fileAlloced);
@@ -244,8 +245,9 @@ assert(fn != NULL);		/* XXX can't happen */
 	    continue;
 	}
 
-	/* Relocation on full paths only, please. */
-	if (fnlen != len) continue;
+	/* Relocation on '/' and full paths only, please. */
+	if (baselen && fnlen != len)
+	    continue;
 
 	rpmlog(RPMLOG_DEBUG, "relocating %s to %s\n",
 	       fn, relocations[j].newPath);
