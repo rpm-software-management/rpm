@@ -1170,6 +1170,31 @@ runroot rpm -ql reloc
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpm -i relocatable package 3])
+AT_KEYWORDS([install relocate])
+RPMTEST_USER
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/rootfs.spec
+
+RPMTEST_CHECK([
+runroot_user \
+  rpm -U --prefix \$PWD/root --dbpath \$PWD/rpmdb \
+  /build/RPMS/noarch/rootfs-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot_user rpm -e --dbpath \$PWD/rpmdb rootfs
+runroot_user test ! -d \$PWD/root
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm -i with/without --excludedocs])
 AT_KEYWORDS([install excludedocs])
 RPMTEST_CHECK([
