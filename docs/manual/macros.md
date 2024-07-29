@@ -19,7 +19,7 @@ expansion of the macro which contains nested macros.
 The macro definition syntax is:
 
 ```
-	%define <name>[(opts)] <body>
+%define <name>[(opts)] <body>
 ```
 
 All whitespace surrounding `<body>` is removed.  Name may be composed
@@ -69,7 +69,7 @@ automatically discarded.
 A macro can be declared into the global scope as follows:
 
 ```
-	%global <name>[(opts)] <body>
+%global <name>[(opts)] <body>
 ```
 
 An important and useful feature of `%global` is that the body is expanded
@@ -223,18 +223,18 @@ In older versions, the behavior of conditionals on built-ins is undefined.
 Here is an example `%patch` definition from /usr/lib/rpm/macros:
 
 ```
-	%patch(b:p:P:REz:) \
-	%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
-	%define patch_suffix	%{!-z:%{-b:--suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
-		%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E} \
-	...
+%patch(b:p:P:REz:) \
+%define patch_file	%{P:%{-P:%{-P*}}%{!-P:%%PATCH0}} \
+%define patch_suffix	%{!-z:%{-b:--suffix %{-b*}}}%{!-b:%{-z:--suffix %{-z*}}}%{!-z:%{!-b: }}%{-z:%{-b:%{error:Can't specify both -z(%{-z*}) and -b(%{-b*})}}} \
+	%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E} \
+...
 ```
 
 
 The first line defines %patch with its options. The body of %patch is
 
 ```
-	%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E}
+%{uncompress:%patch_file} | patch %{-p:-p%{-p*}} %patch_suffix %{-R} %{-E}
 ```
 
 The body contains 7 macros, which expand as follows
@@ -261,13 +261,13 @@ There are two "private" helper macros:
 To use a macro, write:
 
 ```
-	%<name> ...
+%<name> ...
 ```
 
 or
 
 ```
-	%{<name>}
+%{<name>}
 ```
 
 The `%{...}` form allows you to place the expansion adjacent to other text.
@@ -278,19 +278,19 @@ parameters are expanded properly.
 
 Example:
 ```
-	%define mymacro() (echo -n "My arg is %1" ; sleep %1 ; echo done.)
+%define mymacro() (echo -n "My arg is %1" ; sleep %1 ; echo done.)
 ```
 
 Usage:
 
 ```
-	%mymacro 5
+%mymacro 5
 ```
 
 This expands to:
 
 ```
-	(echo -n "My arg is 5" ; sleep 5 ; echo done.)
+(echo -n "My arg is 5" ; sleep 5 ; echo done.)
 ```
 
 This will cause all occurrences of `%1` in the macro definition to be
@@ -330,7 +330,7 @@ expression are expanded first and then the expression is
 evaluated (without re-expanding the terms).  Thus
 
 ```
-	rpm --define 'foo 1 + 2' --eval '%{expr:%foo}'
+rpm --define 'foo 1 + 2' --eval '%{expr:%foo}'
 ```
 
 will print "3".  Using `%[%foo]` instead will result in the
@@ -355,7 +355,7 @@ Evaluating a macro can be difficult outside of an rpm execution context. If
 you wish to see the expanded value of a macro, you may use the option
 
 ```
-	--eval '<macro expression>'
+--eval '<macro expression>'
 ```
 
 that will read rpm config files and print the macro expansion on stdout.
