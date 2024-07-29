@@ -239,22 +239,24 @@ The first line defines %patch with its options. The body of %patch is
 
 The body contains 7 macros, which expand as follows
 
-```
-	%{uncompress:...}	copy uncompressed patch to stdout
-	  %patch_file		... the name of the patch file
-	%{-p:...}		if "-p N" was present, (re-)generate "-pN" flag
-	  -p%{-p*}		... note patch-2.1 insists on contiguous "-pN"
-	%patch_suffix		override (default) ".orig" suffix if desired
-	%{-R}			supply -R (reversed) flag if desired
-	%{-E}			supply -E (delete empty?) flag if desired
-```
+| Macro              | Meaning
+| -----------------  | -------------------
+|`%{uncompress:...}` | copy uncompressed patch to stdout
+| → `%patch_file`    | ... the name of the patch file
+|`%{-p:...}`         | if "-p N" was present, (re-)generate "-pN" flag
+| → `-p%{-p*}`       | ... note patch-2.1 insists on contiguous "-pN"
+|`%patch_suffix`     | override (default) ".orig" suffix if desired
+|`%{-R}`             | supply "-R" (reversed) flag if desired
+|`%{-E}`             | supply "-E" (delete empty?) flag if desired
 
-There are two "private" helper macros:
 
-```
-	%patch_file	the gory details of generating the patch file name
-	%patch_suffix	the gory details of overriding the (default) ".orig"
-```
+There are two "private" helper macros, created with `%define`:
+
+| Macro           | Meaning
+| --------------- | ----------------
+| `%patch_file`   |the gory details of generating the patch file name
+| `%patch_suffix` |the gory details of overriding the (default) ".orig"
+
 
 ## Using a Macro
 
