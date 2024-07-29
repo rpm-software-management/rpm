@@ -62,9 +62,9 @@ so keep on eye on the checks until you get all green.
 
 ### Indentation
 
-RPM uses 8-space tabs.  Indentation is 4 spaces, with each group of 8 or more
-leading spaces replaced by a tab. If in doubt, 'indent -kr' generally
-produces acceptable formatting.
+RPM code uses 8-space tabs.  Indentation is 4 spaces, with each group of
+8 or more leading spaces replaced by a tab. If in doubt, 'indent -kr'
+generally produces acceptable formatting.
 
 In Vim, this can be achieved with
 
@@ -78,6 +78,13 @@ In Emacs use
               indent-tabs-mode t)
 
 ```
+
+The Markdown documentation uses 4-space indents.
+
+An `.editorconfig` file is provided at the root of the repository with
+these settings defined. Any supporting editor should pick them up
+automatically. Editorconfig support is available (built-in or via
+the appropriate plugin/extension) for nearly all text editors.
 
 ### Comments
 
