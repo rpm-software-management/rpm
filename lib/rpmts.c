@@ -648,6 +648,7 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	rpmdbFreeIterator(mi);
 	if (otherinstance)
 	    rpmdbRemove(rpmtsGetRdb(txn->ts), otherinstance);
+	free(label);
     }
 
     return rc;
