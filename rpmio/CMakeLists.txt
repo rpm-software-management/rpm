@@ -8,9 +8,13 @@ target_sources(librpmio PRIVATE
 	rpmstrpool.c rpmmacro_internal.h rpmlua.c rpmlua.h lposix.c
 )
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
-target_include_directories(librpmio PRIVATE
+target_include_directories(librpmio 
+    PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${Intl_INCLUDE_DIRS}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/rpmio/rpmpgp_legacy/CMakeLists.txt)
