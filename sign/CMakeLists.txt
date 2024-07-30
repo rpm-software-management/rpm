@@ -5,11 +5,15 @@ set_target_properties(librpmsign PROPERTIES
 )
 target_sources(librpmsign PRIVATE rpmgensig.c)
 
-target_include_directories(librpmsign PRIVATE
+target_include_directories(librpmsign
+    PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
 	${CMAKE_SOURCE_DIR}/lib
 	${Intl_INCLUDE_DIRS}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 target_link_libraries(librpmsign PUBLIC librpmio librpm)

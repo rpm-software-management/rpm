@@ -12,14 +12,18 @@ target_compile_definitions(librpm PRIVATE
 	LIBRPMALIAS_EXECPATH="${CMAKE_INSTALL_FULL_BINDIR}"
 )
 
-target_include_directories(librpm PRIVATE
+target_include_directories(librpm
+    PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/rpmio
 	${CMAKE_CURRENT_BINARY_DIR}
 	${Intl_INCLUDE_DIRS}
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        # This is needed for rpmcli.h
+        ${POPT_INCLUDE_DIRS}
 )
-# This is needed for rpmcli.h
-target_include_directories(librpm PUBLIC ${POPT_INCLUDE_DIRS})
 
 target_sources(librpm PRIVATE
 	backend/dbi.c backend/dbi.h backend/dummydb.c
