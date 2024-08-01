@@ -19,8 +19,18 @@ static rpmRC unshare_init(rpmPlugin plugin, rpmts ts)
 {
     char *paths = rpmExpand("%{?__transaction_unshare_paths}", NULL);
     private_mounts = argvSplitString(paths, ":", ARGV_SKIPEMPTY);
-    if (private_mounts)
-	unshare_flags |= CLONE_NEWNS;
+    if (private_mounts) {
+	/*
+	 * Changing mount propagation from inside a chroot fails if the root
+	 * is not also a mount point, disable for now.
+	 */
+	if (strcmp(rpmtsRootDir(ts), "/")) {
+	    rpmlog(RPMLOG_WARNING,
+			"private mounts in chroot not implemented\n");
+	} else {
+	    unshare_flags |= CLONE_NEWNS;
+	}
+    }
     free(paths);
 
     if (rpmExpandNumeric("%{?__transaction_unshare_nonet}"))
@@ -47,9 +57,10 @@ static rpmRC unshare_scriptlet_fork_post(rpmPlugin plugin,
 	goto exit;
     }
 
-    if (private_mounts) {
-	if (mount("/", "/", NULL, MS_REC | MS_PRIVATE, NULL) == -1) {
-	    rpmlog(RPMLOG_ERR, _("failed to mount private %s: %s\n"),
+    if (unshare_flags & CLONE_NEWNS) {
+	if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) == -1) {
+	    rpmlog(RPMLOG_ERR,
+		    _("failed to change mount propagation %s: %s\n"),
 		    "/", strerror(errno));
 	    goto exit;
 	}

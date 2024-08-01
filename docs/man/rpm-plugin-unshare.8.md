@@ -27,6 +27,11 @@ This plugin implements the following configurables:
     execution. Typical examples would be `/tmp` to protect against
     insecure temporary file usage inside scriptlets, and `/home` to
     prevent scriptlets from accessing user home directories.
+    When path unsharing is enabled, any mounts made from scriptlets
+    are also private to the scriptlet (and vice versa, mount changes
+    on the host are not visible to the scriptlet).
+
+    Private mounts in chroot-operations is unimplemented.
 
 `%__transaction_unshare_nonet`
 
