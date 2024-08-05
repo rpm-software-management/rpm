@@ -522,7 +522,7 @@ run rpmbuild \
 [0],
 [RPM build warnings:
 ],
-[warning: autopatch: no matching patches in range
+[warning: /data/SPECS/hello-autopatch.spec line 22: autopatch: no matching patches in range
 ])
 RPMTEST_CLEANUP
 
