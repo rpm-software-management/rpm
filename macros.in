@@ -1276,10 +1276,11 @@ end}
 # introduced in the spec, but alternatively can be used to apply indvidual
 # patches in arbitrary order by passing them as arguments.
 # -v		Verbose
+# -q		Don't warn if there are no matching patches
 # -p<N>		Prefix strip (ie patch -p argument)
 # -m<min>       Apply patches with number >= min only (if no arguments)
 # -M<max>       Apply patches with number <= max only (if no arguments)
-%autopatch(vp:m:M:) %{lua:
+%autopatch(vqp:m:M:) %{lua:
 if #arg == 0 then
     local lo = tonumber(rpm.expand("%{-m:%{-m*}}"))
     local hi = tonumber(rpm.expand("%{-M:%{-M*}}"))
@@ -1289,8 +1290,8 @@ if #arg == 0 then
         end
     end
 end
-if #arg == 0 then
-   macros.warn({"autopatch: no matching patches in range"})
+if #arg == 0 and not opt.q then
+   macros.warn({rpm.expand("%{?__file_name:%{__file_name} line %{__file_lineno}}: autopatch: no matching patches in range")})
 end
 local options = rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")
 local bynum = {}
@@ -1317,7 +1318,7 @@ end
 %setup %{-a} %{-b} %{-c} %{-C} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{expand:%__scm_setup_%{__scm} %{!-v:-q}}\
-%{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
+%{!-N:%autopatch -q %{-v} %{-p:-p%{-p*}}}
 
 # Add a sysuser user/group to a package. Takes a sysusers.d(5) line as
 # arguments, eg `%add_sysuser g mygroup 515`.
