@@ -390,6 +390,19 @@ run rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild -bp autosetup without patches])
+AT_KEYWORDS([build])
+RPMDB_INIT
+RPMTEST_CHECK([
+
+run rpmbuild -D="nopatches 1" \
+  -bp ${RPMDATA}/SPECS/hello-auto.spec 2> >(grep warning >&2)
+],
+[0],
+[ignore],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild --build-in-place 1])
 AT_KEYWORDS([build])
 RPMDB_INIT
