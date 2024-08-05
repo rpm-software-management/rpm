@@ -8,9 +8,13 @@ Summary: Simple rpm demonstration.
 %sourcelist
 hello-1.0.tar.gz
 
+%{!?nopatches:
+
 %patchlist
 hello-1.0-modernize.patch
 hello-1.0-install.patch
+
+}
 
 %description
 Simple rpm demonstration.
