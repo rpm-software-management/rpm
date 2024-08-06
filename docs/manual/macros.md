@@ -165,10 +165,12 @@ various common operations.
 
 ### Diagnostics
 
-| Macro          | Description
-| -------------- | -----------
-| `%trace`       | toggle print of debugging information before/after expansion
-| `%dump`        | print the active (i.e. non-covered) macro table
+| Macro            | Description | Introduced
+| ---------------- | ----------- | ----------
+| `%trace`         | toggle print of debugging information before/after expansion
+| `%dump`          | print the active (i.e. non-covered) macro table
+| `%__file_name`   | current file (if parsing a file) | 4.15
+| `%__file_lineno` | line number in current file (if parsing a file) | 4.15
 
 Macros may also be automatically included from /usr/lib/rpm/macros.
 In addition, rpm itself defines numerous macros. To display the current
