@@ -328,8 +328,13 @@ static int fsmOpenat(int dirfd, const char *path, int flags, int dir)
     }
 
     /* O_DIRECTORY equivalent */
-    if (dir && ((fd != ffd) || (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)))) {
+    if (dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode)) {
 	errno = ENOTDIR;
+	fsmClose(&fd);
+    }
+    /* Symlink with non matching owners */
+    if (dir && (fd != ffd)) {
+	errno = EPERM;
 	fsmClose(&fd);
     }
     return fd;
@@ -403,11 +408,17 @@ static int ensureDir(rpmPlugins plugins, const char *p, int owned, int create,
 	if (fd >= 0) {
 	    dirfd = fd;
 	} else {
-	    if (!quiet) {
-		rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
-			bn, p, strerror(errno));
-	    }
 	    rc = RPMERR_OPEN_FAILED;
+	    if (!quiet) {
+		if (errno == EPERM) {
+		    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
+			   bn, p, _("Unsave symlink"));
+		    rc = RPMERR_ILLEGAL_SYMLINK;
+		} else {
+		    rpmlog(RPMLOG_ERR, _("failed to open dir %s of %s: %s\n"),
+			   bn, p, strerror(errno));
+		}
+	    }
 	    break;
 	}
 

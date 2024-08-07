@@ -2433,6 +2433,7 @@ char * rpmfileStrerror(int rc)
     case RPMERR_EXIST_AS_DIR:
 	s = _("File from package already exists as a directory in system");
 	break;
+    case RPMERR_ILLEGAL_SYMLINK: s = _("open failed - Unsave symlink"); break;
     }
 
     if (s != NULL) {
