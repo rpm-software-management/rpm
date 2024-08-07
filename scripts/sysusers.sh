@@ -148,6 +148,7 @@ mkdir -p "$ROOT"/etc/
 [ -e "$ROOT"/etc/passwd ] || touch "$ROOT"/etc/passwd
 [ -e "$ROOT"/etc/shadow ] || touch "$ROOT"/etc/shadow
 [ -e "$ROOT"/etc/group ] || touch "$ROOT"/etc/group
+[ -e "$ROOT"/etc/login.defs ] || touch "$ROOT"/etc/login.defs
 
 # read files from command line
 for fn in "$@"; do
