@@ -52,6 +52,17 @@ end
 print("")
 io.flush()
 
+%filetriggerun -p <lua> -- /usr/bin
+print("filetriggerun(/usr/bin*)<lua>: "..arg[2].." "..arg[3])
+a = rpm.next_file()
+while a do
+    print(a)
+    a = rpm.next_file()
+end
+print("")
+io.flush()
+return 0
+
 %filetriggerin -- /foo
 echo "filetriggerin(/foo*):"
 cat

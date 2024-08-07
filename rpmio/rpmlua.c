@@ -318,6 +318,8 @@ int rpmluaRunScript(rpmlua lua, const char *script, const char *name,
 
 exit:
     free(buf);
+    /* discard any unhandled return data from the script */
+    lua_settop(L, otop);
     return ret;
 }
 

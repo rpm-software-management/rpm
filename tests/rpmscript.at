@@ -461,6 +461,9 @@ filetriggerpostun(/foo*):
 filetriggerun(/usr/bin*): 1 0
 /usr/bin/hello
 
+filetriggerun(/usr/bin*)<lua>: 1 0
+/usr/bin/hello
+
 filetriggerpostun(/usr/bin*): 1 0
 /usr/bin/hello
 
