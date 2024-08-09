@@ -170,14 +170,22 @@ by optional number of arguments to pass to the command.
 rpm.execute('ls', '-l', '/')
 ```
 
-#### execute({table})
+#### execute({table} [, stdout [, stderr]])
 
 Execute an external command (rpm >= 4.20)
 This is an alternative form of rpm.execute() that takes the command and any
 arguments as a single Lua table.
 
+Standard output and/or error can be optionally redirected to named path,
+such as commonly `/dev/null` to suppress output.
+
 ```
 rpm.execute({'ls', '-l', '/''})
+```
+
+Redirect standard error to `/dev/null`:
+```
+rpm.execute({'systemctl', 'restart', 'httpd'}, nil, '/dev/null')
 ```
 
 #### expand(arg)

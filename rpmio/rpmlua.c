@@ -787,8 +787,12 @@ static int rpm_execute(lua_State *L)
 {
     const char *file = NULL;
     std::vector<const char *> argv;
-    int status;
+    int x, status;
     pid_t pid;
+    posix_spawn_file_actions_t fa;
+
+    if ((x = posix_spawn_file_actions_init(&fa)))
+	return pusherror(L, x, "file action init");
 
     if (lua_isstring(L, 1)) {
 	int n = lua_gettop(L);
@@ -799,7 +803,7 @@ static int rpm_execute(lua_State *L)
 	    argv[i] = luaL_checkstring(L, i + 1);
 	argv[n] = NULL;
     } else if (lua_istable(L, 1)) {
-	int n = luaL_len(L, 1);
+	int x = 0, n = luaL_len(L, 1);
 	lua_rawgeti(L, 1, 1);
 	file = lua_tostring(L, -1);
 	lua_pop(L, 1);
@@ -810,10 +814,25 @@ static int rpm_execute(lua_State *L)
 	    lua_pop(L, 1);
 	}
 	argv[n] = NULL;
+
+	if (lua_isstring(L, 2)) {
+	    if ((x = posix_spawn_file_actions_addopen(&fa, STDOUT_FILENO,
+			lua_tostring(L, 2), O_WRONLY|O_APPEND|O_CREAT, 0644)))
+		return pusherror(L, x, "addopen file action failed");
+	}
+	if (lua_isstring(L, 3)) {
+	    if ((x = posix_spawn_file_actions_addopen(&fa, STDERR_FILENO,
+			lua_tostring(L, 3), O_WRONLY|O_APPEND|O_CREAT, 0644)))
+		return pusherror(L, x, "addopen file action failed");
+	}
     }
     rpmSetCloseOnExec();
-    status = posix_spawnp(&pid, file, NULL, NULL,
+
+    status = posix_spawnp(&pid, file, &fa, NULL,
 			const_cast<char* const*>(argv.data()), environ);
+
+    posix_spawn_file_actions_destroy(&fa);
+
     if (status != 0)
 	return pusherror(L, status, NULL);
     if (waitpid(pid, &status, 0) == -1)
