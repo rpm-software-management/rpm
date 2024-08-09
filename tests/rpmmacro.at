@@ -1462,6 +1462,24 @@ nil	No such file or directory	2.0
 [])
 
 RPMTEST_CHECK([
+runroot_other rpmlua -e "print(rpm.execute('echo', '3', '2', '1'))"
+],
+[0],
+[3 2 1
+0.0
+],
+[])
+
+RPMTEST_CHECK([
+runroot_other rpmlua -e "print(rpm.execute({'echo', '3', '2', '1'}))"
+],
+[0],
+[3 2 1
+0.0
+],
+[])
+
+RPMTEST_CHECK([
 runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); print(string.format("%s\t%s\t%s", a,b,c)); io.flush() else posix.wait(pid) end' 2> >(sort >&2)
 ],
 [0],

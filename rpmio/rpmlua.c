@@ -785,16 +785,32 @@ static int rpm_exit(lua_State *L)
 
 static int rpm_execute(lua_State *L)
 {
-    const char *file = luaL_checkstring(L, 1);
-    int i, n = lua_gettop(L);
+    const char *file = NULL;
+    std::vector<const char *> argv;
     int status;
     pid_t pid;
 
-    std::vector<const char *> argv(n+1);
-    argv[0] = file;
-    for (i = 1; i < n; i++)
-	argv[i] = luaL_checkstring(L, i + 1);
-    argv[i] = NULL;
+    if (lua_isstring(L, 1)) {
+	int n = lua_gettop(L);
+	file = lua_tostring(L, 1);
+	argv.resize(n + 1);
+	argv[0] = file;
+	for (int i = 1; i < n; i++)
+	    argv[i] = luaL_checkstring(L, i + 1);
+	argv[n] = NULL;
+    } else if (lua_istable(L, 1)) {
+	int n = luaL_len(L, 1);
+	lua_rawgeti(L, 1, 1);
+	file = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	argv.resize(n + 1);
+	for (int i = 0; i < n; i++) {
+	    lua_rawgeti(L, 1, i + 1);
+	    argv[i] = luaL_checkstring(L, -1);
+	    lua_pop(L, 1);
+	}
+	argv[n] = NULL;
+    }
     rpmSetCloseOnExec();
     status = posix_spawnp(&pid, file, NULL, NULL,
 			const_cast<char* const*>(argv.data()), environ);

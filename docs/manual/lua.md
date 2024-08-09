@@ -170,6 +170,16 @@ by optional number of arguments to pass to the command.
 rpm.execute('ls', '-l', '/')
 ```
 
+#### execute({table})
+
+Execute an external command (rpm >= 4.20)
+This is an alternative form of rpm.execute() that takes the command and any
+arguments as a single Lua table.
+
+```
+rpm.execute({'ls', '-l', '/''})
+```
+
 #### expand(arg)
 
 Perform rpm macro expansion on argument string.
