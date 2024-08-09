@@ -838,7 +838,7 @@ static int rpm_execute(lua_State *L)
     if (waitpid(pid, &status, 0) == -1)
 	return pusherror(L, errno, NULL);
     if (status != 0)
-	return pusherror(L, status, "exit code");
+	return pusherror(L, WEXITSTATUS(status), "exit code");
 
     return pushresult(L, status);
 }
