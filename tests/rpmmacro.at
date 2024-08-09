@@ -1456,7 +1456,7 @@ runroot_other rpmlua -e "for i, v in ipairs({'true', 'false', 'grue'}) do print(
 ],
 [0],
 [0.0
-nil	exit code	256.0
+nil	exit code	1.0
 nil	No such file or directory	2.0
 ],
 [])
