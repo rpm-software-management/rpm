@@ -47,7 +47,7 @@ extern int _rpmlua_have_forked;
 
 #define check_deprecated() \
     fprintf(stderr, \
-	"warning: posix.%s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead\n", __func__+1)
+	"warning: posix.%s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead\n", __func__+1)
 
 static const char *filetype(mode_t m)
 {
