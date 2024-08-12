@@ -71,7 +71,13 @@ static rpmRC ima_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 	    else
 		xx = lsetxattr(path, XATTR_NAME_IMA, fsig, len, 0);
 	    if (xx < 0) {
-		int is_err = errno != EOPNOTSUPP;
+		int is_err = 1;
+		switch (errno) {
+		    case EOPNOTSUPP:
+		    case EROFS:
+			is_err = 0;
+			break;
+		}
 
 	        rpmlog(is_err?RPMLOG_ERR:RPMLOG_DEBUG,
 			"ima: could not apply signature on '%s': %s\n",

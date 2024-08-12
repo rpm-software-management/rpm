@@ -96,10 +96,10 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 
     /*
      * Enable fsverity on the file.
-     * fsverity not supported by file system (ENOTTY) and fsverity not
-     * enabled on file system are expected and not considered
-     * errors. Every other non-zero error code will result in the
-     * installation failing.
+     * fsverity not supported by file system (ENOTTY), fsverity not enabled on
+     * file system and read-only file system are expected and not considered
+     * errors. Every other non-zero error code will result in the installation
+     * failing.
      */
     if (ioctl(fd, FS_IOC_ENABLE_VERITY, &arg) != 0) {
 	switch(errno) {
@@ -141,6 +141,10 @@ static rpmRC fsverity_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 	case EOPNOTSUPP:
 	    rpmlog(RPMLOG_DEBUG, "fsverity not enabled on file system for %s\n",
 		   path);
+	    break;
+	case EROFS:
+	    rpmlog(RPMLOG_DEBUG, "fsverity not applicable on read-only "
+				 "file system for %s\n", path);
 	    break;
 	default:
 	    rpmlog(RPMLOG_DEBUG, "failed to enable verity (errno %i) for %s\n",

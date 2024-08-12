@@ -166,8 +166,16 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 	    else
 		conrc = lsetfilecon(path, scon);
 
-	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
+	    if (conrc == 0)
 		rc = RPMRC_OK;
+	    else if (conrc < 0) {
+		switch (errno) {
+		    case EOPNOTSUPP:
+		    case EROFS:
+			rc = RPMRC_OK;
+			break;
+		}
+	    }
 
 	    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%d %s, %s) %s\n",
 		       fd, path, scon, (conrc < 0 ? strerror(errno) : ""));
