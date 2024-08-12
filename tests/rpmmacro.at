@@ -1475,9 +1475,80 @@ RPMTEST_CHECK([
 cat stderr | sort
 ],
 [0],
-[warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead
-warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.execute() instead
+[warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
+warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
 warning: runaway fork() in Lua script
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([lua rpm spawn])
+AT_KEYWORDS([macros lua])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot_other rpmlua -e "rpm.spawn({'echo', '1', '2', '3'})"
+],
+[0],
+[1 2 3
+],
+[])
+
+RPMTEST_CHECK([
+runroot_other rpmlua \
+	-e "rpm.spawn({'echo', '1', '2', '3'}, {stdout='/dev/null'})"
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot_other rpmlua \
+	-e "rpm.spawn({'ls', '/notthere'})"
+],
+[0],
+[],
+[ls: cannot access '/notthere': No such file or directory
+])
+
+RPMTEST_CHECK([
+runroot_other rpmlua \
+	-e "rpm.spawn({'ls', '/notthere'}, {stderr='/dev/null'})"
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot_other rpmlua \
+	-e "rpm.spawn({'ls', '/notthere'}, {garbage='bbb'})"
+],
+[255],
+[],
+[[error: lua script failed: [string "<execute>"]:1: invalid spawn directive: garbage
+]])
+
+RPMTEST_CHECK([
+runroot_other rpmlua -e "rpm.spawn('echo', '1', '2', '3')"
+],
+[255],
+[],
+[[error: lua script failed: [string "<execute>"]:1: bad argument #1 to 'spawn' (table expected, got string)
+]])
+
+RPMTEST_CHECK([
+runroot_other rpmlua -e "print(rpm.spawn({'cat'}, {stdin='aaa'}))"
+],
+[0],
+[nil	No such file or directory	2.0
+],
+[])
+
+RPMTEST_CHECK([
+echo 1 2 3 > ${RPMTEST}/aaa
+runroot_other rpmlua -e "rpm.spawn({'cat'}, {stdin='aaa'})"
+],
+[0],
+[1 2 3
 ],
 [])
 RPMTEST_CLEANUP
