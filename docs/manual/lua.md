@@ -170,6 +170,8 @@ by optional number of arguments to pass to the command.
 rpm.execute('ls', '-l', '/')
 ```
 
+For better control over the process execution and output, see rpm.spawn().
+
 #### expand(arg)
 
 Perform rpm macro expansion on argument string.
@@ -337,7 +339,28 @@ end
 ```
 
 This function is deprecated and scheduled for removal in 6.0,
-use `rpm.execute()` instead.
+use `rpm.spawn()` or `rpm.execute()` instead.
+
+#### spawn({command} [, {actions}])
+
+Spawn, aka execute, an external program. (rpm >= 4.20)
+
+`{command}` is a table consisting of the command and its arguments.
+An optional second table can be used to pass various actions related
+to the command execution, currently supported are:
+
+| Action  | Argument(s) | Description
+|---------|----------------------
+| `stdin` | path        | Redirect standard input to path
+| `stdout`| path        | Redirect standard output to path
+| `stderr`| path        | Redirect standard error to path
+
+Returns the command exit status: zero on success, or a tuplet
+of (nil, message, code) on failure.
+
+```
+rpm.spawn({'systemctl', 'restart', 'httpd'}, {stderr='/dev/null'})
+```
 
 #### undefine(name)
 
@@ -477,7 +500,7 @@ end
 Execute a program. This may only be performed after posix.fork().
 
 This function is deprecated and scheduled for removal in 6.0,
-use `rpm.execute()` instead.
+use `rpm.spawn()` or `rpm.execute()` instead.
 
 #### files([path])
 
@@ -495,7 +518,7 @@ end
 Fork a new process. 
 
 This function is deprecated and scheduled for removal in 6.0,
-use `rpm.execute()` instead.
+use `rpm.spawn()` or `rpm.execute()` instead.
 
 ```
 pid = posix.fork()
@@ -774,7 +797,7 @@ end
 ```
 
 This function is deprecated and scheduled for removal in 6.0,
-use `rpm.execute()` instead.
+use `rpm.spawn()` or `rpm.execute()` instead.
 
 #### setenv(name, value [, overwrite])
 

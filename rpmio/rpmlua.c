@@ -785,6 +785,83 @@ static int rpm_exit(lua_State *L)
     exit(luaL_optinteger(L, 1, EXIT_SUCCESS));
 }
 
+static int do_spawnop(lua_State *L, posix_spawn_file_actions_t *fap)
+{
+    const char *key = luaL_checkstring(L, -2);
+    const char *val = luaL_checkstring(L, -1);
+    int rc = 0;
+
+    if (rstreq(key, "stdin")) {
+	rc = posix_spawn_file_actions_addopen(fap, STDIN_FILENO,
+		    val, O_RDONLY, 0644);
+    } else if (rstreq(key, "stdout")) {
+	rc = posix_spawn_file_actions_addopen(fap, STDOUT_FILENO,
+		    val, O_WRONLY|O_APPEND|O_CREAT, 0644);
+    } else if (rstreq(key, "stderr")) {
+	rc = posix_spawn_file_actions_addopen(fap, STDERR_FILENO,
+		    val, O_WRONLY|O_APPEND|O_CREAT, 0644);
+    } else {
+	luaL_error(L, "invalid spawn directive: %s", key);
+    }
+
+    return rc;
+}
+
+static int rpm_spawn(lua_State *L)
+{
+    int rc = 0, status;
+    pid_t pid;
+    posix_spawn_file_actions_t fa, *fap = NULL;
+    luaL_checktype(L, 1, LUA_TTABLE);
+    int argc = luaL_len(L, 1);
+
+    if (argc == 0)
+	luaL_error(L, "command not supplied");
+
+    if (lua_istable(L, 2)) {
+	if ((rc = posix_spawn_file_actions_init(&fa)))
+	    return pusherror(L, rc, "spawn file action init");
+	fap = &fa;
+
+	lua_pushnil(L);
+	while (!rc && lua_next(L, 2) != 0) {
+	    rc = do_spawnop(L, &fa);
+	    lua_pop(L, 1);
+	};
+	if (rc)
+	    return pusherror(L, rc, NULL);
+    }
+
+    ARGV_t argv = NULL;
+    for (int i = 0; i < argc; i++) {
+	lua_rawgeti(L, 1, i + 1);
+	argvAdd(&argv, luaL_checkstring(L, -1));
+	lua_pop(L, 1);
+    }
+
+    rpmSetCloseOnExec();
+
+    status = posix_spawnp(&pid, argv[0], fap, NULL, argv, environ);
+
+    argvFree(argv);
+    if (fap)
+	posix_spawn_file_actions_destroy(fap);
+
+    if (status != 0)
+	return pusherror(L, status, NULL);
+    if (waitpid(pid, &status, 0) == -1)
+	return pusherror(L, errno, NULL);
+    if (status != 0) {
+	if (WIFSIGNALED(status)) {
+	    return pusherror(L, WTERMSIG(status), "exit signal");
+	} else {
+	    return pusherror(L, WEXITSTATUS(status), "exit code");
+	}
+    }
+
+    return pushresult(L, WEXITSTATUS(status));
+}
+
 static int rpm_execute(lua_State *L)
 {
     const char *file = luaL_checkstring(L, 1);
@@ -1257,6 +1334,7 @@ static const luaL_Reg rpmlib[] = {
     {"unregister", rpm_unregister},
     {"call", rpm_call},
     {"interactive", rpm_interactive},
+    {"spawn", rpm_spawn},
     {"execute", rpm_execute},
     {"redirect2null", rpm_redirect2null},
     {"vercmp", rpm_vercmp},
