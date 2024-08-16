@@ -26,8 +26,7 @@
 struct scc_s {
     int count; /* # of external requires this SCC has */
     /* int qcnt;  # of external requires pointing to this SCC */
-    int size;  /* # of members */
-    tsortInfo * members;
+    std::vector<tsortInfo> members;
 };
 
 using scc = std::vector<scc_s>;
@@ -318,14 +317,11 @@ static void tarjan(sccData sd, scc & SCCs, tsortInfo tsi)
 			SCCs[sd->sccCnt].count--;
 		}
 	    } while (tsi_q != tsi);
-	    SCCs[sd->sccCnt].size = sd->stackcnt - stackIdx;
 	    /* copy members */
-	    SCCs[sd->sccCnt].members =
-				(tsortInfo *)xcalloc(SCCs[sd->sccCnt].size,
-					   sizeof(tsortInfo));
-	    memcpy(SCCs[sd->sccCnt].members, sd->stack + stackIdx,
-		   SCCs[sd->sccCnt].size * sizeof(tsortInfo));
-	    sd->stackcnt = stackIdx;
+	    for (int i = sd->stackcnt - 1; i >= stackIdx; --i) {
+		SCCs[sd->sccCnt].members.push_back(sd->stack[i]);
+		--sd->stackcnt;
+	    }
 	    sd->sccCnt++;
 	}
     }
@@ -352,12 +348,11 @@ static scc detectSCCs(std::vector<tsortInfo_s> & orderInfo, int debugloops)
 	int msglvl = debugloops ?  RPMLOG_WARNING : RPMLOG_DEBUG;
 	rpmlog(msglvl, "%i Strongly Connected Components\n", sd.sccCnt-2);
 	for (int i = 2; i < sd.sccCnt; i++) {
-	    rpmlog(msglvl, "SCC #%i: %i members (%i external dependencies)\n",
-			   i-1, SCCs[i].size, SCCs[i].count);
+	    rpmlog(msglvl, "SCC #%i: %zu members (%i external dependencies)\n",
+			   i-1, SCCs[i].members.size(), SCCs[i].count);
 
 	    /* loop over members */
-	    for (int j = 0; j < SCCs[i].size; j++) {
-		tsortInfo member = SCCs[i].members[j];
+	    for (auto const & member : SCCs[i].members) {
 		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(member->te));
 		/* show relations between members */
 		for (auto const & rel : member->tsi_forward_relations) {
@@ -437,8 +432,7 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
      * Find packages that are prerequired and use them as
      * starting points for the Dijkstra algorithm
      */
-    for (int i = 0; i < SCC->size; i++) {
-	tsortInfo tsi = SCC->members[i];
+    for (auto & tsi : SCC->members) {
 	tsi->tsi_SccLowlink = INT_MAX;
 	for (auto & rel : tsi->tsi_forward_relations) {
 	    if (rel.rel_flags && rel.rel_suc->tsi_SccIdx == sccNr) {
@@ -454,8 +448,7 @@ static void dijkstra(const struct scc_s *SCC, int sccNr)
     }
 
     if (queue.empty()) { /* no regular prereqs; add self prereqs to queue */
-	for (int i = 0; i < SCC->size; i++) {
-	    tsortInfo tsi = SCC->members[i];
+	for (auto & tsi : SCC->members) {
 	    if (tsi->tsi_SccLowlink != INT_MAX) {
 		queue.push(tsi);
 	    }
@@ -503,8 +496,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 	int best_score = 0;
 
 	/* select best candidate to start with */
-	for (int i = 0; i < SCC->size; i++) {
-	    tsortInfo tsi = SCC->members[i];
+	for (auto & tsi : SCC->members) {
 	    if (tsi->tsi_SccIdx == 0) /* package already collected */
 		continue;
 	    if (tsi->tsi_SccLowlink >= best_score) {
@@ -607,7 +599,7 @@ int rpmtsOrder(rpmts ts)
 	}
 
 	/* Add one member of each leaf SCC */
-	for (int i = 2; SCCs[i].members != NULL; i++) {
+	for (int i = 2; SCCs[i].members.empty() == false; i++) {
 	    tsortInfo member = SCCs[i].members[0];
 	    if (SCCs[i].count == 0 && rpmteType(member->te) == oType) {
 		addQ(member, &q, &r, prefcolor);
@@ -637,9 +629,6 @@ int rpmtsOrder(rpmts ts)
     tsmem->order = newOrder;
     rc = 0;
 
-    for (int i = 2; SCCs[i].members != NULL; i++) {
-	free(SCCs[i].members);
-    }
     rpmalFree(erasedPackages);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
