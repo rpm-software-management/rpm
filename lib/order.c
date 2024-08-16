@@ -256,8 +256,7 @@ static void addQ(tsortInfo p, tsortInfo * qp, tsortInfo * rp,
 
 typedef struct sccData_s {
     int index;			/* DFS node number counter */
-    tsortInfo *stack;		/* Stack of nodes */
-    int stackcnt;		/* Stack top counter */
+    std::vector<tsortInfo> stack; /* Stack of nodes */
     int sccCnt;			/* Number of SCC's found */
 } * sccData;
 
@@ -271,7 +270,7 @@ static void tarjan(sccData sd, scc & SCCs, tsortInfo tsi)
     tsi->tsi_SccIdx = sd->index;
     tsi->tsi_SccLowlink = sd->index;
 
-    sd->stack[sd->stackcnt++] = tsi;                   /* Push p on the stack */
+    sd->stack.push_back(tsi); /* Push p on the stack */
     for (auto & rel : tsi->tsi_relations) {
 	/* Consider successors of p */
 	tsi_q = rel.rel_suc;
@@ -294,18 +293,19 @@ static void tarjan(sccData sd, scc & SCCs, tsortInfo tsi)
 
     if (tsi->tsi_SccLowlink == tsi->tsi_SccIdx) {
 	/* v is the root of an SCC? */
-	if (sd->stack[sd->stackcnt-1] == tsi) {
+	if (sd->stack.back() == tsi) {
 	    /* ignore trivial SCCs */
-	    tsi_q = sd->stack[--sd->stackcnt];
+	    tsi_q = sd->stack.back();
 	    tsi_q->tsi_SccIdx = 1;
+	    sd->stack.pop_back();
 	} else {
-	    int stackIdx = sd->stackcnt;
+	    size_t stackIdx = sd->stack.size();
 	    do {
 		tsi_q = sd->stack[--stackIdx];
 		tsi_q->tsi_SccIdx = sd->sccCnt;
 	    } while (tsi_q != tsi);
 
-	    stackIdx = sd->stackcnt;
+	    stackIdx = sd->stack.size();
 	    do {
 		tsi_q = sd->stack[--stackIdx];
 		/* Calculate count for the SCC */
@@ -318,9 +318,9 @@ static void tarjan(sccData sd, scc & SCCs, tsortInfo tsi)
 		}
 	    } while (tsi_q != tsi);
 	    /* copy members */
-	    for (int i = sd->stackcnt - 1; i >= stackIdx; --i) {
-		SCCs[sd->sccCnt].members.push_back(sd->stack[i]);
-		--sd->stackcnt;
+	    while (sd->stack.size() > stackIdx) {
+		SCCs[sd->sccCnt].members.push_back(sd->stack.back());
+		sd->stack.pop_back();
 	    }
 	    sd->sccCnt++;
 	}
@@ -332,16 +332,13 @@ static scc detectSCCs(std::vector<tsortInfo_s> & orderInfo, int debugloops)
 {
     /* Set up data structures needed for the tarjan algorithm */
     scc SCCs(orderInfo.size()+3);
-    tsortInfo *stack = (tsortInfo *)xcalloc(orderInfo.size(), sizeof(*stack));
-    struct sccData_s sd = { 0, stack, 0, 2 };
+    struct sccData_s sd = { 0, {}, 2 };
 
     for (auto & tsi : orderInfo) {
 	/* Start a DFS at each node */
 	if (tsi.tsi_SccIdx == 0)
 	    tarjan(&sd, SCCs, &tsi);
     }
-
-    free(stack);
 
     /* Debug output */
     if (sd.sccCnt > 2) {
