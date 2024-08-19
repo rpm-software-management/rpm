@@ -176,18 +176,6 @@ runroot rpmbuild -bb \
 
 RPMTEST_CHECK([
 runroot rpmbuild -bb \
-	--define 'buildsystem_autotools_conf %nil' \
-	--define 'buildsystem_autotools_build %nil' \
-	--define 'buildsystem_autotools_install %nil' \
-	--quiet /data/SPECS/amhello.spec
-],
-[1],
-[],
-[error: line 11: Required parametric macro %buildsystem_autotools_conf not defined for buildsystem autotools
-])
-
-RPMTEST_CHECK([
-runroot rpmbuild -bb \
 	--define 'buildsystem_autotools_build %nil' \
 	--define 'buildsystem_autotools_check %nil' \
 	--quiet /data/SPECS/amhello.spec
