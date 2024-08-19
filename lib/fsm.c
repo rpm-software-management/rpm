@@ -304,7 +304,6 @@ static int fsmOpenat(int *wfdp, int dirfd, const char *path, int flags, int dir)
     struct stat lsb, sb;
     int sflags = flags | O_NOFOLLOW;
     int fd = openat(dirfd, path, sflags);
-    int ffd = fd;
     int rc = 0;
 
     /*
@@ -314,7 +313,7 @@ static int fsmOpenat(int *wfdp, int dirfd, const char *path, int flags, int dir)
      * it could've only been the link owner or root.
      */
     if (fd < 0 && errno == ELOOP && flags != sflags) {
-	ffd = openat(dirfd, path, flags);
+	int ffd = openat(dirfd, path, flags);
 	if (ffd >= 0) {
 	    if (fstatat(dirfd, path, &lsb, AT_SYMLINK_NOFOLLOW) == 0) {
 		if (fstat(ffd, &sb) == 0) {
@@ -323,13 +322,16 @@ static int fsmOpenat(int *wfdp, int dirfd, const char *path, int flags, int dir)
 		    }
 		}
 	    }
-	    if (ffd != fd)
+	    /* Symlink with non-matching owners */
+	    if (ffd != fd) {
 		close(ffd);
+		rc = RPMERR_INVALID_SYMLINK;
+	    }
 	}
     }
 
     /* O_DIRECTORY equivalent */
-    if (!rc && dir && ((fd != ffd) || (fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode))))
+    if (!rc && dir && fd >= 0 && fstat(fd, &sb) == 0 && !S_ISDIR(sb.st_mode))
 	rc = RPMERR_ENOTDIR;
 
     if (!rc && fd < 0)
