@@ -2468,7 +2468,7 @@ char * rpmfileStrerror(int rc)
     case RPMERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
     case RPMERR_INTERNAL:	s = _("Internal error");	break;
     case RPMERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
-    case RPMERR_INVALID_SYMLINK: s = _("Invalid symlink");	break;
+    case RPMERR_INVALID_SYMLINK: s = _("Unsafe symlink");	break;
     case RPMERR_ENOTDIR:	s = strerror(ENOTDIR);	break;
     case RPMERR_ENOENT:	s = strerror(ENOENT); break;
     case RPMERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
