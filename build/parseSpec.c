@@ -931,7 +931,7 @@ exit:
 
 struct sectname_s sectList[] = {
     { "prep", SECT_PREP, PART_PREP, 0 },
-    { "conf", SECT_CONF, PART_CONF, 1 },
+    { "conf", SECT_CONF, PART_CONF, 0 },
     { "generate_buildrequires", SECT_BUILDREQUIRES, PART_BUILDREQUIRES, 0 },
     { "build", SECT_BUILD, PART_BUILD, 1 },
     { "install", SECT_INSTALL, PART_INSTALL, 1 },
