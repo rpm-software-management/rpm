@@ -408,12 +408,19 @@ EOF
 chmod a+x "${RPMTEST}"/tmp/fakecurl
 
 RPMTEST_CHECK([
-runroot rpm --define "_urlhelper /tmp/fakecurl" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm 2> >(sed 's| /.*rpm-tmp.* https| rpm-tmp https|' >&2)
+runroot rpm --define "_urlhelper /tmp/fakecurl" --root /srv/test -qp https://example.com/foo-0.1-1.noarch.rpm
 ],
 [1],
 [],
+[stderr])
+
+RPMTEST_CHECK([
+cat stderr | sed 's| /.*rpm-tmp.* https| rpm-tmp https|' | sort
+],
+[0],
 [/tmp/fakecurl: failed to retrieve https://example.com/foo-0.1-1.noarch.rpm
 error: Executing url helper "/tmp/fakecurl rpm-tmp https://example.com/foo-0.1-1.noarch.rpm" failed with status 7
 error: open of https://example.com/foo-0.1-1.noarch.rpm failed: No such file or directory
-])
+],
+[])
 RPMTEST_CLEANUP
