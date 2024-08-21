@@ -304,13 +304,13 @@ touch -t 201703171717 ${tf}
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 cat "${tf}"
 
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 cat "${tf}"
 
 echo "xx" > "${tf}"
@@ -319,7 +319,7 @@ cat "${tf}"
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 cat "${tf}"
 
 touch -t 201703171717 ${tf}
@@ -327,7 +327,7 @@ touch -t 201703171717 ${tf}
 runroot rpm -U --oldpackage \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 cat "${tf}"
 ],
 [0],
@@ -352,7 +352,7 @@ touch -t 201703171717 ${tf}
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm > output.txt 2>&1
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 cat "${tf}"
 
@@ -360,7 +360,7 @@ cat "${tf}"
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 cat "${tf}"
 echo "xx" > "${tf}"
@@ -369,7 +369,7 @@ cat "${tf}"
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm  > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 cat "${tf}"
 
@@ -378,7 +378,7 @@ touch -t 201703171717 ${tf}
 runroot rpm -U -Uvv --fsmdebug  --oldpackage \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c  "touch" output.txt
 cat "${tf}"
 ],
@@ -449,13 +449,13 @@ readlink "${tf}"
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 readlink "${tf}"
 
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 readlink "${tf}"
 
 ln -sf "xx" "${tf}"
@@ -464,13 +464,13 @@ readlink "${tf}"
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 readlink "${tf}"
 
 runroot rpm -U --oldpackage \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 readlink "${tf}"
 ],
 [0],
@@ -494,7 +494,7 @@ readlink "${tf}"
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm > output.txt 2>&1
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 readlink "${tf}"
 
@@ -502,7 +502,7 @@ readlink "${tf}"
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 readlink "${tf}"
 ln -sf "xx" "${tf}"
@@ -511,14 +511,14 @@ readlink "${tf}"
 runroot rpm -Uvv --fsmdebug \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-4.0-1.noarch.rpm  > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c "touch" output.txt
 readlink "${tf}"
 
 runroot rpm -U -Uvv --fsmdebug  --oldpackage \
 	--define "_minimize_writes 1" \
 	/build/RPMS/noarch/replacetest-3.0-1.noarch.rpm  > output.txt 2>&1
-runroot rpm -Va  ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 grep -c  "touch" output.txt
 readlink "${tf}"
 ],
@@ -554,17 +554,17 @@ for v in "1.0" "2.0"; do
 done
 
 runroot rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 runroot rpm -U \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 chmod 777 "${tf}"
 runroot rpm -U \
 	--oldpackage \
 	--define "_minimize_writes 1" \
 	 /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
-runroot rpm -Va ${VERIFYOPTS} replacetest
+runroot rpm -V ${VERIFYOPTS} replacetest
 ],
 [0],
 [],
