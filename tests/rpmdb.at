@@ -56,6 +56,28 @@ runroot rpm \
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpm -qa 3])
+AT_KEYWORDS([rpmdb query])
+RPMTEST_SETUP
+
+RPMTEST_CHECK([
+runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
+	/data/RPMS/foo-1.0-1.noarch.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
+
+# Assert that there are at least 3 packages in the rpmdb (we are using that of
+# the test image here so that is pretty much guaranteed).
+runroot rpm -qa | wc -l | xargs test 2 -lt || exit 1
+
+runroot rpm -qa foo hello | sort
+],
+[0],
+[foo-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 AT_SKIP_IF([test x$PGP = xdummy])
