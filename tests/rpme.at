@@ -293,9 +293,9 @@ done
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos --excludepath=/usr/share /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
-runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -Vv --nogroup --nouser conflicta conflictb
 runroot rpm -e conflicta
-runroot rpm -Vav --nogroup --nouser conflictb
+runroot rpm -Vv --nogroup --nouser conflictb
 runroot rpm -e conflictb
 runroot rpm -Vp --nogroup --nouser /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 ],
@@ -310,9 +310,9 @@ missing     /usr/share/my.version
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos --excludepath=/usr/share /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
-runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -Vv --nogroup --nouser conflicta conflictb
 runroot rpm -e conflicta
-runroot rpm -Vav --nogroup --nouser conflictb
+runroot rpm -Vv --nogroup --nouser conflictb
 runroot rpm -e conflictb
 runroot rpm -Vp --nogroup --nouser /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 ],
@@ -327,9 +327,9 @@ missing     /usr/share/my.version
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm 
 runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
-runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -Vv --nogroup --nouser conflicta conflictb
 runroot rpm -e conflicta
-runroot rpm -Vav --nogroup --nouser conflictb
+runroot rpm -Vv --nogroup --nouser conflictb
 runroot rpm -e conflictb
 runroot rpm -Vp --nogroup --nouser /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
 ],
@@ -344,9 +344,9 @@ missing     /usr/share/my.version
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos /build/RPMS/noarch/conflicta-1.0-1.noarch.rpm
 runroot rpm -U --ignoreos --force /build/RPMS/noarch/conflictb-1.0-1.noarch.rpm
-runroot rpm -Vav --nogroup --nouser conflicta conflictb
+runroot rpm -Vv --nogroup --nouser conflicta conflictb
 runroot rpm -e conflictb
-runroot rpm -Vav --nogroup --nouser conflicta
+runroot rpm -Vv --nogroup --nouser conflicta
 runroot rpm -e conflicta
 ],
 [0],
