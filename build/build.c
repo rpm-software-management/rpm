@@ -428,6 +428,8 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    /* in-place builds counter-intuitively always have buildsubdir */
 	    rpmPushMacro(spec->macros,
 			"buildsubdir", NULL, "%{NAME}-%{VERSION}", RMIL_SPEC);
+	    if (didBuild)
+		what |= RPMBUILD_MKBUILDDIR;
 	    what &= ~(RPMBUILD_RMBUILD);
 	}
 
