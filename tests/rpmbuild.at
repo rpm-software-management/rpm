@@ -384,10 +384,17 @@ RPMDB_INIT
 RPMTEST_CHECK([
 
 run rpmbuild -D="nopatches 1" \
-  -bp ${RPMDATA}/SPECS/hello-auto.spec 2> >(grep warning >&2)
+  -bp ${RPMDATA}/SPECS/hello-auto.spec
 ],
 [0],
 [ignore],
+[stderr])
+
+RPMTEST_CHECK([
+grep warning: stderr
+],
+[1],
+[],
 [])
 RPMTEST_CLEANUP
 
@@ -505,13 +512,19 @@ RPMDB_INIT
 RPMTEST_CHECK([
 
 run rpmbuild \
-  -ba ${RPMDATA}/SPECS/hello-autopatch.spec 2> >(grep warning >&2) | grep warning
+  -ba --quiet ${RPMDATA}/SPECS/hello-autopatch.spec
 ],
 [0],
-[RPM build warnings:
+[],
+[stderr])
+
+RPMTEST_CHECK([
+grep warning: stderr
 ],
+[0],
 [warning: /data/SPECS/hello-autopatch.spec line 22: autopatch: no matching patches in range
-])
+],
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -ba find-lang])
