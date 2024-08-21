@@ -430,7 +430,7 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 			"buildsubdir", NULL, "%{NAME}-%{VERSION}", RMIL_SPEC);
 	    if (didBuild)
 		what |= RPMBUILD_MKBUILDDIR;
-	    what &= ~(RPMBUILD_RMBUILD);
+	    what &= ~(RPMBUILD_PREP|RPMBUILD_RMBUILD);
 	}
 
 	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&

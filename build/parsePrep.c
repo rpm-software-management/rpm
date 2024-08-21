@@ -190,10 +190,6 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	goto exit;
     }
 
-    if (rpmExpandNumeric("%{_build_in_place}")) {
-	goto exit;
-    }
-
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	char *optArg = poptGetOptArg(optCon);
