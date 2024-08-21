@@ -265,9 +265,10 @@ The following options may also be used:
 
 **\--build-in-place**
 
-:   Build from locally checked out sources. Sets \_builddir to current
-    working directory. Skips handling of -n and untar in the %setup and
-    the deletion of the buildSubdir.
+:   Build from locally checked out sources in the current working
+    directory. The build tree is set up as if %setup was used,
+    but %builddir/%buildsubdir points back to the current working
+    directory. %prep is skipped entirely.
 
 **\--target ***PLATFORM*
 
