@@ -461,6 +461,27 @@ hello-2.0/hello.c
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmbuild --build-in-place --noprep])
+AT_KEYWORDS([build])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot_other mv hello-2.0/hello.spec .
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot --chdir hello-2.0 rpmbuild -bb --quiet \
+	--noprep --build-in-place ../hello.spec
+],
+[0],
+[],
+[ignore])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmbuild --build-in-place --short-circuit])
 AT_KEYWORDS([build])
 RPMDB_INIT
