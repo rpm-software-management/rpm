@@ -112,15 +112,18 @@ static int singleRoot(const char *path)
 	    goto afree;
 	}
 	rootName = xstrdup(archive_entry_pathname(entry));
-	rootLen = strlen(rootName);
-	if (archive_entry_filetype(entry) != AE_IFDIR) {
-	    /* Root entry is not a directory */
+	char *sep = strchr(rootName, '/');
+	if (sep == NULL) {
+	    /* No directories in the pathname */
 	    ret = 0;
 	    goto afree;
 	}
+
+	/* Do all entries in the archive start with the same lead directory? */
+	rootLen = sep - rootName + 1;
 	while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-	    if (strncmp(rootName, archive_entry_pathname(entry), rootLen)) {
-		/* multiple top level entries */
+	    const char *p = archive_entry_pathname(entry);
+	    if (strncmp(rootName, p, rootLen)) {
 		ret = 0;
 		goto afree;
 	    }
