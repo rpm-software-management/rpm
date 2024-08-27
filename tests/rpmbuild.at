@@ -525,6 +525,22 @@ run rpmbuild \
 [0],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+run rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-singleroot1.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+run rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-singleroot2.spec
+],
+[0],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -ba autopatch])
