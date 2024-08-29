@@ -97,31 +97,37 @@ SIGN OPTIONS
 CONFIGURING SIGNING KEYS
 ------------------------
 
-In order to sign packages, you need to create your own public and secret
-key pair (see the GnuPG manual). In addition, **rpm** must be configured to
-find GnuPG and the appropriate keys with the following macros:
+In order to sign packages, you need to create your own OpenPGP key pair
+(aka certificate) and configure **rpm** to use it. The following macros are
+available:
 
-**%\_gpg\_name**
+**%\_openpgp_sign_id**
 
-:   The name of the \"user\" whose key you wish to use to sign your
-    packages. Typically this is the only configuration needed.
+:   The fingerprint or keyid of the signing key to use. Typically
+    this is the only configuration needed. If omitted,
+    **--key-id** must be explicitly specified when signing.
+
+**%\_openpgp_sign**
+
+:   The OpenPGP implementation to use for signing. Supported values are
+    \"gpg\" for GnuPG (default and traditional) and \"sq\" for Sequoia PGP.
+
+Implementation specific macros:
 
 **%\_gpg\_path**
 
 :   The location of your GnuPG keyring if not the default **\$GNUPGHOME**.
 
+**%\_gpg\_name**
 
-**%\_\_gpg**
+:   Legacy macro for configuring user id with GnuPG. Use the implementation
+    independent and non-ambiguous **%\_openpgp_sign_id** instead.
 
-:   The path of the GnuPG executable. Normally pre-configured.
+For example, to configure rpm to sign with Sequoia PGP using a key with
+fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
 
-For example, to be able to use GnuPG to sign packages as the user *\"John
-Doe \<jdoe\@foo.com\>\"* from the key rings located in */etc/rpm/.gpg*
-using the executable */opt/bin/gpg* you would include
-
-    %_gpg_path /etc/rpm/.gpg
-    %_gpg_name John Doe <jdoe@foo.com>
-    %__gpg /opt/bin/gpg
+%_openpgp_sign sq
+%_openpgp_signer 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
 
 in a macro configuration file, typically ~/.config/rpm/macros.
 See **Macro Configuration** in **rpm**(8) for more details.

@@ -50,6 +50,7 @@ RUN dnf -y install \
   dwz \
   fsverity-utils fsverity-utils-devel \
   pandoc \
+  sequoia-sq \
   libasan \
   libubsan \
   && dnf clean all
