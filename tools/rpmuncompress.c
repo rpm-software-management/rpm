@@ -40,19 +40,20 @@ struct archiveType_s {
     const char *cmd;
     const char *unpack;
     const char *quiet;
+    const char *dest;
     int setTZ;
 } archiveTypes[] = {
-    { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"", 0 },
-    { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		"", 0 },
-    { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"", 0 },
-    { COMPRESSED_ZIP,	1,	"%{__unzip}",	"",		"-qq", 1 },
-    { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"", 0 },
-    { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"", 0 },
-    { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"", 0 },
-    { COMPRESSED_LRZIP,	0,	"%{__lrzip}",	"-dqo-",	"", 0 },
-    { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x",		"", 0 },
-    { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"", 0 },
-    { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"", 0 },
+    { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"", "", 0 },
+    { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		"", "", 0 },
+    { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"", "", 0 },
+    { COMPRESSED_ZIP,	1,	"%{__unzip}",	"",		"-qq", "-d", 1 },
+    { COMPRESSED_LZMA,	0,	"%{__xz}",	"-dc",		"", "", 0 },
+    { COMPRESSED_XZ,	0,	"%{__xz}",	"-dc",		"", "", 0 },
+    { COMPRESSED_LZIP,	0,	"%{__lzip}",	"-dc",		"", "", 0 },
+    { COMPRESSED_LRZIP,	0,	"%{__lrzip}",	"-dqo-",	"", "", 0 },
+    { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x",		"-bso0 -bsp0", "-o", 0 },
+    { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"", "", 0 },
+    { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"", "--target=", 0 },
     { -1,		0,	NULL,		NULL,		NULL, 0 },
 };
 
@@ -154,15 +155,37 @@ static char *doUntar(const char *fn)
     if ((at = getArchiver(fn)) == NULL)
 	goto exit;
 
+    int needtar = (at->extractable == 0);
+
     if (dstpath) {
 	char * sr = singleRoot(fn);
 
-	/* the trick is simple, if the archive has multiple entries,
-	 * just extract it into the specified destination path, otherwise
-	 * strip the first path entry and extract in the destination path
+	/* if the archive has multiple entries, just extract it into the
+	 * specified destination path, otherwise also strip the first path
+	 * entry
 	 */
-	rasprintf(&mkdir, "mkdir '%s' ; ", dstpath);
-	rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+	if (needtar) {
+	    rasprintf(&mkdir, "mkdir -p '%s' ; ", dstpath);
+	    rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+	} else {
+	    if (sr) {
+		rasprintf(&mkdir, "mkdir -p '%s' ; tmp=`mktemp -d -p'%s'` ; ",
+			  dstpath, dstpath);
+		char * moveup;
+		/* Extract into temp directory to avoid collisions */
+		/* then move files in top dir two levels up */
+		rasprintf(
+		    &moveup,
+		    " && "
+		    "(shopt -s dotglob; mv \"$tmp\"/'%s'/* '%s') && "
+		    "rmdir \"$tmp\"/'%s' \"$tmp\" ", sr, dstpath, sr);
+		rasprintf(&stripcd, "%s\"$tmp\" %s", at->dest, moveup);
+		free(moveup);
+	    } else {
+		rasprintf(&mkdir, "mkdir -p '%s' ; ", dstpath);
+		rasprintf(&stripcd, "%s'%s'", at->dest, dstpath);
+	    }
+	}
 	free(sr);
     } else {
 	mkdir = xstrdup("");
@@ -171,7 +194,6 @@ static char *doUntar(const char *fn)
     tar = rpmGetPath("%{__tar}", NULL);
     if (at->compressed != COMPRESSED_NOT) {
 	char *zipper = NULL;
-	int needtar = (at->extractable == 0);
 
 	zipper = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			   at->cmd, " ", at->unpack, " ",
@@ -196,7 +218,7 @@ static char *doUntar(const char *fn)
 	    free(gem);
 	    free(tmp);
 	} else {
-	    rasprintf(&buf, "%s '%s'", zipper, fn);
+	    rasprintf(&buf, "%s%s '%s' %s", mkdir, zipper, fn, stripcd);
 	}
 	free(zipper);
     } else {
