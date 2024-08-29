@@ -126,10 +126,10 @@ exit:
 static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
 {
     int rc = EXIT_FAILURE;
-    char * name = rpmExpand("%{?_gpg_name}", NULL);
+    char * name = rpmExpand("%{?_openpgp_sign_id}", NULL);
 
     if (rstreq(name, "")) {
-	fprintf(stderr, _("You must set \"%%_gpg_name\" in your macro file\n"));
+	fprintf(stderr, _("You must set \"%%_openpgp_sign_id\" in your macro file\n"));
 	goto exit;
     }
 

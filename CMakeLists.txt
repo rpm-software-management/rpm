@@ -154,6 +154,7 @@ function(makemacros)
 	findutil(__AS as)
 	findutil(__CPP cpp)
 	findutil(__CXX c++)
+	findutil(__SQ sq)
 
 	list(GET db_backends 0 DB_BACKEND)
 

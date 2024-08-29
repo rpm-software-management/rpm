@@ -199,7 +199,7 @@ char ** signCmd(const char *sigfile)
     rpmPushMacro(NULL, "__plaintext_filename", NULL, "-", -1);
     rpmPushMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
-    char *cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
+    char *cmd = rpmExpand("%{?__openpgp_sign_cmd}", NULL);
 
     rpmPopMacro(NULL, "__plaintext_filename");
     rpmPopMacro(NULL, "__signature_filename");
@@ -797,7 +797,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	    free(algo);
 	}
 	if (args->keyid) {
-	    rpmPushMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
+	    rpmPushMacro(NULL, "_opengpg_sign_id", NULL, args->keyid, RMIL_GLOBAL);
 	}
     }
 
@@ -808,7 +808,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	    rpmPopMacro(NULL, "_gpg_digest_algo");
 	}
 	if (args->keyid) {
-	    rpmPopMacro(NULL, "_gpg_name");
+	    rpmPopMacro(NULL, "_openpgp_sign_id");
 	}
     }
 
