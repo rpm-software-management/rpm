@@ -90,11 +90,11 @@ static char *doUncompress(const char *fn)
  * Detect if an archive has a single top level entry, and it's a directory.
  *
  * @param path	path of the archive
- * @return	1 if archive as only a directory as top level entry,
- * 		0 if it contains multiple top level entries or a single file
- * 		-1 on archive error
+ * @return	only top level directory (if any),
+ * 		NULL if it contains multiple top level entries or a single file
+ * 		or on archive error
  */
-static int singleRoot(const char *path)
+static char * singleRoot(const char *path)
 {
 	struct archive *a;
 	struct archive_entry *entry;
@@ -128,15 +128,18 @@ static int singleRoot(const char *path)
 		goto afree;
 	    }
 	}
+	*sep = '\0';
 	ret = 1;
 
 afree:
-	free(rootName);
 	r = archive_read_free(a);
 	if (r != ARCHIVE_OK)
 	    ret = -1;
 
-	return ret;
+	if (ret != 1)
+	    rootName = _free(rootName);
+
+	return rootName;
 }
 
 static char *doUntar(const char *fn)
@@ -152,7 +155,7 @@ static char *doUntar(const char *fn)
 	goto exit;
 
     if (dstpath) {
-	int sr = singleRoot(fn);
+	char * sr = singleRoot(fn);
 
 	/* the trick is simple, if the archive has multiple entries,
 	 * just extract it into the specified destination path, otherwise
@@ -160,6 +163,7 @@ static char *doUntar(const char *fn)
 	 */
 	rasprintf(&mkdir, "mkdir '%s' ; ", dstpath);
 	rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+	free(sr);
     } else {
 	mkdir = xstrdup("");
 	stripcd = xstrdup("");
