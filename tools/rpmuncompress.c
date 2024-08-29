@@ -152,14 +152,17 @@ static char *doUntar(const char *fn)
 	goto exit;
 
     if (dstpath) {
-	    int sr = singleRoot(fn);
+	int sr = singleRoot(fn);
 
-	    /* the trick is simple, if the archive has multiple entries,
-	     * just extract it into the specified destination path, otherwise
-	     * strip the first path entry and extract in the destination path
-	     */
-	    rasprintf(&mkdir, "mkdir '%s' ; ", dstpath);
-	    rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+	/* the trick is simple, if the archive has multiple entries,
+	 * just extract it into the specified destination path, otherwise
+	 * strip the first path entry and extract in the destination path
+	 */
+	rasprintf(&mkdir, "mkdir '%s' ; ", dstpath);
+	rasprintf(&stripcd, " -C '%s' %s", dstpath, sr ? "--strip-components=1" : "");
+    } else {
+	mkdir = xstrdup("");
+	stripcd = xstrdup("");
     }
     tar = rpmGetPath("%{__tar}", NULL);
     if (at->compressed != COMPRESSED_NOT) {
@@ -170,7 +173,7 @@ static char *doUntar(const char *fn)
 			   at->cmd, " ", at->unpack, " ",
 			   verbose ? "" : at->quiet, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir ?: "", zipper, fn, tar, taropts, stripcd ?: "");
+	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir, zipper, fn, tar, taropts, stripcd);
 	} else if (at->compressed == COMPRESSED_GEM) {
 	    char *tmp = xstrdup(fn);
 	    const char *bn = basename(tmp);
@@ -193,7 +196,7 @@ static char *doUntar(const char *fn)
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s '%s' %s", mkdir ?: "", tar, taropts, fn, stripcd ?: "");
+	rasprintf(&buf, "%s %s %s '%s' %s", mkdir, tar, taropts, fn, stripcd);
     }
 
 exit:
