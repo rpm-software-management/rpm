@@ -347,6 +347,45 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress "/tmp/some%%ath"
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([uncompress 3])
+AT_KEYWORDS([macros rpmuncompress])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C /tmp/test-1.2.3 /data/SOURCES/test-1.2.3.zip
+],
+[0],
+[])
+
+RPMTEST_CHECK([
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C /tmp/test-1.2.3-7 /data/SOURCES/test-1.2.3.7z
+],
+[0],
+[])
+
+
+RPMTEST_CHECK([
+runroot_other find /tmp/test-1.2.3
+],
+[0],
+[/tmp/test-1.2.3
+/tmp/test-1.2.3/README.txt
+/tmp/test-1.2.3/src
+/tmp/test-1.2.3/src/README.txt
+/tmp/test-1.2.3/.gitignore
+])
+RPMTEST_CHECK([
+runroot_other find /tmp/test-1.2.3-7
+],
+[0],
+[/tmp/test-1.2.3-7
+/tmp/test-1.2.3-7/README.txt
+/tmp/test-1.2.3-7/src
+/tmp/test-1.2.3-7/src/README.txt
+/tmp/test-1.2.3-7/.gitignore
+])
+RPMTEST_CLEANUP
+
 AT_SETUP([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
