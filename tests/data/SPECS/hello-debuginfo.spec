@@ -4,6 +4,8 @@
 # inspecting it's output. Everybody else should use a simple noarch
 # package which can be built under runroot in the test-suite.
 
+%bcond customdebug 1
+
 Summary: hello -- hello, world rpm
  Name: hello
 Version: 1.0
@@ -16,7 +18,10 @@ URL: http://rpm.org
 	Source0: hello-1.0.tar.gz
  Patch0: hello-1.0-modernize.patch
 Prefix: /usr
+
+%if %{with customdebug}
 %global debug_package %{nil}
+%endif
 
 %description
 Simple rpm demonstration.
