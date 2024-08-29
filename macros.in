@@ -194,9 +194,12 @@ package or when debugging this package.\
 %files debugsource -f debugsourcefiles.list\
 %{nil}
 
+# The duplicate __debug_package definition is needed to ensure matching
+# state when %install is skipped due to short-circuit.
 %debug_package \
 %ifnarch noarch\
 %global __debug_package 1\
+%%global __debug_package 1\
 %_debuginfo_template\
 %{?_debugsource_packages:%_debugsource_template}\
 %endif\
