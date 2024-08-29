@@ -2460,6 +2460,27 @@ runroot rpm -qpl /build/RPMS/*/hello-debuginfo-1.0-1.*.rpm
 /usr/lib/debug/test.txt
 ],
 [ignore])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bb \
+		--define "_prefix /usr/local" \
+		--without customdebug \
+		--define "_enable_debug_packages 0" \
+		/data/SPECS/hello-debuginfo.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -bb \
+		--define "_prefix /usr/local" \
+		--without customdebug \
+		/data/SPECS/hello-debuginfo.spec
+],
+[1],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 AT_SETUP([explicit %_enable_debug_package on noarch])
