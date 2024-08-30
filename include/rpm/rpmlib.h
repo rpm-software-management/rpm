@@ -1,7 +1,7 @@
 #ifndef H_RPMLIB
 #define	H_RPMLIB
 
-/** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+/** \ingroup rpmcli rpmrc rpmdb header
  * \file rpmlib.h
  *
  * In Memoriam: Steve Taylor <staylor@redhat.com> was here, now he's not.
@@ -155,7 +155,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp);
 
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * Install source package.
  * @param ts		transaction set
  * @param fd		file handle

@@ -1,7 +1,7 @@
 #ifndef _RPMFILES_H
 #define _RPMFILES_H
 
-/** \ingroup rpmfilesles
+/** \ingroup rpmfiles
  * \file rpmfiles.h
  * File info set API.
  */

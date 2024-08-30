@@ -82,6 +82,9 @@
 /** \defgroup	rpmfi	File Info Set Iterator API.
     \brief File Info Set Iterator API.
  */
+/** \defgroup	payload	File archive (aka payload) API.
+    \brief File archive (aka payload) API.
+ */
 /** \defgroup	rpmfc	File Classification API.
     \brief Structures and methods for build-time file classification
  */
@@ -99,6 +102,9 @@
  */
 /** \defgroup	rpmpgp	OpenPGP API.
     \brief OpenPGP constants and structures from RFC-2440.
+ */
+/** \defgroup	rpmplugin	RPM plugins API
+    \brief Structures and methods for developint RPM plugins
  */
 /** \defgroup headquery Querying package headers:
  *
@@ -144,5 +150,8 @@
  */
 /** \defgroup	rpmrc	RPMRC.
     \brief Reading config files and getting some important configuration values.
+ */
+/** \defgroup	rpmutil	Miscellaneous utility APIs
+    \brief Miscellaneous utility APIs
  */
 /** @} */
