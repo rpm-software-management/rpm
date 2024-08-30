@@ -5,6 +5,9 @@
 
 #include "system.h"
 
+#include <algorithm>
+#include <vector>
+
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -753,16 +756,11 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     return rc;
 }
 
-static int compareBinaries(const void *p1, const void *p2) {
-    Package pkg1 = *(Package *)p1;
-    Package pkg2 = *(Package *)p2;
+static bool pkgSizeBigger(const Package & pkg1, const Package & pkg2)
+{
     uint64_t size1 = headerGetNumber(pkg1->header, RPMTAG_LONGSIZE);
     uint64_t size2 = headerGetNumber(pkg2->header, RPMTAG_LONGSIZE);
-    if (size1 > size2)
-        return -1;
-    if (size1 < size2)
-        return 1;
-    return 0;
+    return size1 > size2;
 }
 
 /*
@@ -772,26 +770,17 @@ static int compareBinaries(const void *p1, const void *p2) {
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 {
     rpmRC rc = RPMRC_OK;
-    Package pkg;
-    Package *tasks;
-    int npkgs = 0;
+    std::vector<Package> tasks;
 
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-        npkgs++;
-    tasks = (Package *)xcalloc(npkgs, sizeof(Package));
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+	tasks.push_back(pkg);
+    std::sort(tasks.begin(), tasks.end(), &pkgSizeBigger);
 
-    pkg = spec->packages;
-    for (int i = 0; i < npkgs; i++) {
-        tasks[i] = pkg;
-        pkg = pkg->next;
-    }
-    qsort(tasks, npkgs, sizeof(Package), compareBinaries);
-
+    int i = 0;
     #pragma omp parallel
     #pragma omp single
-    for (int i = 0; i < npkgs; i++) {
-	Package pkg = tasks[i];
-	#pragma omp task untied priority(i)
+    for (auto & pkg : tasks) {
+	#pragma omp task untied priority(i++)
 	{
 	pkg->rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
 	rpmlog(RPMLOG_DEBUG,
@@ -809,8 +798,6 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     /* Now check the package set if enabled */
     if (rc == RPMRC_OK)
 	rc = checkPackageSet(spec->packages);
-
-    free(tasks);
 
     return rc;
 }
