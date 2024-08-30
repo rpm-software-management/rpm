@@ -1,7 +1,7 @@
 #ifndef H_RPMDS
 #define H_RPMDS
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmds
  * \file rpmds.h
  * Structure(s) used for dependency tag sets.
  */
