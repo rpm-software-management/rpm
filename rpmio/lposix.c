@@ -331,7 +331,7 @@ static int Pmkfifo(lua_State *L)		/** mkfifo(path) */
 
 static int Pexec(lua_State *L)			/** exec(path,[args]) */
 {
-	check_deprecated(L, "posix.exec");
+	check_deprecated(L, "posix.exec", "4.20.0");
 
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
@@ -355,7 +355,7 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 
 static int Pfork(lua_State *L)			/** fork() */
 {
-	check_deprecated(L, "posix.fork");
+	check_deprecated(L, "posix.fork", "4.20.0");
 
 	pid_t pid = fork();
 	if (pid == 0) {
@@ -367,7 +367,7 @@ static int Pfork(lua_State *L)			/** fork() */
 
 static int Pwait(lua_State *L)			/** wait([pid]) */
 {
-	check_deprecated(L, "posix.wait");
+	check_deprecated(L, "posix.wait", "4.20.0");
 
 	pid_t pid = luaL_optinteger(L, 1, -1);
 	return pushresult(L, waitpid(pid, NULL, 0), NULL);
