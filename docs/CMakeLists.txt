@@ -44,6 +44,7 @@ install(FILES
 	manual/lua.md
 	manual/macros.md
 	manual/more_dependencies.md
+	manual/philosophy.md
 	manual/plugins.md
 	manual/queryformat.md
 	manual/relocatable.md
