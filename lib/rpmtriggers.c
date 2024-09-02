@@ -119,11 +119,12 @@ static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter,
     rpmTagVal prioTag = RPMTAG_TRANSFILETRIGGERPRIORITIES;
 
     while ((ds = rpmdsFilterTi(triggers, tix))) {
-	if ((rpmdsNext(ds) >= 0) && (rpmdsFlags(ds) & filter) &&
-		strcmp(prefix, rpmdsN(ds)) == 0) {
-	    unsigned int priority = getTrigPriority(trigH, prioTag, tix);
-	    rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
-				tix, priority);
+	while (rpmdsNext(ds) >= 0) {
+	    if ((rpmdsFlags(ds) & filter) && strcmp(prefix, rpmdsN(ds)) == 0) {
+		unsigned int priority = getTrigPriority(trigH, prioTag, tix);
+		rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
+				    tix, priority);
+	    }
 	}
 	rpmdsFree(ds);
 	tix++;
