@@ -36,6 +36,7 @@ struct rpmScript_s {
     char *body;			/* script body */
     char *descr;		/* description for logging */
     rpmscriptFlags flags;	/* flags to control operation */
+    char *rpmver;		/* builder rpm version */
     int chroot;			/* chrooted script? */
     struct scriptNextFileFunc_s *nextFileFunc;  /* input function */
 };
@@ -179,10 +180,18 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 
+	lua_pushstring(L, "RPM_PACKAGE_RPMVERSION");
+	lua_pushstring(L, script->rpmver);
+	lua_settable(L, LUA_REGISTRYINDEX);
+
 	if (chdir("/") == 0 &&
 		rpmluaRunScript(lua, scriptbuf, script->descr, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
 	}
+
+	lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");
+	lua_pushnil(L);
+	lua_settable(L, LUA_REGISTRYINDEX);
 
 	/* This failing would be fatal, return something different for it... */
 	if (fchdir(cwd)) {
@@ -530,6 +539,7 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     script->type = getScriptType(tag);
     script->flags = getDefFlags(tag) | flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
+    script->rpmver = headerGetAsString(h, RPMTAG_RPMVERSION);
     script->chroot = 1;
     rasprintf(&script->descr, "%%%s%s(%s)", prefix, tag2sln(tag), nevra);
 
@@ -706,6 +716,7 @@ rpmScript rpmScriptFree(rpmScript script)
 	free(script->args);
 	free(script->body);
 	free(script->descr);
+	free(script->rpmver);
 	delete script->nextFileFunc;
 	delete script;
     }
