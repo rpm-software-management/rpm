@@ -4,6 +4,8 @@
 #include <rpm/rpmutil.h>
 #include "rpmscript.h"
 
+#define RPMTRIGGER_DEFAULT_PRIORITY 1000000
+
 struct triggerInfo_s {
     unsigned int hdrNum;
     unsigned int tix;

@@ -10,6 +10,7 @@
 
 #include "rpmlua.h"
 #include "rpmscript.h"	/* script flags */
+#include "rpmtriggers.h" /* default priority */
 #include "rpmbuild_internal.h"
 #include "rpmbuild_misc.h"
 
@@ -86,7 +87,7 @@ int parseScript(rpmSpec spec, int parsePart)
     char *prog = xstrdup("/bin/sh");
     char *origprog = prog;
     char *file = NULL;
-    int priority = 1000000;
+    int priority = RPMTRIGGER_DEFAULT_PRIORITY;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},

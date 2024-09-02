@@ -99,24 +99,32 @@ static void rpmtriggersSortAndUniq(rpmtriggers trigs)
     }
 }
 
+static unsigned int getTrigPriority(Header h, rpmTagVal prioTag, int tix)
+{
+    unsigned int priority = RPMTRIGGER_DEFAULT_PRIORITY;
+    struct rpmtd_s priorities;
+
+    if (headerGet(h, prioTag, &priorities, HEADERGET_MINMEM)) {
+	if (rpmtdSetIndex(&priorities, tix) >= 0)
+	    priority = rpmtdGetNumber(&priorities);
+    }
+    return priority;
+}
+
 static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter,
 			const char *prefix)
 {
     int tix = 0;
     rpmds ds;
     rpmds triggers = rpmdsNew(trigH, RPMTAG_TRANSFILETRIGGERNAME, 0);
+    rpmTagVal prioTag = RPMTAG_TRANSFILETRIGGERPRIORITIES;
 
     while ((ds = rpmdsFilterTi(triggers, tix))) {
 	if ((rpmdsNext(ds) >= 0) && (rpmdsFlags(ds) & filter) &&
 		strcmp(prefix, rpmdsN(ds)) == 0) {
-	    struct rpmtd_s priorities;
-
-	    if (headerGet(trigH, RPMTAG_TRANSFILETRIGGERPRIORITIES,
-			&priorities, HEADERGET_MINMEM)) {
-		rpmtdSetIndex(&priorities, tix);
-		rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
-				tix, *rpmtdGetUint32(&priorities));
-	    }
+	    unsigned int priority = getTrigPriority(trigH, prioTag, tix);
+	    rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
+				tix, priority);
 	}
 	rpmdsFree(ds);
 	tix++;
@@ -542,9 +550,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 	/* Check if file trigger is fired by any file in ts/te */
 	if (matchFunc(ts, te, pfx, sense)) {
 	    for (i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
-		struct rpmtd_s priorities;
 		unsigned int priority = 0;
-		unsigned int *priority_ptr;
 		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
 		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
 
@@ -560,11 +566,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 
 		/* Get priority of trigger from header */
 		trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offset);
-		headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
-		rpmtdSetIndex(&priorities, tix);
-		priority_ptr = rpmtdGetUint32(&priorities);
-		if (priority_ptr)
-		    priority = *priority_ptr;
+		priority = getTrigPriority(trigH, priorityTag, tix);
 		headerFree(trigH);
 
 		/* Store file trigger in array */
@@ -628,9 +630,11 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
     triggers = rpmtriggersCreate(triggersCount);
 
     for (i = 0; i < triggersCount; i++) {
-	rpmtdSetIndex(&priorities, i);
+	unsigned int priority = RPMTRIGGER_DEFAULT_PRIORITY;
+	if (rpmtdSetIndex(&priorities, i) >= 0)
+	    priority = rpmtdGetNumber(&priorities);
 	/* Offset is not important, all triggers are from the same package */
-	rpmtriggersAdd(triggers, 0, i, *rpmtdGetUint32(&priorities));
+	rpmtriggersAdd(triggers, 0, i, priority);
     }
 
     /* Sort triggers by priority, offset, trigger index */
