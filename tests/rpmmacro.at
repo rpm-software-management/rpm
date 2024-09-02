@@ -365,24 +365,24 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C /tmp/test-1.2.3-7 /data/
 
 
 RPMTEST_CHECK([
-runroot_other find /tmp/test-1.2.3
+runroot_other find /tmp/test-1.2.3 | sort
 ],
 [0],
 [/tmp/test-1.2.3
+/tmp/test-1.2.3/.gitignore
 /tmp/test-1.2.3/README.txt
 /tmp/test-1.2.3/src
 /tmp/test-1.2.3/src/README.txt
-/tmp/test-1.2.3/.gitignore
 ])
 RPMTEST_CHECK([
-runroot_other find /tmp/test-1.2.3-7
+runroot_other find /tmp/test-1.2.3-7 | sort
 ],
 [0],
 [/tmp/test-1.2.3-7
+/tmp/test-1.2.3-7/.gitignore
 /tmp/test-1.2.3-7/README.txt
 /tmp/test-1.2.3-7/src
 /tmp/test-1.2.3-7/src/README.txt
-/tmp/test-1.2.3-7/.gitignore
 ])
 RPMTEST_CLEANUP
 
