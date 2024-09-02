@@ -475,7 +475,133 @@ transfiletriggerpostun(/foo*):
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic file triggers 2])
+AT_SETUP([basic file triggers: prefix args])
+AT_KEYWORDS([filetrigger script])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hlinktest.spec
+runroot rpmbuild --quiet -bb /data/SPECS/filetriggers-prefix.spec
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/filetriggers-prefix-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+runroot rpm -e hello-script
+],
+[0],
+[filetriggerin:
+/usr/bin
+
+transfiletriggerin:
+/usr/bin
+
+transfiletriggerun:
+/usr/bin
+
+filetriggerun:
+/usr/bin
+
+filetriggerpostun:
+/usr/bin
+
+transfiletriggerpostun
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -e hlinktest
+],
+[0],
+[filetriggerin:
+/foo
+
+transfiletriggerin:
+/foo
+
+transfiletriggerun:
+/foo
+
+filetriggerun:
+/foo
+
+filetriggerpostun:
+/foo
+
+transfiletriggerpostun
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
+	       /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -e hello-script hlinktest
+],
+[0],
+[filetriggerin:
+/foo
+
+filetriggerin:
+/usr/bin
+
+transfiletriggerin:
+/foo
+/usr/bin
+
+transfiletriggerun:
+/foo
+/usr/bin
+
+filetriggerun:
+/foo
+
+filetriggerpostun:
+/foo
+
+filetriggerun:
+/usr/bin
+
+filetriggerpostun:
+/usr/bin
+
+transfiletriggerpostun
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e filetriggers-prefix
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
+	       /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/filetriggers-prefix-1.0-1.noarch.rpm
+runroot rpm -e filetriggers-prefix
+],
+[0],
+[filetriggerin:
+/foo
+/usr/bin
+
+transfiletriggerin:
+/foo
+/usr/bin
+
+transfiletriggerun:
+/foo
+/usr/bin
+
+filetriggerun:
+/foo
+/usr/bin
+
+],
+[])
+
+RPMTEST_CLEANUP
+
+AT_SETUP([basic file triggers: runtime args])
 AT_KEYWORDS([filetrigger script])
 RPMDB_INIT
 
