@@ -293,7 +293,78 @@ scripts-1.0-2 POSTUNTRANS 0
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic trigger scripts and arguments])
+AT_SETUP([basic trigger scripts: package args])
+AT_KEYWORDS([trigger script])
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+runroot rpmbuild --quiet -bb /data/SPECS/hlinktest.spec
+runroot rpmbuild --quiet -bb \
+		 --define "rel 1" \
+		 --define "trigpkg hello-script hlinktest non-existent" \
+		 /data/SPECS/triggers.spec
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/triggers-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+runroot rpm -e hello-script
+],
+[0],
+[triggers-1.0-1 TRIGGERPREIN 1 0
+triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERUN 1 0
+triggers-1.0-1 TRIGGERPOSTUN 1 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -e hlinktest
+],
+[0],
+[triggers-1.0-1 TRIGGERPREIN 1 0
+triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERUN 1 0
+triggers-1.0-1 TRIGGERPOSTUN 1 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
+	       /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -e hello-script hlinktest
+],
+[0],
+[triggers-1.0-1 TRIGGERPREIN 1 0
+triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERPREIN 1 0
+triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERUN 1 0
+triggers-1.0-1 TRIGGERPOSTUN 1 0
+triggers-1.0-1 TRIGGERUN 1 0
+triggers-1.0-1 TRIGGERPOSTUN 1 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e triggers
+runroot rpm -U /build/RPMS/noarch/hello-script-1.0-1.noarch.rpm \
+	       /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/triggers-1.0-1.noarch.rpm
+runroot rpm -e triggers
+],
+[0],
+[triggers-1.0-1 TRIGGERPREIN 0 1
+triggers-1.0-1 TRIGGERIN 1 1
+triggers-1.0-1 TRIGGERUN 0 1
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([basic trigger scripts: runtime args])
 AT_KEYWORDS([trigger script])
 RPMDB_INIT
 
