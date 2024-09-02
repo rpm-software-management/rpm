@@ -386,6 +386,55 @@ runroot_other find /tmp/test-1.2.3-7 | sort
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([uncompress 4])
+AT_KEYWORDS([macros rpmuncompress])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot_other mkdir -p /tmp/1
+runroot_other --chdir /tmp/1 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.zip
+runroot_other --chdir /tmp/1 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.zip
+],
+[0],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot_other --chdir /tmp/1 find . | sort
+],
+[0],
+[.
+./test-1.2.3-beta
+./test-1.2.3-beta/.gitignore
+./test-1.2.3-beta/README.txt
+./test-1.2.3-beta/src
+./test-1.2.3-beta/src/README.txt
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot_other mkdir -p /tmp/2
+runroot_other --chdir /tmp/2 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.7z
+runroot_other --chdir /tmp/2 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.7z
+],
+[0],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot_other --chdir /tmp/2 find . | sort
+],
+[0],
+[.
+./test-1.2.3-beta
+./test-1.2.3-beta/.gitignore
+./test-1.2.3-beta/README.txt
+./test-1.2.3-beta/src
+./test-1.2.3-beta/src/README.txt
+],
+[ignore])
+RPMTEST_CLEANUP
+
 AT_SETUP([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
