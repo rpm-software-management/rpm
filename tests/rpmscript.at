@@ -801,3 +801,31 @@ runroot_other test -f /tmp/scriptwrite.log
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([deprecated Lua functions])
+AT_KEYWORDS([script lua])
+
+# binary pre-built on rpm 4.18 should emit no warnings
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot rpm -U /data/RPMS/luafork-1.0-1.noarch.rpm
+],
+[0],
+[child
+],
+[])
+
+RPMTEST_CHECK([
+RPMDB_INIT
+
+runroot rpmbuild -bb --quiet /data/SPECS/luafork.spec
+runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm
+],
+[0],
+[child
+],
+[warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
+warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
+])
+
+RPMTEST_CLEANUP
+

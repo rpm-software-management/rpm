@@ -759,7 +759,7 @@ static int rpm_redirect2null(lua_State *L)
 {
     int target_fd, fd, r, e;
 
-    check_deprecated(L, "rpm.redirect2null");
+    check_deprecated(L, "rpm.redirect2null", "4.20.0");
 
     if (!_rpmlua_have_forked)
 	return luaL_error(L, "redirect2null not permitted in this context");
@@ -1365,8 +1365,22 @@ static int luaopen_rpm(lua_State *L)
     return 1;
 }
 
-void check_deprecated(lua_State *L, const char *func)
+void check_deprecated(lua_State *L, const char *func, const char *deprecated_in)
 {
-    fprintf(stderr,
-	"warning: %s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead\n", func);
+    int warn = 1;
+    lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");
+    if (lua_isstring(L, -1)) {
+	rpmver v1 = rpmverParse(lua_tostring(L, -1));
+	rpmver v2 = rpmverParse(deprecated_in);
+	if (v1 && v2 && rpmverCmp(v1, v2) < 0)
+	    warn = 0;
+	rpmverFree(v2);
+	rpmverFree(v1);
+    }
+    lua_pop(L, 1);
+
+    if (warn) {
+	fprintf(stderr,
+	    "warning: %s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead\n", func);
+    }
 }
