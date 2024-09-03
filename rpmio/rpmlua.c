@@ -787,6 +787,8 @@ static int rpm_redirect2null(lua_State *L)
 {
     int target_fd, fd, r, e;
 
+    check_deprecated(L, "rpm.redirect2null");
+
     if (!_rpmlua_have_forked)
 	return luaL_error(L, "redirect2null not permitted in this context");
 
@@ -1391,4 +1393,10 @@ static int luaopen_rpm(lua_State *L)
 
     luaL_newlib(L, rpmlib);
     return 1;
+}
+
+void check_deprecated(lua_State *L, const char *func)
+{
+    fprintf(stderr,
+	"warning: %s(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead\n", func);
 }
