@@ -132,21 +132,20 @@ int rpmScriptChrootOut(rpmScript script)
  * Run internal Lua script.
  */
 static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2,
-		   scriptNextFileFunc nextFileFunc)
+		   rpmScript script, rpmlogLvl lvl, FD_t scriptFd,
+		   ARGV_t * argvp, int arg1, int arg2)
 {
-    char *scriptbuf = NULL;
+    char *scriptbuf = script->body;
     rpmRC rc = RPMRC_FAIL;
     rpmlua lua = rpmluaGetGlobalState();
     lua_State *L = (lua_State *)rpmluaGetLua(lua);
     int cwd = -1;
 
-    rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
+    rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", script->descr);
 
-    if (nextFileFunc) {
+    if (script->nextFileFunc) {
 	lua_getglobal(L, "rpm");
-	lua_pushlightuserdata(L, nextFileFunc);
+	lua_pushlightuserdata(L, script->nextFileFunc);
 	lua_pushcclosure(L, &next_file, 1);
 	lua_setfield(L, -2, "next_file");
     }
@@ -168,11 +167,10 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 
     if (arg1 >= 0 || arg2 >= 0) {
 	/* Hack to convert arguments to numbers for backwards compat. Ugh. */
-	rstrscat(&scriptbuf,
+	scriptbuf = rstrscat(NULL,
 		arg1 >= 0 ? "arg[2] = tonumber(arg[2]);" : "",
 		arg2 >= 0 ? "arg[3] = tonumber(arg[3]);" : "",
-		script, NULL);
-        script = scriptbuf;
+		script->body, NULL);
     }
 
     /* Lua scripts can change our cwd and umask, save and restore */
@@ -182,9 +180,10 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	umask(oldmask);
 
 	if (chdir("/") == 0 &&
-		rpmluaRunScript(lua, script, sname, NULL, *argvp) == 0) {
+		rpmluaRunScript(lua, scriptbuf, script->descr, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
 	}
+
 	/* This failing would be fatal, return something different for it... */
 	if (fchdir(cwd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to restore current directory: %m"));
@@ -193,14 +192,15 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	close(cwd);
 	umask(oldmask);
     }
-    free(scriptbuf);
+    if (scriptbuf != script->body)
+	free(scriptbuf);
 
     if (prefixes) {
 	lua_pushnil(L);
 	lua_setglobal(L, "RPM_INSTALL_PREFIX");
     }
 
-    if (nextFileFunc) {
+    if (script->nextFileFunc) {
 	lua_pushnil(L);
 	lua_setfield(L, -2, "next_file");
 	lua_pop(L, 1); /* "rpm" global */
@@ -308,9 +308,8 @@ exit:
  * Run an external script.
  */
 static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2,
-		   scriptNextFileFunc nextFileFunc)
+		   rpmScript script, rpmlogLvl lvl, FD_t scriptFd,
+		   ARGV_t * argvp, int arg1, int arg2)
 {
     FD_t out = NULL;
     char * fn = NULL;
@@ -322,14 +321,14 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     char *mline = NULL;
     rpmRC rc = RPMRC_FAIL;
 
-    rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
+    rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", script->descr);
 
-    if (script) {
-	fn = writeScript(*argvp[0], script);
+    if (script->body) {
+	fn = writeScript(*argvp[0], script->body);
 	if (fn == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		   _("Couldn't create temporary file for %s: %s\n"),
-		   sname, strerror(errno));
+		   script->descr, strerror(errno));
 	    goto exit;
 	}
 
@@ -364,18 +363,18 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     }
     if (out == NULL) { 
 	rpmlog(RPMLOG_ERR, _("Couldn't duplicate file descriptor: %s: %s\n"),
-	       sname, strerror(errno));
+	       script->descr, strerror(errno));
 	goto exit;
     }
 
     pid = fork();
     if (pid == (pid_t) -1) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
-		sname, strerror(errno));
+		script->descr, strerror(errno));
 	goto exit;
     } else if (pid == 0) {/* Child */
 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
-	       sname, *argvp[0], (unsigned)getpid());
+	       script->descr, *argvp[0], (unsigned)getpid());
 
 	fclose(in);
 	dup2(inpipe[0], STDIN_FILENO);
@@ -390,7 +389,8 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     close(inpipe[0]);
     inpipe[0] = 0;
 
-    if (nextFileFunc) {
+    if (script->nextFileFunc) {
+	scriptNextFileFunc nextFileFunc = script->nextFileFunc;
 	while ((line = nextFileFunc->func(nextFileFunc->param)) != NULL) {
 	    size_t size = strlen(line);
 	    size_t ret_size;
@@ -418,18 +418,18 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
     } while (reaped == -1 && errno == EINTR);
 
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   sname, (unsigned)pid, (unsigned)reaped, status);
+	   script->descr, (unsigned)pid, (unsigned)reaped, status);
 
     if (reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sname, pid, reaped, strerror(errno));
+		 script->descr, pid, reaped, strerror(errno));
     } else if (!WIFEXITED(status) || WEXITSTATUS(status)) {
       	if (WIFSIGNALED(status)) {
 	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
-                   sname, WTERMSIG(status));
+                   script->descr, WTERMSIG(status));
 	} else {
 	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
-		   sname, WEXITSTATUS(status));
+		   script->descr, WEXITSTATUS(status));
 	}
     } else {
 	/* if we get this far we're clear */
@@ -482,9 +482,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
-	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
+	    rc = runExtScript(plugins, prefixes, script, lvl, scriptFd, &args, arg1, arg2);
 	} else {
-	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2, script->nextFileFunc);
+	    rc = runLuaScript(plugins, prefixes, script, lvl, scriptFd, &args, arg1, arg2);
 	}
     }
 
