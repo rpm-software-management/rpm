@@ -1092,7 +1092,8 @@ runroot rpm \
 ],
 [1],
 [],
-[error: lua script failed: [[string "<lua>"]]:1: redirect2null not permitted in this context]
+[warning: rpm.redirect2null(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
+error: lua script failed: [[string "<lua>"]]:1: redirect2null not permitted in this context]
 )
 RPMTEST_CLEANUP
 
@@ -1565,6 +1566,7 @@ cat stderr | sort
 [0],
 [warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
 warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
+warning: rpm.redirect2null(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
 warning: runaway fork() in Lua script
 ],
 [])
