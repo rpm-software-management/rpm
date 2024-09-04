@@ -189,12 +189,12 @@ Orderflags   | 5037 | int32 array
 ### Basic scriptlets
 
 All scriptlet tags follow the same pattern. The main tag contains the
-corresponding scriptlet (eg `%postin`) body. If present, the prog tag
+corresponding scriptlet (eg `%post`) body. If present, the prog tag
 denotes the scriptlet interpreter and possible arguments, and flags tag
 contains additional processing information such as whether to macro
 expand the scriptlet body.
 
-`%postin` script is executed right after the package got installed
+`%post` script is executed right after the package got installed
 
 Tag Name    | Value| Type
 ------------|------|--------------
@@ -220,7 +220,7 @@ Postun      | 1026 | string
 Postunflags | 5023 | int32
 Postunprog  | 1088 | string array
 
-`%prein` script is executed right before the package is installed
+`%pre` script is executed right before the package is installed
 
 Prein      | 1023 | string
 Preinflags | 5020 | int32
