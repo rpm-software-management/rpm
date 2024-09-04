@@ -33,7 +33,14 @@ echo "transfiletriggerun:"
 cat | xargs dirname | uniq
 echo
 
-%transfiletriggerpostun -- /usr/bin /foo /etc
-echo "transfiletriggerpostun"
+%transfiletriggerpostun -- /usr/bin /etc
+echo "transfiletriggerpostun:"
+echo /usr/bin
+echo
+
+%transfiletriggerpostun -- /opt /foo
+echo "transfiletriggerpostun:"
+echo /foo
+echo
 
 %files
