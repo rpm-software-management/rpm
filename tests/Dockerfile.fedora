@@ -46,7 +46,7 @@ RUN dnf -y install \
   tar unzip gzip bzip2 cpio xz p7zip-plugins \
   pkgconfig \
   /usr/bin/systemd-sysusers \
-  /usr/bin/gdb-add-index \
+  gdb-headless-14.2 \
   dwz \
   fsverity-utils fsverity-utils-devel \
   pandoc \
