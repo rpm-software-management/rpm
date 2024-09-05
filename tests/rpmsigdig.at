@@ -1003,6 +1003,15 @@ run rpmsign --define "__gpg_sign_cmd mumble" --key-id 1964C5FC --addsign "${RPMT
 [error: Invalid sign command: mumble
 ])
 
+RPMTEST_CHECK([
+run rpmsign --define "__gpg /gnus/not/here" --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+],
+[1],
+[],
+[error: Could not exec /gnus/not/here: No such file or directory
+error: /gnus/not/here exec failed (1)
+])
+
 # rpmsign --addsign <signed>
 RPMTEST_CHECK([
 RPMDB_INIT
