@@ -1,5 +1,0 @@
-%__perllib_provides	%{_rpmconfigdir}/perl.prov
-%__perllib_requires	%{_rpmconfigdir}/perl.req
-%__perllib_magic	^Perl[[:digit:]] module source.*
-%__perllib_path		\\.pm$
-%__perllib_flags	magic_and_path

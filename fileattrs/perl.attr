@@ -1,3 +1,0 @@
-%__perl_requires	%{_rpmconfigdir}/perl.req
-%__perl_magic		^.*[Pp]erl .*$
-%__perl_flags		exeonly
