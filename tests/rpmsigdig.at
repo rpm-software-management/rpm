@@ -995,6 +995,14 @@ cmp -s ${ORIG} ${NEW}; echo $?
 ],
 [])
 
+RPMTEST_CHECK([
+run rpmsign --define "__gpg_sign_cmd mumble" --key-id 1964C5FC --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+],
+[1],
+[],
+[error: Invalid sign command: mumble
+])
+
 # rpmsign --addsign <signed>
 RPMTEST_CHECK([
 RPMDB_INIT
