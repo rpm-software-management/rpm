@@ -5,12 +5,12 @@
 #include "system.h"
 
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <stack>
 
 #include <stdarg.h>
-#include <pthread.h>
 #include <errno.h>
 #include <libgen.h>
 #ifdef HAVE_SCHED_GETAFFINITY
@@ -66,14 +66,20 @@ struct rpmMacroEntry_s {
 };
 
 using macroTable = std::map<string,std::stack<rpmMacroEntry_s>>;
+using wrlock = std::lock_guard<std::recursive_mutex>;
 
 /*! The structure used to store the set of macros in a context. */
+/*
+ * The macro engine internals do not require recursive mutexes but Lua
+ * macro bindings which can get called from the internals use the external
+ * interfaces which do perform locking. Until that is fixed somehow
+ * we'll just have to settle for recursive mutexes.
+ */
 struct rpmMacroContext_s {
-    macroTable tab;	/*!< Map of macro entry stacks */
-    int depth;		 /*!< Depth tracking on external recursion */
-    int level;		 /*!< Scope level tracking when on external recursion */
-    pthread_mutex_t lock;
-    pthread_mutexattr_t lockattr;
+    macroTable tab {};	/*!< Map of macro entry stacks */
+    int depth {};	 /*!< Depth tracking on external recursion */
+    int level {};	 /*!< Scope level tracking when on external recursion */
+    std::recursive_mutex mutex {};
 };
 
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
@@ -81,29 +87,6 @@ rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
 static struct rpmMacroContext_s rpmCLIMacroContext_s;
 rpmMacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
-
-/*
- * The macro engine internals do not require recursive mutexes but Lua
- * macro bindings which can get called from the internals use the external
- * interfaces which do perform locking. Until that is fixed somehow
- * we'll just have to settle for recursive mutexes.
- * Unfortunately POSIX doesn't specify static initializers for recursive
- * mutexes so we need to have a separate PTHREAD_ONCE initializer just
- * to initialize the otherwise static macro context mutexes. Pooh.
- */
-static pthread_once_t locksInitialized = PTHREAD_ONCE_INIT;
-
-static void initLocks(void)
-{
-    rpmMacroContext mcs[] = { rpmGlobalMacroContext, rpmCLIMacroContext, NULL };
-
-    for (rpmMacroContext *mcp = mcs; *mcp; mcp++) {
-	rpmMacroContext mc = *mcp;
-	pthread_mutexattr_init(&mc->lockattr);
-	pthread_mutexattr_settype(&mc->lockattr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&mc->lock, &mc->lockattr);
-    }
-}
 
 /**
  * Macro expansion state.
@@ -157,15 +140,7 @@ static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
 {
     if (mc == NULL)
 	mc = rpmGlobalMacroContext;
-    pthread_once(&locksInitialized, initLocks);
-    pthread_mutex_lock(&mc->lock);
     return mc;
-}
-
-static rpmMacroContext rpmmctxRelease(rpmMacroContext mc)
-{
-    pthread_mutex_unlock(&mc->lock);
-    return NULL;
 }
 
 /**
@@ -1911,8 +1886,9 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
     int rc;
 
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
+
     rc = doExpandMacros(mc, sbuf, flags, &target);
-    rpmmctxRelease(mc);
 
     if (rc) {
 	free(target);
@@ -1930,6 +1906,8 @@ int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, ch
     int rc = 1; /* assume failure */
 
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
+
     mep = findEntry(mc, n, 0, NULL);
     if (mep) {
 	rpmMacroBuf mb = mbCreate(mc, flags);
@@ -1937,7 +1915,6 @@ int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, ch
 	target = xstrdup(mb->buf.c_str());
 	delete mb;
     }
-    rpmmctxRelease(mc);
     if (rc) {
 	free(target);
 	return -1;
@@ -1951,6 +1928,7 @@ void
 rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     if (fp == NULL) fp = stderr;
     
     fprintf(fp, "========================\n");
@@ -1966,7 +1944,6 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     }
     fprintf(fp, _("======================== active %zu empty %d\n"),
 		mc->tab.size(), 0);
-    rpmmctxRelease(mc);
 }
 
 int rpmPushMacroFlags(rpmMacroContext mc,
@@ -1974,8 +1951,8 @@ int rpmPushMacroFlags(rpmMacroContext mc,
 	      int level, rpmMacroFlags flags)
 {
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
-    rpmmctxRelease(mc);
     return 0;
 }
 
@@ -1991,17 +1968,17 @@ int rpmPushMacroAux(rpmMacroContext mc,
 		int level, rpmMacroFlags flags)
 {
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
 		level, flags|ME_FUNC);
-    rpmmctxRelease(mc);
     return 0;
 }
 
 int rpmPopMacro(rpmMacroContext mc, const char * n)
 {
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     popMacro(mc, n);
-    rpmmctxRelease(mc);
     return 0;
 }
 
@@ -2010,8 +1987,8 @@ rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
     int rc;
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     rc = defineMacro(mc, macro, level);
-    rpmmctxRelease(mc);
     return rc;
 }
 
@@ -2019,9 +1996,9 @@ int rpmMacroIsDefined(rpmMacroContext mc, const char *n)
 {
     int defined = 0;
     if ((mc = rpmmctxAcquire(mc)) != NULL) {
+	wrlock lock(mc->mutex);
 	if (findEntry(mc, n, 0, NULL))
 	    defined = 1;
-	rpmmctxRelease(mc);
     }
     return defined;
 }
@@ -2030,10 +2007,10 @@ int rpmMacroIsParametric(rpmMacroContext mc, const char *n)
 {
     int parametric = 0;
     if ((mc = rpmmctxAcquire(mc)) != NULL) {
+	wrlock lock(mc->mutex);
 	rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
 	if (mep && mep->opts)
 	    parametric = 1;
-	rpmmctxRelease(mc);
     }
     return parametric;
 }
@@ -2052,11 +2029,10 @@ rpmLoadMacros(rpmMacroContext mc, int level)
 
     gmc = rpmmctxAcquire(NULL);
     mc = rpmmctxAcquire(mc);
+    wrlock glock(gmc->mutex);
+    wrlock lock(mc->mutex);
 
     copyMacros(mc, gmc, level);
-
-    rpmmctxRelease(mc);
-    rpmmctxRelease(gmc);
 }
 
 int
@@ -2065,8 +2041,8 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
     int rc;
 
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     rc = loadMacroFile(mc, fn);
-    rpmmctxRelease(mc);
 
     return rc;
 }
@@ -2077,6 +2053,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
     ARGV_t pattern, globs = NULL;
     rpmMacroContext climc;
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
 
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
@@ -2108,18 +2085,16 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     /* Reload cmdline macros */
     climc = rpmmctxAcquire(rpmCLIMacroContext);
+    wrlock clilock(climc->mutex);
     copyMacros(climc, mc, RMIL_CMDLINE);
-    rpmmctxRelease(climc);
-
-    rpmmctxRelease(mc);
 }
 
 void
 rpmFreeMacros(rpmMacroContext mc)
 {
     mc = rpmmctxAcquire(mc);
+    wrlock lock(mc->mutex);
     freeMacros(mc);
-    rpmmctxRelease(mc);
 }
 
 char * 
@@ -2138,8 +2113,9 @@ rpmExpand(const char *arg, ...)
     va_end(ap);
 
     rpmMacroContext mc = rpmmctxAcquire(NULL);
+    wrlock lock(mc->mutex);
+
     (void) doExpandMacros(mc, buf.c_str(), 0, &ret);
-    rpmmctxRelease(mc);
 
     return ret;
 }
