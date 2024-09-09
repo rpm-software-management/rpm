@@ -401,7 +401,7 @@ runroot rpm \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
 ],
 [0],
-[qt8W635v5FKy1pILrW+0uw==
+[/vwl1f12ud62zrBAcGhDLA==
 ],
 [])
 RPMTEST_CLEANUP
