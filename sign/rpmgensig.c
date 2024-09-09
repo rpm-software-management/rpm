@@ -191,7 +191,7 @@ exit:
     return sigtd;
 }
 
-char ** signCmd(const char *sigfile)
+static char ** signCmd(const char *sigfile)
 {
     int argc = 0;
     char **argv = NULL;
