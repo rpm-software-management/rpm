@@ -33,7 +33,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
+	/data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 ],
 [0],
@@ -48,13 +48,15 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
+	/data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -Vva --nodeps ${VERIFYOPTS}
 ],
 [0],
-[.........    /usr/local/bin/hello
-.........    /usr/share/doc/hello-1.0
-.........  d /usr/share/doc/hello-1.0/FAQ
+[.........    /usr/bin/hello
+.........    /usr/share/doc/hello-2.0
+.........  d /usr/share/doc/hello-2.0/COPYING
+.........  d /usr/share/doc/hello-2.0/FAQ
+.........  d /usr/share/doc/hello-2.0/README
 ],
 [])
 RPMTEST_CLEANUP
@@ -125,16 +127,16 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
-rm -f "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ
-chmod u-x "${RPMTEST}"/usr/local/bin/hello
-dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
+	/data/RPMS/hello-2.0-1.i686.rpm
+rm -f "${RPMTEST}"/usr/share/doc/hello-2.0/FAQ
+chmod u-x "${RPMTEST}"/usr/bin/hello
+dd if=/dev/zero of="${RPMTEST}"/usr/bin/hello \
    conv=notrunc bs=1 seek=5 count=6 2> /dev/null
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 ],
 [1],
-[.M5....T.    /usr/local/bin/hello
-missing   d /usr/share/doc/hello-1.0/FAQ
+[.M5....T.    /usr/bin/hello
+missing   d /usr/share/doc/hello-2.0/FAQ
 ],
 [])
 RPMTEST_CLEANUP
@@ -146,16 +148,16 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
-rm -f "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ
-chmod u-x "${RPMTEST}"/usr/local/bin/hello
-dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
+	/data/RPMS/hello-2.0-1.i686.rpm
+rm -f "${RPMTEST}"/usr/share/doc/hello-2.0/FAQ
+chmod u-x "${RPMTEST}"/usr/bin/hello
+dd if=/dev/zero of="${RPMTEST}"/usr/bin/hello \
    conv=notrunc bs=1 seek=5 count=6 2> /dev/null
-runroot rpm -Vp --nodeps ${VERIFYOPTS} /data/RPMS/hello-1.0-1.i386.rpm
+runroot rpm -Vp --nodeps ${VERIFYOPTS} /data/RPMS/hello-2.0-1.i686.rpm
 ],
 [1],
-[.M5....T.    /usr/local/bin/hello
-missing   d /usr/share/doc/hello-1.0/FAQ
+[.M5....T.    /usr/bin/hello
+missing   d /usr/share/doc/hello-2.0/FAQ
 ],
 [])
 RPMTEST_CLEANUP
@@ -597,7 +599,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.ppc64.rpm
+	/data/RPMS/hello-2.0-1.i686.rpm
 
 runroot rpm -Va ${VERIFYOPTS} --nodeps | grep "/bin/hello"
 ],
@@ -612,16 +614,16 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
-	/data/RPMS/hello-1.0-1.i386.rpm
-runroot_other touch /usr/share/doc/hello-1.0/FAQ
-runroot_other chmod a-x /usr/local/bin/hello
+	/data/RPMS/hello-2.0-1.i686.rpm
+runroot_other touch /usr/share/doc/hello-2.0/FAQ
+runroot_other chmod a-x /usr/bin/hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 runroot rpm --restore hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 ],
 [0],
-[.M.......    /usr/local/bin/hello
-.......T.  d /usr/share/doc/hello-1.0/FAQ
+[.M.......    /usr/bin/hello
+.......T.  d /usr/share/doc/hello-2.0/FAQ
 ],
 [])
 RPMTEST_CLEANUP
