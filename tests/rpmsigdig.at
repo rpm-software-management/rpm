@@ -922,7 +922,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --rpmv3 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id 4344591E1964C5FC --rpmv3 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
@@ -951,7 +951,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
@@ -981,7 +981,7 @@ ORIG="${RPMTEST}/data/RPMS/hello-2.0-1.x86_64.rpm"
 NEW="${RPMTEST}/tmp/hello-2.0-1.x86_64.rpm"
 
 cp ${ORIG} "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --addsign ${NEW} > /dev/null
+run rpmsign --key-id 4344591E1964C5FC --addsign ${NEW} > /dev/null
 cmp -s ${ORIG} ${NEW}; echo $?
 run rpmsign --delsign ${NEW} > /dev/null
 cmp -s ${ORIG} ${NEW}; echo $?
@@ -1014,7 +1014,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
+run rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
 ],
 [0],
 [],
@@ -1030,7 +1030,7 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
-runroot rpmsign --define "_pkgverify_flags 0" --key-id 1964C5FC --digest-algo sha256 --addsign "/tmp/${pkg}"
+runroot rpmsign --define "_pkgverify_flags 0" --key-id 4344591E1964C5FC --digest-algo sha256 --addsign "/tmp/${pkg}"
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -1186,7 +1186,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 757BF69E --digest-algo sha512 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id B0645AEC757BF69E --digest-algo sha512 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
@@ -1219,7 +1219,7 @@ RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
-run rpmsign --key-id 5F65BBE8 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+run rpmsign --key-id 7f1c21f95f65bbe8 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
 echo PRE-IMPORT
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 echo POST-IMPORT
