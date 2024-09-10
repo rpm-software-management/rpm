@@ -307,39 +307,47 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # install a package into a local rpmdb
-# * Shall only work with relocation
+# * Shall only work with if one is relocated
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_KEYWORDS([rpmdb install])
-RPMTEST_CHECK([
 RPMDB_INIT
 
+RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch --relocate=/usr=/check \
+  --noscripts --nodeps --ignorearch \
   /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0])
 
-RPMTEST_CLEANUP
-
-
-# ------------------------------
-# install a package into a local rpmdb
-# * Shall only work with relocation
-# * Use --ignorearch because we don't know the arch
-AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
-AT_KEYWORDS([rpmdb install])
 RPMTEST_CHECK([
-RPMDB_INIT
+runroot rpm -i \
+  --noscripts --nodeps --ignorearch \
+  /data/RPMS/hello-1.0-1.ppc64.rpm
+],
+[1],
+[],
+[	file /usr/local/bin/hello from install of hello-1.0-1.ppc64 conflicts with file from package hello-1.0-1.i386
+])
 
+RPMTEST_CHECK([
 runroot rpm -i \
   --noscripts --nodeps --ignorearch --relocate=/usr=/check \
   /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
-[0],
-[ignore],
-[ignore])
+[0])
 
+RPMTEST_CHECK([
+runroot rpm -ql hello.i386 hello.ppc64
+],
+[0],
+[/usr/local/bin/hello
+/usr/share/doc/hello-1.0
+/usr/share/doc/hello-1.0/FAQ
+/check/local/bin/hello
+/check/share/doc/hello-1.0
+/check/share/doc/hello-1.0/FAQ
+])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmdb --rebuilddb])
