@@ -1037,7 +1037,7 @@ run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}"/tmp/he
 [],
 [])
 
-# rpmsign --addsign <corrupted>
+# rpmsign --addsign corrupted md5 hash
 RPMTEST_CHECK([
 RPMDB_INIT
 
@@ -1062,6 +1062,35 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+],
+[])
+
+# rpmsign --addsign corrupted payload
+RPMTEST_CHECK([
+RPMDB_INIT
+
+pkg="hello-2.0-1.x86_64.rpm"
+cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
+dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
+   conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
+runroot rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "/tmp/${pkg}"
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+],
+[error: not signing corrupt package /tmp/hello-2.0-1.x86_64.rpm: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header SHA256 digest: OK
+    Header SHA1 digest: OK
+    Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+    Payload SHA256 ALT digest: NOTFOUND
+    MD5 digest: BAD (Expected 137ca1d8b35cca02a1854ba301c5432e != d662cd0d81601a7107312684ad1ddf38)
 ],
 [])
 gpgconf --kill gpg-agent
