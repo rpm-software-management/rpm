@@ -4,12 +4,13 @@
 
 #include "system.h"
 
+#include <mutex>
+#include <shared_mutex>
 #include <vector>
 #include <string>
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <errno.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
@@ -18,13 +19,13 @@
 
 typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
-    pthread_rwlock_t lock;
     unsigned mask;
     int nrecsPri[RPMLOG_NPRIS];
     std::vector<rpmlogRec_s> recs;
     rpmlogCallback cbfunc;
     rpmlogCallbackData cbdata;
     FILE *stdlog;
+    std::shared_mutex mutex;
 };
 
 struct rpmlogRec_s {
@@ -33,40 +34,23 @@ struct rpmlogRec_s {
     std::string message;	/* log message string */
 };
 
+using wrlock = std::unique_lock<std::shared_mutex>;
+using rdlock = std::shared_lock<std::shared_mutex>;
+
 /* Force log context acquisition through a function */
-static rpmlogCtx rpmlogCtxAcquire(int write)
+static rpmlogCtx rpmlogCtxAcquire()
 {
-    static struct rpmlogCtx_s _globalCtx = { PTHREAD_RWLOCK_INITIALIZER,
-					     RPMLOG_UPTO(RPMLOG_NOTICE),
+    static struct rpmlogCtx_s _globalCtx = { RPMLOG_UPTO(RPMLOG_NOTICE),
 					     {0}, {}, NULL, NULL, NULL };
-    rpmlogCtx ctx = &_globalCtx;
-    int xx;
-
-    /* XXX Silently failing is bad, but we can't very well use log here... */
-    if (write)
-	xx = pthread_rwlock_wrlock(&ctx->lock);
-    else
-	xx = pthread_rwlock_rdlock(&ctx->lock);
-
-    return (xx == 0) ? ctx : NULL;
-}
-
-/* Release log context */
-static rpmlogCtx rpmlogCtxRelease(rpmlogCtx ctx)
-{
-    if (ctx)
-	pthread_rwlock_unlock(&ctx->lock);
-    return NULL;
+    return &_globalCtx;
 }
 
 int rpmlogGetNrecsByMask(unsigned mask)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
     int nrecs = 0;
 
-    if (ctx == NULL)
-	return -1;
-
+    rdlock lock(ctx->mutex);
     if (mask) {
 	for (int i = 0; i < RPMLOG_NPRIS; i++, mask >>= 1)
 	    if (mask & 1)
@@ -74,7 +58,6 @@ int rpmlogGetNrecsByMask(unsigned mask)
     } else
 	nrecs = ctx->recs.size();
 
-    rpmlogCtxRelease(ctx);
     return nrecs;
 }
 
@@ -86,24 +69,24 @@ int rpmlogGetNrecs(void)
 int rpmlogCode(void)
 {
     int code = -1;
-    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    rdlock lock(ctx->mutex);
     
-    if (ctx && ctx->recs.empty() == false)
+    if (ctx->recs.empty() == false)
 	code = ctx->recs.back().code;
 
-    rpmlogCtxRelease(ctx);
     return code;
 }
 
 const char * rpmlogMessage(void)
 {
     const char *msg = _("(no error)");
-    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    rdlock lock(ctx->mutex);
 
-    if (ctx && ctx->recs.empty() == false)
+    if (ctx->recs.empty() == false)
 	msg = ctx->recs.back().message.c_str();
 
-    rpmlogCtxRelease(ctx);
     return msg;
 }
 
@@ -119,10 +102,8 @@ rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
 
 void rpmlogPrintByMask(FILE *f, unsigned mask)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(0);
-
-    if (ctx == NULL)
-	return;
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    rdlock lock(ctx->mutex);
 
     if (f == NULL)
 	f = stderr;
@@ -133,8 +114,6 @@ void rpmlogPrintByMask(FILE *f, unsigned mask)
 	if (rec.message.empty() == false)
 	    fprintf(f, "    %s", rec.message.c_str());
     }
-
-    rpmlogCtxRelease(ctx);
 }
 
 void rpmlogPrint(FILE *f)
@@ -144,15 +123,11 @@ void rpmlogPrint(FILE *f)
 
 void rpmlogClose (void)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(1);
-
-    if (ctx == NULL)
-	return;
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    wrlock lock(ctx->mutex);
 
     ctx->recs.clear();
     memset(ctx->nrecsPri, 0, sizeof(ctx->nrecsPri));
-
-    rpmlogCtxRelease(ctx);
 }
 
 void rpmlogOpen (const char *ident, int option,
@@ -162,45 +137,36 @@ void rpmlogOpen (const char *ident, int option,
 
 int rpmlogSetMask (int mask)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(mask ? 1 : 0);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
 
-    int omask = -1;
-    if (ctx) {
-	omask = ctx->mask;
-	if (mask)
-	    ctx->mask = mask;
-    }
+    wrlock lock(ctx->mutex);
+    int omask = ctx->mask;
+    if (mask)
+	ctx->mask = mask;
 
-    rpmlogCtxRelease(ctx);
     return omask;
 }
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    wrlock lock(ctx->mutex);
 
-    rpmlogCallback ocb = NULL;
-    if (ctx) {
-	ocb = ctx->cbfunc;
-	ctx->cbfunc = cb;
-	ctx->cbdata = data;
-    }
+    rpmlogCallback ocb = ctx->cbfunc;
+    ctx->cbfunc = cb;
+    ctx->cbdata = data;
 
-    rpmlogCtxRelease(ctx);
     return ocb;
 }
 
 FILE * rpmlogSetFile(FILE * fp)
 {
-    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    wrlock lock(ctx->mutex);
 
-    FILE * ofp = NULL;
-    if (ctx) {
-	ofp = ctx->stdlog;
-	ctx->stdlog = fp;
-    }
+    FILE * ofp = ctx->stdlog;
+    ctx->stdlog = fp;
 
-    rpmlogCtxRelease(ctx);
     return ofp;
 }
 
@@ -374,17 +340,14 @@ static int rpmlogDefault(FILE *stdlog, rpmlogRec rec)
 /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void dolog(struct rpmlogRec_s *rec, int saverec)
 {
-    static pthread_mutex_t serialize = PTHREAD_MUTEX_INITIALIZER;
-
+    static std::mutex serial_mutex;
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
     FILE *clog = NULL;
     rpmlogCallbackData cbdata = NULL;
     rpmlogCallback cbfunc = NULL;
-    rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
-
-    if (ctx == NULL)
-	return;
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    wrlock lock(ctx->mutex);
 
     /* Save copy of all messages at warning (or below == "more important"). */
     if (saverec) {
@@ -396,25 +359,22 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
     clog = ctx->stdlog;
 
     /* Free the context for callback and actual log output */
-    ctx = rpmlogCtxRelease(ctx);
+    lock.unlock();
 
     /* Always serialize callback and output to avoid interleaved messages. */
-    if (pthread_mutex_lock(&serialize) == 0) {
-	if (cbfunc) {
-	    cbrc = cbfunc(rec, cbdata);
-	    needexit += cbrc & RPMLOG_EXIT;
-	}
-
-	if (cbrc & RPMLOG_DEFAULT) {
-	    cbrc = rpmlogDefault(clog, rec);
-	    needexit += cbrc & RPMLOG_EXIT;
-	}
-	pthread_mutex_unlock(&serialize);
+    std::lock_guard<std::mutex> serialize(serial_mutex);
+    if (cbfunc) {
+	cbrc = cbfunc(rec, cbdata);
+	needexit += cbrc & RPMLOG_EXIT;
     }
-    
+
+    if (cbrc & RPMLOG_DEFAULT) {
+	cbrc = rpmlogDefault(clog, rec);
+	needexit += cbrc & RPMLOG_EXIT;
+    }
+
     if (needexit)
 	exit(EXIT_FAILURE);
-
 }
 
 void rpmlog (int code, const char *fmt, ...)
