@@ -7,6 +7,5 @@ PAYLOADSIZE: (none)
 PAYLOADSIZEALT: (none)
 /build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm:
     Header SHA256 digest: OK
-    Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
     Payload SHA256 digest: OK

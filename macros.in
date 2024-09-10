@@ -670,7 +670,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %_pkgverify_level digest
 
 # Disabler flags for package verification (similar to vsflags)
-%_pkgverify_flags 0x20000
+# Set to 0x0 for full compatibility with v4 packages.
+%_pkgverify_flags 0x20100
 
 # Minimize writes during transactions (at the cost of more reads) to
 # conserve eg SSD disks (EXPERIMENTAL).
