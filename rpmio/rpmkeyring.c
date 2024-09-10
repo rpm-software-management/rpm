@@ -1,9 +1,10 @@
 #include "system.h"
 
+#include <mutex>
 #include <vector>
+#include <shared_mutex>
 #include <string>
 #include <map>
-#include <pthread.h>
 
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
@@ -21,13 +22,16 @@ struct rpmPubkey_s {
     std::string keyid;
     pgpDigParams pgpkey;
     int nrefs;
-    pthread_rwlock_t lock;
+    std::shared_mutex mutex;
 };
+
+using wrlock = std::unique_lock<std::shared_mutex>;
+using rdlock = std::shared_lock<std::shared_mutex>;
 
 struct rpmKeyring_s {
     std::map<std::string,rpmPubkey> keys; /* pointers to keys */
     int nrefs;
-    pthread_rwlock_t lock;
+    std::shared_mutex mutex;
 };
 
 static std::string key2str(const uint8_t *keyid)
@@ -39,7 +43,6 @@ rpmKeyring rpmKeyringNew(void)
 {
     rpmKeyring keyring = new rpmKeyring_s {};
     keyring->nrefs = 1;
-    pthread_rwlock_init(&keyring->lock, NULL);
     return keyring;
 }
 
@@ -48,15 +51,11 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     if (keyring == NULL)
 	return NULL;
 
-    pthread_rwlock_wrlock(&keyring->lock);
+    wrlock lock(keyring->mutex);
     if (--keyring->nrefs == 0) {
 	for (auto & item : keyring->keys)
 	    rpmPubkeyFree(item.second);
-	pthread_rwlock_unlock(&keyring->lock);
-	pthread_rwlock_destroy(&keyring->lock);
 	delete keyring;
-    } else {
-	pthread_rwlock_unlock(&keyring->lock);
     }
     return NULL;
 }
@@ -70,7 +69,7 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	return -1;
 
     /* check if we already have this key, but always wrlock for simplicity */
-    pthread_rwlock_wrlock(&keyring->lock);
+    wrlock lock(keyring->mutex);
     auto item = keyring->keys.find(key->keyid);
     if (item != keyring->keys.end() && mode == RPMKEYRING_DELETE) {
 	rpmPubkeyFree(item->second);
@@ -84,7 +83,6 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
 	rc = 0;
     }
-    pthread_rwlock_unlock(&keyring->lock);
 
     return rc;
 }
@@ -98,19 +96,17 @@ rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key)
 {
     if (keyring == NULL || key == NULL)
 	return NULL;
-    pthread_rwlock_rdlock(&keyring->lock);
+    rdlock lock(keyring->mutex);
     auto item = keyring->keys.find(key->keyid);
     rpmPubkey rkey = item == keyring->keys.end() ? NULL : rpmPubkeyLink(item->second);
-    pthread_rwlock_unlock(&keyring->lock);
     return rkey;
 }
 
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
 {
     if (keyring) {
-	pthread_rwlock_wrlock(&keyring->lock);
+	wrlock lock(keyring->mutex);
 	keyring->nrefs++;
-	pthread_rwlock_unlock(&keyring->lock);
     }
     return keyring;
 }
@@ -152,7 +148,6 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     key->nrefs = 1;
     memcpy(key->pkt.data(), pkt, pktlen);
     key->keyid = key2str(keyid);
-    pthread_rwlock_init(&key->lock, NULL);
 
 exit:
     return key;
@@ -165,7 +160,6 @@ static rpmPubkey rpmPubkeyNewSubkey(pgpDigParams pgpkey)
     key->pgpkey = pgpkey;
     key->keyid = key2str(pgpDigParamsSignID(pgpkey));
     key->nrefs = 1;
-    pthread_rwlock_init(&key->lock, NULL);
     return key;
 }
 
@@ -195,14 +189,10 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     if (key == NULL)
 	return NULL;
 
-    pthread_rwlock_wrlock(&key->lock);
+    wrlock lock(key->mutex);
     if (--key->nrefs == 0) {
 	pgpDigParamsFree(key->pgpkey);
-	pthread_rwlock_unlock(&key->lock);
-	pthread_rwlock_destroy(&key->lock);
 	delete key;
-    } else {
-	pthread_rwlock_unlock(&key->lock);
     }
     return NULL;
 }
@@ -210,9 +200,8 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
 rpmPubkey rpmPubkeyLink(rpmPubkey key)
 {
     if (key) {
-	pthread_rwlock_wrlock(&key->lock);
+	wrlock lock(key->mutex);
 	key->nrefs++;
-	pthread_rwlock_unlock(&key->lock);
     }
     return key;
 }
@@ -222,9 +211,8 @@ char * rpmPubkeyBase64(rpmPubkey key)
     char *enc = NULL;
 
     if (key) {
-	pthread_rwlock_rdlock(&key->lock);
+	rdlock lock(key->mutex);
 	enc = rpmBase64Encode(key->pkt.data(), key->pkt.size(), -1);
-	pthread_rwlock_unlock(&key->lock);
     }
     return enc;
 }
@@ -236,8 +224,8 @@ rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp)
     size_t mergedpktlen = 0;
     rpmRC rc;
 
-    pthread_rwlock_rdlock(&oldkey->lock);
-    pthread_rwlock_rdlock(&newkey->lock);
+    rdlock olock(oldkey->mutex);
+    rdlock nlock(newkey->mutex);
     rc = pgpPubkeyMerge(oldkey->pkt.data(), oldkey->pkt.size(), newkey->pkt.data(), newkey->pkt.size(), &mergedpkt, &mergedpktlen, 0);
     if (rc == RPMRC_OK && (mergedpktlen != oldkey->pkt.size() || memcmp(mergedpkt, oldkey->pkt.data(), mergedpktlen) != 0)) {
 	mergedkey = rpmPubkeyNew(mergedpkt, mergedpktlen);
@@ -246,8 +234,6 @@ rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp)
     }
     *mergedkeyp = mergedkey;
     free(mergedpkt);
-    pthread_rwlock_unlock(&newkey->lock);
-    pthread_rwlock_unlock(&oldkey->lock);
     return rc;
 }
 
@@ -266,6 +252,7 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
     rpmPubkey key = NULL;
 
     if (keyring && sig) {
+	rdlock lock(keyring->mutex);
 	auto keyid = key2str(pgpDigParamsSignID(sig));
 	auto item = keyring->keys.find(keyid);
 	if (item != keyring->keys.end()) {
@@ -287,9 +274,6 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 {
     rpmRC rc = RPMRC_FAIL;
 
-    if (keyring)
-	pthread_rwlock_rdlock(&keyring->lock);
-
     if (sig && ctx) {
 	pgpDigParams pgpkey = NULL;
 	rpmPubkey key = findbySig(keyring, sig);
@@ -305,9 +289,6 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 	    free(lints);
 	}
     }
-
-    if (keyring)
-	pthread_rwlock_unlock(&keyring->lock);
 
     return rc;
 }
