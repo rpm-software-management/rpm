@@ -12,9 +12,7 @@ m4_define([RPMOUTPUT_LEGACY], [m4_if(RPM_PGP, [legacy], [$1
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i386.rpm
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64.rpm:
@@ -22,7 +20,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: OK
-/data/RPMS/hello-1.0-1.i386.rpm:
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[/data/RPMS/hello-1.0-1.i386.rpm:
     Header SHA1 digest: OK
     MD5 digest: OK
 ],
@@ -44,22 +49,30 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
-RPMTEST_CHECK([
 RPMDB_INIT
 
 cp "${RPMTEST}"/data/misc/hello.intro "${RPMTEST}"/data/misc/hello.payload .
 gzip -cd < hello.payload > hello.uc-payload
 cat hello.intro hello.payload > "${RPMTEST}"/tmp/hello-c.rpm
 cat hello.intro hello.uc-payload > "${RPMTEST}"/tmp/hello-uc.rpm
-runroot rpmkeys -Kv /tmp/hello-c.rpm /tmp/hello-uc.rpm
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-c.rpm
 ],
-[1],
+[0],
 [/tmp/hello-c.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: OK
-/tmp/hello-uc.rpm:
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-uc.rpm
+],
+[1],
+[/tmp/hello-uc.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
@@ -1032,21 +1045,23 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
-run rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "${RPMTEST}/tmp/${pkg}" >/dev/null 2> stderr
-echo $?
-grep -c "error: not signing corrupt package " stderr
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
-echo $?
+runroot rpmsign --key-id 1964C5FC --digest-algo sha256 --addsign "/tmp/${pkg}"
 ],
-[],
-[1
-1
-/tmp/hello-2.0-1.x86_64.rpm:
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+],
+[error: not signing corrupt package /tmp/hello-2.0-1.x86_64.rpm: MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
     MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
-1
 ],
 [])
 gpgconf --kill gpg-agent
