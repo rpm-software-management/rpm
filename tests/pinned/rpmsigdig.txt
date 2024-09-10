@@ -10,4 +10,3 @@ PAYLOADSIZEALT: (none)
     Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
     Payload SHA256 digest: OK
-    MD5 digest: OK

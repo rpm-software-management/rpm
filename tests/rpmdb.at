@@ -315,14 +315,14 @@ RPMDB_INIT
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch \
+  --noscripts --nodeps --ignorearch --noverify \
   /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0])
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch \
+  --noscripts --nodeps --ignorearch --noverify \
   /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [1],
@@ -332,7 +332,7 @@ runroot rpm -i \
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch --relocate=/usr=/check \
+  --noscripts --nodeps --ignorearch --noverify --relocate=/usr=/check \
   /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0])
@@ -355,7 +355,7 @@ AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT
 
-runroot rpm -U --noscripts --nodeps --ignorearch \
+runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
   /data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
 runroot rpm -U --noscripts --nodeps --ignorearch \
