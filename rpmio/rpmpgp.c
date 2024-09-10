@@ -53,7 +53,7 @@ char *pgpIdentItem(pgpDigParams digp)
 {
     char *id = NULL;
     if (digp) {
-        char *signid = rpmhex(pgpDigParamsSignID(digp) + 4, PGP_KEYID_LEN - 4);
+        char *signid = rpmhex(pgpDigParamsSignID(digp), PGP_KEYID_LEN);
 	rasprintf(&id, _("V%d %s/%s %s, key ID %s"),
                   pgpDigParamsVersion(digp),
                   pgpValString(PGPVAL_PUBKEYALGO,
