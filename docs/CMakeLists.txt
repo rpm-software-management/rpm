@@ -26,6 +26,7 @@ if (doxsrc)
 endif()
 
 install(FILES
+  	manual/about.md
 	manual/arch_dependencies.md
 	manual/autosetup.md
 	manual/boolean_dependencies.md
