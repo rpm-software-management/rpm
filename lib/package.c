@@ -4,10 +4,10 @@
 
 #include "system.h"
 
+#include <mutex>
 #include <set>
 
 #include <netinet/in.h>
-#include <pthread.h>
 
 #include <rpm/rpmlib.h>			/* XXX RPMSIGTAG, other sig stuff */
 #include <rpm/rpmts.h>
@@ -117,21 +117,17 @@ exit:
  */
 static int stashKeyid(unsigned int keyid)
 {
-    static pthread_mutex_t keyid_lock = PTHREAD_MUTEX_INITIALIZER;
+    static std::mutex keyid_mutex;
     static std::set<unsigned int> keyids;
     int seen = 0;
 
     if (keyid == 0)
 	return 0;
 
-    /* Just pretend we didn't see the keyid if we fail to lock */
-    if (pthread_mutex_lock(&keyid_lock))
-	return 0;
-
+    std::lock_guard<std::mutex> lock(keyid_mutex);
     auto ret = keyids.insert(keyid);
     seen = (ret.second == false);
 
-    pthread_mutex_unlock(&keyid_lock);
     return seen;
 }
 
