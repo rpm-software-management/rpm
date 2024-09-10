@@ -1,7 +1,10 @@
 #include "system.h"
+
+#include <shared_mutex>
+#include <mutex>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmstrpool.h>
 #include "debug.h"
@@ -41,23 +44,13 @@ struct rpmstrPool_s {
     poolHash hash;		/* string -> sid hash table */
     int frozen;			/* are new id additions allowed? */
     int nrefs;			/* refcount */
-    pthread_rwlock_t lock;
+    std::shared_mutex mutex;
 };
 
 static inline const char *id2str(rpmstrPool pool, rpmsid sid);
 
-static inline void poolLock(rpmstrPool pool, int write)
-{
-    if (write)
-	pthread_rwlock_wrlock(&pool->lock);
-    else
-	pthread_rwlock_rdlock(&pool->lock);
-}
-
-static inline void poolUnlock(rpmstrPool pool)
-{
-    pthread_rwlock_unlock(&pool->lock);
-}
+using wrlock = std::unique_lock<std::shared_mutex>;
+using rdlock = std::shared_lock<std::shared_mutex>;
 
 /* calculate hash and string length on at once */
 static inline unsigned int rstrlenhash(const char * str, size_t * len)
@@ -258,17 +251,15 @@ rpmstrPool rpmstrPoolCreate(void)
 
     rpmstrPoolRehash(pool);
     pool->nrefs = 1;
-    pthread_rwlock_init(&pool->lock, NULL);
     return pool;
 }
 
 rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 {
     if (pool) {
-	poolLock(pool, 1);
+	wrlock lock(pool->mutex);
 	if (pool->nrefs > 1) {
 	    pool->nrefs--;
-	    poolUnlock(pool);
 	} else {
 	    if (pool_debug)
 		poolHashPrintStats(pool);
@@ -278,8 +269,6 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 		pool->chunks[i] = _free(pool->chunks[i]);
 	    }
 	    free(pool->chunks);
-	    poolUnlock(pool);
-	    pthread_rwlock_destroy(&pool->lock);
 	    free(pool);
 	}
     }
@@ -289,9 +278,8 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 rpmstrPool rpmstrPoolLink(rpmstrPool pool)
 {
     if (pool) {
-	poolLock(pool, 1);
+	wrlock lock(pool->mutex);
 	pool->nrefs++;
-	poolUnlock(pool);
     }
     return pool;
 }
@@ -301,7 +289,7 @@ void rpmstrPoolFreeze(rpmstrPool pool, int keephash)
     if (!pool)
 	return;
 
-    poolLock(pool, 1);
+    wrlock lock(pool->mutex);
     if (!pool->frozen) {
 	if (!keephash) {
 	    pool->hash = poolHashFree(pool->hash);
@@ -311,18 +299,16 @@ void rpmstrPoolFreeze(rpmstrPool pool, int keephash)
 			      pool->offs_alloced * sizeof(*pool->offs));
 	pool->frozen = 1;
     }
-    poolUnlock(pool);
 }
 
 void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
     if (pool) {
-	poolLock(pool, 1);
+	wrlock lock(pool->mutex);
 	if (pool->hash == NULL) {
 	    rpmstrPoolRehash(pool);
 	}
 	pool->frozen = 0;
-	poolUnlock(pool);
     }
 }
 
@@ -417,9 +403,13 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 
     if (pool && s) {
 	unsigned int hash = rstrnhash(s, slen);
-	poolLock(pool, create);
-	sid = strn2id(pool, s, slen, hash, create);
-	poolUnlock(pool);
+	if (create) {
+	    wrlock lock(pool->mutex);
+	    sid = strn2id(pool, s, slen, hash, create);
+	} else {
+	    rdlock lock(pool->mutex);
+	    sid = strn2id(pool, s, slen, hash, create);
+	}
     }
     return sid;
 }
@@ -431,9 +421,13 @@ rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create)
     if (pool && s) {
 	size_t slen;
 	unsigned int hash = rstrlenhash(s, &slen);
-	poolLock(pool, create);
-	sid = strn2id(pool, s, slen, hash, create);
-	poolUnlock(pool);
+	if (create) {
+	    wrlock lock(pool->mutex);
+	    sid = strn2id(pool, s, slen, hash, create);
+	} else {
+	    rdlock lock(pool->mutex);
+	    sid = strn2id(pool, s, slen, hash, create);
+	}
     }
     return sid;
 }
@@ -442,9 +436,8 @@ const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid)
 {
     const char *s = NULL;
     if (pool) {
-	poolLock(pool, 0);
+	rdlock lock(pool->mutex);
 	s = id2str(pool, sid);
-	poolUnlock(pool);
     }
     return s;
 }
@@ -453,11 +446,10 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
 {
     size_t slen = 0;
     if (pool) {
-	poolLock(pool, 0);
+	rdlock lock(pool->mutex);
 	const char *s = id2str(pool, sid);
 	if (s)
 	    slen = strlen(s);
-	poolUnlock(pool);
     }
     return slen;
 }
@@ -469,13 +461,11 @@ int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
     if (poolA == poolB)
 	 eq = (sidA == sidB);
     else {
-	poolLock(poolA, 0);
-	poolLock(poolB, 0);
+	rdlock lockB(poolB->mutex);
+	rdlock lockA(poolA->mutex);
 	const char *a = rpmstrPoolStr(poolA, sidA);
 	const char *b = rpmstrPoolStr(poolB, sidB);
 	eq = rstreq(a, b);
-	poolUnlock(poolA);
-	poolUnlock(poolB);
     }
     return eq;
 }
@@ -484,9 +474,8 @@ rpmsid rpmstrPoolNumStr(rpmstrPool pool)
 {
     rpmsid n = 0;
     if (pool) {
-	poolLock(pool, 0);
+	rdlock lock(pool->mutex);
 	n = pool->offs_size;
-	poolUnlock(pool);
     }
     return n;
 }
