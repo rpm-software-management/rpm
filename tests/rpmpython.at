@@ -190,6 +190,7 @@ myprint(rpm.labelCompare("2:1.0-1", "2.0-1"))
 )
 
 RPMPY_TEST([vfyflags API],[
+ts.setVfyFlags(0)
 dlv = ts.getVfyFlags()
 tlv = dlv | rpm.RPMVSF_NOSHA1HEADER
 olv = ts.setVfyFlags(tlv)
