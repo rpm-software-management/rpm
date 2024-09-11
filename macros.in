@@ -195,11 +195,12 @@ package or when debugging this package.\
 %{nil}
 
 # The duplicate __debug_package definition is needed to ensure matching
-# state when %install is skipped due to short-circuit.
+# state when %install is skipped due to short-circuit, IFF buildsubdir
+# is defined (indicating use of automatic debuginfo generation)
 %debug_package \
 %ifnarch noarch\
 %global __debug_package 1\
-%%global __debug_package 1\
+%{?buildsubdir:%%global __debug_package 1}\
 %_debuginfo_template\
 %{?_debugsource_packages:%_debugsource_template}\
 %endif\
