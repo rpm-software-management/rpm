@@ -2499,6 +2499,18 @@ runroot rpmbuild --quiet -bb \
 [ignore])
 RPMTEST_CLEANUP
 
+AT_SETUP([manual %debug_package use])
+AT_KEYWORDS([build debuginfo])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpmbuild -bb \
+		/data/SPECS/manualdebug.spec
+],
+[0],
+[ignore],
+[ignore])
+RPMTEST_CLEANUP
+
 AT_SETUP([explicit %_enable_debug_package on noarch])
 AT_KEYWORDS([build debuginfo])
 RPMTEST_CHECK([
