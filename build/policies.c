@@ -289,6 +289,7 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 	mod = freeModule(mod);
 	name = _free(name);
 	types = _free(types);
+	optCon = poptFreeContext(optCon);
     }
 
     rc = RPMRC_OK;
@@ -297,6 +298,7 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     freeModule(mod);
     free(name);
     free(types);
+    poptFreeContext(optCon);
 
     return rc;
 }
