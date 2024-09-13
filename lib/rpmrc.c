@@ -1,8 +1,10 @@
 #include "system.h"
 
+#include <mutex>
+#include <shared_mutex>
+
 #include <fcntl.h>
 #include <stdarg.h>
-#include <pthread.h>
 
 #if defined(__linux__)
 #include <elf.h>
@@ -39,6 +41,9 @@
 #include "rpmug.h"
 
 #include "debug.h"
+
+using wrlock = std::unique_lock<std::shared_mutex>;
+using rdlock = std::shared_lock<std::shared_mutex>;
 
 static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
@@ -145,7 +150,7 @@ struct rpmrcCtx_s {
     struct tableType_s tables[RPM_MACHTABLE_COUNT];
     int machDefaults;
     int pathDefaults;
-    pthread_rwlock_t lock;
+    std::shared_mutex mutex;
 };
 
 /* prototypes */
@@ -158,8 +163,8 @@ static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name);
 
 static void rpmRebuildTargetVars(rpmrcCtx ctx, const char **target, const char ** canontarget);
 
-/* Force context (lock) acquisition through a function */
-static rpmrcCtx rpmrcCtxAcquire(int write)
+/* Force context acquisition through a function */
+static rpmrcCtx rpmrcCtxAcquire()
 {
     static struct rpmrcCtx_s _globalCtx = {
 	.currTables = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH },
@@ -169,24 +174,10 @@ static rpmrcCtx rpmrcCtxAcquire(int write)
 	    { "buildarch", 0, 1 },
 	    { "buildos", 0, 1 }
 	},
-	.lock = PTHREAD_RWLOCK_INITIALIZER,
     };
     rpmrcCtx ctx = &_globalCtx;
 
-    /* XXX: errors should be handled */
-    if (write)
-	pthread_rwlock_wrlock(&ctx->lock);
-    else
-	pthread_rwlock_rdlock(&ctx->lock);
-
     return ctx;
-}
-
-/* Release context (lock) */
-static rpmrcCtx rpmrcCtxRelease(rpmrcCtx ctx)
-{
-    pthread_rwlock_unlock(&ctx->lock);
-    return NULL;
 }
 
 static int optionCompare(const void * a, const void * b)
@@ -1791,7 +1782,8 @@ exit:
 int rpmReadConfigFiles(const char * file, const char * target)
 {
     int rc = -1; /* assume failure */
-    rpmrcCtx ctx = rpmrcCtxAcquire(1);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    wrlock lock(ctx->mutex);
 
     if (rpmInitCrypto())
 	goto exit;
@@ -1826,13 +1818,13 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rc = 0;
 
 exit:
-    rpmrcCtxRelease(ctx);
     return rc;
 }
 
 void rpmFreeRpmrc(void)
 {
-    rpmrcCtx ctx = rpmrcCtxAcquire(1);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    wrlock lock(ctx->mutex);
     int i, j, k;
 
     ctx->platpat = argvFree(ctx->platpat);
@@ -1902,14 +1894,14 @@ void rpmFreeRpmrc(void)
     rpmluaFree(lua);
     rpmugFree();
 
-    rpmrcCtxRelease(ctx);
     return;
 }
 
 int rpmShowRC(FILE * fp)
 {
-    /* Write-context necessary as this calls rpmSetTables(), ugh */
-    rpmrcCtx ctx = rpmrcCtxAcquire(1);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    /* Write-lock necessary as this calls rpmSetTables(), ugh */
+    wrlock lock(ctx->mutex);
     const struct rpmOption *opt;
     rpmds ds = NULL;
     int i;
@@ -1977,9 +1969,6 @@ int rpmShowRC(FILE * fp)
 
     rpmDumpMacroTable(NULL, fp);
 
-    /* XXX: Move this earlier eventually... */
-    rpmrcCtxRelease(ctx);
-
     return 0;
 }
 
@@ -1987,36 +1976,37 @@ int rpmMachineScore(int type, const char * name)
 {
     int score = 0;
     if (name) {
-	rpmrcCtx ctx = rpmrcCtxAcquire(0);
+	rpmrcCtx ctx = rpmrcCtxAcquire();
+	rdlock lock(ctx->mutex);
 	machEquivInfo info = machEquivSearch(&ctx->tables[type].equiv, name);
 	if (info)
 	    score = info->score;
-	rpmrcCtxRelease(ctx);
     }
     return score;
 }
 
 int rpmIsKnownArch(const char *name)
 {
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    rdlock lock(ctx->mutex);
     canonEntry canon = lookupInCanonTable(name,
 			    ctx->tables[RPM_MACHTABLE_INSTARCH].canons,
 			    ctx->tables[RPM_MACHTABLE_INSTARCH].canonsLength);
     int known = (canon != NULL || rstreq(name, "noarch"));
-    rpmrcCtxRelease(ctx);
     return known;
 }
 
 void rpmGetArchInfo(const char ** name, int * num)
 {
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    rdlock lock(ctx->mutex);
     getMachineInfo(ctx, ARCH, name, num);
-    rpmrcCtxRelease(ctx);
 }
 
 int rpmGetArchColor(const char *arch)
 {
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    rdlock lock(ctx->mutex);
     const char *color;
     char *e;
     int color_i = -1; /* assume failure */
@@ -2031,15 +2021,14 @@ int rpmGetArchColor(const char *arch)
 	    color_i = -1;
 	}
     }
-    rpmrcCtxRelease(ctx);
 
     return color_i;
 }
 
 void rpmGetOsInfo(const char ** name, int * num)
 {
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    rpmrcCtx ctx = rpmrcCtxAcquire();
+    rdlock lock(ctx->mutex);
     getMachineInfo(ctx, OS, name, num);
-    rpmrcCtxRelease(ctx);
 }
 
