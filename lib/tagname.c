@@ -3,9 +3,6 @@
  */
 
 #include "system.h"
-
-#include <pthread.h>
-
 #include <rpm/header.h>
 #include <rpm/rpmstring.h>
 #include "debug.h"
@@ -27,9 +24,6 @@ struct headerTagTableEntry_s {
 
 #define TABLESIZE (sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1)
 static const int rpmTagTableSize = TABLESIZE;
-
-static headerTagTableEntry tagsByName[TABLESIZE]; /*!< tags sorted by name. */
-static headerTagTableEntry tagsByValue[TABLESIZE]; /*!< tags sorted by value. */
 
 /**
  * Compare tag table entries by name.
@@ -61,21 +55,32 @@ static int tagCmpValue(const void * avp, const void * bvp)
     return ret;
 }
 
-static pthread_once_t tagsLoaded = PTHREAD_ONCE_INIT;
+class tagTable {
+    public:
+    tagTable();
+    headerTagTableEntry getEntry(const char *tag);
+    headerTagTableEntry getEntry(rpmTagVal tag);
+    int getNames(rpmtd tagnames, int fullname);
 
-/* Initialize tag by-value and by-name lookup tables */
-static void loadTags(void)
+    private:
+    headerTagTableEntry byName[TABLESIZE]; /*!< tags sorted by name */
+    headerTagTableEntry byValue[TABLESIZE]; /*!< tags sorted by value */
+
+};
+
+tagTable::tagTable()
 {
+    /* Initialize tag by-value and by-name lookup tables */
     for (int i = 0; i < rpmTagTableSize; i++) {
-	tagsByValue[i] = &rpmTagTable[i];
-	tagsByName[i] = &rpmTagTable[i];
+	byValue[i] = &rpmTagTable[i];
+	byName[i] = &rpmTagTable[i];
     }
 
-    qsort(tagsByValue, rpmTagTableSize, sizeof(*tagsByValue), tagCmpValue);
-    qsort(tagsByName, rpmTagTableSize, sizeof(*tagsByName), tagCmpName);
+    qsort(byValue, rpmTagTableSize, sizeof(*byValue), tagCmpValue);
+    qsort(byName, rpmTagTableSize, sizeof(*byName), tagCmpName);
 }
 
-static headerTagTableEntry entryByTag(rpmTagVal tag)
+headerTagTableEntry tagTable::getEntry(rpmTagVal tag)
 {
     headerTagTableEntry entry = NULL;
     int i, comparison;
@@ -84,7 +89,7 @@ static headerTagTableEntry entryByTag(rpmTagVal tag)
 
     while (l < u) {
 	i = (l + u) / 2;
-	comparison = (tag - tagsByValue[i]->val);
+	comparison = (tag - byValue[i]->val);
 
 	if (comparison < 0) {
 	    u = i;
@@ -92,17 +97,17 @@ static headerTagTableEntry entryByTag(rpmTagVal tag)
 	    l = i + 1;
 	} else {
 	    /* Make sure that the bsearch retrieve is stable. */
-	    while (i > 0 && tag == tagsByValue[i-1]->val) {
+	    while (i > 0 && tag == byValue[i-1]->val) {
 		i--;
 	    }
-	    entry = tagsByValue[i];
+	    entry = byValue[i];
 	    break;
 	}
     }
     return entry;
 }
 
-static headerTagTableEntry entryByName(const char *tag)
+headerTagTableEntry tagTable::getEntry(const char *tag)
 {
     headerTagTableEntry entry = NULL;
     int i, comparison;
@@ -111,26 +116,48 @@ static headerTagTableEntry entryByName(const char *tag)
 
     while (l < u) {
 	i = (l + u) / 2;
-	comparison = rstrcasecmp(tag, tagsByName[i]->shortname);
+	comparison = rstrcasecmp(tag, byName[i]->shortname);
 
 	if (comparison < 0) {
 	    u = i;
 	} else if (comparison > 0) {
 	    l = i + 1;
 	} else {
-	    entry = tagsByName[i];
+	    entry = byName[i];
 	    break;
 	}
     }
     return entry;
 }
 
+int tagTable::getNames(rpmtd tagnames, int fullname)
+{
+    const char **names;
+    const char *name;
+
+    if (tagnames == NULL)
+	return 0;
+
+    rpmtdReset(tagnames);
+    tagnames->count = rpmTagTableSize;
+    tagnames->data = names = (const char **)xmalloc(tagnames->count * sizeof(*names));
+    tagnames->type = RPM_STRING_ARRAY_TYPE;
+    tagnames->flags = RPMTD_ALLOCED | RPMTD_IMMUTABLE;
+
+    for (int i = 0; i < tagnames->count; i++) {
+	name = fullname ? byName[i]->name :
+			  byName[i]->shortname;
+	names[i] = name;
+    }
+    return tagnames->count;
+}
+
+static tagTable tags;
+
 const char * rpmTagGetName(rpmTagVal tag)
 {
     const char *name = "(unknown)";
     const struct headerTagTableEntry_s *t;
-
-    pthread_once(&tagsLoaded, loadTags);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -145,7 +172,7 @@ const char * rpmTagGetName(rpmTagVal tag)
 	break;
 
     default:
-	t = entryByTag(tag);
+	t = tags.getEntry(tag);
 	if (t && t->shortname)
 	    name = t->shortname;
 	break;
@@ -158,9 +185,7 @@ rpmTagType rpmTagGetType(rpmTagVal tag)
     const struct headerTagTableEntry_s *t;
     rpmTagType tagtype = RPM_NULL_TYPE;
 
-    pthread_once(&tagsLoaded, loadTags);
-
-    t = entryByTag(tag);
+    t = tags.getEntry(tag);
     if (t) {
 	/* XXX this is dumb */
 	tagtype = (rpmTagType)(t->type | t->retype);
@@ -173,12 +198,10 @@ rpmTagVal rpmTagGetValue(const char * tagstr)
     const struct headerTagTableEntry_s *t;
     rpmTagVal tagval = RPMTAG_NOT_FOUND;
 
-    pthread_once(&tagsLoaded, loadTags);
-
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
 
-    t = entryByName(tagstr);
+    t = tags.getEntry(tagstr);
     if (t)
 	tagval = t->val;
 	
@@ -229,24 +252,5 @@ rpmTagClass rpmTagGetClass(rpmTagVal tag)
 
 int rpmTagGetNames(rpmtd tagnames, int fullname)
 {
-    const char **names;
-    const char *name;
-
-    pthread_once(&tagsLoaded, loadTags);
-
-    if (tagnames == NULL)
-	return 0;
-
-    rpmtdReset(tagnames);
-    tagnames->count = rpmTagTableSize;
-    tagnames->data = names = (const char **)xmalloc(tagnames->count * sizeof(*names));
-    tagnames->type = RPM_STRING_ARRAY_TYPE;
-    tagnames->flags = RPMTD_ALLOCED | RPMTD_IMMUTABLE;
-
-    for (int i = 0; i < tagnames->count; i++) {
-	name = fullname ? tagsByName[i]->name :
-			  tagsByName[i]->shortname;
-	names[i] = name;
-    }
-    return tagnames->count;
+    return tags.getNames(tagnames, fullname);
 }
