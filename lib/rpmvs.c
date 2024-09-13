@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include <pthread.h>
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
