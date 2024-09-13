@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <filesystem>
+#include <string>
 #include <vector>
 
 #include <sys/types.h>
@@ -9,7 +10,6 @@
 #include <errno.h>
 #include <popt.h>
 #include <ctype.h>
-#include <pthread.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmurl.h>
@@ -22,9 +22,6 @@
 #include "debug.h"
 
 namespace fs = std::filesystem;
-
-static const char *rpm_config_dir = NULL;
-static pthread_once_t configDirSet = PTHREAD_ONCE_INIT;
 
 int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
 {
@@ -476,14 +473,17 @@ int rpmMkdirs(const char *root, const char *pathstr)
     return rc;
 }
 
-static void setConfigDir(void)
-{
-    char *rpmenv = getenv("RPM_CONFIGDIR");
-    rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPM_CONFIGDIR;
-}
+/* One-shot initialization of our global config directory */
+struct rpmConfDir {
+    std::string path;
+    rpmConfDir() {
+	char *rpmenv = getenv("RPM_CONFIGDIR");
+	path = rpmenv ? rpmenv : RPM_CONFIGDIR;
+    };
+};
 
 const char *rpmConfigDir(void)
 {
-    pthread_once(&configDirSet, setConfigDir);
-    return rpm_config_dir;
+    static rpmConfDir confDir {};
+    return confDir.path.c_str();
 }
