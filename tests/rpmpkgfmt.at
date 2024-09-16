@@ -63,15 +63,15 @@ runroot rpm -U --nodeps /data/RPMS/hello-1.0-1.x86_64.rpm-v3
 [1],
 [],
 [warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
-	package hello-1.0-1.x86_64 does not verify: no digest
+error: package format not supported: /data/RPMS/hello-1.0-1.x86_64.rpm-v3
 ])
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps --noverify /data/RPMS/hello-1.0-1.x86_64.rpm-v3
 ],
-[0],
+[1],
 [],
 [warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
-warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+error: package format not supported: /data/RPMS/hello-1.0-1.x86_64.rpm-v3
 ])
 RPMTEST_CLEANUP

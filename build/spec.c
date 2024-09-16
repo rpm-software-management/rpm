@@ -312,15 +312,19 @@ rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag)
 
 rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
 {
+    /* Make a temporary immutable header to appease rpmtsAddInstallElement() */
+    Header h = headerReload(headerCopy(rpmSpecSourceHeader(spec)),
+			    RPMTAG_HEADERIMMUTABLE);
     rpmps probs = NULL;
 
     rpmtsEmpty(ts);
 
-    rpmtsAddInstallElement(ts, rpmSpecSourceHeader(spec), NULL, 0, NULL);
+    rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
     rpmtsCheck(ts);
     probs = rpmtsProblems(ts);
 
     rpmtsEmpty(ts);
+    headerFree(h);
     return probs;
 }
 

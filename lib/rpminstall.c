@@ -635,6 +635,12 @@ restart:
 	    eiu->numFailed++;
 	    goto exit;
 	    break;
+	case 3:
+	    rpmlog(RPMLOG_ERR,
+			    _("package format not supported: %s\n"), *eiu->fnp);
+	    eiu->numFailed++;
+	    goto exit;
+	    break;
 	default:
 	    eiu->numFailed++;
 	    goto exit;
