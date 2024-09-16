@@ -31,3 +31,47 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
 [expout],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([rpm v3 format])
+AT_KEYWORDS([pkgformat install query v3])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpm -qpl /data/RPMS/hello-1.0-1.x86_64.rpm-v3
+],
+[0],
+[/usr/local/bin/hello
+/usr/share/doc/hello
+/usr/share/doc/hello/FAQ
+],
+[warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+])
+
+RPMTEST_CHECK([
+runroot_other rpm2cpio /data/RPMS/hello-1.0-1.x86_64.rpm-v3 | cpio -t --quiet
+],
+[0],
+[./usr/local/bin/hello
+./usr/share/doc/hello
+./usr/share/doc/hello/FAQ
+],
+[warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+])
+
+RPMTEST_CHECK([
+runroot rpm -U --nodeps /data/RPMS/hello-1.0-1.x86_64.rpm-v3
+],
+[1],
+[],
+[warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+	package hello-1.0-1.x86_64 does not verify: no digest
+])
+
+RPMTEST_CHECK([
+runroot rpm -U --nodeps --noverify /data/RPMS/hello-1.0-1.x86_64.rpm-v3
+],
+[0],
+[],
+[warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+warning: RPM v3 packages are deprecated: hello-1.0-1.x86_64
+])
+RPMTEST_CLEANUP
