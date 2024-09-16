@@ -392,6 +392,12 @@ static int addPackage(rpmts ts, Header h,
 	goto exit;
     }
 
+    /* Installing v3 packages is no longer supported */
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	ec = 3;
+	goto exit;
+    }
+
     /* Source packages are never "upgraded" */
     if (isSource)
 	op = RPMTE_INSTALL;
