@@ -661,7 +661,8 @@ rpmts rpmtsCreate(void);
  * @param key		package retrieval key (e.g. file name)
  * @param upgrade	is package being upgraded?
  * @param relocs	package file relocations
- * @return		0 on success, 1 on I/O error, 2 needs capabilities
+ * @return		0 on success, 1 on I/O error, 2 needs capabilities,
+ * 			3 on unsupported format
  */
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		const fnpyKey key, int upgrade,
