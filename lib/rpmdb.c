@@ -2443,15 +2443,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		continue;
 	    }
 
-	    /* Deleted entries are eliminated in legacy headers by copy. */
-	    if (headerIsEntry(h, RPMTAG_HEADERIMAGE)) {
-		Header nh = headerReload(headerCopy(h), RPMTAG_HEADERIMAGE);
-		rc = rpmdbAdd(newdb, nh);
-		headerFree(nh);
-	    } else {
-		rc = rpmdbAdd(newdb, h);
-	    }
-
+	    rc = rpmdbAdd(newdb, h);
 	    if (rc) {
 		rpmlog(RPMLOG_ERR, _("cannot add record originally at %u\n"),
 		       rpmdbGetIteratorOffset(mi));
