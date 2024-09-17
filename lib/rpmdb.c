@@ -2426,7 +2426,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    /* let's sanity check this record a bit, otherwise just skip it */
 	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
-		headerIsEntry(h, RPMTAG_RELEASE)))
+		headerIsEntry(h, RPMTAG_RELEASE) &&
+		headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)))
 	    {
 		rpmlog(RPMLOG_ERR,
 			_("header #%u in the database is bad -- skipping.\n"),
