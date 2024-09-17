@@ -326,66 +326,6 @@ static void expandFilelist(Header h)
     (void) headerDel(h, RPMTAG_DIRINDEXES);
 }
 
-/*
- * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
- * Retrofit an explicit "Provides: name = epoch:version-release.
- */
-static void providePackageNVR(Header h)
-{
-    const char *name = headerGetString(h, RPMTAG_NAME);
-    char *pEVR = headerGetAsString(h, RPMTAG_EVR);
-    rpmsenseFlags pFlags = RPMSENSE_EQUAL;
-    int bingo = 1;
-    struct rpmtd_s pnames;
-    rpmds hds, nvrds;
-
-    /* Generate provides for this package name-version-release. */
-    if (!(name && pEVR)) {
-	free(pEVR);
-	return;
-    }
-
-    /*
-     * Rpm prior to 3.0.3 does not have versioned provides.
-     * If no provides at all are available, we can just add.
-     */
-    if (!headerGet(h, RPMTAG_PROVIDENAME, &pnames, HEADERGET_MINMEM)) {
-	goto exit;
-    }
-
-    /*
-     * Otherwise, fill in entries on legacy packages.
-     */
-    if (!headerIsEntry(h, RPMTAG_PROVIDEVERSION)) {
-	while (rpmtdNext(&pnames) >= 0) {
-	    rpmsenseFlags fdummy = RPMSENSE_ANY;
-
-	    headerPutString(h, RPMTAG_PROVIDEVERSION, "");
-	    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &fdummy, 1);
-	}
-	goto exit;
-    }
-
-    /* see if we already have this provide */
-    hds = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
-    nvrds = rpmdsSingle(RPMTAG_PROVIDENAME, name, pEVR, pFlags);
-    if (rpmdsFind(hds, nvrds) >= 0) {
-	bingo = 0;
-    }
-    rpmdsFree(hds);
-    rpmdsFree(nvrds);
-    
-
-exit:
-    if (bingo) {
-	headerPutString(h, RPMTAG_PROVIDENAME, name);
-	headerPutString(h, RPMTAG_PROVIDEVERSION, pEVR);
-	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pFlags, 1);
-    }
-    rpmtdFreeData(&pnames);
-    free(pEVR);
-}
-
 static void legacyRetrofit(Header h)
 {
     /*
@@ -395,11 +335,6 @@ static void legacyRetrofit(Header h)
      * the new style (this is a noop for new headers).
      */
      compressFilelist(h);
-
-    /* Retrofit "Provide: name = EVR" for binary packages. */
-    if (!headerIsSource(h)) {
-	providePackageNVR(h);
-    }
 }
 
 int headerConvert(Header h, int op)
