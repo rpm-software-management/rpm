@@ -2176,6 +2176,18 @@ exit:
     return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
+static bool validHeader(Header h)
+{
+    if (!(headerIsEntry(h, RPMTAG_NAME) &&
+	headerIsEntry(h, RPMTAG_VERSION) &&
+	headerIsEntry(h, RPMTAG_RELEASE) &&
+	headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)))
+    {
+	return false;
+    }
+    return true;
+}
+
 int rpmdbAdd(rpmdb db, Header h)
 {
     dbiIndex dbi = NULL;
@@ -2189,7 +2201,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	return 0;
 
     hdrBlob = (uint8_t *)headerExport(h, &hdrLen);
-    if (hdrBlob == NULL || hdrLen == 0) {
+    if (!validHeader(h) || hdrBlob == NULL || hdrLen == 0) {
 	ret = -1;
 	goto exit;
     }
@@ -2424,11 +2436,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	    /* let's sanity check this record a bit, otherwise just skip it */
-	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
-		headerIsEntry(h, RPMTAG_VERSION) &&
-		headerIsEntry(h, RPMTAG_RELEASE) &&
-		headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)))
-	    {
+	    if (!validHeader(h)) {
 		rpmlog(RPMLOG_ERR,
 			_("header #%u in the database is bad -- skipping.\n"),
 			rpmdbGetIteratorOffset(mi));
