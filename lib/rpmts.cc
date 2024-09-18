@@ -590,8 +590,13 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	unlink(tmppath);
     }
 
-    FD_t fd = Fopen(tmppath ? tmppath : path, "wx");
-    if (fd) {
+    if (rpmMkdirs(rpmtsRootDir(txn->ts), "%{_keyringpath}")) {
+	rpmlog(RPMLOG_ERR, _("failed to create keyring directory %s: %s\n"),
+		path, strerror(errno));
+	goto exit;
+    }
+
+    if (FD_t fd = Fopen(tmppath ? tmppath : path, "wx")) {
 	size_t keylen = strlen(keyval);
 	if (Fwrite(keyval, 1, keylen, fd) == keylen)
 	    rc = RPMRC_OK;
@@ -625,6 +630,7 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	free(keyglob);
     }
 
+exit:
     free(path);
     free(keyval);
     free(keyfmt);
