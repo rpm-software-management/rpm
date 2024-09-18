@@ -275,7 +275,6 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
-runroot_other mkdir -p /tmp/kr
 runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
 	--define "_keyring fs" \
