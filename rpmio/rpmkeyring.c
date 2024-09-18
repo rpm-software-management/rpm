@@ -20,6 +20,7 @@ int _print_pkts = 0;
 struct rpmPubkey_s {
     std::vector<uint8_t> pkt;
     std::string keyid;
+    rpmPubkey primarykey;
     pgpDigParams pgpkey;
     int nrefs;
     std::shared_mutex mutex;
@@ -143,6 +144,7 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
 	goto exit;
 
     key = new rpmPubkey_s {};
+    key->primarykey = NULL;
     key->pkt.resize(pktlen);
     key->pgpkey = pgpkey;
     key->nrefs = 1;
@@ -153,35 +155,83 @@ exit:
     return key;
 }
 
-static rpmPubkey rpmPubkeyNewSubkey(pgpDigParams pgpkey)
+static rpmPubkey rpmPubkeyNewSubkey(rpmPubkey primarykey, pgpDigParams pgpkey)
 {
     rpmPubkey key = new rpmPubkey_s {};
-    /* Packets with all subkeys already stored in main key */
+    /* Packets with all subkeys already stored in primary key */
+    key->primarykey = primarykey;
     key->pgpkey = pgpkey;
     key->keyid = key2str(pgpDigParamsSignID(pgpkey));
     key->nrefs = 1;
     return key;
 }
 
-rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count)
+static rpmPubkey pubkeyLink(rpmPubkey key)
+{
+    key->nrefs++;
+    return key;
+}
+
+rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count)
 {
     rpmPubkey *subkeys = NULL;
     pgpDigParams *pgpsubkeys = NULL;
     int pgpsubkeysCount = 0;
     int i;
 
-    if (mainkey && !pgpPrtParamsSubkeys(mainkey->pkt.data(), mainkey->pkt.size(),
-			mainkey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
-
+    if (primarykey && !pgpPrtParamsSubkeys(primarykey->pkt.data(), primarykey->pkt.size(),
+	    primarykey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
 	/* Returned to C, can't use new */
 	subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
-	for (i = 0; i < pgpsubkeysCount; i++)
-	    subkeys[i] = rpmPubkeyNewSubkey(pgpsubkeys[i]);
+	for (i = 0; i < pgpsubkeysCount; i++) {
+	    subkeys[i] = rpmPubkeyNewSubkey(primarykey, pgpsubkeys[i]);
+	    primarykey = pubkeyLink(primarykey);
+	}
 	free(pgpsubkeys);
     }
     *count = pgpsubkeysCount;
 
     return subkeys;
+}
+
+rpmPubkey pubkeyPrimarykey(rpmPubkey key)
+{
+    rpmPubkey primarykey = NULL;
+    if (key) {
+	wrlock lock(key->mutex);
+	if (key->primarykey == NULL) {
+	    primarykey = pubkeyLink(key);
+	} else {
+	    primarykey = rpmPubkeyLink(key->primarykey);
+	}
+    }
+    return primarykey;
+}
+
+int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen)
+{
+    if (key == NULL)
+	return -1;
+    int rc = -1;
+    rpmPubkey primarykey = pubkeyPrimarykey(key);
+    if (primarykey) {
+	rdlock lock(primarykey->mutex);
+	rc = pgpPubkeyFingerprint(primarykey->pkt.data(), primarykey->pkt.size(), fp, fplen);
+    }
+    primarykey = rpmPubkeyFree(primarykey);
+    return rc;
+}
+
+char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
+{
+    char * result = NULL;
+    uint8_t *fp = NULL;
+    size_t fplen = 0;
+    if (!rpmPubkeyFingerprint(key, &fp, &fplen)) {
+	result = rpmhex(fp, fplen);
+	free(fp);
+    }
+    return result;
 }
 
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
@@ -192,6 +242,7 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     wrlock lock(key->mutex);
     if (--key->nrefs == 0) {
 	pgpDigParamsFree(key->pgpkey);
+	rpmPubkeyFree(key->primarykey);
 	delete key;
     }
     return NULL;
