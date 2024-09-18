@@ -72,12 +72,12 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring);
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
 
 /** \ingroup rpmkeyring
- * Return array of subkeys belonging to mainkey
- * param mainkey	main rpmPubkey
+ * Return array of subkeys belonging to primarykey
+ * param primarykey	primary rpmPubkey
  * param count		count of returned subkeys
  * @return		an array of subkey's handles
  */
-rpmPubkey *rpmGetSubkeys(rpmPubkey mainkey, int *count);
+rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count);
 
 /** \ingroup rpmkeyring
  * Create a new rpmPubkey from ASCII-armored pubkey file
@@ -106,6 +106,22 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key);
  * @return              base64 encoded pubkey (malloced), NULL on error
  */
 char * rpmPubkeyBase64(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Return fingerprint of primary key
+ * @param key		Pubkey
+ * @param fp		Fingerprint data
+ * @param fplen		Length of Fingerprint
+ * @return		0 on success
+ */
+int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen);
+
+/** \ingroup rpmkeyring
+ * Return fingerprint of primary key as hex string
+ * @param key		Pubkey
+ * @ return		string or NULL on failure
+ */
+char * rpmPubkeyFingerprintAsHex(rpmPubkey key);
 
 /** \ingroup rpmkeyring
  * Return pgp params of key
