@@ -1363,7 +1363,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     /* Add to file class dictionary and index array */
     for (int ix = 0; ix < fc->nfiles; ix++) {
-	const string & ftype = fc->ftype[ix].c_str();
+	const string & ftype = fc->ftype[ix];
 	/* Pool id's start from 1, for headers we want it from 0 */
 	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype.c_str(), 1) - 1;
 
