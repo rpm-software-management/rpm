@@ -143,6 +143,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     *sinfo = vinfo->vi; /* struct assignment */
     sinfo->wrapped = (vinfo->sigh == 0);
     sinfo->strength = sinfo->type;
+    sinfo->key = NULL;
 
     if (td == NULL) {
 	rc = RPMRC_NOTFOUND;
@@ -246,6 +247,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	else if (sinfo->type == RPMSIG_DIGEST_TYPE)
 	    free(sinfo->dig);
 	rpmDigestFinal(sinfo->ctx, NULL, NULL, 0);
+	rpmPubkeyFree(sinfo->key);
 	free(sinfo->msg);
 	free(sinfo->descr);
 	memset(sinfo, 0, sizeof(*sinfo));
@@ -590,9 +592,9 @@ static rpmRC
 verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
     rpmRC res = RPMRC_FAIL;
-    if (pgpSignatureType(sinfo->sig) == PGPSIGTYPE_BINARY)
-	res = rpmKeyringVerifySig(keyring, sinfo->sig, sinfo->ctx);
-
+    if (pgpSignatureType(sinfo->sig) == PGPSIGTYPE_BINARY) {
+	res = rpmKeyringVerifySig2(keyring, sinfo->sig, sinfo->ctx, &sinfo->key);
+    }
     return res;
 }
 
