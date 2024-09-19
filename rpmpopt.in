@@ -149,6 +149,9 @@ rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 	--POPTdesc=$"list file names with their classes"
 
+rpm	alias --filemime --qf '[%{FILENAMES}\t%{FILEMIMES}\n]' \
+	--POPTdesc=$"list file names with their mime types"
+
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with their colors"
 

@@ -511,6 +511,50 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
     return ftypeTag(h, td, hgflags, makeFClass);
 }
 
+/*
+ * Attempt to generate file mime type if missing from header:
+ * we can easily generate this for symlinks and other special types.
+ * Always return malloced strings to simplify life in filemimeTag().
+ */
+static char *makeFMime(rpmfi fi)
+{
+    char *fmime = NULL;
+    const char *hm = rpmfiFMime(fi);
+
+    if (hm != NULL && hm[0] != '\0') {
+	fmime = xstrdup(hm);
+    } else {
+	switch (rpmfiFMode(fi) & S_IFMT) {
+	case S_IFBLK:
+	    fmime = xstrdup("inode/blockdevice");
+	    break;
+	case S_IFCHR:
+	    fmime = xstrdup("inode/chardevice");
+	    break;
+	case S_IFDIR:
+	    fmime = xstrdup("inode/directory");
+	    break;
+	case S_IFIFO:
+	    fmime = xstrdup("inode/fifo");
+	    break;
+	case S_IFSOCK:
+	    fmime = xstrdup("inode/socket");
+	    break;
+	case S_IFLNK:
+	    fmime = xstrdup("inode/symlink");
+	    break;
+	}
+    }
+
+    return (fmime != NULL) ? fmime : xstrdup("");
+}
+
+/* Retrieve/generate file mime types */
+static int filemimesTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return ftypeTag(h, td, hgflags, makeFMime);
+}
+
 /**
  * Retrieve file provides.
  * @param h		header
@@ -1048,6 +1092,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { RPMTAG_FILENLINKS,	filenlinksTag },
     { RPMTAG_SYSUSERS,		sysusersTag },
+    { RPMTAG_FILEMIMES,		filemimesTag },
     { 0, 			NULL }
 };
 

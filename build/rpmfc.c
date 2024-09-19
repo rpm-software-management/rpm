@@ -69,14 +69,17 @@ struct rpmfc_s {
     vector<rpmfcAttr> atypes;	/*!< known file attribute types */
 
     vector<string> fn;	/*!< (no. files) file names */
+    vector<string> fmime;/*!< (no. files) file mime types */
     vector<string> ftype;/*!< (no. files) file types */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     vector<rpm_color_t> fcolor; /*!< (no. files) file colors */
+    vector<rpmsid> fmdictx;/*!< (no. files) file mime dictionary indices */
     vector<rpmsid> fcdictx;/*!< (no. files) file class dictionary indices */
     vector<uint32_t> fddictx;/*!< (no. files) file depends dictionary start */
     vector<uint32_t> fddictn;/*!< (no. files) file depends dictionary no. entries */
     vector<uint32_t> ddictx;	/*!< (no. dependencies) file->dependency mapping */
     rpmstrPool cdict;	/*!< file class dictionary */
+    rpmstrPool mdict;	/*!< file class dictionary */
     rpmfcFileDeps fileDeps; /*!< file dependency mapping */
 
     fattrHash fahash;	/*!< attr:file mapping */
@@ -871,6 +874,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	    rpmdsFree(fd.dep);
 
 	rpmstrPoolFree(fc->cdict);
+	rpmstrPoolFree(fc->mdict);
 
 	rpmstrPoolFree(fc->pool);
 	delete fc;
@@ -1232,16 +1236,19 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->nfiles = argvCount(argv);
     fc->fn.assign(fc->nfiles, "");
     fc->ftype.assign(fc->nfiles, "");
+    fc->fmime.assign(fc->nfiles, "");
     fc->fattrs = (ARGV_t *)xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor.assign(fc->nfiles, 0);
     fc->fcdictx.assign(fc->nfiles, 0);
+    fc->fmdictx.assign(fc->nfiles, 0);
 
     /* Initialize the per-file dictionary indices. */
     fc->fddictx.assign(fc->nfiles, 0);
     fc->fddictn.assign(fc->nfiles, 0);
 
-    /* Build (sorted) file class dictionary. */
+    /* Build (sorted) file class and mime dictionaries. */
     fc->cdict = rpmstrPoolCreate();
+    fc->mdict = rpmstrPoolCreate();
 
     #pragma omp parallel
     {
@@ -1346,6 +1353,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ix, ftype, fmime, s);
 
+	fc->fmime[ix] = fmime;
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    fc->ftype[ix] = ftype;
 
@@ -1364,8 +1372,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     /* Add to file class dictionary and index array */
     for (int ix = 0; ix < fc->nfiles; ix++) {
 	const string & ftype = fc->ftype[ix];
+	const string & fmime = fc->fmime[ix];
 	/* Pool id's start from 1, for headers we want it from 0 */
 	fc->fcdictx[ix] = rpmstrPoolId(fc->cdict, ftype.c_str(), 1) - 1;
+	fc->fmdictx[ix] = rpmstrPoolId(fc->mdict, fmime.c_str(), 1) - 1;
 
 	if (ftype.empty())
 	    fc->fwhite++;
@@ -1379,6 +1389,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 exit:
     /* No more additions after this, freeze pool to minimize memory use */
     rpmstrPoolFreeze(fc->cdict, 0);
+    rpmstrPoolFreeze(fc->mdict, 0);
 
     return rc;
 }
@@ -1690,14 +1701,27 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add per-file colors(#files) */
     headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor.data(), fc->nfiles);
     
-    /* Add classes(#classes) */
-    for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
-	headerPutString(pkg->header, RPMTAG_CLASSDICT,
-			rpmstrPoolStr(fc->cdict, id));
-    }
+    if (pkg->rpmver >= 6) {
+	/* Add mime types(#mime types) */
+	for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->mdict); id++) {
+	    headerPutString(pkg->header, RPMTAG_MIMEDICT,
+			    rpmstrPoolStr(fc->mdict, id));
+	}
 
-    /* Add per-file classes(#files) */
-    headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx.data(), fc->nfiles);
+	/* Add per-file mime types(#files) */
+	headerPutUint32(pkg->header, RPMTAG_FILEMIMEINDEX,
+			fc->fmdictx.data(), fc->nfiles);
+    } else {
+	/* Add classes(#classes) */
+	for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
+	    headerPutString(pkg->header, RPMTAG_CLASSDICT,
+			    rpmstrPoolStr(fc->cdict, id));
+	}
+
+	/* Add per-file classes(#files) */
+	headerPutUint32(pkg->header, RPMTAG_FILECLASS,
+			fc->fcdictx.data(), fc->nfiles);
+    }
 
     /* Add dependency dictionary(#dependencies) */
     if (!fc->ddictx.empty()) {

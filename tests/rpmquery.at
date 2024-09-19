@@ -1341,18 +1341,58 @@ Sourcepackage
 [])
 RPMTEST_CLEANUP
 
+# my autotest fu fails to deal with trailing whitespace except by trimming it
 AT_SETUP([file classes query])
 AT_KEYWORDS([query])
 RPMDB_INIT
-RPMTEST_CHECK([
-runroot rpmbuild -bb --quiet /data/SPECS/filetypes.spec
-runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm
-],
+RPMTEST_CHECK([[
+# v4 packages
+runroot rpmbuild -bb --quiet \
+		--define "_rpmfilever 4" /data/SPECS/filetypes.spec
+runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
+]],
 [0],
 [/opt/README	ASCII text
 /opt/linkme	symbolic link to `myscript.sh'
 /opt/mydir	directory
 /opt/myscript.sh	POSIX shell script, ASCII text executable
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --filemime /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
+]],
+[0],
+[/opt/README
+/opt/linkme	inode/symlink
+/opt/mydir	inode/directory
+/opt/myscript.sh
+],
+[])
+
+# v6 variants of the same
+RPMTEST_CHECK([[
+runroot rpmbuild -bb --quiet \
+		--define "_rpmfilever 6" \
+		/data/SPECS/filetypes.spec
+runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
+]],
+[0],
+[/opt/README
+/opt/linkme	symbolic link to `myscript.sh'
+/opt/mydir	directory
+/opt/myscript.sh
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --filemime /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
+]],
+[0],
+[/opt/README	text/plain
+/opt/linkme	inode/symlink
+/opt/mydir	inode/directory
+/opt/myscript.sh	text/x-shellscript
 ],
 [])
 RPMTEST_CLEANUP

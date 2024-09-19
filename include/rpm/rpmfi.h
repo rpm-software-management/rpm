@@ -237,11 +237,18 @@ rpm_color_t rpmfiColor(rpmfi fi);
 rpm_color_t rpmfiFColor(rpmfi fi);
 
 /** \ingroup rpmfi
- * Return current file class from file info set iterator.
+ * Return current file class from file info set iterator (v4 packages).
  * @param fi		file info set iterator
  * @return		current file class, 0 on invalid
  */
 const char * rpmfiFClass(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current file mime type from file info set iterator (v6 packages)
+ * @param fi		file info set iterator
+ * @return		current file mime type, 0 on invalid
+ */
+const char * rpmfiFMime(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file depends dictionary from file info set iterator.
