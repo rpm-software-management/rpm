@@ -321,7 +321,7 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
     return key;
 }
 
-rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
+rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx, rpmPubkey * keyptr)
 {
     rpmRC rc = RPMRC_FAIL;
 
@@ -339,7 +339,15 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 	    rpmlog(rc ? RPMLOG_ERR : RPMLOG_WARNING, "%s\n", lints);
 	    free(lints);
 	}
+	if (keyptr) {
+	    *keyptr = pubkeyPrimarykey(key);
+	}
     }
 
     return rc;
+}
+
+rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
+{
+    return rpmKeyringVerifySig2(keyring, sig, ctx, NULL);
 }

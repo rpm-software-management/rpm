@@ -23,6 +23,7 @@ struct rpmsinfo_s {
     int id;
     int wrapped;
     int strength;
+    rpmPubkey key;
     unsigned int keyid;
     union {
 	pgpDigParams sig;
