@@ -43,8 +43,8 @@ Tag #2 [region]
 Header:
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 56 (896 bytes)
-Data size: 2716 bytes
-Header size: 3612 bytes
+Data size: 2719 bytes
+Header size: 3615 bytes
 
 Region entries 56
 Region size 912
@@ -53,7 +53,7 @@ Dribbles: 0
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2700
+	offset: 2703
 	count:    16
 
 	region trailer
@@ -321,74 +321,74 @@ Tag #43 [region]
 	count:    20
 
 Tag #44 [region]
-	tagno:  1141 (Fileclass)
-	type:      4 (int32)
-	offset: 2252
+	tagno:  5008 (Longfilesizes)
+	type:      5 (int64)
+	offset: 2256
 	count:    20
 
 Tag #45 [region]
-	tagno:  1142 (Classdict)
-	type:      8 (argv)
-	offset: 2332
-	count:     2
-
-Tag #46 [region]
-	tagno:  5008 (Longfilesizes)
-	type:      5 (int64)
-	offset: 2360
-	count:    20
-
-Tag #47 [region]
 	tagno:  5009 (Longsize)
 	type:      5 (int64)
-	offset: 2520
+	offset: 2416
+	count:     1
+
+Tag #46 [region]
+	tagno:  5011 (Filedigestalgo)
+	type:      4 (int32)
+	offset: 2424
+	count:     1
+
+Tag #47 [region]
+	tagno:  5062 (Encoding)
+	type:      6 (string)
+	offset: 2428
 	count:     1
 
 Tag #48 [region]
-	tagno:  5011 (Filedigestalgo)
-	type:      4 (int32)
-	offset: 2528
+	tagno:  5092 (Payloaddigest)
+	type:      8 (argv)
+	offset: 2434
 	count:     1
 
 Tag #49 [region]
-	tagno:  5062 (Encoding)
-	type:      6 (string)
-	offset: 2532
+	tagno:  5093 (Payloaddigestalgo)
+	type:      4 (int32)
+	offset: 2500
 	count:     1
 
 Tag #50 [region]
-	tagno:  5092 (Payloaddigest)
+	tagno:  5097 (Payloaddigestalt)
 	type:      8 (argv)
-	offset: 2538
+	offset: 2504
 	count:     1
 
 Tag #51 [region]
-	tagno:  5093 (Payloaddigestalgo)
-	type:      4 (int32)
-	offset: 2604
+	tagno:  5112 (Payloadsize)
+	type:      5 (int64)
+	offset: 2576
 	count:     1
 
 Tag #52 [region]
-	tagno:  5097 (Payloaddigestalt)
-	type:      8 (argv)
-	offset: 2608
+	tagno:  5113 (Payloadsizealt)
+	type:      5 (int64)
+	offset: 2584
 	count:     1
 
 Tag #53 [region]
-	tagno:  5112 (Payloadsize)
-	type:      5 (int64)
-	offset: 2680
+	tagno:  5114 (Rpmformat)
+	type:      4 (int32)
+	offset: 2592
 	count:     1
 
 Tag #54 [region]
-	tagno:  5113 (Payloadsizealt)
-	type:      5 (int64)
-	offset: 2688
-	count:     1
+	tagno:  5115 (Filemimeindex)
+	type:      4 (int32)
+	offset: 2596
+	count:    20
 
 Tag #55 [region]
-	tagno:  5114 (Rpmformat)
-	type:      4 (int32)
-	offset: 2696
-	count:     1
+	tagno:  5116 (Mimedict)
+	type:      8 (argv)
+	offset: 2676
+	count:     2
 

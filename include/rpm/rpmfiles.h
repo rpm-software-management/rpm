@@ -153,6 +153,7 @@ enum rpmfiFlags_e {
     RPMFI_NOFILEFLAGS		= (1 << 17),
     RPMFI_NOFILESIGNATURES	= (1 << 18),
     RPMFI_NOVERITYSIGNATURES	= (1 << 19),
+    RPMFI_NOFILEMIME		= (1 << 20),
 };
 
 typedef rpmFlags rpmfiFlags;
@@ -161,14 +162,14 @@ typedef rpmFlags rpmfiFlags;
     (RPMFI_NOFILECLASS | RPMFI_NOFILELANGS | \
      RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | \
      RPMFI_NOFILESIGNATURES | RPMFI_NOVERITYSIGNATURES | \
-     RPMFI_NOFILEVERIFYFLAGS)
+     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_INSTALL \
-    (RPMFI_NOFILECLASS | RPMFI_NOFILEVERIFYFLAGS)
+    (RPMFI_NOFILECLASS | RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_VERIFY \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
-     RPMFI_NOFILECOLORS)
+     RPMFI_NOFILECOLORS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_QUERY \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
@@ -181,7 +182,7 @@ typedef rpmFlags rpmfiFlags;
      RPMFI_NOFILEDIGESTS | RPMFI_NOFILEMTIMES | RPMFI_NOFILERDEVS | \
      RPMFI_NOFILEINODES | RPMFI_NOFILECOLORS | \
      RPMFI_NOFILESIGNATURES | RPMFI_NOVERITYSIGNATURES | \
-     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEFLAGS)
+     RPMFI_NOFILEVERIFYFLAGS | RPMFI_NOFILEFLAGS | RPMFI_NOFILEMIME)
 
 #define RPMFI_FLAGS_ONLY_FILENAMES \
     (RPMFI_FLAGS_FILETRIGGER | RPMFI_NOFILESTATES)
@@ -401,12 +402,20 @@ rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
 rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
- * Return file class from file info set.
+ * Return file class from file info set (v4 packages)
  * @param fi		file info set
  * @param ix		file index
  * @return		file class, 0 on invalid
  */
 const char * rpmfilesFClass(rpmfiles fi, int ix);
+
+/** \ingroup rpmfiles
+ * Return file mime type from file info set (v6 packages)
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file mime type, 0 on invalid
+ */
+const char * rpmfilesFMime(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
  * Return file depends dictionary from file info set.

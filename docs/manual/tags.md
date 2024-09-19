@@ -90,6 +90,7 @@ Dirnames          | 1118 | string array | dirname(3) components of contained pat
 Filedigestalgo    | 5011 | int32        | ID of file digest algorithm. If missing, considered `0` for `md5`.
 Longarchivesize   | 271  | int64        | (Uncompressed) payload size when > 4GB.
 Longsize          | 5009 | int64        | Installed package size when > 4GB.
+Mimedict          | 5116 | int32        | Dictionary of MIME types, only >= v6.
 Payloadcompressor | 1125 | string       | Payload compressor name (as passed to rpmio `Fopen()`)
 Payloadflags      | 1126 | string       | Payload compressor level (as passed to rpmio `Fopen()`)
 Payloadformat     | 1124 | string       | Payload format (`cpio`)
@@ -109,6 +110,7 @@ Filegroupname   | 1040 | string array | Unix group name.
 Fileinodes      | 1096 | int32 array  | Abstract inode number (hardlink calculation only).
 Filelangs       | 1097 | string array | Optional language of the file (eg man page translations)
 Filelinktos     | 1036 | string array | Symlink target for symlink files.
+Filemimeindex   | 5115 | int32 array  | Index into MIME dictionary (see Mimedict tag), only >= v6.
 Filemodes       | 1030 | int16 array  | Unix file mode.
 Filemtimes      | 1034 | int32 array  | Unix file modification timestamp (aka mtime).
 Filerdevs       | 1033 | int16 array  | Device ID (of device files)
@@ -121,10 +123,10 @@ Longfilesizes   | 5008 | int64 array  | File size (when files > 4GB are present)
 
 Tag Name            | Value| Type         | Description
 --------------------|------|--------------|------------
-Classdict           | 1142 | string array | File class (libmagic string) dictionary
+Classdict           | 1142 | string array | File class (libmagic string) dictionary (only v4)
 Dependsdict         | 1145 | int32 array  | File dependencies dictionary
 Filecaps            | 5010 | string array | `cap_to_text(3)` textual representation of file capabilities.
-Fileclass           | 1141 | int32 array  | Index into Classdict
+Fileclass           | 1141 | int32 array  | Index into Classdict (only v4)
 Filecolors          | 1140 | int32 array  | File "color" - 1 for 32bit ELF, 2 for 64bit ELF and 0 otherwise
 Filedependsn        | 1144 | int32 array  | Number of file dependencies in Dependsdict, starting from Filedependsx
 Filedependsx        | 1143 | int32 array  | Index into Dependsdict denoting start of this file's dependencies.
