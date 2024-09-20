@@ -1340,3 +1340,19 @@ Sourcepackage
 ],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([file classes query])
+AT_KEYWORDS([query])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet /data/SPECS/filetypes.spec
+runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm
+],
+[0],
+[/opt/README	ASCII text
+/opt/linkme	symbolic link to `myscript.sh'
+/opt/mydir	directory
+/opt/myscript.sh	POSIX shell script, ASCII text executable
+],
+[])
+RPMTEST_CLEANUP
