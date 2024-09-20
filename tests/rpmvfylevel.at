@@ -319,7 +319,7 @@ done
 [0],
 [nopls
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
@@ -327,7 +327,7 @@ done
 0
 noplds
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
@@ -341,7 +341,7 @@ nohdrs
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: OK
+    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     MD5 digest: OK
 0
 nosig

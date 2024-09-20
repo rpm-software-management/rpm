@@ -306,13 +306,25 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 {
     char *msg = NULL;
-    if (sinfo->msg) {
-	rasprintf(&msg, "%s: %s (%s)",
-		rpmsinfoDescr(sinfo), rpmSigString(sinfo->rc), sinfo->msg);
-    } else {
-	rasprintf(&msg, "%s: %s",
-		rpmsinfoDescr(sinfo), rpmSigString(sinfo->rc));
+    char *fphex = NULL;
+    char *fpmsg = NULL;
+    if (sinfo->rc == RPMRC_OK && sinfo->key) {
+	fphex = rpmPubkeyFingerprintAsHex(sinfo->key);
     }
+    if (fphex)
+	rasprintf(&fpmsg, _(", key fingerprint: %s"), fphex);
+    else
+	rstrcat(&fpmsg, "");
+
+    if (sinfo->msg) {
+	rasprintf(&msg, "%s%s: %s (%s)",
+		  rpmsinfoDescr(sinfo), fpmsg, rpmSigString(sinfo->rc), sinfo->msg);
+    } else {
+	rasprintf(&msg, "%s%s: %s",
+		  rpmsinfoDescr(sinfo), fpmsg, rpmSigString(sinfo->rc));
+    }
+    free(fphex);
+    free(fpmsg);
     return msg;
 }
 
