@@ -631,7 +631,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 	%{__sq} sign \
         %{?_openpgp_sign_id:--signer-key %{_openpgp_sign_id}} \
 	%{?_sq_sign_cmd_extra_args} \
-        --detached -o %{shescape:%{?__signature_filename}} \
+        --detached --output %{shescape:%{?__signature_filename}} \
         %{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
 
 %__openpgp_sign_path %{expand:%{__%{_openpgp_sign}}}
