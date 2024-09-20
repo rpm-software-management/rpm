@@ -475,6 +475,30 @@ static char *makeFClass(rpmfi fi)
     return (fclass != NULL) ? fclass : xstrdup("");
 }
 
+static int ftypeTag(Header h, rpmtd td, headerGetFlags hgflags,
+		    char *(ftypefunc)(rpmfi fi))
+{
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
+    int numfiles = rpmfiFC(fi);
+
+    if (numfiles > 0) {
+	char **ftypes = (char **)xmalloc(numfiles * sizeof(*ftypes));
+	int ix;
+
+	while ((ix = rpmfiNext(fi)) >= 0) {
+	    ftypes[ix] = ftypefunc(fi);
+	}
+
+	td->data = ftypes;
+	td->count = numfiles;
+	td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+	td->type = RPM_STRING_ARRAY_TYPE;
+    }
+    rpmfiFree(fi);
+
+    return (numfiles > 0); 
+}
+
 /**
  * Retrieve/generate file classes.
  * @param h		header
@@ -484,26 +508,7 @@ static char *makeFClass(rpmfi fi)
  */
 static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
-    int numfiles = rpmfiFC(fi);
-
-    if (numfiles > 0) {
-	char **fclasses = (char **)xmalloc(numfiles * sizeof(*fclasses));
-	int ix;
-
-	rpmfiInit(fi, 0);
-	while ((ix = rpmfiNext(fi)) >= 0) {
-	    fclasses[ix] = makeFClass(fi);
-	}
-
-	td->data = fclasses;
-	td->count = numfiles;
-	td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
-	td->type = RPM_STRING_ARRAY_TYPE;
-    }
-
-    rpmfiFree(fi);
-    return (numfiles > 0); 
+    return ftypeTag(h, td, hgflags, makeFClass);
 }
 
 /**
