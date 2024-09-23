@@ -75,6 +75,7 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
 [Iam
 ],
 [])
+
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -b buildsystem])
@@ -3566,6 +3567,62 @@ runroot rpmbuild -bc /data/SPECS/mydir.spec 2>&1 | awk /^mydir/
 [0],
 [mydir1=/build/BUILD/mydir-1.0-build/mydir-1.0
 mydir2=/build/BUILD/mydir-1.0-build/mydir-1.0
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([file digests])
+AT_KEYWORDS([build digest])
+RPMDB_INIT
+RPMTEST_CHECK([[
+runroot rpmbuild -bs --quiet /data/SPECS/hello.spec
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+]],
+[0],
+[bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
+7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
+c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpmbuild -bs --quiet \
+		--define "_source_filedigest_algorithm 0" \
+		/data/SPECS/hello.spec
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+]],
+[0],
+[bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
+7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
+c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpmbuild -bs --quiet \
+		--define "_source_filedigest_algorithm 12345" \
+		/data/SPECS/hello.spec
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+]],
+[0],
+[bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
+7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
+c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+],
+[warning: Unknown file digest algorithm 12345, falling back to 8
+])
+
+# Just in case somebody still needs 4.4 compatibility...
+RPMTEST_CHECK([[
+runroot rpmbuild -bs --quiet \
+		--define "_source_filedigest_algorithm 1" \
+		/data/SPECS/hello.spec
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+]],
+[0],
+[79678ec5e51e7565b4703286f26ac6a6 hello-1.0-modernize.patch
+b718a835936fd2f6c8855f210c4789a1 hello-1.0.tar.gz
+155931ba96d11559b7f116412214db3a hello.spec
 ],
 [])
 RPMTEST_CLEANUP
