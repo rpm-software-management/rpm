@@ -1,7 +1,7 @@
 install(PROGRAMS gendiff TYPE BIN)
 install(PROGRAMS
 	brp-compress brp-strip brp-strip-comment-note
-	brp-strip-static-archive brp-elfperms brp-remove-la-files
+	brp-strip-static-archive brp-remove-la-files
 	check-files check-prereqs
 	check-buildroot check-rpaths check-rpaths-worker
 	find-lang.sh find-requires find-provides
