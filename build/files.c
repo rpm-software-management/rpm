@@ -1015,7 +1015,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
     char buf[BUFSIZ];
     int i, npaths = 0;
     int fail_on_dupes = rpmExpandNumeric("%{?_duplicate_files_terminate_build}") > 0;
-    uint32_t defaultalgo = RPM_HASH_MD5, digestalgo;
+    uint32_t defaultalgo = RPM_HASH_SHA256, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
     int override_date = 0;
@@ -1058,8 +1058,8 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
     free(mtime_policy_str);
 
     /*
-     * See if non-md5 file digest algorithm is requested. If not
-     * specified, quietly assume md5. Otherwise check if supported type.
+     * See if non-default file digest algorithm is requested. If not
+     * specified, quietly assume default. Otherwise check if supported type.
      */
     digestalgo = rpmExpandNumeric(isSrc ? "%{_source_filedigest_algorithm}" :
 					  "%{_binary_filedigest_algorithm}");
@@ -1069,8 +1069,8 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 
     if (rpmDigestLength(digestalgo) == 0) {
 	rpmlog(RPMLOG_WARNING,
-		_("Unknown file digest algorithm %u, falling back to MD5\n"), 
-		digestalgo);
+		_("Unknown file digest algorithm %u, falling back to %u\n"),
+		digestalgo, defaultalgo);
 	digestalgo = defaultalgo;
     }
 
@@ -1288,7 +1288,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	headerPutUint64(h, RPMTAG_LONGSIZE, &totalsize, 1);
     }
 
-    if (digestalgo != defaultalgo) {
+    if (digestalgo != RPM_HASH_MD5) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
 	rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
     }
