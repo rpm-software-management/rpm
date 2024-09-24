@@ -377,6 +377,13 @@ static void dolog(struct rpmlogRec_s *rec, int saverec)
 	exit(EXIT_FAILURE);
 }
 
+static int rpmlogGetMask(void)
+{
+    /* No locking needed, reading an int is atomic */
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    return ctx->mask;
+}
+
 void rpmlog (int code, const char *fmt, ...)
 {
     int saved_errno = errno;
@@ -386,7 +393,7 @@ void rpmlog (int code, const char *fmt, ...)
     va_list ap;
     char *msg = NULL;
 
-    if ((mask & rpmlogSetMask(0)) == 0)
+    if ((mask & rpmlogGetMask()) == 0)
 	goto exit;
 
     va_start(ap, fmt);
