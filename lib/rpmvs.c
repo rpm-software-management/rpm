@@ -308,21 +308,27 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
     char *msg = NULL;
     char *fphex = NULL;
     char *fpmsg = NULL;
+    char * descr = xstrdup(rpmsinfoDescr(sinfo));
     if (sinfo->rc == RPMRC_OK && sinfo->key) {
 	fphex = rpmPubkeyFingerprintAsHex(sinfo->key);
     }
-    if (fphex)
-	rasprintf(&fpmsg, _(", key fingerprint: %s"), fphex);
-    else
+    if (fphex) {
+	rasprintf(&fpmsg, _(", Key Fingerprint: %s"), fphex);
+	char * pos = strstr(descr, ", key ID");
+	if (pos)
+	    *pos = '\0';
+    } else {
 	rstrcat(&fpmsg, "");
+    }
 
     if (sinfo->msg) {
 	rasprintf(&msg, "%s%s: %s (%s)",
-		  rpmsinfoDescr(sinfo), fpmsg, rpmSigString(sinfo->rc), sinfo->msg);
+		  descr, fpmsg, rpmSigString(sinfo->rc), sinfo->msg);
     } else {
 	rasprintf(&msg, "%s%s: %s",
-		  rpmsinfoDescr(sinfo), fpmsg, rpmSigString(sinfo->rc));
+		  descr, fpmsg, rpmSigString(sinfo->rc));
     }
+    free(descr);
     free(fphex);
     free(fpmsg);
     return msg;

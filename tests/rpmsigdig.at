@@ -353,13 +353,13 @@ Checking for key:
 Version     : eb04e625
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0, key fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 0
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0, key fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
     RSA signature: NOTFOUND
@@ -688,24 +688,24 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
 1
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
-    Header V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
-    Header V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
     Header SHA256 digest: OK
@@ -754,7 +754,7 @@ RPMOUTPUT_SEQUOIA([      because: Signature appears to be created by a non-confo
 RPMOUTPUT_SEQUOIA([      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))])dnl
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 ],
 [])
 RPMTEST_CLEANUP
@@ -856,7 +856,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
     MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
@@ -896,7 +896,7 @@ dorpm -Kv
     MD5 digest: OK
 /data/RPMS/hello-2.0-1.x86_64-corrupted.rpm: DIGESTS SIGNATURES NOT OK
 /data/RPMS/hello-2.0-1.x86_64-corrupted.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
@@ -939,8 +939,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
     V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
@@ -967,7 +967,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
     Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
@@ -1118,7 +1118,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
     Header V4 RSA/SHA512 Signature, key ID 4344591e1964c5fc: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
-    Header V4 RSA/SHA512 Signature, key ID 4344591e1964c5fc, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
@@ -1199,7 +1199,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
     Header V4 EdDSA/SHA512 Signature, key ID b0645aec757bf69e: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
-    Header V4 EdDSA/SHA512 Signature, key ID b0645aec757bf69e, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header V4 EdDSA/SHA512 Signature, Key Fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
 ],
 [])
 gpgconf --kill gpg-agent
@@ -1232,7 +1232,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
     Header V4 ECDSA/SHA256 Signature, key ID 7f1c21f95f65bbe8: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
-    Header V4 ECDSA/SHA256 Signature, key ID 7f1c21f95f65bbe8, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header V4 ECDSA/SHA256 Signature, Key Fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
 ],
 [])
 
