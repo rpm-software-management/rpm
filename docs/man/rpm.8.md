@@ -52,7 +52,7 @@ select-options
 
 \[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file
 ***FILE*\] \[**\--path ***PATH*\] \[**-g,\--group ***GROUP*\] \[**-p,\--package
-***PACKAGE\_FILE*\] \[**\--hdrid ***SHA1*\] \[**\--pkgid ***MD5*\]
+***PACKAGE\_FILE*\]
 \[**\--tid ***TID*\] \[**\--querybynumber ***HDRNUM*\]
 \[**\--triggeredby ***PACKAGE\_NAME*\] \[**\--whatprovides
 ***CAPABILITY*\] \[**\--whatrequires ***CAPABILITY*\]
@@ -638,11 +638,6 @@ name starts with \"b\".
 
 :   Query packages with the group of *GROUP*.
 
-**\--hdrid ***SHA1*
-
-:   Query package that contains a given header identifier, i.e. the
-    *SHA1* digest of the immutable header region.
-
 **-p, \--package ***PACKAGE\_FILE*
 
 :   Query an (uninstalled) package *PACKAGE\_FILE*. The *PACKAGE\_FILE*
@@ -663,11 +658,6 @@ name starts with \"b\".
 :   Query package(s) owning *PATH*, whether the file is installed or not.
     Multiple packages may own a *PATH*, but the file is only owned by the
     package installed last.
-
-**\--pkgid ***MD5*
-
-:   Query package that contains a given package identifier, i.e. the
-    *MD5* digest of the combined header and payload contents.
 
 **\--querybynumber ***HDRNUM*
 
