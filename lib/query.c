@@ -309,7 +309,6 @@ static rpmdbMatchIterator matchesIterator(rpmts ts, rpmDbiTag dbi,
 static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * arg)
 {
     const char * s;
-    int i;
     rpmdbMatchIterator mi = NULL;
 
     if (qva->qva_showPackage == NULL)
@@ -328,43 +327,6 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, arg, 0);
 	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package triggers %s\n"), arg);
-	}
-	break;
-
-    case RPMQV_PKGID:
-    {	unsigned char MD5[16];
-	unsigned char * t;
-
-	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
-	    {};
-	if (i != 32) {
-	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "pkgid", arg);
-	    goto exit;
-	}
-
-	MD5[0] = '\0';
-        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
-            *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
-	
-	mi = rpmtsInitIterator(ts, RPMDBI_SIGMD5, MD5, sizeof(MD5));
-	if (mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
-			"pkgid", arg);
-	}
-    }	break;
-
-    case RPMQV_HDRID:
-	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
-	    {};
-	if (i != 40) {
-	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "hdrid", arg);
-	    goto exit;
-	}
-
-	mi = rpmtsInitIterator(ts, RPMDBI_SHA1HEADER, arg, 0);
-	if (mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
-			"hdrid", arg);
 	}
 	break;
 

@@ -90,8 +90,6 @@ enum rpmQVSources_e {
     RPMQV_DBOFFSET,	/*!< ... from database header instance. */
     RPMQV_SPECRPMS,	/*!< ... from spec file binaries (query only). */
     RPMQV_SPECFILE = RPMQV_SPECRPMS, /*!< ... backwards compatibility */
-    RPMQV_PKGID,	/*!< ... from package id (header+payload MD5). */
-    RPMQV_HDRID,	/*!< ... from header id (immutable header SHA1). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_SPECSRPM,	/*!< ... from spec file source (query only). */
     RPMQV_WHATRECOMMENDS,	/*!< ... from recommends db search. */

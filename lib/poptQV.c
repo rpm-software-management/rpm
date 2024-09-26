@@ -20,8 +20,6 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_QUERYBYNUMBER	-1003
 #define POPT_TRIGGEREDBY	-1004
 #define POPT_DUMP		-1005
-#define POPT_QUERYBYPKGID	-1007
-#define POPT_QUERYBYHDRID	-1008
 #define POPT_QUERYBYTID		-1010
 #define POPT_WHATRECOMMENDS	-1011
 #define POPT_WHATSUGGESTS	-1012
@@ -62,8 +60,6 @@ static void rpmQVSourceArgCallback( poptContext con,
     case POPT_WHATENHANCES: qva->qva_source |= RPMQV_WHATENHANCES; break;
     case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY; break;
     case POPT_QUERYBYPATH: qva->qva_source |= RPMQV_PATH_ALL; break;
-    case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID; break;
-    case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID; break;
     case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID; break;
     case POPT_QUERYBYNUMBER: qva->qva_source |= RPMQV_DBOFFSET; break;
     }
@@ -91,11 +87,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify package(s) in group"), "GROUP" },
  { "package", 'p', 0, 0, 'p',
 	N_("query/verify a package file"), NULL },
-
- { "pkgid", '\0', 0, 0, POPT_QUERYBYPKGID,
-	N_("query/verify package(s) with package identifier"), "MD5" },
- { "hdrid", '\0', 0, 0, POPT_QUERYBYHDRID,
-	N_("query/verify package(s) with header identifier"), "SHA1" },
 
  { "query", 'q', 0, NULL, 'q',
 	N_("rpm query mode"), NULL },
