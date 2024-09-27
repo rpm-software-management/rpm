@@ -30,6 +30,7 @@
 #include "rpmplugins.hh"
 #include "rpmts_internal.hh"
 #include "rpmte_internal.hh"
+#include "rpmlog_internal.hh"
 #include "misc.hh"
 #include "rpmtriggers.hh"
 
@@ -575,6 +576,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->plugins = rpmpluginsFree(ts->plugins);
 
     rpmtriggersFree(ts->trigs2run);
+    rpmlogReset((uint64_t) ts);
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
