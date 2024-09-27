@@ -18,6 +18,7 @@
 
 #include "rpmlead.hh"
 #include "rpmio_internal.hh"	/* fd digest bits */
+#include "rpmlog_internal.hh"	/* rpmlogOnce */
 #include "header_internal.hh"	/* XXX headerCheck */
 #include "rpmvs.hh"
 
@@ -31,6 +32,7 @@ struct pkgdata_s {
     hdrvsmsg msgfunc;
     const char *fn;
     char *msg;
+    uint64_t logDomain;
     rpmRC rc;
 };
 
@@ -110,28 +112,6 @@ exit:
     return xl->stag;
 }
 
-/**
- * Remember current key id.
- * XXX: This s*** needs to die. Hook it into keyring or sumthin...
- * @param keyid		signature keyid
- * @return		0 if new keyid, otherwise 1
- */
-static int stashKeyid(const char *keyid)
-{
-    static std::mutex keyid_mutex;
-    static std::set<std::string> keyids;
-    int seen = 0;
-
-    if (keyid == NULL)
-	return 0;
-
-    std::lock_guard<std::mutex> lock(keyid_mutex);
-    auto ret = keyids.insert(keyid);
-    seen = (ret.second == false);
-
-    return seen;
-}
-
 static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct pkgdata_s *pkgdata = (struct pkgdata_s *)cbdata;
@@ -170,6 +150,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	.msgfunc = appendhdrmsg,
 	.fn = NULL,
 	.msg = NULL,
+	.logDomain = (uint64_t) ts,
 	.rc = RPMRC_OK,
     };
 
@@ -294,8 +275,8 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-	if (stashKeyid(sinfo->keyid) == 0)
-	    lvl = RPMLOG_WARNING;
+	if (rpmlogOnce(pkgdata->logDomain, sinfo->keyid, RPMLOG_WARNING, "%s: %s\n", pkgdata->fn, msg))
+	    goto exit;
 	break;
     case RPMRC_NOTFOUND:	/* Signature/digest not present. */
 	lvl = RPMLOG_WARNING;
@@ -307,6 +288,8 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
     }
 
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
+ exit:
+    ;
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
@@ -323,6 +306,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	.msgfunc = loghdrmsg,
 	.fn = fn ? fn : Fdescr(fd),
 	.msg = NULL,
+	.logDomain = (uint64_t) ts,
 	.rc = RPMRC_OK,
     };
 

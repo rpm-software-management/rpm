@@ -353,6 +353,24 @@ for e in ts:
 lock]
 )
 
+RPMPY_TEST([log suppression per transaction],[
+for i in range(4):
+    try:
+        ts.addInstall('${RPMDATA}/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm', 'u')
+    except rpm.error as e:
+        print(e)
+    if i==1:
+        ts = rpm.ts()
+],
+[public key not available
+public key not available
+public key not available
+public key not available
+],
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOKEY
+warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOKEY]
+)
+
 RPMPY_TEST([transaction callback 1],[
 def ocb(what, amount, total, key, data):
     print(what, amount, total, type(key), data)
