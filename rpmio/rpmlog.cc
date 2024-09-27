@@ -7,6 +7,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <vector>
+#include <unordered_map>
 #include <string>
 
 #include <stdarg.h>
@@ -17,11 +18,22 @@
 #include <rpm/rpmstring.h>
 #include "debug.h"
 
+struct pair_hash {
+    template <class T1, class T2>
+    std::size_t operator () (const std::pair<T1,T2> &p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        /* based on boost::hash_combine */
+        return h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2);
+    }
+};
+
 typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
     unsigned mask;
     int nrecsPri[RPMLOG_NPRIS];
     std::vector<rpmlogRec_s> recs;
+    std::unordered_map<uint64_t, std::unordered_map<std::pair<int, std::string>, int, pair_hash>> seen;
     rpmlogCallback cbfunc;
     rpmlogCallbackData cbdata;
     FILE *stdlog;
@@ -41,7 +53,7 @@ using rdlock = std::shared_lock<std::shared_mutex>;
 static rpmlogCtx rpmlogCtxAcquire()
 {
     static struct rpmlogCtx_s _globalCtx = { RPMLOG_UPTO(RPMLOG_NOTICE),
-					     {0}, {}, NULL, NULL, NULL };
+					     {0}, {}, {}, NULL, NULL, NULL };
     return &_globalCtx;
 }
 
@@ -127,6 +139,7 @@ void rpmlogClose (void)
     wrlock lock(ctx->mutex);
 
     ctx->recs.clear();
+    ctx->seen.clear();
     memset(ctx->nrecsPri, 0, sizeof(ctx->nrecsPri));
 }
 
@@ -411,4 +424,37 @@ void rpmlog (int code, const char *fmt, ...)
     va_end(ap);
 exit:
     errno = saved_errno;
+}
+
+int rpmlogOnce (uint64_t domain, const char * key, int code, const char *fmt, ...)
+{
+    int saved_errno = errno;
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    int newkey = 0;
+
+    if (ctx) {
+	wrlock lock(ctx->mutex);
+	/* members get initialized automatically on first access */
+	newkey = !(ctx->seen[domain][{code, key}]++);
+    }
+
+    if (newkey) {
+	va_list ap;
+	char *msg = NULL;
+	va_start(ap, fmt);
+	if (rvasprintf(&msg, fmt, ap) >= 0) {
+	    rpmlog(code, msg);
+	    free(msg);
+	}
+	va_end(ap);
+    }
+    errno = saved_errno;
+    return newkey;
+}
+
+void rpmlogReset(uint64_t domain, int mode=0)
+{
+    rpmlogCtx ctx = rpmlogCtxAcquire();
+    wrlock lock(ctx->mutex);
+    ctx->seen.erase(domain);
 }
