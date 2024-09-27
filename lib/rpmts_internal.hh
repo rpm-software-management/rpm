@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <atomic>
+#include <set>
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmstrpool.h>
@@ -100,6 +101,7 @@ struct rpmts_s {
     int min_writes;             /*!< macro minimize_writes used */
 
     time_t overrideTime;	/*!< Time value used when overriding system clock. */
+    std::set<std::string> logged_once; /* Messages already logged */
 };
 
 /** \ingroup rpmts

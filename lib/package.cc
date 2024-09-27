@@ -27,6 +27,7 @@ typedef struct pkgdata_s *pkgdatap;
 typedef void (*hdrvsmsg)(struct rpmsinfo_s *sinfo, pkgdatap pkgdata, const char *msg);
 
 struct pkgdata_s {
+    rpmts ts;
     hdrvsmsg msgfunc;
     const char *fn;
     char *msg;
@@ -107,28 +108,6 @@ exit:
     }
 
     return xl->stag;
-}
-
-/**
- * Remember current key id.
- * XXX: This s*** needs to die. Hook it into keyring or sumthin...
- * @param keyid		signature keyid
- * @return		0 if new keyid, otherwise 1
- */
-static int stashKeyid(unsigned int keyid)
-{
-    static std::mutex keyid_mutex;
-    static std::set<unsigned int> keyids;
-    int seen = 0;
-
-    if (keyid == 0)
-	return 0;
-
-    std::lock_guard<std::mutex> lock(keyid_mutex);
-    auto ret = keyids.insert(keyid);
-    seen = (ret.second == false);
-
-    return seen;
 }
 
 static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
@@ -287,14 +266,19 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
 			const char *msg)
 {
     int lvl = RPMLOG_DEBUG;
+    char * signid = NULL;
+    int printed = 0;
     switch (sinfo->rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-	if (stashKeyid(sinfo->keyid) == 0)
-	    lvl = RPMLOG_WARNING;
+	signid = rpmhex(pgpDigParamsSignID(sinfo->sig), PGP_KEYID_LEN);
+	printed = rpmtsLogOnce(pkgdata->ts, signid, RPMLOG_WARNING, "%s: %s\n", pkgdata->fn, msg);
+	free(signid);
+	if (!printed)
+	    goto exit;
 	break;
     case RPMRC_NOTFOUND:	/* Signature/digest not present. */
 	lvl = RPMLOG_WARNING;
@@ -306,6 +290,8 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
     }
 
     rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
+ exit:
+    ;
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
@@ -319,6 +305,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
     struct pkgdata_s pkgdata = {
+	.ts = ts,
 	.msgfunc = loghdrmsg,
 	.fn = fn ? fn : Fdescr(fd),
 	.msg = NULL,
