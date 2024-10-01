@@ -416,7 +416,7 @@ RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650
 RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 invalid: key is not alive])dnl
 RPMOUTPUT_SEQUOIA([      because: The subkey is not live])dnl
 RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOTTRUSTED
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -430,7 +430,7 @@ RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650
 RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 invalid: key is not alive])dnl
 RPMOUTPUT_SEQUOIA([      because: The subkey is not live])dnl
 RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOTTRUSTED
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
@@ -484,7 +484,7 @@ Checking package after importing key:
 RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) has been revoked])dnl
 RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
 RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOTTRUSTED
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -496,7 +496,7 @@ Checking package after importing key, no digest:
 RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) has been revoked])dnl
 RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650C36B6F41BCB3A771BFEB04E625 (Alice <alice@example.org>):])dnl
 RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
-    Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOTTRUSTED
+    Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header DSA signature: NOTFOUND
     RSA signature: NOTFOUND
     DSA signature: NOTFOUND
@@ -785,11 +785,11 @@ runroot rpmkeys -Kv /tmp/${pkg}
     V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
     MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-v3-signed.rpm:
-    Header V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
+    Header V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 63a0502eb7f5eaa07d43fe8fa805665b86e58d53db38ccf625bbbf01e3cd67ab)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    V3 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
+    V3 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     MD5 digest: NOTFOUND
 ],
 [])
@@ -820,11 +820,11 @@ runroot rpmkeys -Kv /tmp/${pkg}
     V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
     MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-signed.rpm:
-    Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
+    Header V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     MD5 digest: NOTFOUND
 ],
 [])
@@ -860,7 +860,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
-    V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: BAD
+    V4 RSA/SHA256 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     DSA signature: NOTFOUND
     MD5 digest: NOTFOUND
 ],

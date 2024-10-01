@@ -309,7 +309,7 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
     char *fphex = NULL;
     char *fpmsg = NULL;
     char * descr = xstrdup(rpmsinfoDescr(sinfo));
-    if (sinfo->rc == RPMRC_OK && sinfo->key) {
+    if (sinfo->key) {
 	fphex = rpmPubkeyFingerprintAsHex(sinfo->key);
     }
     if (fphex) {
