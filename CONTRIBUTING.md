@@ -14,6 +14,8 @@ easy project to get into.
 first to avoid situations where efforts goes wasted because it's
 not in line with RPM design and goals.**
 
+Also check if your idea aligns with [RPM's philosophy](https://rpm-software-management.github.io/rpm/manual/philosophy.html).
+
 ## Submitting Patches
 
 Patches should be submitted via GitHub pull requests (PRs) or via `git
