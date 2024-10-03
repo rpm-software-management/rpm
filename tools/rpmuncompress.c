@@ -101,6 +101,7 @@ static char * singleRoot(const char *path)
 	struct archive_entry *entry;
 	int r, ret = -1, rootLen;
 	char *rootName = NULL;
+	char *sep = NULL;
 
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
@@ -113,7 +114,7 @@ static char * singleRoot(const char *path)
 	    goto afree;
 	}
 	rootName = xstrdup(archive_entry_pathname(entry));
-	char *sep = strchr(rootName, '/');
+	sep = strchr(rootName, '/');
 	if (sep == NULL) {
 	    /* No directories in the pathname */
 	    ret = 0;
@@ -151,11 +152,12 @@ static char *doUntar(const char *fn)
     const char *taropts = verbose ? "-xvvof" : "-xof";
     char *mkdir = NULL;
     char *stripcd = NULL;
+    int needtar = 0;
 
     if ((at = getArchiver(fn)) == NULL)
 	goto exit;
 
-    int needtar = (at->extractable == 0);
+    needtar = (at->extractable == 0);
 
     if (dstpath) {
 	char * sr = singleRoot(fn);
