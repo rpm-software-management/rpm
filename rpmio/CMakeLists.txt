@@ -1,11 +1,11 @@
 add_library(librpmio SHARED)
 
 target_sources(librpmio PRIVATE
-	argv.c base64.c digest.c expression.c macro.c rpmhook.h rpmhook.c
-	rpmio.c rpmlog.c rpmmalloc.c rgetopt.c rpmpgp.c rpmpgpval.h
-	rpmsq.c rpmsw.c url.c rpmio_internal.h rpmvercmp.c
-	rpmver.c rpmstring.c rpmfileutil.c rpmglob.c rpmkeyring.c
-	rpmstrpool.c rpmmacro_internal.h rpmlua.c rpmlua.h lposix.c
+	argv.cc base64.cc digest.cc expression.cc macro.cc rpmhook.hh rpmhook.cc
+	rpmio.cc rpmlog.cc rpmmalloc.cc rgetopt.cc rpmpgp.cc rpmpgpval.hh
+	rpmsq.cc rpmsw.cc url.cc rpmio_internal.hh rpmvercmp.cc
+	rpmver.cc rpmstring.cc rpmfileutil.cc rpmglob.cc rpmkeyring.cc
+	rpmstrpool.cc rpmmacro_internal.hh rpmlua.cc rpmlua.hh lposix.cc
 )
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
 target_include_directories(librpmio 
@@ -23,34 +23,24 @@ endif()
 
 if (WITH_SEQUOIA)
 	pkg_check_modules(RPMSEQUOIA REQUIRED IMPORTED_TARGET rpm-sequoia>=1.7.0)
-	target_sources(librpmio PRIVATE rpmpgp_sequoia.c)
+	target_sources(librpmio PRIVATE rpmpgp_sequoia.cc)
 	target_link_libraries(librpmio PRIVATE PkgConfig::RPMSEQUOIA)
 else()
 	if (WITH_LEGACY_OPENPGP)
 		target_link_libraries(librpmio PRIVATE rpmpgp_legacy)
 	else()
-		target_sources(librpmio PRIVATE rpmpgp_dummy.c)
+		target_sources(librpmio PRIVATE rpmpgp_dummy.cc)
 	endif()
 	if (WITH_OPENSSL)
 		find_package(OpenSSL 1.0.2 REQUIRED)
-		target_sources(librpmio PRIVATE digest_openssl.c)
+		target_sources(librpmio PRIVATE digest_openssl.cc)
 		target_link_libraries(librpmio PRIVATE OpenSSL::Crypto)
 	else()
 		pkg_check_modules(LIBGCRYPT REQUIRED IMPORTED_TARGET libgcrypt)
-		target_sources(librpmio PRIVATE digest_libgcrypt.c)
+		target_sources(librpmio PRIVATE digest_libgcrypt.cc)
 		target_link_libraries(librpmio PRIVATE PkgConfig::LIBGCRYPT)
 	endif()
 endif()
-
-set (cxx_sources
-	argv.c base64.c digest.c expression.c lposix.c macro.c
-	digest_libgcrypt.c digest_openssl.c
-	rgetopt.c rpmfileutil.c rpmglob.c rpmhook.c rpmio.c
-	rpmkeyring.c rpmlog.c rpmlua.c rpmpgp.c rpm_sequoia.c rpmsq.c
-	rpmsw.c rpmstring.c rpmstrpool.c
-	rpmver.c rpmvercmp.c url.c
-)
-set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
 
 set_target_properties(librpmio PROPERTIES
 	VERSION ${RPM_LIBVERSION}

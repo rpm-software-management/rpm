@@ -21,7 +21,7 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmplugin.h>
 
-#include "rpmsignverity.h"
+#include "rpmsignverity.hh" /* RPM_FSVERITY_BLKSZ define only! */
 
 static int sign_config_files = 0;
 

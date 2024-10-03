@@ -1,17 +1,17 @@
-add_library(cliutils OBJECT cliutils.c cliutils.h)
+add_library(cliutils OBJECT cliutils.cc cliutils.hh)
 
-add_executable(rpm rpm.c cliutils)
-add_executable(rpmdb rpmdb.c cliutils)
-add_executable(rpmkeys rpmkeys.c cliutils)
-add_executable(rpmsign rpmsign.c cliutils)
-add_executable(rpmbuild rpmbuild.c cliutils)
-add_executable(rpmspec rpmspec.c cliutils)
+add_executable(rpm rpm.cc cliutils)
+add_executable(rpmdb rpmdb.cc cliutils)
+add_executable(rpmkeys rpmkeys.cc cliutils)
+add_executable(rpmsign rpmsign.cc cliutils)
+add_executable(rpmbuild rpmbuild.cc cliutils)
+add_executable(rpmspec rpmspec.cc cliutils)
 
-add_executable(rpmdeps rpmdeps.c)
-add_executable(rpmgraph rpmgraph.c)
-add_executable(rpmlua rpmlua.c)
-add_executable(rpmuncompress rpmuncompress.c)
-add_executable(rpmdump rpmdump.c)
+add_executable(rpmdeps rpmdeps.cc)
+add_executable(rpmgraph rpmgraph.cc)
+add_executable(rpmlua rpmlua.cc)
+add_executable(rpmuncompress rpmuncompress.cc)
+add_executable(rpmdump rpmdump.cc)
 
 target_link_libraries(rpmsign PRIVATE librpmsign)
 target_link_libraries(rpmlua PRIVATE LUA::LUA)
@@ -21,12 +21,12 @@ target_link_libraries(rpmdeps PRIVATE librpmbuild)
 target_link_libraries(rpmuncompress PRIVATE PkgConfig::LIBARCHIVE)
 
 if (HAVE_STRCHRNUL)
-	add_executable(rpmsort rpmsort.c)
+	add_executable(rpmsort rpmsort.cc)
 	install(TARGETS rpmsort)
 endif()
 
 if (LIBELF_FOUND)
-	add_executable(elfdeps elfdeps.c)
+	add_executable(elfdeps elfdeps.cc)
 	target_link_libraries(elfdeps PRIVATE PkgConfig::LIBELF)
 	install(TARGETS elfdeps DESTINATION ${RPM_CONFIGDIR})
 endif()
@@ -40,7 +40,7 @@ if (READLINE_FOUND)
 endif()
 
 if (WITH_ARCHIVE)
-	add_executable(rpm2archive rpm2archive.c)
+	add_executable(rpm2archive rpm2archive.cc)
 	target_link_libraries(rpm2archive PRIVATE PkgConfig::LIBARCHIVE)
 	install(TARGETS rpm2archive)
 endif()
@@ -65,13 +65,6 @@ if (WITH_ARCHIVE)
 			)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 endif()
-
-set (cxx_sources
-	cliutils.c elfdeps.c rpm2archive.c rpmbuild.c rpm.c rpmdb.c
-	rpmdeps.c rpmdump.c rpmgraph.c rpmkeys.c rpmlua.c rpmsign.c
-	rpmsort.c rpmspec.c rpmuncompress.c
-)
-set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
