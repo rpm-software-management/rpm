@@ -3,7 +3,7 @@ set_target_properties(librpmsign PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
 )
-target_sources(librpmsign PRIVATE rpmgensig.c)
+target_sources(librpmsign PRIVATE rpmgensig.cc)
 
 target_include_directories(librpmsign
     PRIVATE
@@ -19,17 +19,12 @@ target_include_directories(librpmsign
 target_link_libraries(librpmsign PUBLIC librpmio librpm)
 target_link_libraries(librpmsign PRIVATE PkgConfig::POPT ${Intl_LIBRARIES})
 if (WITH_IMAEVM)
-	target_sources(librpmsign PRIVATE rpmsignfiles.c)
+	target_sources(librpmsign PRIVATE rpmsignfiles.cc)
 	target_link_libraries(librpmsign PRIVATE IMA::IMA)
 endif()
 if (WITH_FSVERITY)
-	target_sources(librpmsign PRIVATE rpmsignverity.c)
+	target_sources(librpmsign PRIVATE rpmsignverity.cc)
 	target_link_libraries(librpmsign PRIVATE PkgConfig::FSVERITY)
 endif()
-
-set (cxx_sources
-	rpmgensig.c rpmsignfiles.c rpmsignverity.c
-)
-set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
 
 install(TARGETS librpmsign EXPORT rpm-targets)

@@ -4,13 +4,13 @@ set_target_properties(librpmbuild PROPERTIES
 	SOVERSION ${RPM_SOVERSION}
 )
 target_sources(librpmbuild PRIVATE
-	build.c files.c misc.c pack.c
-	parseSimpleScript.c parseChangelog.c parseDescription.c
-	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c
-	parseSpec.c parseList.c reqprov.c rpmfc.c spec.c
-	parsePolicies.c policies.c
-	rpmbuild_internal.h rpmbuild_misc.h
-	speclua.c
+	build.cc files.cc misc.cc pack.cc
+	parseSimpleScript.cc parseChangelog.cc parseDescription.cc
+	parseFiles.cc parsePreamble.cc parsePrep.cc parseReqs.cc parseScript.cc
+	parseSpec.cc parseList.cc reqprov.cc rpmfc.cc spec.cc
+	parsePolicies.cc policies.cc
+	rpmbuild_internal.hh rpmbuild_misc.hh
+	speclua.cc
 )
 
 target_include_directories(librpmbuild
@@ -53,15 +53,6 @@ if(OpenMP_C_FOUND)
 	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_C)
 endif()
 
-set (cxx_sources
-	build.c files.c misc.c pack.c
-	parseChangelog.c parseDescription.c parseFiles.c parseList.c
-	parsePolicies.c parsePreamble.c parsePrep.c parseReqs.c
-	parseScript.c parseSimpleScript.c parseSpec.c
-	policies.c reqprov.c rpmfc.c
-	spec.c speclua.c
-)
-set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
 if (OpenMP_C_FOUND)
 	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_CXX)
 endif()

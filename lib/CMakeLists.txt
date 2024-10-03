@@ -21,64 +21,48 @@ target_include_directories(librpm
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-        # This is needed for rpmcli.h
+        # This is needed for rpmcli.hh
         ${POPT_INCLUDE_DIRS}
 )
 
 target_sources(librpm PRIVATE
-	backend/dbi.c backend/dbi.h backend/dummydb.c
-	backend/dbiset.c backend/dbiset.h
-	headerutil.c header.c headerfmt.c header_internal.h
-	rpmdb.c rpmdb_internal.h
-	fprint.c fprint.h tagname.c rpmtd.c tagtbl.inc
-	cpio.c cpio.h depends.c order.c formats.c tagexts.c fsm.c fsm.h
-	manifest.c manifest.h package.c
-	poptALL.c poptI.c poptQV.c psm.c query.c
-	rpmal.c rpmal.h rpmchecksig.c rpmds.c rpmds_internal.h
-	rpmfi.c rpmfi_internal.h
-	rpmgi.h rpmgi.c rpminstall.c rpmts_internal.h
-	rpmlead.c rpmlead.h rpmps.c rpmprob.c rpmrc.c
-	rpmte.c rpmte_internal.h rpmts.c rpmfs.h rpmfs.c
-	signature.c signature.h transaction.c
-	verify.c rpmlock.c rpmlock.h misc.h relocation.c
-	rpmscript.h rpmscript.c
-	rpmchroot.c rpmchroot.h
-	rpmplugins.c rpmplugins.h rpmug.c rpmug.h
-	rpmtriggers.h rpmtriggers.c rpmvs.c rpmvs.h
+	backend/dbi.cc backend/dbi.hh backend/dummydb.cc
+	backend/dbiset.cc backend/dbiset.hh
+	headerutil.cc header.cc headerfmt.cc header_internal.hh
+	rpmdb.cc rpmdb_internal.hh
+	fprint.cc fprint.hh tagname.cc rpmtd.cc tagtbl.inc
+	cpio.cc cpio.hh depends.cc order.cc formats.cc tagexts.cc fsm.cc fsm.hh
+	manifest.cc manifest.hh package.cc
+	poptALL.cc poptI.cc poptQV.cc psm.cc query.cc
+	rpmal.cc rpmal.hh rpmchecksig.cc rpmds.cc rpmds_internal.hh
+	rpmfi.cc rpmfi_internal.hh
+	rpmgi.hh rpmgi.cc rpminstall.cc rpmts_internal.hh
+	rpmlead.cc rpmlead.hh rpmps.cc rpmprob.cc rpmrc.cc
+	rpmte.cc rpmte_internal.hh rpmts.cc rpmfs.hh rpmfs.cc
+	signature.cc signature.hh transaction.cc
+	verify.cc rpmlock.cc rpmlock.hh misc.hh relocation.cc
+	rpmscript.hh rpmscript.cc
+	rpmchroot.cc rpmchroot.hh
+	rpmplugins.cc rpmplugins.hh rpmug.cc rpmug.hh
+	rpmtriggers.hh rpmtriggers.cc rpmvs.cc rpmvs.hh
 )
 
 if(ENABLE_SQLITE)
-	target_sources(librpm PRIVATE backend/sqlite.c)
+	target_sources(librpm PRIVATE backend/sqlite.cc)
 	target_link_libraries(librpm PRIVATE PkgConfig::SQLITE)
 endif()
 
 if(ENABLE_NDB)
 	target_sources(librpm PRIVATE
-		backend/ndb/glue.c
+		backend/ndb/glue.cc
 		backend/ndb/rpmpkg.c backend/ndb/rpmpkg.h
 		backend/ndb/rpmidx.c backend/ndb/rpmidx.h
 		backend/ndb/rpmxdb.c backend/ndb/rpmxdb.h
 	)
 endif()
 
-# sources converted to c++ so far (avoid having to do everything at once)
-set (cxx_sources
-	cpio.c depends.c formats.c fprint.c fsm.c header.c
-	headerfmt.c headerutil.c manifest.c order.c package.c
-	poptALL.c poptI.c poptQV.c psm.c
-	query.c relocation.c rpmal.c rpmchecksig.c rpmchroot.c
-	rpmdb.c rpmds.c rpmfi.c rpmfs.c rpmgi.c rpminstall.c
-	rpmlead.c rpmlock.c rpmplugins.c rpmprob.c rpmps.c
-	rpmrc.c rpmscript.c rpmtd.c rpmte.c rpmtriggers.c
-	rpmts.c rpmug.c rpmvs.c signature.c tagexts.c tagname.c
-	transaction.c verify.c
-	backend/dbi.c backend/dbiset.c backend/bdb_ro.c
-	backend/dummydb.c backend/sqlite.c backend/ndb/glue.c
-)
-set_source_files_properties(${cxx_sources} PROPERTIES LANGUAGE CXX)
-
 if(ENABLE_BDB_RO)
-	target_sources(librpm PRIVATE backend/bdb_ro.c)
+	target_sources(librpm PRIVATE backend/bdb_ro.cc)
 endif()
 
 if(WITH_ACL)
