@@ -35,6 +35,13 @@ struct rpmKeyring_s {
     std::shared_mutex mutex;
 };
 
+struct rpmKeyringIterator_s {
+    rpmKeyring keyring;
+    rdlock keyringlock;
+    std::map<std::string,rpmPubkey>::const_iterator iterator;
+    rpmPubkey current;
+};
+
 static std::string key2str(const uint8_t *keyid)
 {
     return std::string(reinterpret_cast<const char *>(keyid), PGP_KEYID_LEN);
@@ -60,6 +67,52 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     }
     return NULL;
 }
+
+rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused)
+{
+    if (!keyring || unused != 0)
+	return NULL;
+
+    return new rpmKeyringIterator_s {
+	rpmKeyringLink(keyring),
+	rdlock(keyring->mutex),
+	keyring->keys.cbegin(),
+	NULL,
+    };
+}
+
+rpmPubkey rpmKeyringIteratorNext(rpmKeyringIterator iterator)
+{
+    rpmPubkey next = NULL;
+
+    if (!iterator)
+	return NULL;
+
+    while (iterator->iterator != iterator->keyring->keys.end()) {
+	next = iterator->iterator->second;
+	iterator->iterator++;
+	if (!next->primarykey)
+	    break;
+	else
+            next = NULL;
+    }
+    rpmPubkeyFree(iterator->current);
+    iterator->current = rpmPubkeyLink(next);
+    return iterator->current;
+}
+
+rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator)
+{
+    if (!iterator)
+	return NULL;
+
+    rpmPubkeyFree(iterator->current);
+    iterator->keyringlock.unlock(); /* needed or rpmKeyringFree locks up */
+    rpmKeyringFree(iterator->keyring);
+    delete iterator;
+    return NULL;
+}
+
 
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode)
 {
