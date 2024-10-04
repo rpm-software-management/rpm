@@ -79,6 +79,7 @@ typedef void * rpmCallbackData;
 
 typedef struct rpmPubkey_s * rpmPubkey;
 typedef struct rpmKeyring_s * rpmKeyring;
+typedef struct rpmKeyringIterator_s * rpmKeyringIterator;
 
 typedef uint32_t rpmsid;
 typedef struct rpmstrPool_s * rpmstrPool;
