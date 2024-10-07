@@ -179,15 +179,21 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count)
     int pgpsubkeysCount = 0;
     int i;
 
-    if (primarykey && !pgpPrtParamsSubkeys(primarykey->pkt.data(), primarykey->pkt.size(),
-	    primarykey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
-	/* Returned to C, can't use new */
-	subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
-	for (i = 0; i < pgpsubkeysCount; i++) {
-	    subkeys[i] = rpmPubkeyNewSubkey(primarykey, pgpsubkeys[i]);
-	    primarykey = pubkeyLink(primarykey);
+    if (primarykey) {
+
+	rdlock lock(primarykey->mutex);
+
+	if (!pgpPrtParamsSubkeys(
+		primarykey->pkt.data(), primarykey->pkt.size(),
+		primarykey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
+	    /* Returned to C, can't use new */
+	    subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
+	    for (i = 0; i < pgpsubkeysCount; i++) {
+		subkeys[i] = rpmPubkeyNewSubkey(primarykey, pgpsubkeys[i]);
+		primarykey = pubkeyLink(primarykey);
+	    }
+	    free(pgpsubkeys);
 	}
-	free(pgpsubkeys);
     }
     *count = pgpsubkeysCount;
 
