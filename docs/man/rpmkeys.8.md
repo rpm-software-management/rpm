@@ -19,7 +19,7 @@ DESCRIPTION
 
 The general forms of rpm digital signature commands are
 
-**rpmkeys** **\--list** \[*KEYHASH \...*\]
+**rpmkeys** **\--list** \[*KEYFINGERPRINT \...*\]
 
 **rpmkeys** **\--import** *PUBKEY \...*
 

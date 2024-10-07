@@ -3,7 +3,9 @@
 #include <popt.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmkeyring.h>
 #include <rpm/rpmlog.h>
+
 #include "cliutils.hh"
 #include "debug.h"
 
@@ -42,19 +44,57 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-static ARGV_t gpgkeyargs(ARGV_const_t args) {
-    ARGV_t gpgargs = NULL;
-    for (char * const * arg = args; *arg; arg++) {
-	if (strncmp(*arg, "gpg-pubkey-", 11)) {
-	    char * gpgarg = NULL;
-	    rstrscat(&gpgarg, "gpg-pubkey-", *arg, NULL);
-	    argvAdd(&gpgargs, gpgarg);
-	    free(gpgarg);
-	} else {
-	    argvAdd(&gpgargs, *arg);
+static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, int callback(rpmPubkey, void*))
+{
+    int ec = EXIT_SUCCESS;
+    if (args) {
+	for (char * const * arg = args; *arg; arg++) {
+	    int found = false;
+	    auto iter = rpmKeyringInitIterator(keyring, 0);
+	    rpmPubkey key = NULL;
+	    while ((key = rpmKeyringIteratorNext(iter))) {
+		char * fp = rpmPubkeyFingerprintAsHex(key);
+		char * keyid = rpmPubkeyKeyIDAsHex(key);
+		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid)) {
+		    found = true;
+		}
+		free(fp);
+		free(keyid);
+		if (found)
+		    break;
+	    }
+	    rpmKeyringIteratorFree(iter);
+	    if (found) {
+		callback(key, userdata);
+	    } else {
+		rpmlog(RPMLOG_NOTICE, "Key %s not found\n", *arg);
+		ec = EXIT_FAILURE;
+	    }
+	}
+    } else {
+	int found = false;
+	auto iter = rpmKeyringInitIterator(keyring, 0);
+	rpmPubkey key = NULL;
+	while ((key = rpmKeyringIteratorNext(iter))) {
+	    found = true;
+	    callback(key, userdata);
+	}
+	rpmKeyringIteratorFree(iter);
+	if (!found) {
+	    rpmlog(RPMLOG_NOTICE, "No keys installed\n");
+	    ec = EXIT_FAILURE;
 	}
     }
-    return gpgargs;
+    return ec;
+}
+
+static int printKey(rpmPubkey key, void * data)
+{
+    char * fp = rpmPubkeyFingerprintAsHex(key);
+    pgpDigParams params = rpmPubkeyPgpDigParams(key);
+    rpmlog(RPMLOG_NOTICE, "%s %s public key\n", fp, pgpDigParamsUserID(params));
+    free(fp);
+    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -63,6 +103,7 @@ int main(int argc, char *argv[])
     poptContext optCon = NULL;
     rpmts ts = NULL;
     ARGV_const_t args = NULL;
+    rpmKeyring keyring = NULL;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
@@ -78,6 +119,7 @@ int main(int argc, char *argv[])
 
     ts = rpmtsCreate();
     rpmtsSetRootDir(ts, rpmcliRootDir);
+    keyring = rpmtsGetKeyring(ts, 1);
 
     switch (mode) {
     case MODE_CHECKSIG:
@@ -112,16 +154,7 @@ int main(int argc, char *argv[])
     }
     case MODE_LISTKEY:
     {
-	ARGV_t query = NULL;
-	if (args != NULL) {
-	    query = gpgkeyargs(args);
-	} else {
-	    argvAdd(&query, "gpg-pubkey");
-	}
-	QVA_t qva = &rpmQVKArgs;
-	rstrcat(&qva->qva_queryFormat, "%{version}-%{release}: %{summary}\n");
-	ec = rpmcliQuery(ts, &rpmQVKArgs, (ARGV_const_t) query);
-	query = argvFree(query);
+	ec = matchingKeys(keyring, args, NULL, printKey);
 	break;
     }
     default:
@@ -129,6 +162,7 @@ int main(int argc, char *argv[])
     }
 
 exit:
+    rpmKeyringFree(keyring);
     rpmtsFree(ts);
     rpmcliFini(optCon);
     fflush(stderr);
