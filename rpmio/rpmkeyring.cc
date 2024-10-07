@@ -293,6 +293,12 @@ char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
     return result;
 }
 
+char * rpmPubkeyKeyIDAsHex(rpmPubkey key)
+{
+    return rpmhex((const uint8_t*)(key->keyid.c_str()), key->keyid.length());
+}
+
+
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
 {
     if (key == NULL)
