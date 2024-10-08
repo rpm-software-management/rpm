@@ -104,6 +104,7 @@ various common operations.
 | `%define ...`       | define a macro |
 | `%undefine ...`     | undefine a macro |
 | `%global ...`       | define a macro whose body is available in global context |
+| `%dnl`              | discard to next line (without expanding) | 4.15.0
 | `%{load:...}`       | load a macro file | 4.12.0
 | `%{expand:...}`     | like eval, expand ... to \<body> and (re-)expand \<body> |
 | `%{expr:...}`       | evaluate an [expression](#expression-expansion) | 4.15.0
