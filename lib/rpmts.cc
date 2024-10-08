@@ -660,7 +660,7 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     return rc;
 }
 
-rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
+rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 {
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
@@ -669,9 +669,8 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     rpmPubkey *subkeys = NULL;
     rpmPubkey oldkey = NULL;
     int subkeysCount = 0;
-    rpmVSFlags oflags = rpmtsVSFlags(ts);
+    rpmVSFlags oflags = rpmtsVSFlags(txn->ts);
     rpmKeyring keyring = NULL;
-    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int krc, i;
 
     if (txn == NULL)
@@ -692,9 +691,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     }
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
-    rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
-    keyring = rpmtsGetKeyring(ts, 1);
-    rpmtsSetVSFlags(ts, oflags);
+    rpmtsSetVSFlags(txn->ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
+    keyring = rpmtsGetKeyring(txn->ts, 1);
+    rpmtsSetVSFlags(txn->ts, oflags);
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
@@ -722,9 +721,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rpm_tid_t tid = rpmtsGetTid(ts);
+	rpm_tid_t tid = rpmtsGetTid(txn->ts);
 
-	if (makePubkeyHeader(ts, pubkey, subkeys, subkeysCount, &h) != 0)
+	if (makePubkeyHeader(txn->ts, pubkey, subkeys, subkeysCount, &h) != 0)
 	    goto exit;
 
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
@@ -732,8 +731,8 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
 	/* Add header to database. */
 	rc = RPMRC_OK;
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    if (ts->keyringtype == KEYRING_FS)
+	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
+	    if (txn->ts->keyringtype == KEYRING_FS)
 		rc = rpmtsImportFSKey(txn, h, 0, oldkey ? 1 : 0);
 	    else
 		rc = rpmtsImportDBKey(txn, h, 0, oldkey ? 1 : 0);
@@ -752,7 +751,17 @@ exit:
     rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);
-    rpmtxnEnd(txn);
+    return rc;
+}
+
+rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
+{
+    rpmRC rc = RPMRC_FAIL;
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    if (txn) {
+	rc = rpmtxnImportPubkey(txn, pkt, pktlen);
+	rpmtxnEnd(txn);
+    }
     return rc;
 }
 
