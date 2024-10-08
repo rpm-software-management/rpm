@@ -35,6 +35,8 @@
 
 #include "debug.h"
 
+using std::string;
+
 enum {
     KEYRING_RPMDB 	= 1,
     KEYRING_FS		= 2,
@@ -638,23 +640,39 @@ exit:
     return rc;
 }
 
+static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int newinstance = 0)
+{
+    if (rpmtsOpenDB(txn->ts, (O_RDWR|O_CREAT)))
+	return RPMRC_FAIL;
+
+    rpmRC rc = RPMRC_NOTFOUND;
+    unsigned int otherinstance = 0;
+    Header oh;
+    string label = "gpg-pubkey-" + keyid;
+    rpmdbMatchIterator mi = rpmtsInitIterator(txn->ts, RPMDBI_LABEL, label.c_str(), 0);
+
+    while (otherinstance == 0 && (oh = rpmdbNextIterator(mi)) != NULL)
+	if (headerGetInstance(oh) != newinstance)
+	    otherinstance = headerGetInstance(oh);
+    rpmdbFreeIterator(mi);
+    if (otherinstance) {
+	rc = rpmdbRemove(rpmtsGetRdb(txn->ts), otherinstance) ?
+		RPMRC_FAIL : RPMRC_OK;
+    }
+
+    return rc;
+}
+
 static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 {
     rpmRC rc = rpmtsImportHeader(txn, h, 0);
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	unsigned int newinstance = headerGetInstance(h), otherinstance = 0;
-	char *label = headerFormat(h, "%{name}-%{version}", NULL);
-	Header oh;
-	rpmdbMatchIterator mi = rpmtsInitIterator(txn->ts, RPMDBI_LABEL, label, 0);
-	while (otherinstance == 0 && (oh = rpmdbNextIterator(mi)) != NULL)
-	    if (headerGetInstance(oh) != newinstance)
-		otherinstance = headerGetInstance(oh);
-	rpmdbFreeIterator(mi);
-	if (otherinstance)
-	    rpmdbRemove(rpmtsGetRdb(txn->ts), otherinstance);
-	free(label);
+	unsigned int newinstance = headerGetInstance(h);
+	char *keyid = headerFormat(h, "%{version}", NULL);
+	rpmtsDeleteDBKey(txn, keyid, newinstance);
+	free(keyid);
     }
 
     return rc;
