@@ -3,6 +3,7 @@
 #include <popt.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmlog.h>
 #include "cliutils.hh"
 #include "debug.h"
 
@@ -89,10 +90,24 @@ int main(int argc, char *argv[])
 	break;
     case MODE_DELKEY:
     {
-	struct rpmInstallArguments_s * ia = &rpmIArgs;
-	ARGV_t gpgargs = gpgkeyargs(args);
-	ec = rpmErase(ts, ia, gpgargs);
-	argvFree(gpgargs);
+	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+	if (txn) {
+	    int nfail = 0;
+	    for (char const * const *arg = args; *arg && **arg; arg++) {
+		rpmRC delrc = rpmtxnDeletePubkey(txn, *arg);
+		if (delrc) {
+		    if (delrc == RPMRC_NOTFOUND)
+			rpmlog(RPMLOG_ERR, ("key not found: %s\n"), *arg);
+		    else if (delrc == RPMRC_NOKEY)
+			rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
+		    else if (delrc == RPMRC_FAIL)
+			rpmlog(RPMLOG_ERR, ("failed to delete key: %s\n"), *arg);
+		    nfail++;
+		}
+	    }
+	    ec = nfail;
+	    rpmtxnEnd(txn);
+	}
 	break;
     }
     case MODE_LISTKEY:
