@@ -342,6 +342,15 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags);
 rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
+ * Import public key packet(s) to transaction keystore.
+ * @param txn           transaction handle
+ * @param pkt           pgp pubkey packet(s)
+ * @param pktlen        pgp pubkey length
+ * @return              RPMRC_OK/RPMRC_FAIL
+ */
+rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen);
+
+/** \ingroup rpmts
  * Retrieve handle for keyring used for this transaction set
  * @param ts            transaction set
  * @param autoload	load default keyring if keyring is not set
