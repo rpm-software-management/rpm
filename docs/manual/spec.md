@@ -6,6 +6,13 @@ title: rpm.org - Spec file format
 
 ## Generic syntax
 
+### Macros
+
+Each line in the spec is macro-expanded before further processing. The macro
+syntax and the built-in macros are described on a [dedicated page](macros).
+Typically there are vast amounts of other macros available for helping with
+common packaging tasks.
+
 ### Comments
 
 Comments in spec file have # at the start of the line.
