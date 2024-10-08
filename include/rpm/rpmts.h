@@ -333,8 +333,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags);
 
 /** \ingroup rpmts
- * Import public key packet(s).
- * @todo Implicit --update policy for gpg-pubkey headers.
+ * Import public key packet(s) to transaction keystore.
  * @param ts            transaction set
  * @param pkt           pgp pubkey packet(s)
  * @param pktlen        pgp pubkey length
