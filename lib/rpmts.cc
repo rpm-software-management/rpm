@@ -579,6 +579,25 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
     return rc;
 }
 
+static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & newname = "")
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    string keyglob = "gpg-pubkey-" + keyid + "*.key";
+    ARGV_t files = NULL;
+    char *pkpath = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyglob.c_str());
+    if (rpmGlob(pkpath, NULL, &files) == 0) {
+	char **f;
+	for (f = files; *f; f++) {
+	    char *bf = strrchr(*f, '/');
+	    if (bf && strcmp(bf + 1, newname.c_str()) != 0)
+		rc = unlink(*f) ? RPMRC_FAIL : RPMRC_OK;
+	}
+	argvFree(files);
+    }
+    free(pkpath);
+    return rc;
+}
+
 static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -616,20 +635,10 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	char *keyglob = headerFormat(h, "%{name}-%{version}-*.key", NULL);
-	ARGV_t files = NULL;
-	char *pkpath = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyglob);
-	if (rpmGlob(pkpath, NULL, &files) == 0) {
-	    char **f;
-	    for (f = files; *f; f++) {
-		char *bf = strrchr(*f, '/');
-		if (bf && strcmp(bf + 1, keyfmt) != 0)
-		    unlink(*f);
-	    }
-	}
-	free(pkpath);
-	argvFree(files);
-	free(keyglob);
+	char *keyid = headerFormat(h, "%{version}", NULL);
+	rpmtsDeleteFSKey(txn, keyid, keyfmt);
+	free(keyid);
+
     }
 
 exit:
