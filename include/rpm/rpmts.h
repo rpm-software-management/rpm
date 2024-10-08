@@ -351,6 +351,17 @@ rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
+ * Delete public key from transaction keystore.
+ * @param txn           transaction handle
+ * @param keyid         key fingerprint or keyid (in hex)
+ * @return              RPMRC_OK on success
+ * 			RPMRC_NOTFOUND if key not found
+ * 			RPMRC_NOKEY on invalid keyid
+ * 			RPMRC_FAIL on other failure
+ */
+rpmRC rpmtxnDeletePubkey(rpmtxn txn, const char *keyid);
+
+/** \ingroup rpmts
  * Retrieve handle for keyring used for this transaction set
  * @param ts            transaction set
  * @param autoload	load default keyring if keyring is not set
