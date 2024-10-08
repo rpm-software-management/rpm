@@ -582,14 +582,14 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
 static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & newname = "")
 {
     rpmRC rc = RPMRC_NOTFOUND;
-    string keyglob = "gpg-pubkey-" + keyid + "*.key";
+    string keyglob = "gpg-pubkey-" + keyid + "-*.key";
     ARGV_t files = NULL;
     char *pkpath = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyglob.c_str());
     if (rpmGlob(pkpath, NULL, &files) == 0) {
 	char **f;
 	for (f = files; *f; f++) {
 	    char *bf = strrchr(*f, '/');
-	    if (bf && strcmp(bf + 1, newname.c_str()) != 0)
+	    if (newname.empty() || (bf && strcmp(bf + 1, newname.c_str()) != 0))
 		rc = unlink(*f) ? RPMRC_FAIL : RPMRC_OK;
 	}
 	argvFree(files);
@@ -778,6 +778,38 @@ exit:
     rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);
+    return rc;
+}
+
+rpmRC rpmtxnDeletePubkey(rpmtxn txn, const char *keyid)
+{
+    rpmRC rc = RPMRC_FAIL;
+    size_t klen = strlen(keyid);
+
+    /* Allow short keyid while we're transitioning */
+    if (klen != 40 && klen != 16 && klen != 8)
+	return RPMRC_NOKEY;
+
+    if (!rpmIsValidHex(keyid, klen))
+	return RPMRC_NOKEY;
+
+    if (txn) {
+	/* force keyring load */
+	rpmVSFlags oflags = rpmtsVSFlags(txn->ts);
+	rpmtsSetVSFlags(txn->ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
+	rpmKeyring keyring = rpmtsGetKeyring(txn->ts, 1);
+	rpmtsSetVSFlags(txn->ts, oflags);
+
+	/* Both import and delete just return OK on test-transaction */
+	rc = RPMRC_OK;
+	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
+	    if (txn->ts->keyringtype == KEYRING_FS)
+		rc = rpmtsDeleteFSKey(txn, keyid);
+	    else
+		rc = rpmtsDeleteDBKey(txn, keyid);
+	}
+	rpmKeyringFree(keyring);
+    }
     return rc;
 }
 
