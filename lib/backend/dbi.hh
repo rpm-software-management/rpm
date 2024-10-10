@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include <stdio.h>
+#include <atomic>
 #include "dbiset.hh"
 #include <rpm/rpmtag.h>
 
@@ -68,7 +69,7 @@ struct rpmdb_s {
     struct rpmop_s db_putops;
     struct rpmop_s db_delops;
 
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
 };
 
 /* Type of the dbi, also serves as the join key size */

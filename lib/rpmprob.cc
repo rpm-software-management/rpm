@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <stdlib.h>
+#include <atomic>
 
 #include <rpm/rpmstring.h>
 #include <rpm/rpmprob.h>
@@ -19,10 +20,8 @@ struct rpmProblem_s {
     rpmProblemType type;
     char * str1;
     uint64_t num1;
-    int nrefs;
+    std::atomic_int nrefs;
 };
-
-static rpmProblem rpmProblemUnlink(rpmProblem prob);
 
 rpmProblem rpmProblemCreate(rpmProblemType type,
                             const char * pkgNEVR, fnpyKey key,
@@ -44,11 +43,9 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
 
 rpmProblem rpmProblemFree(rpmProblem prob)
 {
-    if (prob == NULL) return NULL;
+    if (prob == NULL || --prob->nrefs > 0)
+	return NULL;
 
-    if (prob->nrefs > 1) {
-	return rpmProblemUnlink(prob);
-    }
     prob->pkgNEVR = _free(prob->pkgNEVR);
     prob->altNEVR = _free(prob->altNEVR);
     prob->str1 = _free(prob->str1);
@@ -62,14 +59,6 @@ rpmProblem rpmProblemLink(rpmProblem prob)
 	prob->nrefs++;
     }
     return prob;
-}
-
-static rpmProblem rpmProblemUnlink(rpmProblem prob)
-{
-    if (prob) {
-	prob->nrefs--;
-    }
-    return NULL;
 }
 
 const char * rpmProblemGetPkgNEVR(rpmProblem p)

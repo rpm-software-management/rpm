@@ -43,8 +43,6 @@
 using std::unordered_map;
 using std::vector;
 
-static rpmdb rpmdbUnlink(rpmdb db);
-
 static int buildIndexes(rpmdb db)
 {
     int rc = 0;
@@ -346,12 +344,7 @@ int rpmdbClose(rpmdb db)
 {
     int rc = 0;
 
-    if (db == NULL)
-	goto exit;
-
-    (void) rpmdbUnlink(db);
-
-    if (db->nrefs > 0)
+    if (db == NULL || --db->nrefs > 0)
 	goto exit;
 
     /* Always re-enable fsync on close of rw-database */
@@ -460,13 +453,6 @@ static int openDatabase(const char * prefix,
     }
 
     return rc;
-}
-
-static rpmdb rpmdbUnlink(rpmdb db)
-{
-    if (db)
-	db->nrefs--;
-    return NULL;
 }
 
 rpmdb rpmdbLink(rpmdb db)

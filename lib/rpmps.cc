@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <vector>
-
+#include <atomic>
 #include <inttypes.h>
 #include <stdlib.h>
 
@@ -18,7 +18,7 @@ using std::vector;
 
 struct rpmps_s {
     vector<rpmProblem> probs;	/*!< Array of pointers to specific problems. */
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
 };
 
 struct rpmpsi_s {
@@ -26,14 +26,6 @@ struct rpmpsi_s {
     rpmps ps;
 };
 
-
-static rpmps rpmpsUnlink(rpmps ps)
-{
-    if (ps) {
-	ps->nrefs--;
-    }
-    return NULL;
-}
 
 rpmps rpmpsLink(rpmps ps)
 {
@@ -65,7 +57,7 @@ rpmpsi rpmpsInitIterator(rpmps ps)
 rpmpsi rpmpsFreeIterator(rpmpsi psi)
 {
     if (psi != NULL) {
-	rpmpsUnlink(psi->ps);
+	rpmpsFree(psi->ps);
 	delete psi;
     }
     return NULL;
@@ -107,10 +99,8 @@ rpmps rpmpsCreate(void)
 
 rpmps rpmpsFree(rpmps ps)
 {
-    if (ps == NULL) return NULL;
-    if (ps->nrefs > 1) {
-	return rpmpsUnlink(ps);
-    }
+    if (ps == NULL || --ps->nrefs > 0)
+	return NULL;
 	
     for (auto & prob : ps->probs)
 	rpmProblemFree(prob);
