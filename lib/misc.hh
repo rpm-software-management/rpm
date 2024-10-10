@@ -58,4 +58,6 @@ RPM_GNUC_INTERNAL
 void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs);
 
+RPM_GNUC_INTERNAL
+int rpmIsValidHex(const char *str, size_t slen);
 #endif	/* H_MISC */
