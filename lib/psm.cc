@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <errno.h>
+#include <atomic>
 
 #include <rpm/rpmlib.h>		/* rpmvercmp and others */
 #include <rpm/rpmmacro.h>
@@ -43,7 +44,7 @@ struct rpmpsm_s {
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
 
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
 };
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te, pkgGoal goal);

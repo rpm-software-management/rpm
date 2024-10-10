@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <atomic>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
@@ -50,7 +51,7 @@ struct rpmfi_s {
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
     uint8_t * found;	/*!< Bit field of files found in the archive */
-    int nrefs;			/*!< Reference count */
+    std::atomic_int nrefs;	/*!< Reference count */
 };
 
 struct rpmfn_s {
@@ -122,31 +123,17 @@ struct rpmfiles_s {
     nlinkHash *nlinks;		/*!< Files connected by hardlinks */
     rpm_loff_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
-    int nrefs;		/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
 };
 
 static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd);
 static int cmpPoolFn(rpmstrPool pool, rpmfn files, int ix, const char * fn);
-
-static rpmfiles rpmfilesUnlink(rpmfiles fi)
-{
-    if (fi)
-	fi->nrefs--;
-    return NULL;
-}
 
 rpmfiles rpmfilesLink(rpmfiles fi)
 {
     if (fi)
 	fi->nrefs++;
     return fi;
-}
-
-static rpmfi rpmfiUnlink(rpmfi fi)
-{
-    if (fi)
-	fi->nrefs--;
-    return NULL;
 }
 
 rpmfi rpmfiLink(rpmfi fi)
@@ -1240,10 +1227,8 @@ exit:
 
 rpmfiles rpmfilesFree(rpmfiles fi)
 {
-    if (fi == NULL) return NULL;
-
-    if (fi->nrefs > 1)
-	return rpmfilesUnlink(fi);
+    if (fi == NULL || --fi->nrefs > 0)
+	return NULL;
 
     if (rpmfilesFC(fi) > 0) {
 	if (fi->ofndata != &fi->fndata) {
@@ -1297,7 +1282,6 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 
     delete fi->nlinks;
 
-    (void) rpmfilesUnlink(fi);
     delete fi;
 
     return NULL;
@@ -1305,10 +1289,8 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 
 rpmfi rpmfiFree(rpmfi fi)
 {
-    if (fi == NULL) return NULL;
-
-    if (fi->nrefs > 1)
-	return rpmfiUnlink(fi);
+    if (fi == NULL || --fi->nrefs > 0)
+	return NULL;
 
     fi->files = rpmfilesFree(fi->files);
     fi->fn = _free(fi->fn);

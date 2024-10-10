@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <errno.h>
 #include <inttypes.h>
+#include <atomic>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include "header_internal.hh"
@@ -109,7 +110,7 @@ struct headerToken_s {
     unsigned int instance;	/*!< Rpmdb instance */
     headerFlags flags;
     int sorted;			/*!< Current sort method */
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;			/*!< Reference count. */
 };
 
 /** \ingroup header
@@ -239,18 +240,9 @@ Header headerLink(Header h)
     return h;
 }
 
-static Header headerUnlink(Header h)
-{
-    if (h != NULL)
-	h->nrefs--;
-    return NULL;
-}
-
 Header headerFree(Header h)
 {
-    (void) headerUnlink(h);
-
-    if (h == NULL || h->nrefs > 0)
+    if (h == NULL || --h->nrefs > 0)
 	return NULL;
 
     if (h->index) {

@@ -2,6 +2,7 @@
  * \file lib/rpmds.c
  */
 #include "system.h"
+#include <atomic>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmvercmp */
@@ -29,7 +30,7 @@ struct rpmds_s {
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
     int *ti;			/*!< Trigger index. */
 };
 
@@ -202,12 +203,6 @@ rpm_color_t rpmdsColorIndex(rpmds ds, int i)
 	Color = ds->Color[i];
     return Color;
 }
-static rpmds rpmdsUnlink(rpmds ds)
-{
-    if (ds)
-	ds->nrefs--;
-    return NULL;
-}
 
 rpmds rpmdsLink(rpmds ds)
 {
@@ -220,11 +215,8 @@ rpmds rpmdsFree(rpmds ds)
 {
     rpmTagVal tagEVR, tagF, tagTi;
 
-    if (ds == NULL)
+    if (ds == NULL || --ds->nrefs > 0)
 	return NULL;
-
-    if (ds->nrefs > 1)
-	return rpmdsUnlink(ds);
 
     if (dsType(ds->tagN, NULL, &tagEVR, &tagF, &tagTi))
 	return NULL;
@@ -240,7 +232,6 @@ rpmds rpmdsFree(rpmds ds)
     ds->DNEVR = _free(ds->DNEVR);
     ds->Color = _free(ds->Color);
 
-    (void) rpmdsUnlink(ds);
     delete ds;
     return NULL;
 }
