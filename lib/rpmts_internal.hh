@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <atomic>
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmstrpool.h>
@@ -92,7 +93,7 @@ struct rpmts_s {
 
     rpmPlugins plugins;		/*!< Transaction plugins */
 
-    int nrefs;			/*!< Reference count. */
+    std::atomic_int nrefs;	/*!< Reference count. */
 
     rpmtriggers trigs2run;   /*!< Transaction file triggers */
 

@@ -60,13 +60,6 @@ static void loadKeyring(rpmts ts);
 
 int _rpmts_stats = 0;
 
-static rpmts rpmtsUnlink(rpmts ts)
-{
-    if (ts)
-	ts->nrefs--;
-    return NULL;
-}
-
 rpmts rpmtsLink(rpmts ts)
 {
     if (ts)
@@ -951,11 +944,11 @@ static void rpmtsPrintStats(rpmts ts)
 
 rpmts rpmtsFree(rpmts ts)
 {
-    if (ts == NULL)
+    if (ts == NULL || --ts->nrefs > 0)
 	return NULL;
 
-    if (ts->nrefs > 1)
-	return rpmtsUnlink(ts);
+    /* Cleanup still needs to rpmtsLink() and rpmtsFree() */
+    ts = rpmtsLink(ts);
 
     /* Don't issue element change callbacks when freeing */
     rpmtsSetChangeCallback(ts, NULL, NULL);
@@ -984,7 +977,6 @@ rpmts rpmtsFree(rpmts ts)
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
-    (void) rpmtsUnlink(ts);
     delete ts;
 
     return NULL;
@@ -1403,7 +1395,6 @@ rpm_time_t rpmtsGetTime(rpmts ts, time_t step)
 
 rpmtsi rpmtsiFree(rpmtsi tsi)
 {
-    /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
     if (tsi) {
 	tsi->ts = rpmtsFree(tsi->ts);
 	delete tsi;
