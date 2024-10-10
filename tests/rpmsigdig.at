@@ -35,6 +35,87 @@ runroot rpmkeys -Kv /data/RPMS/hello-1.0-1.i386.rpm
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmkeys key update (rpmdb)])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+# currently the default but make it explicit
+# root's .rpmmacros used to keep this build prefix independent
+echo "%_keyring rpmdb" >> "${RPMTEST}"/root/.rpmmacros
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[1],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 6323c42711450b6c: NOKEY
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list|wc -l
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys --list|wc -l
+],
+[0],
+[1
+1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[0],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header V4 EdDSA/SHA512 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmkeys key update (fs)])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+# root's .rpmmacros used to keep this build prefix independent
+echo "%_keyring fs" >> "${RPMTEST}"/root/.rpmmacros
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[1],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header V4 EdDSA/SHA512 Signature, key ID 6323c42711450b6c: NOKEY
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CHECK([
+# XXX rpmkeys --list doesn't yet work with fs keystore
+runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
+],
+[0],
+[1
+1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[0],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header V4 EdDSA/SHA512 Signature, Key Fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+RPMTEST_CLEANUP
 # ------------------------------
 # Test rpmkeys write errors
 AT_SETUP([[rpmkeys -K no space left on stdout]])
