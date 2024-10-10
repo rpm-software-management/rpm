@@ -112,7 +112,7 @@ static int sinfoLookup(rpmTagVal tag)
     return ix;
 }
 
-static int validHex(const char *str, size_t slen)
+int rpmIsValidHex(const char *str, size_t slen)
 {
     int valid = 0; /* Assume invalid */
     const char *b;
@@ -221,7 +221,7 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    sinfo->dig = rpmhex((const uint8_t *)data, dlen);
 	} else {
 	    /* Our hex data is always at least sha-1 long */
-	    if (dlen < 40 || !validHex((const char *)data, dlen)) {
+	    if (dlen < 40 || !rpmIsValidHex((const char *)data, dlen)) {
 		rasprintf(&sinfo->msg,
 			_("%s: tag %u: invalid hex"), origin, td->tag);
 		goto exit;
