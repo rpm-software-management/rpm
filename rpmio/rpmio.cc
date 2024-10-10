@@ -12,6 +12,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/resource.h>
+#include <atomic>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
@@ -46,7 +47,7 @@ typedef	struct {
  * The FD_t File Handle data structure.
  */
 struct FD_s {
-    int		nrefs;
+    std::atomic_int	nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
     int		magic;
@@ -322,17 +323,17 @@ FD_t fdLink(FD_t fd)
 
 FD_t fdFree( FD_t fd)
 {
-    if (fd) {
-	if (--fd->nrefs > 0)
-	    return fd;
-	delete fd->stats;
-	if (fd->digests) {
-	    fd->digests = rpmDigestBundleFree(fd->digests);
-	}
-	delete fd->fps;
-	free(fd->descr);
-	delete fd;
+    if (fd == NULL || --fd->nrefs > 0)
+	return fd;
+
+    delete fd->stats;
+    if (fd->digests) {
+	fd->digests = rpmDigestBundleFree(fd->digests);
     }
+    delete fd->fps;
+    free(fd->descr);
+    delete fd;
+
     return NULL;
 }
 
