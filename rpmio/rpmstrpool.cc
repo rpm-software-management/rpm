@@ -2,6 +2,7 @@
 
 #include <shared_mutex>
 #include <mutex>
+#include <atomic>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,7 @@ struct rpmstrPool_s {
 
     poolHash hash;		/* string -> sid hash table */
     int frozen;			/* are new id additions allowed? */
-    int nrefs;			/* refcount */
+    std::atomic_int nrefs;	/* refcount */
     std::shared_mutex mutex;
 };
 
@@ -256,29 +257,25 @@ rpmstrPool rpmstrPoolCreate(void)
 
 rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 {
-    if (pool) {
-	wrlock lock(pool->mutex);
-	if (pool->nrefs > 1) {
-	    pool->nrefs--;
-	} else {
-	    if (pool_debug)
-		poolHashPrintStats(pool);
-	    poolHashFree(pool->hash);
-	    free(pool->offs);
-	    for (int i=1;i<=pool->chunks_size;i++) {
-		pool->chunks[i] = _free(pool->chunks[i]);
-	    }
-	    free(pool->chunks);
-	    free(pool);
-	}
+    if (pool == NULL || --pool->nrefs > 0)
+	return NULL;
+
+    if (pool_debug)
+	poolHashPrintStats(pool);
+    poolHashFree(pool->hash);
+    free(pool->offs);
+    for (int i=1; i<=pool->chunks_size; i++) {
+	pool->chunks[i] = _free(pool->chunks[i]);
     }
+    free(pool->chunks);
+    free(pool);
+
     return NULL;
 }
 
 rpmstrPool rpmstrPoolLink(rpmstrPool pool)
 {
     if (pool) {
-	wrlock lock(pool->mutex);
 	pool->nrefs++;
     }
     return pool;
