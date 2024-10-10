@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <mutex>
+#include <atomic>
 #include <vector>
 #include <shared_mutex>
 #include <string>
@@ -22,7 +23,7 @@ struct rpmPubkey_s {
     std::string keyid;
     rpmPubkey primarykey;
     pgpDigParams pgpkey;
-    int nrefs;
+    std::atomic_int nrefs;
     std::shared_mutex mutex;
 };
 
@@ -31,7 +32,7 @@ using rdlock = std::shared_lock<std::shared_mutex>;
 
 struct rpmKeyring_s {
     std::map<std::string,rpmPubkey> keys; /* pointers to keys */
-    int nrefs;
+    std::atomic_int nrefs;
     std::shared_mutex mutex;
 };
 
@@ -56,15 +57,13 @@ rpmKeyring rpmKeyringNew(void)
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 {
-    if (keyring == NULL)
+    if (keyring == NULL || --keyring->nrefs > 0)
 	return NULL;
 
-    wrlock lock(keyring->mutex);
-    if (--keyring->nrefs == 0) {
-	for (auto & item : keyring->keys)
-	    rpmPubkeyFree(item.second);
-	delete keyring;
-    }
+    for (auto & item : keyring->keys)
+	rpmPubkeyFree(item.second);
+    delete keyring;
+
     return NULL;
 }
 
@@ -159,7 +158,6 @@ rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key)
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
 {
     if (keyring) {
-	wrlock lock(keyring->mutex);
 	keyring->nrefs++;
     }
     return keyring;
@@ -219,12 +217,6 @@ static rpmPubkey rpmPubkeyNewSubkey(rpmPubkey primarykey, pgpDigParams pgpkey)
     return key;
 }
 
-static rpmPubkey pubkeyLink(rpmPubkey key)
-{
-    key->nrefs++;
-    return key;
-}
-
 rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count)
 {
     rpmPubkey *subkeys = NULL;
@@ -243,7 +235,7 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count)
 	    subkeys = (rpmPubkey *)xmalloc(pgpsubkeysCount * sizeof(*subkeys));
 	    for (i = 0; i < pgpsubkeysCount; i++) {
 		subkeys[i] = rpmPubkeyNewSubkey(primarykey, pgpsubkeys[i]);
-		primarykey = pubkeyLink(primarykey);
+		primarykey = rpmPubkeyLink(primarykey);
 	    }
 	    free(pgpsubkeys);
 	}
@@ -259,7 +251,7 @@ rpmPubkey pubkeyPrimarykey(rpmPubkey key)
     if (key) {
 	wrlock lock(key->mutex);
 	if (key->primarykey == NULL) {
-	    primarykey = pubkeyLink(key);
+	    primarykey = rpmPubkeyLink(key);
 	} else {
 	    primarykey = rpmPubkeyLink(key->primarykey);
 	}
@@ -301,22 +293,19 @@ char * rpmPubkeyKeyIDAsHex(rpmPubkey key)
 
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
 {
-    if (key == NULL)
+    if (key == NULL || --key->nrefs > 0)
 	return NULL;
 
-    wrlock lock(key->mutex);
-    if (--key->nrefs == 0) {
-	pgpDigParamsFree(key->pgpkey);
-	rpmPubkeyFree(key->primarykey);
-	delete key;
-    }
+    pgpDigParamsFree(key->pgpkey);
+    rpmPubkeyFree(key->primarykey);
+    delete key;
+
     return NULL;
 }
 
 rpmPubkey rpmPubkeyLink(rpmPubkey key)
 {
     if (key) {
-	wrlock lock(key->mutex);
 	key->nrefs++;
     }
     return key;
