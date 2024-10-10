@@ -95,7 +95,7 @@ runroot rpmkeys --delete 1964c5fc
 RPMTEST_CHECK([
 # XXX rpmkeys on rpmdb returns "package gpg-pubkey is not installed" with
 # and error code when no keys are present, paper over
-runroot rpmkeys --list | grep -v "not installed" | wc -l
+runroot rpmkeys --list | grep -v "No keys installed" | wc -l
 exit 0
 ],
 [0],
