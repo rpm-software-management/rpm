@@ -117,8 +117,8 @@ static int validHex(const char *str, size_t slen)
     int valid = 0; /* Assume invalid */
     const char *b;
 
-    /* Our hex data is always even sized and at least sha-1 long */
-    if (slen % 2 || slen < 40)
+    /* Our hex data is always even sized */
+    if (slen % 2)
 	goto exit;
 
     for (b = str ; *b != '\0'; b++) {
@@ -220,7 +220,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	if (td->type == RPM_BIN_TYPE) {
 	    sinfo->dig = rpmhex((const uint8_t *)data, dlen);
 	} else {
-	    if (!validHex((const char *)data, dlen)) {
+	    /* Our hex data is always at least sha-1 long */
+	    if (dlen < 40 || !validHex((const char *)data, dlen)) {
 		rasprintf(&sinfo->msg,
 			_("%s: tag %u: invalid hex"), origin, td->tag);
 		goto exit;
