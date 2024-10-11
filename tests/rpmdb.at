@@ -81,6 +81,15 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmdb --export and --import])
 AT_KEYWORDS([rpmdb])
 
+# This needs to run *without* RPMDB_INIT to test behavior on read-only mount
+RPMTEST_CHECK([
+run rpmdb --exportdb --dbpath ${RPMTEST}/data/misc/ > rdonly.list
+test -s rdonly.list
+],
+[0],
+[],
+[])
+
 RPMTEST_CHECK([
 RPMDB_INIT
 runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
