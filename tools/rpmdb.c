@@ -79,6 +79,7 @@ static int importDB(rpmts ts)
 	Header h;
 	while ((h = headerRead(fd, HEADER_MAGIC_YES))) {
 	    rc += rpmtsImportHeader(txn, h, 0);
+	    headerFree(h);
 	}
     } else {
 	rc = -1;
