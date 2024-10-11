@@ -34,6 +34,10 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	if (lock->fd == -1) {
 	    if (errno == EACCES)
 		lock->fd = open(lock_path, O_RDONLY);
+	    else if (errno == EROFS) {
+		/* read-only media doesn't need locks, just feed it something */
+		lock->fd = dup(STDIN_FILENO);
+	    }
 	    if (lock->fd == -1) {
 		delete lock;
 		lock = NULL;
