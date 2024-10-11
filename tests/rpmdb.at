@@ -78,6 +78,42 @@ hello-2.0-1.x86_64
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmdb --export and --import])
+AT_KEYWORDS([rpmdb])
+
+RPMTEST_CHECK([
+RPMDB_INIT
+runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+# Need to pass the dbpath explicitly since we're not going through run/runroot
+runroot_other /sbin/runuser -u nobody -- rpmdb --dbpath /var/lib/rpm --exportdb > hdr.list
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qa --dbpath ${PWD}
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmdb --importdb --dbpath ${PWD} < hdr.list
+runroot rpm -qa --dbpath ${PWD}
+],
+[0],
+[hlinktest-1.0-1.noarch
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 AT_SKIP_IF([test x$PGP = xdummy])
