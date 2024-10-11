@@ -18,7 +18,7 @@ RPM_GNUC_INTERNAL
 rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr);
 
 RPM_GNUC_INTERNAL
-int rpmlockAcquire(rpmlock lock);
+int rpmlockAcquire(rpmlock lock, int lockmode);
 
 RPM_GNUC_INTERNAL
 void rpmlockRelease(rpmlock lock);
