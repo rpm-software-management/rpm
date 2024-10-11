@@ -65,7 +65,8 @@ Scriptlet                 | Mandatory | Buildsystem macro
 `%check`                  | No        | `%buildsystem_name_check`
 `%clean`                  | No        | `%buildsystem_name_clean`
 
-Replace "name" with the buildsystem name, eg `%buildsystem_cmake_build`.
+Replace "name" with the buildsystem name (which cannot contain an
+underscore), e.g. `%buildsystem_cmake_build`.
 When `BuildSystem:` tag is set, these automatically populate the corresponding
 spec section, unless the spec manually overrides it. All buildsystem
 macros are required to be parametric to have enforceable semantics.
