@@ -124,7 +124,7 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
     return lock;
 }
 
-int rpmlockAcquire(rpmlock lock)
+int rpmlockAcquire(rpmlock lock, int lockmode)
 {
     int locked = 0; /* assume failure */
     int myerrno = errno;
@@ -132,11 +132,11 @@ int rpmlockAcquire(rpmlock lock)
     errno = myerrno;
 
     if (lock) {
-	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
-	if (!locked && (lock->openmode & RPMLOCK_WRITE) && maywait) {
+	locked = rpmlock_acquire(lock, lockmode);
+	if (!locked && (lock->openmode & lockmode) && maywait) {
 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
 		    lock->descr, lock->path);
-	    locked = rpmlock_acquire(lock, (RPMLOCK_WRITE|RPMLOCK_WAIT));
+	    locked = rpmlock_acquire(lock, (lockmode|RPMLOCK_WAIT));
 	}
 	if (!locked) {
 	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
@@ -155,7 +155,7 @@ void rpmlockRelease(rpmlock lock)
 rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
 {
     rpmlock lock = rpmlockNew(lock_path, descr);
-    if (!rpmlockAcquire(lock))
+    if (!rpmlockAcquire(lock, RPMLOCK_WRITE))
 	lock = rpmlockFree(lock);
     return lock;
 }
