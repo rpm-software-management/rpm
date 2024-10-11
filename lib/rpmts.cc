@@ -1479,7 +1479,8 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
     if (ts->lock == NULL)
 	ts->lock = rpmlockNew(ts->lockPath, _("transaction"));
 
-    if (rpmlockAcquire(ts->lock)) {
+    int lockmode = (flags & RPMTXN_WRITE) ? RPMLOCK_WRITE : RPMLOCK_READ;
+    if (rpmlockAcquire(ts->lock, lockmode)) {
 	txn = new rpmtxn_s {};
 	txn->lock = ts->lock;
 	txn->flags = flags;
