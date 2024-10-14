@@ -44,9 +44,12 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, int callback(rpmPubkey, void*))
+static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, void*), void * userdata = NULL)
 {
     int ec = EXIT_SUCCESS;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    char * c;
+
     if (args) {
 	for (char * const * arg = args; *arg; arg++) {
 	    int found = false;
@@ -54,6 +57,17 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
 
 	    /* Allow short keyid while we're transitioning */
 	    if (klen != 40 && klen != 16 && klen != 8) {
+		rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
+		ec = EXIT_FAILURE;
+		continue;
+	    }
+
+	    /* Check for valid hex chars */
+	    for (c=*arg; *c; c++) {
+		if (strchr("0123456789abcdefABCDEF", *c) == NULL)
+		    break;
+	    }
+	    if (*c) {
 		rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
 		ec = EXIT_FAILURE;
 		continue;
@@ -89,6 +103,7 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
 	}
 	rpmKeyringIteratorFree(iter);
     }
+    rpmKeyringFree(keyring);
     return ec;
 }
 
@@ -107,7 +122,6 @@ int main(int argc, char *argv[])
     poptContext optCon = NULL;
     rpmts ts = NULL;
     ARGV_const_t args = NULL;
-    rpmKeyring keyring = NULL;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
@@ -123,7 +137,6 @@ int main(int argc, char *argv[])
 
     ts = rpmtsCreate();
     rpmtsSetRootDir(ts, rpmcliRootDir);
-    keyring = rpmtsGetKeyring(ts, 1);
 
     switch (mode) {
     case MODE_CHECKSIG:
@@ -158,7 +171,7 @@ int main(int argc, char *argv[])
     }
     case MODE_LISTKEY:
     {
-	ec = matchingKeys(keyring, args, NULL, printKey);
+	ec = matchingKeys(ts, args, printKey);
 	break;
     }
     default:
@@ -166,7 +179,6 @@ int main(int argc, char *argv[])
     }
 
 exit:
-    rpmKeyringFree(keyring);
     rpmtsFree(ts);
     rpmcliFini(optCon);
     fflush(stderr);
