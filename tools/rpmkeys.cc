@@ -50,6 +50,15 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
     if (args) {
 	for (char * const * arg = args; *arg; arg++) {
 	    int found = false;
+	    size_t klen = strlen(*arg);
+
+	    /* Allow short keyid while we're transitioning */
+	    if (klen != 40 && klen != 16 && klen != 8) {
+		rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
+		ec = EXIT_FAILURE;
+		continue;
+	    }
+
 	    auto iter = rpmKeyringInitIterator(keyring, 0);
 	    rpmPubkey key = NULL;
 	    while ((key = rpmKeyringIteratorNext(iter))) {
@@ -67,7 +76,7 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
 	    if (found) {
 		callback(key, userdata);
 	    } else {
-		rpmlog(RPMLOG_NOTICE, "Key %s not found\n", *arg);
+		rpmlog(RPMLOG_ERR, ("key not found: %s\n"), *arg);
 		ec = EXIT_FAILURE;
 	    }
 	}
