@@ -14,6 +14,7 @@ enum modes {
     MODE_IMPORTKEY	= (1 << 1),
     MODE_DELKEY		= (1 << 2),
     MODE_LISTKEY	= (1 << 3),
+    MODE_EXPORTKEY	= (1 << 4),
 };
 
 static int mode = 0;
@@ -24,6 +25,8 @@ static struct poptOption keyOptsTable[] = {
 	N_("verify package signature(s)"), NULL },
     { "import", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
 	N_("import an armored public key"), NULL },
+    { "export", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_EXPORTKEY,
+	N_("export an public key"), NULL },
     { "test", '\0', POPT_ARG_NONE, &test, 0,
 	N_("don't import, but tell if it would work or not"), NULL },
     { "delete", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
@@ -123,6 +126,14 @@ static int deleteKey(rpmPubkey key, void * data)
     return 0;
 }
 
+static int exportKey(rpmPubkey key, void * data)
+{
+    char * armored = rpmPubkeyArmorWrap(key);
+    rpmlog(RPMLOG_NOTICE, "%s", armored);
+    free(armored);
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
@@ -139,7 +150,7 @@ int main(int argc, char *argv[])
 
     args = (ARGV_const_t) poptGetArgs(optCon);
 
-    if (mode != MODE_LISTKEY && args == NULL)
+    if (args == NULL && mode != MODE_LISTKEY && mode != MODE_EXPORTKEY)
 	argerror(_("no arguments given"));
 
     ts = rpmtsCreate();
@@ -154,6 +165,11 @@ int main(int argc, char *argv[])
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts)|RPMTRANS_FLAG_TEST));
 	ec = rpmcliImportPubkeys(ts, args);
 	break;
+    case MODE_EXPORTKEY:
+    {
+	ec = matchingKeys(ts, args, exportKey);
+	break;
+    }
     case MODE_DELKEY:
     {
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
