@@ -78,7 +78,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 RPMTEST_CHECK([
 runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
-[3],
+[1],
 [],
 [error: invalid key id: abcd
 error: invalid key id: gimmekey
@@ -147,7 +147,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 RPMTEST_CHECK([
 runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
-[3],
+[1],
 [],
 [error: invalid key id: abcd
 error: invalid key id: gimmekey
