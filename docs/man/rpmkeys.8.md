@@ -21,6 +21,8 @@ The general forms of rpm digital signature commands are
 
 **rpmkeys** **\--list** \[*KEYFINGERPRINT \...*\]
 
+**rpmkeys** **\--export** \[*KEYFINGERPRINT \...*\]
+
 **rpmkeys** **\--import** *PUBKEY \...*
 
 **rpmkeys** **\--delete** *KEYHASH \...*
@@ -52,6 +54,10 @@ querying. Here\'s information about the Red Hat GPG/DSA key:
 
 Finally, public keys can be erased after importing just like packages.
 Here\'s how to remove the Red Hat GPG/DSA key:
+
+**rpmkeys** **\--export**
+
+Write the keys in an armor wrapped text format to standard out.
 
 **rpmkeys** **\--delete db42a60e**
 
