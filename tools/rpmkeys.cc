@@ -64,7 +64,8 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
 	    while ((key = rpmKeyringIteratorNext(iter))) {
 		char * fp = rpmPubkeyFingerprintAsHex(key);
 		char * keyid = rpmPubkeyKeyIDAsHex(key);
-		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid)) {
+		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid) ||
+		    !strcmp(*arg, keyid+8)) {
 		    found = true;
 		}
 		free(fp);
