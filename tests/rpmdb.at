@@ -186,9 +186,9 @@ RPMTEST_CHECK([
 runroot rpmkeys --list XXX
 ],
 [1],
-[Key XXX not found
-],
-[])
+[],
+[error: invalid key id: XXX
+])
 
 RPMTEST_CHECK([
 runroot rpmkeys --delete 1964c5fc
