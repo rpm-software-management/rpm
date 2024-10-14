@@ -27,7 +27,7 @@ EXAMPLES
 ========
 
 \
-***$ echo -e 'rpm-4.18.0-3.fc38.x86_64\nrpm-4.18.0-1.fc38.x86_64' | rpmsort \
+***$ echo -e \'rpm-4.18.0-3.fc38.x86_64\\nrpm-4.18.0-1.fc38.x86_64\' | rpmsort \
 rpm-4.18.0-1.fc38.x86_64 \
 rpm-4.18.0-3.fc38.x86_64***
 
