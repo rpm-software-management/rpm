@@ -774,17 +774,10 @@ exit:
     return rc;
 }
 
-rpmRC rpmtxnDeletePubkey(rpmtxn txn, const char *keyid)
+rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 {
     rpmRC rc = RPMRC_FAIL;
-    size_t klen = strlen(keyid);
-
-    /* Allow short keyid while we're transitioning */
-    if (klen != 40 && klen != 16 && klen != 8)
-	return RPMRC_NOKEY;
-
-    if (!rpmIsValidHex(keyid, klen))
-	return RPMRC_NOKEY;
+    char * keyid = rpmPubkeyKeyIDAsHex(key);
 
     if (txn) {
 	/* force keyring load */
@@ -797,12 +790,13 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, const char *keyid)
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
 	    if (txn->ts->keyringtype == KEYRING_FS)
-		rc = rpmtsDeleteFSKey(txn, keyid);
+		rc = rpmtsDeleteFSKey(txn, keyid+8);
 	    else
-		rc = rpmtsDeleteDBKey(txn, keyid);
+		rc = rpmtsDeleteDBKey(txn, keyid+8);
 	}
 	rpmKeyringFree(keyring);
     }
+    free(keyid);
     return rc;
 }
 

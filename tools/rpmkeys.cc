@@ -116,6 +116,13 @@ static int printKey(rpmPubkey key, void * data)
     return 0;
 }
 
+static int deleteKey(rpmPubkey key, void * data)
+{
+    rpmtxn txn = (rpmtxn) data;
+    rpmtxnDeletePubkey(txn, key);
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
@@ -151,20 +158,7 @@ int main(int argc, char *argv[])
     {
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
 	if (txn) {
-	    int nfail = 0;
-	    for (char const * const *arg = args; *arg && **arg; arg++) {
-		rpmRC delrc = rpmtxnDeletePubkey(txn, *arg);
-		if (delrc) {
-		    if (delrc == RPMRC_NOTFOUND)
-			rpmlog(RPMLOG_ERR, ("key not found: %s\n"), *arg);
-		    else if (delrc == RPMRC_NOKEY)
-			rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
-		    else if (delrc == RPMRC_FAIL)
-			rpmlog(RPMLOG_ERR, ("failed to delete key: %s\n"), *arg);
-		    nfail++;
-		}
-	    }
-	    ec = nfail;
+	    ec = matchingKeys(ts, args, deleteKey, txn);
 	    rpmtxnEnd(txn);
 	}
 	break;
