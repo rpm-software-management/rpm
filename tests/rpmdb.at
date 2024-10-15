@@ -134,9 +134,8 @@ RPMTEST_CHECK([
 runroot rpmkeys --delete 1964c5fc
 runroot rpmkeys --list
 ],
-[1],
-[package gpg-pubkey is not installed
-],
+[0],
+[],
 [])
 RPMTEST_CLEANUP
 
