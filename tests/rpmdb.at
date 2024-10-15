@@ -199,9 +199,8 @@ runroot rpmkeys --delete 757bf69e
 runroot rpmkeys --delete eb04e625
 runroot rpmkeys --list
 ],
-[1],
-[No keys installed
-],
+[0],
+[],
 [])
 RPMTEST_CLEANUP
 

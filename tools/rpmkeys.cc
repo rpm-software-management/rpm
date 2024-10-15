@@ -72,18 +72,12 @@ static int matchingKeys(rpmKeyring keyring, ARGV_const_t args, void * userdata, 
 	    }
 	}
     } else {
-	int found = false;
 	auto iter = rpmKeyringInitIterator(keyring, 0);
 	rpmPubkey key = NULL;
 	while ((key = rpmKeyringIteratorNext(iter))) {
-	    found = true;
 	    callback(key, userdata);
 	}
 	rpmKeyringIteratorFree(iter);
-	if (!found) {
-	    rpmlog(RPMLOG_NOTICE, "No keys installed\n");
-	    ec = EXIT_FAILURE;
-	}
     }
     return ec;
 }
