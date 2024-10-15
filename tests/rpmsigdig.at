@@ -29,6 +29,39 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmkeys key update and delete (rpmdb)])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+# currently the default but make it explicit
+# root's .rpmmacros used to keep this build prefix independent
+echo "%_keyring rpmdb" >> "${RPMTEST}"/root/.rpmmacros
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
+],
+[3],
+[],
+[error: package gpg-pubkey-abcd is not installed
+error: package gpg-pubkey-gimmekey is not installed
+error: package gpg-pubkey-1111aaaa2222bbbb is not installed
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete 1964c5fc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 # Test rpmkeys write errors
 AT_SETUP([[rpmkeys -K no space left on stdout]])
