@@ -98,12 +98,13 @@ int main(int argc, char *argv[])
     case MODE_LISTKEY:
     {
 	ARGV_t query = NULL;
+	QVA_t qva = &rpmQVKArgs;
 	if (args != NULL) {
 	    query = gpgkeyargs(args);
 	} else {
+	    qva->qva_source |= RPMQV_ALL;
 	    argvAdd(&query, "gpg-pubkey");
 	}
-	QVA_t qva = &rpmQVKArgs;
 	rstrcat(&qva->qva_queryFormat, "%{version}-%{release}: %{summary}\n");
 	ec = rpmcliQuery(ts, &rpmQVKArgs, (ARGV_const_t) query);
 	query = argvFree(query);
