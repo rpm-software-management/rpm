@@ -141,6 +141,13 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key);
 char * rpmPubkeyBase64(rpmPubkey key);
 
 /** \ingroup rpmkeyring
+ * Return base64 encoding of pubkey
+ * @param key           Pubkey
+ * @return              armored pubkey (malloced), NULL on error
+ */
+char * rpmPubkeyArmorWrap(rpmPubkey key);
+
+/** \ingroup rpmkeyring
  * Return fingerprint of primary key
  * @param key		Pubkey
  * @param fp		Fingerprint data

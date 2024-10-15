@@ -322,6 +322,17 @@ char * rpmPubkeyBase64(rpmPubkey key)
     return enc;
 }
 
+char * rpmPubkeyArmorWrap(rpmPubkey key)
+{
+    char *enc = NULL;
+
+    if (key) {
+	rdlock lock(key->mutex);
+	enc = pgpArmorWrap(PGPARMOR_PUBKEY, key->pkt.data(), key->pkt.size());
+    }
+    return enc;
+}
+
 rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp)
 {
     rpmPubkey mergedkey = NULL;
