@@ -348,7 +348,9 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMDB_INIT
 
-runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+	--define "_keyring rpmdb" \
+	--import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpm -qi gpg-pubkey-1964c5fc-58e63918|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey-1964c5fc-58e63918],
 [0],
@@ -704,7 +706,9 @@ AT_KEYWORDS([rpmkeys import])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 RPMTEST_CHECK([
-runroot rpmkeys --import /data/keys/different-creation-times.asc
+runroot rpmkeys \
+	--define "_keyring rpmdb" \
+	--import /data/keys/different-creation-times.asc
 runroot rpm -qi gpg-pubkey-62837bea-62553e62|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey
 ],
