@@ -465,7 +465,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_6
 echo Importing key:
 runroot rpmkeys --quiet --import /data/keys/alice.asc; echo $?
 echo Checking for key:
-runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
+runroot rpmkeys --list b6542f92f30650c36b6f41bcb3a771bfeb04e625
 echo Checking package after importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
 echo Checking package after importing key, no digest:
@@ -486,7 +486,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
 Importing key:
 0
 Checking for key:
-Version     : eb04e625
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
     Header V4 RSA/SHA512 Signature, Key Fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
@@ -523,7 +523,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_6
 echo Importing key:
 runroot rpmkeys --quiet --import /data/keys/alice-expired-subkey.asc 2>&1; echo $?
 echo Checking for key:
-runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
+runroot rpmkeys --list b6542f92f30650c36b6f41bcb3a771bfeb04e625
 echo Checking package after importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no digest:
@@ -544,7 +544,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
 Importing key:
 0
 Checking for key:
-Version     : eb04e625
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
 RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) expired on 2022-04-12 00:00:15])dnl
@@ -593,7 +593,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_6
 echo Importing key:
 runroot rpmkeys --quiet --import /data/keys/alice-revoked-subkey.asc 2>&1; echo $?
 echo Checking for key:
-runroot rpm -qi gpg-pubkey-eb04e625-* | grep Version | head -n1
+runroot rpmkeys --list b6542f92f30650c36b6f41bcb3a771bfeb04e625
 echo Checking package after importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
 echo Checking package after importing key, no digest:
@@ -614,7 +614,7 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
 Importing key:
 0
 Checking for key:
-Version     : eb04e625
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
 Checking package after importing key:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
 RPMOUTPUT_LEGACY([error: Subkey 1f71177215217ee0 of key b3a771bfeb04e625 (Alice <alice@example.org>) has been revoked])dnl
