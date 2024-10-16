@@ -6,6 +6,7 @@
 #include <shared_mutex>
 #include <string>
 #include <map>
+#include <cassert>
 
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
@@ -31,7 +32,7 @@ using wrlock = std::unique_lock<std::shared_mutex>;
 using rdlock = std::shared_lock<std::shared_mutex>;
 
 struct rpmKeyring_s {
-    std::map<std::string,rpmPubkey> keys; /* pointers to keys */
+    std::multimap<std::string,rpmPubkey> keys; /* pointers to keys */
     std::atomic_int nrefs;
     std::shared_mutex mutex;
 };
@@ -126,16 +127,21 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 
     /* check if we already have this key, but always wrlock for simplicity */
     wrlock lock(keyring->mutex);
-    auto item = keyring->keys.find(key->keyid);
-    if (item != keyring->keys.end() && mode == RPMKEYRING_DELETE) {
+    auto range = keyring->keys.equal_range(key->keyid);
+    auto item = range.first;
+    for (; item != range.second; ++item) {
+	if (item->second->fp == key->fp)
+	    break;
+    }
+    if (item != range.second && mode == RPMKEYRING_DELETE) {
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
-    } else if (item != keyring->keys.end() && mode == RPMKEYRING_REPLACE) {
+    } else if (item != range.second && mode == RPMKEYRING_REPLACE) {
 	rpmPubkeyFree(item->second);
 	item->second = rpmPubkeyLink(key);
 	rc = 0;
-    } else if (item == keyring->keys.end() && (mode == RPMKEYRING_ADD ||mode == RPMKEYRING_REPLACE) ) {
+    } else if (item == range.second && (mode == RPMKEYRING_ADD || mode == RPMKEYRING_REPLACE) ) {
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
 	rc = 0;
     }
@@ -153,9 +159,13 @@ rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key)
     if (keyring == NULL || key == NULL)
 	return NULL;
     rdlock lock(keyring->mutex);
-    auto item = keyring->keys.find(key->keyid);
-    rpmPubkey rkey = item == keyring->keys.end() ? NULL : rpmPubkeyLink(item->second);
-    return rkey;
+
+    auto range = keyring->keys.equal_range(key->keyid);
+    for (auto item = range.first; item != range.second; ++item) {
+	if (item->second->fp == key->fp)
+	    return rpmPubkeyLink(item->second);
+    }
+    return NULL;
 }
 
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
@@ -363,50 +373,67 @@ pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key)
     return params;
 }
 
-static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
+rpmRC pubKeyVerify(rpmPubkey key, pgpDigParams sig, DIGEST_CTX ctx, std::vector<std::pair<int, std::string>> &results)
 {
-    rpmPubkey key = NULL;
+    rpmRC rc = RPMRC_FAIL;
+    char *lints = NULL;
+    rc = pgpVerifySignature2(key ? key->pgpkey : NULL, sig, ctx, &lints);
 
-    if (keyring && sig) {
-	rdlock lock(keyring->mutex);
-	auto keyid = key2str(pgpDigParamsSignID(sig));
-	auto item = keyring->keys.find(keyid);
-	if (item != keyring->keys.end()) {
-	    key = item->second;
-	    pgpDigParams pub = key->pgpkey;
-	    /* Do the parameters match the signature? */
-	    if ((pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
-                 != pgpDigParamsAlgo(pub, PGPVAL_PUBKEYALGO)) ||
-                memcmp(pgpDigParamsSignID(sig), pgpDigParamsSignID(pub),
-                       PGP_KEYID_LEN)) {
-		key = NULL;
-	    }
-	}
-    }
-    return key;
+    /* found right key, discard error messages from wrong keys */
+    if (rc == RPMRC_OK)
+	results.clear();
+
+    results.push_back({rc, std::string(lints ? lints : "")});
+    free(lints);
+    return rc;
 }
 
 rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx, rpmPubkey * keyptr)
 {
     rpmRC rc = RPMRC_FAIL;
+    rpmPubkey key = NULL;
 
     if (sig && ctx) {
-	pgpDigParams pgpkey = NULL;
-	rpmPubkey key = findbySig(keyring, sig);
+	rdlock lock(keyring->mutex);
+	auto keyid = key2str(pgpDigParamsSignID(sig));
+	std::vector<std::pair<int, std::string>> results = {};
 
-	if (key)
-	    pgpkey = key->pgpkey;
+	/* Look for verifying key */
+	auto range = keyring->keys.equal_range(keyid);
 
-	/* We call verify even if key not found for a signature sanity check */
-	char *lints = NULL;
-	rc = pgpVerifySignature2(pgpkey, sig, ctx, &lints);
-	if (lints) {
-	    rpmlog(rc ? RPMLOG_ERR : RPMLOG_WARNING, "%s\n", lints);
-	    free(lints);
+	for (auto it = range.first; it != range.second; ++it) {
+	    key = it->second;
+
+	    /* Do the parameters match the signature? */
+	    if (pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
+		!= pgpDigParamsAlgo(key->pgpkey, PGPVAL_PUBKEYALGO))
+	    {
+		continue;
+	    }
+
+	    rc = pubKeyVerify(key, sig, ctx, results);
+
+	    if (rc == RPMRC_OK)
+		break;
 	}
-	if (keyptr) {
-	    *keyptr = pubkeyPrimarykey(key);
+
+	/* No key, sanity check signature*/
+	if (results.empty()) {
+	    key = NULL;
+	    rc = pubKeyVerify(NULL, sig, ctx, results);
+	    assert(rc != RPMRC_OK);
 	}
+
+	for (auto const & item : results) {
+	    if (!item.second.empty()) {
+		rpmlog(item.first ? RPMLOG_ERR : RPMLOG_WARNING, "%s\n",
+		       item.second.c_str());
+	    }
+	}
+    }
+
+    if (keyptr) {
+	*keyptr = pubkeyPrimarykey(key);
     }
 
     return rc;
