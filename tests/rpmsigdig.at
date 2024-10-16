@@ -1455,3 +1455,81 @@ POST-IMPORT
 
 gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
+
+# ------------------------------
+# Test key id collision
+AT_SETUP([key id collision])
+AT_KEYWORDS([rpmsign signature])
+AT_SKIP_IF([test x$PGP = xdummy])
+RPMDB_INIT
+gpg2 --import ${RPMTEST}/data/keys/keyidcollision1.asc
+# Our keys have no passphrases to be asked, silence GPG_TTY warning
+export GPG_TTY=""
+RPMTEST_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 79cc07f167fee8841829acaa42655a75156b3de0 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo PRE-IMPORT
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+echo POST-IMPORT
+runroot rpmkeys --import /data/keys/keyidcollision2.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys --import /data/keys/keyidcollision1.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+],
+[0],
+[PRE-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, key ID 42655a75156b3de0: NOKEY
+POST-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, Key Fingerprint: 94706f8da571389e8642bdfd42655a75156b3de0: BAD
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, Key Fingerprint: 79cc07f167fee8841829acaa42655a75156b3de0: OK
+],
+[error: Verifying a signature using certificate 94706F8DA571389E8642BDFD42655A75156B3DE0 ():
+  Certificate 42655A75156B3DE0 does not contain key 79CC07F167FEE8841829ACAA42655A75156B3DE0 or it is not valid
+])
+
+gpgconf --kill gpg-agent
+RPMTEST_CLEANUP
+
+# ------------------------------
+# Test key id collision
+AT_SETUP([key id collision])
+AT_KEYWORDS([rpmsign signature])
+AT_SKIP_IF([test x$PGP = xdummy])
+RPMDB_INIT
+gpg2 --import ${RPMTEST}/data/keys/keyidcollision2.asc
+# Our keys have no passphrases to be asked, silence GPG_TTY warning
+export GPG_TTY=""
+RPMTEST_CHECK([
+RPMDB_INIT
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+run rpmsign --key-id 94706f8da571389e8642bdfd42655a75156b3de0 --digest-algo sha256 --addsign "${RPMTEST}"/tmp/hello-2.0-1.x86_64.rpm > /dev/null
+echo PRE-IMPORT
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+echo POST-IMPORT
+runroot rpmkeys --import /data/keys/keyidcollision1.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys --import /data/keys/keyidcollision2.pub
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+],
+[0],
+[PRE-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, key ID 42655a75156b3de0: NOKEY
+POST-IMPORT
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, Key Fingerprint: 79cc07f167fee8841829acaa42655a75156b3de0: BAD
+/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA256 Signature, Key Fingerprint: 94706f8da571389e8642bdfd42655a75156b3de0: OK
+],
+[error: Verifying a signature using certificate 79CC07F167FEE8841829ACAA42655A75156B3DE0 ():
+  Certificate 42655A75156B3DE0 does not contain key 94706F8DA571389E8642BDFD42655A75156B3DE0 or it is not valid
+])
+
+gpgconf --kill gpg-agent
+RPMTEST_CLEANUP
