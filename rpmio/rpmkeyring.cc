@@ -20,7 +20,7 @@ int _print_pkts = 0;
 
 struct rpmPubkey_s {
     std::vector<uint8_t> pkt;
-    std::string keyid;
+    std::string keyid;		/* hex keyid */
     rpmPubkey primarykey;
     pgpDigParams pgpkey;
     std::atomic_int nrefs;
@@ -45,7 +45,10 @@ struct rpmKeyringIterator_s {
 
 static std::string key2str(const uint8_t *keyid)
 {
-    return std::string(reinterpret_cast<const char *>(keyid), PGP_KEYID_LEN);
+    char *hexid = rpmhex(keyid, PGP_KEYID_LEN);
+    std::string s { hexid };
+    free(hexid);
+    return s;
 }
 
 rpmKeyring rpmKeyringNew(void)
@@ -285,9 +288,9 @@ char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
     return result;
 }
 
-char * rpmPubkeyKeyIDAsHex(rpmPubkey key)
+const char * rpmPubkeyKeyIDAsHex(rpmPubkey key)
 {
-    return rpmhex((const uint8_t*)(key->keyid.c_str()), key->keyid.length());
+    return key ? key->keyid.c_str() : NULL;
 }
 
 

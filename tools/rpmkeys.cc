@@ -80,13 +80,12 @@ static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, voi
 	    rpmPubkey key = NULL;
 	    while ((key = rpmKeyringIteratorNext(iter))) {
 		char * fp = rpmPubkeyFingerprintAsHex(key);
-		char * keyid = rpmPubkeyKeyIDAsHex(key);
+		const char * keyid = rpmPubkeyKeyIDAsHex(key);
 		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid) ||
 		    !strcmp(*arg, keyid+8)) {
 		    found = true;
 		}
 		free(fp);
-		free(keyid);
 		if (found)
 		    break;
 	    }
