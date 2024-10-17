@@ -501,7 +501,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     char * enc = NULL;
     char * s = NULL;
     int rc = -1;
-    int i;
 
     memset(&kd, 0, sizeof(kd));
 
@@ -534,14 +533,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     addGpgProvide(h, kd.userid, kd.verid);
     addGpgProvide(h, kd.shortid, kd.verid);
     addGpgProvide(h, kd.signid, kd.verid);
-
-    for (i = 0; i < subkeysCount; i++) {
-	struct pgpdata_s skd;
-	initPgpData(subkeys[i], &skd);
-	addGpgProvide(h, skd.shortid, skd.verid);
-	addGpgProvide(h, skd.signid, skd.verid);
-	finiPgpData(&skd);
-    }
 
     /* Reload it into immutable region and stomp standard digests on it */
     h = makeImmutable(h);
