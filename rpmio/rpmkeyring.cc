@@ -25,7 +25,6 @@ struct rpmPubkey_s {
     rpmPubkey primarykey;
     pgpDigParams pgpkey;
     std::atomic_int nrefs;
-    std::shared_mutex mutex;
 };
 
 using wrlock = std::unique_lock<std::shared_mutex>;
@@ -239,9 +238,6 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count)
     int i;
 
     if (primarykey) {
-
-	rdlock lock(primarykey->mutex);
-
 	if (!pgpPrtParamsSubkeys(
 		primarykey->pkt.data(), primarykey->pkt.size(),
 		primarykey->pgpkey, &pgpsubkeys, &pgpsubkeysCount)) {
@@ -263,7 +259,6 @@ rpmPubkey pubkeyPrimarykey(rpmPubkey key)
 {
     rpmPubkey primarykey = NULL;
     if (key) {
-	wrlock lock(key->mutex);
 	if (key->primarykey == NULL) {
 	    primarykey = rpmPubkeyLink(key);
 	} else {
@@ -280,7 +275,6 @@ int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen)
     int rc = -1;
     rpmPubkey primarykey = pubkeyPrimarykey(key);
     if (primarykey) {
-	rdlock lock(primarykey->mutex);
 	rc = pgpPubkeyFingerprint(primarykey->pkt.data(), primarykey->pkt.size(), fp, fplen);
     }
     primarykey = rpmPubkeyFree(primarykey);
@@ -291,7 +285,6 @@ const char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
 {
     const char * result = NULL;
     if (key) {
-	rdlock lock(key->mutex);
 	result = key->fp.c_str();
     }
     return result;
@@ -328,7 +321,6 @@ char * rpmPubkeyBase64(rpmPubkey key)
     char *enc = NULL;
 
     if (key) {
-	rdlock lock(key->mutex);
 	enc = rpmBase64Encode(key->pkt.data(), key->pkt.size(), -1);
     }
     return enc;
@@ -339,7 +331,6 @@ char * rpmPubkeyArmorWrap(rpmPubkey key)
     char *enc = NULL;
 
     if (key) {
-	rdlock lock(key->mutex);
 	enc = pgpArmorWrap(PGPARMOR_PUBKEY, key->pkt.data(), key->pkt.size());
     }
     return enc;
@@ -350,11 +341,8 @@ rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp)
     rpmPubkey mergedkey = NULL;
     uint8_t *mergedpkt = NULL;
     size_t mergedpktlen = 0;
-    rpmRC rc;
 
-    rdlock olock(oldkey->mutex);
-    rdlock nlock(newkey->mutex);
-    rc = pgpPubkeyMerge(oldkey->pkt.data(), oldkey->pkt.size(), newkey->pkt.data(), newkey->pkt.size(), &mergedpkt, &mergedpktlen, 0);
+    rpmRC rc = pgpPubkeyMerge(oldkey->pkt.data(), oldkey->pkt.size(), newkey->pkt.data(), newkey->pkt.size(), &mergedpkt, &mergedpktlen, 0);
     if (rc == RPMRC_OK && (mergedpktlen != oldkey->pkt.size() || memcmp(mergedpkt, oldkey->pkt.data(), mergedpktlen) != 0)) {
 	mergedkey = rpmPubkeyNew(mergedpkt, mergedpktlen);
 	if (!mergedkey)
