@@ -421,7 +421,7 @@ static void addGpgProvide(Header h, const char *n, const char *v)
 }
 
 struct pgpdata_s {
-    char *signid;
+    const char *signid;
     char *timestr;
     char *verid;
     const char *userid;
@@ -429,10 +429,11 @@ struct pgpdata_s {
     uint32_t time;
 };
 
-static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
+static void initPgpData(rpmPubkey key, struct pgpdata_s *pd)
 {
+    pgpDigParams pubp = rpmPubkeyPgpDigParams(key);
     memset(pd, 0, sizeof(*pd));
-    pd->signid = rpmhex(pgpDigParamsSignID(pubp), PGP_KEYID_LEN);
+    pd->signid = rpmPubkeyKeyIDAsHex(key);
     pd->shortid = pd->signid + 8;
     pd->userid = pgpDigParamsUserID(pubp);
     if (! pd->userid) {
@@ -448,7 +449,6 @@ static void finiPgpData(struct pgpdata_s *pd)
 {
     free(pd->timestr);
     free(pd->verid);
-    free(pd->signid);
     memset(pd, 0, sizeof(*pd));
 }
 
@@ -509,7 +509,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	goto exit;
 
     /* Build header elements. */
-    initPgpData(rpmPubkeyPgpDigParams(key), &kd);
+    initPgpData(key, &kd);
 
     rasprintf(&s, "%s public key", kd.userid);
     headerPutString(h, RPMTAG_PUBKEYS, enc);
@@ -537,7 +537,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 
     for (i = 0; i < subkeysCount; i++) {
 	struct pgpdata_s skd;
-	initPgpData(rpmPubkeyPgpDigParams(subkeys[i]), &skd);
+	initPgpData(subkeys[i], &skd);
 	addGpgProvide(h, skd.shortid, skd.verid);
 	addGpgProvide(h, skd.signid, skd.verid);
 	finiPgpData(&skd);
