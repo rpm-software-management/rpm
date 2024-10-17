@@ -21,6 +21,7 @@ int _print_pkts = 0;
 struct rpmPubkey_s {
     std::vector<uint8_t> pkt;
     std::string keyid;		/* hex keyid */
+    std::string fp;		/* hex fingerprint */
     rpmPubkey primarykey;
     pgpDigParams pgpkey;
     std::atomic_int nrefs;
@@ -187,6 +188,9 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     rpmPubkey key = NULL;
     pgpDigParams pgpkey = NULL;
     pgpKeyID_t keyid;
+    uint8_t *fp = NULL;
+    size_t fplen = 0;
+    char *hexfp = NULL;
     
     if (pkt == NULL || pktlen == 0)
 	goto exit;
@@ -197,6 +201,10 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     if (pgpPrtParams(pkt, pktlen, PGPTAG_PUBLIC_KEY, &pgpkey))
 	goto exit;
 
+    if (pgpPubkeyFingerprint(pkt, pktlen, &fp, &fplen))
+	goto exit;
+    hexfp = rpmhex(fp, fplen);
+
     key = new rpmPubkey_s {};
     key->primarykey = NULL;
     key->pkt.resize(pktlen);
@@ -204,8 +212,11 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     key->nrefs = 1;
     memcpy(key->pkt.data(), pkt, pktlen);
     key->keyid = key2str(keyid);
+    key->fp = hexfp;
 
 exit:
+    free(hexfp);
+    free(fp);
     return key;
 }
 
@@ -276,14 +287,12 @@ int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen)
     return rc;
 }
 
-char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
+const char * rpmPubkeyFingerprintAsHex(rpmPubkey key)
 {
-    char * result = NULL;
-    uint8_t *fp = NULL;
-    size_t fplen = 0;
-    if (!rpmPubkeyFingerprint(key, &fp, &fplen)) {
-	result = rpmhex(fp, fplen);
-	free(fp);
+    const char * result = NULL;
+    if (key) {
+	rdlock lock(key->mutex);
+	result = key->fp.c_str();
     }
     return result;
 }
