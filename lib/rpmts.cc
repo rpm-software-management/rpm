@@ -622,7 +622,10 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	char *keyid = headerFormat(h, "%{version}", NULL);
-	rpmtsDeleteFSKey(txn, keyid, keyfmt);
+	if (rpmtsDeleteFSKey(txn, keyid, keyfmt) == RPMRC_NOTFOUND) {
+	    /* make sure an old, short keyid version gets removed */
+	    rpmtsDeleteFSKey(txn, keyid+32, keyfmt);
+	}
 	free(keyid);
 
     }
@@ -666,7 +669,10 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
 	char *keyid = headerFormat(h, "%{version}", NULL);
-	rpmtsDeleteDBKey(txn, keyid, newinstance);
+	if (rpmtsDeleteDBKey(txn, keyid, newinstance) == RPMRC_NOTFOUND) {
+	    /* make sure an old, short keyid version gets removed */
+	    rpmtsDeleteDBKey(txn, keyid+32, newinstance);
+	}
 	free(keyid);
     }
 

@@ -100,6 +100,67 @@ runroot rpmkeys --list
 [])
 RPMTEST_CLEANUP
 
+AT_SETUP([rpmkeys migrate from keyid to fingerprint (rpmdb)])
+AT_KEYWORDS([rpmkeys rpmdb])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpm -q --dbpath /data/misc/ gpg-pubkey
+],
+[0],
+[gpg-pubkey-1964c5fc-58e63918
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --import --dbpath /data/misc/ /data/keys/rpm.org-rsa-2048-add-subkey.asc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -q --dbpath /data/misc/ gpg-pubkey
+],
+[0],
+[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpmkeys migrate from keyid to fingerprint (fs)])
+AT_KEYWORDS([rpmkeys rpmdb])
+RPMDB_INIT
+# root's .rpmmacros used to keep this build prefix independent
+echo "%_keyring fs" >> "${RPMTEST}"/root/.rpmmacros
+
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot_other mv /var/lib/rpm/pubkeys/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key /var/lib/rpm/pubkeys/gpg-pubkey-1964c5fc-58e63918.key
+runroot_other ls /var/lib/rpm/pubkeys/
+runroot rpmkeys --list
+],
+[0],
+[gpg-pubkey-1964c5fc-58e63918.key
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot_other ls /var/lib/rpm/pubkeys/
+],
+[0],
+[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmkeys key update (fs)])
 AT_KEYWORDS([rpmkeys signature])
 RPMDB_INIT
