@@ -664,6 +664,16 @@ int rpmtsGetNotifyStyle(rpmts ts);
 int rpmtsSetChangeCallback(rpmts ts, rpmtsChangeFunction notify, void *data);
 
 /** \ingroup rpmts
+ * Log messages with the same key just once
+ * @param ts		transaction set
+ * @param key		key to match log messages together
+ * @param code		rpmlogLvl
+ * @param fmt		format string and parameter to render
+ * @return		0 for the first call with this key value 1 otherwise
+ */
+int rpmtsLogOnce(rpmts ts, const char * key, int code, const char * fmt, ...) RPM_GNUC_PRINTF(4, 5);
+
+/** \ingroup rpmts
  * Create an empty transaction set.
  * @return		new transaction set
  */

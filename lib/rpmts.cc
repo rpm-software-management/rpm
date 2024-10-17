@@ -1260,6 +1260,26 @@ int rpmtsSetChangeCallback(rpmts ts, rpmtsChangeFunction change, void *data)
     return 0;
 }
 
+int rpmtsLogOnce(rpmts ts, const char * key, int code, const char * fmt, ...)
+{
+    int saved_errno = errno;
+    va_list ap;
+    char *msg = NULL;
+    int seen = 0;
+    auto ret = ts->logged_once.insert(key);
+    seen = (ret.second == false);
+    if (!seen) {
+	va_start(ap, fmt);
+	if (rvasprintf(&msg, fmt, ap) >= 0) {
+	    rpmlog(code, msg);
+	    free(msg);
+	}
+	va_end(ap);
+    }
+    errno = saved_errno;
+    return seen;
+}
+
 tsMembers rpmtsMembers(rpmts ts)
 {
     return (ts != NULL) ? ts->members : NULL;
@@ -1368,6 +1388,7 @@ rpmts rpmtsCreate(void)
     ts->trigs2run = rpmtriggersCreate(10);
 
     ts->min_writes = (rpmExpandNumeric("%{?_minimize_writes}") > 0);
+    ts->logged_once = {};
 
     return rpmtsLink(ts);
 }
