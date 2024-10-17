@@ -307,7 +307,7 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 {
     char *msg = NULL;
-    char *fphex = NULL;
+    const char *fphex = NULL;
     char *fpmsg = NULL;
     char * descr = xstrdup(rpmsinfoDescr(sinfo));
     if (sinfo->key) {
@@ -330,7 +330,6 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 		  descr, fpmsg, rpmSigString(sinfo->rc));
     }
     free(descr);
-    free(fphex);
     free(fpmsg);
     return msg;
 }

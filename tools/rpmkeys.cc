@@ -79,13 +79,12 @@ static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, voi
 	    auto iter = rpmKeyringInitIterator(keyring, 0);
 	    rpmPubkey key = NULL;
 	    while ((key = rpmKeyringIteratorNext(iter))) {
-		char * fp = rpmPubkeyFingerprintAsHex(key);
+		const char * fp = rpmPubkeyFingerprintAsHex(key);
 		const char * keyid = rpmPubkeyKeyIDAsHex(key);
 		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid) ||
 		    !strcmp(*arg, keyid+8)) {
 		    found = true;
 		}
-		free(fp);
 		if (found)
 		    break;
 	    }
@@ -111,10 +110,9 @@ static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, voi
 
 static int printKey(rpmPubkey key, void * data)
 {
-    char * fp = rpmPubkeyFingerprintAsHex(key);
     pgpDigParams params = rpmPubkeyPgpDigParams(key);
-    rpmlog(RPMLOG_NOTICE, "%s %s public key\n", fp, pgpDigParamsUserID(params));
-    free(fp);
+    rpmlog(RPMLOG_NOTICE, "%s %s public key\n",
+		rpmPubkeyFingerprintAsHex(key), pgpDigParamsUserID(params));
     return 0;
 }
 
