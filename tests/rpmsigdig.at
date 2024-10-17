@@ -347,11 +347,11 @@ RPMDB_INIT
 runroot rpmkeys \
 	--define "_keyring rpmdb" \
 	--import /data/keys/rpm.org-rsa-2048-test.pub
-runroot rpm -qi gpg-pubkey-1964c5fc-58e63918|grep -v Date|grep -v Version:
-runroot rpm -q --provides gpg-pubkey-1964c5fc-58e63918],
+runroot rpm -qi gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918|grep -v Date|grep -v Version:
+runroot rpm -q --provides gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918],
 [0],
 [Name        : gpg-pubkey
-Version     : 1964c5fc
+Version     : 771b18d3d7baa28734333c424344591e1964c5fc
 Release     : 58e63918
 Architecture: (none)
 Group       : Public Keys
@@ -393,9 +393,9 @@ UNW2iqnN3BA7guhOv6OMiROF1+I7Q5nWT63mQC7IgQ==
 =Z6nu
 -----END PGP PUBLIC KEY BLOCK-----
 
-gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:4344591e1964c5fc-58e63918
-gpg(1964c5fc) = 4:4344591e1964c5fc-58e63918
-gpg(4344591e1964c5fc) = 4:4344591e1964c5fc-58e63918
+gpg(rpm.org RSA testkey <rsa@rpm.org>) = 4:771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+gpg(1964c5fc) = 4:771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+gpg(4344591e1964c5fc) = 4:771b18d3d7baa28734333c424344591e1964c5fc-58e63918
 ],
 [])
 RPMTEST_CLEANUP
@@ -410,7 +410,7 @@ runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
 	--define "_keyring fs" \
 	--import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other cat /tmp/kr/gpg-pubkey-1964c5fc-58e63918.key | grep -v 'Version: '
+runroot_other cat /tmp/kr/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key | grep -v 'Version: '
 ],
 [0],
 [-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -703,12 +703,12 @@ RPMTEST_CHECK([
 runroot rpmkeys \
 	--define "_keyring rpmdb" \
 	--import /data/keys/different-creation-times.asc
-runroot rpm -qi gpg-pubkey-62837bea-62553e62|grep -v Date|grep -v Version:
+runroot rpm -qi gpg-pubkey-2f38916f5e77cf307b338596a72b7d4f62837bea-62553e62|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey
 ],
 [0],
 [[Name        : gpg-pubkey
-Version     : 62837bea
+Version     : 2f38916f5e77cf307b338596a72b7d4f62837bea
 Release     : 62553e62
 Architecture: (none)
 Group       : Public Keys
@@ -744,9 +744,9 @@ AfWOO/Uikf26AHEXoaPWBqecM0pPehlX21lJ3ambpMB2T885Sg==
 =IEYU
 -----END PGP PUBLIC KEY BLOCK-----
 
-gpg(Alice Lovelace <alice@example.org>) = 4:a72b7d4f62837bea-62553e62
-gpg(62837bea) = 4:a72b7d4f62837bea-62553e62
-gpg(a72b7d4f62837bea) = 4:a72b7d4f62837bea-62553e62
+gpg(Alice Lovelace <alice@example.org>) = 4:2f38916f5e77cf307b338596a72b7d4f62837bea-62553e62
+gpg(62837bea) = 4:2f38916f5e77cf307b338596a72b7d4f62837bea-62553e62
+gpg(a72b7d4f62837bea) = 4:2f38916f5e77cf307b338596a72b7d4f62837bea-62553e62
 ]],
 [])
 RPMTEST_CLEANUP
