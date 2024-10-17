@@ -421,6 +421,7 @@ static void addGpgProvide(Header h, const char *n, const char *v)
 }
 
 struct pgpdata_s {
+    const char *fingerprint;
     const char *signid;
     char *timestr;
     char *verid;
@@ -433,6 +434,7 @@ static void initPgpData(rpmPubkey key, struct pgpdata_s *pd)
 {
     pgpDigParams pubp = rpmPubkeyPgpDigParams(key);
     memset(pd, 0, sizeof(*pd));
+    pd->fingerprint = rpmPubkeyFingerprintAsHex(key);
     pd->signid = rpmPubkeyKeyIDAsHex(key);
     pd->shortid = pd->signid + 8;
     pd->userid = pgpDigParamsUserID(pubp);
@@ -442,7 +444,7 @@ static void initPgpData(rpmPubkey key, struct pgpdata_s *pd)
     pd->time = pgpDigParamsCreationTime(pubp);
 
     rasprintf(&pd->timestr, "%x", pd->time);
-    rasprintf(&pd->verid, "%d:%s-%s", pgpDigParamsVersion(pubp), pd->signid, pd->timestr);
+    rasprintf(&pd->verid, "%d:%s-%s", pgpDigParamsVersion(pubp), pd->fingerprint, pd->timestr);
 }
 
 static void finiPgpData(struct pgpdata_s *pd)
@@ -517,7 +519,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	goto exit;
 
     headerPutString(h, RPMTAG_NAME, "gpg-pubkey");
-    headerPutString(h, RPMTAG_VERSION, kd.shortid);
+    headerPutString(h, RPMTAG_VERSION, kd.fingerprint);
     headerPutString(h, RPMTAG_RELEASE, kd.timestr);
     headerPutString(h, RPMTAG_DESCRIPTION, d);
     headerPutString(h, RPMTAG_GROUP, group);
@@ -779,11 +781,11 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	/* Both import and delete just return OK on test-transaction */
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
-	    const char *keyid = rpmPubkeyKeyIDAsHex(key);
+	    const char *fp = rpmPubkeyFingerprintAsHex(key);
 	    if (txn->ts->keyringtype == KEYRING_FS)
-		rc = rpmtsDeleteFSKey(txn, keyid+8);
+		rc = rpmtsDeleteFSKey(txn, fp);
 	    else
-		rc = rpmtsDeleteDBKey(txn, keyid+8);
+		rc = rpmtsDeleteDBKey(txn, fp);
 	}
 	rpmKeyringFree(keyring);
     }
