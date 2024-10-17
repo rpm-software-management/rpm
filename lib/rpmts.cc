@@ -777,7 +777,6 @@ exit:
 rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 {
     rpmRC rc = RPMRC_FAIL;
-    char * keyid = rpmPubkeyKeyIDAsHex(key);
 
     if (txn) {
 	/* force keyring load */
@@ -789,6 +788,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	/* Both import and delete just return OK on test-transaction */
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
+	    const char *keyid = rpmPubkeyKeyIDAsHex(key);
 	    if (txn->ts->keyringtype == KEYRING_FS)
 		rc = rpmtsDeleteFSKey(txn, keyid+8);
 	    else
@@ -796,7 +796,6 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	}
 	rpmKeyringFree(keyring);
     }
-    free(keyid);
     return rc;
 }
 
