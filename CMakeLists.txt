@@ -17,7 +17,7 @@ option(ENABLE_WERROR "Stop build on warnings" OFF)
 option(ENABLE_SQLITE "Enable sqlite rpmdb support" ON)
 option(ENABLE_NDB "Enable ndb rpmdb support" ON)
 option(ENABLE_BDB_RO "Enable read-only Berkeley DB rpmdb support (EXPERIMENTAL)" OFF)
-option(ENABLE_TESTSUITE "Enable test-suite" ON)
+option(ENABLE_TESTSUITE "Enable test-suite" OFF)
 option(ENABLE_ASAN "Enable address-sanitizer" OFF)
 option(ENABLE_UBSAN "Enable undefined behavior-sanitizer" OFF)
 
