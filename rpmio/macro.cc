@@ -2074,7 +2074,8 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	for (path = files; *path; path++) {
 	    if (rpmFileHasSuffix(*path, ".rpmnew") || 
 		rpmFileHasSuffix(*path, ".rpmsave") ||
-		rpmFileHasSuffix(*path, ".rpmorig")) {
+		rpmFileHasSuffix(*path, ".rpmorig") ||
+		rpmFileHasSuffix(*path, "~")) {
 		continue;
 	    }
 	    (void) loadMacroFile(mc, *path);
