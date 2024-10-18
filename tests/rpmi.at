@@ -1696,6 +1696,46 @@ error: replacetest-1.0-1.noarch: install failed
 ])
 RPMTEST_CLEANUP
 
+AT_SETUP([update on invalid symlinked directory])
+AT_KEYWORDS([install update symlink])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+for r in 1 2; do
+    runroot rpmbuild --quiet --bb \
+		--define "rel ${r}" \
+		/data/SPECS/pamupdate.spec
+done
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/pamupdate-1.0-1.noarch.rpm
+runroot rpm -V pamupdate
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot_other chown -h nobody:nobody /var/run
+runroot rpm -U /build/RPMS/noarch/pamupdate-1.0-2.noarch.rpm
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+# --nomtime shouldn't be needed but fixing that's another story
+runroot rpm -V --nomtime pamupdate
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpm -U diskspace])
 AT_KEYWORDS([install diskspace])
 RPMTEST_CHECK([
