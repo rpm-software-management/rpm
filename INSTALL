@@ -199,8 +199,8 @@ This also creates and installs the new platform file e.g.
 
 Rpm comes with an automated self-test suite. The test-suite requires podman
 (https://github.com/containers/podman/) or docker (https://github.com/docker/).
-It is enabled by default but can be disabled with -DENABLE_TESTSUITE=OFF to
-avoid the dependencies.  The test-suite can be executed with:
+It is disabled by default to avoid the dependencies but can be enabled with
+-DENABLE_TESTSUITE=ON.  The test-suite can be executed with:
 
     make check
 
