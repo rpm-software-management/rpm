@@ -1094,7 +1094,7 @@ setmeta:
 	    if (ensureDir(NULL, rpmfiDN(fi), 0, 0, 1, &di.dirfd))
 		continue;
 
-	    if (fp->stage > FILE_NONE && !fp->skip) {
+	    if (fp->stage > FILE_NONE && !fp->skip && fp->action != FA_TOUCH) {
 		(void) fsmRemove(di.dirfd, fp->fpath, fp->sb.st_mode);
 	    }
 	}
