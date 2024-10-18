@@ -151,9 +151,9 @@ runroot rpm -qa | sort
 ],
 [0],
 [foo-1.0-1.noarch
-gpg-pubkey-1964c5fc-58e63918
-gpg-pubkey-757bf69e-661d22a8
-gpg-pubkey-eb04e625-62521e00
+gpg-pubkey-152bb32fd9ca982797e835cfb0645aec757bf69e-661d22a8
+gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+gpg-pubkey-b6542f92f30650c36b6f41bcb3a771bfeb04e625-62521e00
 hello-2.0-1.x86_64
 ],
 [])

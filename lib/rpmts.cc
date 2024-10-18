@@ -421,7 +421,8 @@ static void addGpgProvide(Header h, const char *n, const char *v)
 }
 
 struct pgpdata_s {
-    char *signid;
+    const char *fingerprint;
+    const char *signid;
     char *timestr;
     char *verid;
     const char *userid;
@@ -429,10 +430,12 @@ struct pgpdata_s {
     uint32_t time;
 };
 
-static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
+static void initPgpData(rpmPubkey key, struct pgpdata_s *pd)
 {
+    pgpDigParams pubp = rpmPubkeyPgpDigParams(key);
     memset(pd, 0, sizeof(*pd));
-    pd->signid = rpmhex(pgpDigParamsSignID(pubp), PGP_KEYID_LEN);
+    pd->fingerprint = rpmPubkeyFingerprintAsHex(key);
+    pd->signid = rpmPubkeyKeyIDAsHex(key);
     pd->shortid = pd->signid + 8;
     pd->userid = pgpDigParamsUserID(pubp);
     if (! pd->userid) {
@@ -441,14 +444,13 @@ static void initPgpData(pgpDigParams pubp, struct pgpdata_s *pd)
     pd->time = pgpDigParamsCreationTime(pubp);
 
     rasprintf(&pd->timestr, "%x", pd->time);
-    rasprintf(&pd->verid, "%d:%s-%s", pgpDigParamsVersion(pubp), pd->signid, pd->timestr);
+    rasprintf(&pd->verid, "%d:%s-%s", pgpDigParamsVersion(pubp), pd->fingerprint, pd->timestr);
 }
 
 static void finiPgpData(struct pgpdata_s *pd)
 {
     free(pd->timestr);
     free(pd->verid);
-    free(pd->signid);
     memset(pd, 0, sizeof(*pd));
 }
 
@@ -501,7 +503,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     char * enc = NULL;
     char * s = NULL;
     int rc = -1;
-    int i;
 
     memset(&kd, 0, sizeof(kd));
 
@@ -509,7 +510,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	goto exit;
 
     /* Build header elements. */
-    initPgpData(rpmPubkeyPgpDigParams(key), &kd);
+    initPgpData(key, &kd);
 
     rasprintf(&s, "%s public key", kd.userid);
     headerPutString(h, RPMTAG_PUBKEYS, enc);
@@ -518,7 +519,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
 	goto exit;
 
     headerPutString(h, RPMTAG_NAME, "gpg-pubkey");
-    headerPutString(h, RPMTAG_VERSION, kd.shortid);
+    headerPutString(h, RPMTAG_VERSION, kd.fingerprint);
     headerPutString(h, RPMTAG_RELEASE, kd.timestr);
     headerPutString(h, RPMTAG_DESCRIPTION, d);
     headerPutString(h, RPMTAG_GROUP, group);
@@ -534,14 +535,6 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
     addGpgProvide(h, kd.userid, kd.verid);
     addGpgProvide(h, kd.shortid, kd.verid);
     addGpgProvide(h, kd.signid, kd.verid);
-
-    for (i = 0; i < subkeysCount; i++) {
-	struct pgpdata_s skd;
-	initPgpData(rpmPubkeyPgpDigParams(subkeys[i]), &skd);
-	addGpgProvide(h, skd.shortid, skd.verid);
-	addGpgProvide(h, skd.signid, skd.verid);
-	finiPgpData(&skd);
-    }
 
     /* Reload it into immutable region and stomp standard digests on it */
     h = makeImmutable(h);
@@ -629,7 +622,10 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	char *keyid = headerFormat(h, "%{version}", NULL);
-	rpmtsDeleteFSKey(txn, keyid, keyfmt);
+	if (rpmtsDeleteFSKey(txn, keyid, keyfmt) == RPMRC_NOTFOUND) {
+	    /* make sure an old, short keyid version gets removed */
+	    rpmtsDeleteFSKey(txn, keyid+32, keyfmt);
+	}
 	free(keyid);
 
     }
@@ -673,7 +669,10 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
 	char *keyid = headerFormat(h, "%{version}", NULL);
-	rpmtsDeleteDBKey(txn, keyid, newinstance);
+	if (rpmtsDeleteDBKey(txn, keyid, newinstance) == RPMRC_NOTFOUND) {
+	    /* make sure an old, short keyid version gets removed */
+	    rpmtsDeleteDBKey(txn, keyid+32, newinstance);
+	}
 	free(keyid);
     }
 
@@ -788,11 +787,11 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	/* Both import and delete just return OK on test-transaction */
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
-	    const char *keyid = rpmPubkeyKeyIDAsHex(key);
+	    const char *fp = rpmPubkeyFingerprintAsHex(key);
 	    if (txn->ts->keyringtype == KEYRING_FS)
-		rc = rpmtsDeleteFSKey(txn, keyid+8);
+		rc = rpmtsDeleteFSKey(txn, fp);
 	    else
-		rc = rpmtsDeleteDBKey(txn, keyid+8);
+		rc = rpmtsDeleteDBKey(txn, fp);
 	}
 	rpmKeyringFree(keyring);
     }
