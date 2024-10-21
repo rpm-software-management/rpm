@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <string>
 #include <mutex>
 #include <set>
 
@@ -115,13 +116,13 @@ exit:
  * @param keyid		signature keyid
  * @return		0 if new keyid, otherwise 1
  */
-static int stashKeyid(unsigned int keyid)
+static int stashKeyid(const char *keyid)
 {
     static std::mutex keyid_mutex;
-    static std::set<unsigned int> keyids;
+    static std::set<std::string> keyids;
     int seen = 0;
 
-    if (keyid == 0)
+    if (keyid == NULL)
 	return 0;
 
     std::lock_guard<std::mutex> lock(keyid_mutex);

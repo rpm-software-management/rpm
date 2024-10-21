@@ -7,6 +7,30 @@ m4_define([RPMOUTPUT_SEQUOIA], [m4_if(RPM_PGP, [sequoia], [$1
 m4_define([RPMOUTPUT_LEGACY], [m4_if(RPM_PGP, [legacy], [$1
 ])])
 
+AT_SETUP([seen signer id tracking])
+AT_KEYWORDS([query signature])
+RPMTEST_CHECK([
+# stderr redirected to stdout to test the exact order of output
+runroot rpm -qp \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm \
+	/data/RPMS/hello-2.0-1.x86_64.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm 2>&1
+],
+[0],
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header V4 RSA/SHA256 Signature, key ID 4344591e1964c5fc: NOKEY
+hello-2.0-1.x86_64
+warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header V4 RSA/SHA512 Signature, key ID 1f71177215217ee0: NOKEY
+hello-2.0-1.x86_64
+hello-2.0-1.x86_64
+warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm: Header V4 EdDSA/SHA512 Signature, key ID 6323c42711450b6c: NOKEY
+hello-2.0-1.x86_64
+hello-2.0-1.x86_64
+],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 # Test pre-built package verification
 AT_SETUP([rpmkeys -Kv <unsigned> 1])
