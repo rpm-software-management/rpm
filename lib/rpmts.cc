@@ -269,7 +269,7 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-static int loadKeyringFromFiles(rpmts ts)
+static int rpmtsLoadKeyringFromFiles(rpmts ts)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
@@ -318,7 +318,7 @@ exit:
     return nkeys;
 }
 
-static int loadKeyringFromDB(rpmts ts)
+static int rpmtsLoadKeyringFromDB(rpmts ts)
 {
     Header h;
     rpmdbMatchIterator mi;
@@ -401,9 +401,9 @@ static void loadKeyring(rpmts ts)
 	if (!ts->keyringtype)
 	    ts->keyringtype = getKeyringType();
 	if (ts->keyringtype == KEYRING_FS) {
-	    loadKeyringFromFiles(ts);
+	    rpmtsLoadKeyringFromFiles(ts);
 	} else {
-	    loadKeyringFromDB(ts);
+	    rpmtsLoadKeyringFromDB(ts);
 	}
     }
 }
