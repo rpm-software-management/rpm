@@ -29,6 +29,7 @@ target_sources(librpm PRIVATE
 	backend/dbi.cc backend/dbi.hh backend/dummydb.cc
 	backend/dbiset.cc backend/dbiset.hh
 	headerutil.cc header.cc headerfmt.cc header_internal.hh
+	keystore.cc keystore.hh
 	rpmdb.cc rpmdb_internal.hh
 	fprint.cc fprint.hh tagname.cc rpmtd.cc tagtbl.inc
 	cpio.cc cpio.hh depends.cc order.cc formats.cc tagexts.cc fsm.cc fsm.hh
