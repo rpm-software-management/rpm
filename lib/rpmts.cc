@@ -489,8 +489,7 @@ static Header makeImmutable(Header h)
 }
 
 /* Build pubkey header. */
-static int makePubkeyHeader(rpmts ts, rpmPubkey key, rpmPubkey *subkeys,
-			    int subkeysCount, Header * hdrp)
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
 {
     Header h = headerNew();
     const char * afmt = "%{pubkeys:armor}";
@@ -745,7 +744,7 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     if (krc == 0) {
 	rpm_tid_t tid = rpmtsGetTid(ts);
 
-	if (makePubkeyHeader(ts, pubkey, subkeys, subkeysCount, &h) != 0)
+	if (makePubkeyHeader(ts, pubkey, &h) != 0)
 	    goto exit;
 
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
