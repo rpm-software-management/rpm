@@ -583,6 +583,11 @@ static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & n
     return rc;
 }
 
+static rpmRC rpmtsDeleteFSKey(rpmtxn txn, rpmPubkey key)
+{
+    return rpmtsDeleteFSKey(txn, rpmPubkeyFingerprintAsHex(key));
+}
+
 static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -659,6 +664,11 @@ static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int new
     }
 
     return rc;
+}
+
+static rpmRC rpmtsDeleteDBKey(rpmtxn txn, rpmPubkey key)
+{
+    return rpmtsDeleteDBKey(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
 static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
@@ -799,11 +809,10 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	/* Both import and delete just return OK on test-transaction */
 	rc = RPMRC_OK;
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    const char *fp = rpmPubkeyFingerprintAsHex(key);
-	    if (txn->ts->keyringtype == KEYRING_FS)
-		rc = rpmtsDeleteFSKey(txn, fp);
+	    if (ts->keyringtype == KEYRING_FS)
+		rc = rpmtsDeleteFSKey(txn, key);
 	    else
-		rc = rpmtsDeleteDBKey(txn, fp);
+		rc = rpmtsDeleteDBKey(txn, key);
 	}
 	rpmKeyringFree(keyring);
     }
