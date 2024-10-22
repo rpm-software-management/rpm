@@ -794,6 +794,17 @@ exit:
     return rc;
 }
 
+static rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key)
+{
+    rpmRC rc = RPMRC_FAIL;
+    rpmts ts = rpmtxnTs(txn);
+    if (ts->keyringtype == KEYRING_FS)
+	rc = rpmtsDeleteFSKey(txn, key);
+    else
+	rc = rpmtsDeleteDBKey(txn, key);
+    return rc;
+}
+
 rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -807,13 +818,12 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	rpmtsSetVSFlags(ts, oflags);
 
 	/* Both import and delete just return OK on test-transaction */
-	rc = RPMRC_OK;
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    if (ts->keyringtype == KEYRING_FS)
-		rc = rpmtsDeleteFSKey(txn, key);
-	    else
-		rc = rpmtsDeleteDBKey(txn, key);
+	if ((rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    rc = RPMRC_OK;
+	} else {
+	    rc = rpmKeystoreDeletePubkey(txn, key);
 	}
+	rc = RPMRC_OK;
 	rpmKeyringFree(keyring);
     }
     return rc;
