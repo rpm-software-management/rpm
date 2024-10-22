@@ -570,7 +570,7 @@ static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & n
     rpmRC rc = RPMRC_NOTFOUND;
     string keyglob = "gpg-pubkey-" + keyid + "-*.key";
     ARGV_t files = NULL;
-    char *pkpath = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyglob.c_str());
+    char *pkpath = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", keyglob.c_str());
     if (rpmGlob(pkpath, NULL, &files) == 0) {
 	char **f;
 	for (f = files; *f; f++) {
@@ -589,7 +589,7 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     rpmRC rc = RPMRC_FAIL;
     char *keyfmt = headerFormat(h, "%{nvr}.key", NULL);
     char *keyval = headerGetAsString(h, RPMTAG_DESCRIPTION);
-    char *path = rpmGenPath(rpmtsRootDir(txn->ts), "%{_keyringpath}/", keyfmt);
+    char *path = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", keyfmt);
     char *tmppath = NULL;
 
     if (replace) {
@@ -597,7 +597,7 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	unlink(tmppath);
     }
 
-    if (rpmMkdirs(rpmtsRootDir(txn->ts), "%{_keyringpath}")) {
+    if (rpmMkdirs(rpmtxnRootDir(txn), "%{_keyringpath}")) {
 	rpmlog(RPMLOG_ERR, _("failed to create keyring directory %s: %s\n"),
 		path, strerror(errno));
 	goto exit;
@@ -640,21 +640,22 @@ exit:
 
 static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int newinstance = 0)
 {
-    if (rpmtsOpenDB(txn->ts, (O_RDWR|O_CREAT)))
+    rpmts ts = rpmtxnTs(txn);
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	return RPMRC_FAIL;
 
     rpmRC rc = RPMRC_NOTFOUND;
     unsigned int otherinstance = 0;
     Header oh;
     string label = "gpg-pubkey-" + keyid;
-    rpmdbMatchIterator mi = rpmtsInitIterator(txn->ts, RPMDBI_LABEL, label.c_str(), 0);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_LABEL, label.c_str(), 0);
 
     while (otherinstance == 0 && (oh = rpmdbNextIterator(mi)) != NULL)
 	if (headerGetInstance(oh) != newinstance)
 	    otherinstance = headerGetInstance(oh);
     rpmdbFreeIterator(mi);
     if (otherinstance) {
-	rc = rpmdbRemove(rpmtsGetRdb(txn->ts), otherinstance) ?
+	rc = rpmdbRemove(rpmtsGetRdb(ts), otherinstance) ?
 		RPMRC_FAIL : RPMRC_OK;
     }
 
@@ -688,12 +689,14 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmPubkey *subkeys = NULL;
     rpmPubkey oldkey = NULL;
     int subkeysCount = 0;
-    rpmVSFlags oflags = rpmtsVSFlags(txn->ts);
     rpmKeyring keyring = NULL;
     int krc, i;
 
     if (txn == NULL)
 	return rc;
+
+    rpmts ts = rpmtxnTs(txn);
+    rpmVSFlags oflags = rpmtsVSFlags(ts);
 
     if (pgpPubKeyLint(pkt, pktlen, &lints) != RPMRC_OK) {
 	if (lints) {
@@ -710,9 +713,9 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     }
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
-    rpmtsSetVSFlags(txn->ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
-    keyring = rpmtsGetKeyring(txn->ts, 1);
-    rpmtsSetVSFlags(txn->ts, oflags);
+    rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
+    keyring = rpmtsGetKeyring(ts, 1);
+    rpmtsSetVSFlags(ts, oflags);
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
@@ -740,9 +743,9 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rpm_tid_t tid = rpmtsGetTid(txn->ts);
+	rpm_tid_t tid = rpmtsGetTid(ts);
 
-	if (makePubkeyHeader(txn->ts, pubkey, subkeys, subkeysCount, &h) != 0)
+	if (makePubkeyHeader(ts, pubkey, subkeys, subkeysCount, &h) != 0)
 	    goto exit;
 
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
@@ -750,8 +753,8 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
 	/* Add header to database. */
 	rc = RPMRC_OK;
-	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
-	    if (txn->ts->keyringtype == KEYRING_FS)
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    if (ts->keyringtype == KEYRING_FS)
 		rc = rpmtsImportFSKey(txn, h, 0, oldkey ? 1 : 0);
 	    else
 		rc = rpmtsImportDBKey(txn, h, 0, oldkey ? 1 : 0);
@@ -779,14 +782,15 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 
     if (txn) {
 	/* force keyring load */
-	rpmVSFlags oflags = rpmtsVSFlags(txn->ts);
-	rpmtsSetVSFlags(txn->ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
-	rpmKeyring keyring = rpmtsGetKeyring(txn->ts, 1);
-	rpmtsSetVSFlags(txn->ts, oflags);
+	rpmts ts = rpmtxnTs(txn);
+	rpmVSFlags oflags = rpmtsVSFlags(ts);
+	rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
+	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+	rpmtsSetVSFlags(ts, oflags);
 
 	/* Both import and delete just return OK on test-transaction */
 	rc = RPMRC_OK;
-	if (!(rpmtsFlags(txn->ts) & RPMTRANS_FLAG_TEST)) {
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	    const char *fp = rpmPubkeyFingerprintAsHex(key);
 	    if (txn->ts->keyringtype == KEYRING_FS)
 		rc = rpmtsDeleteFSKey(txn, fp);
@@ -1485,4 +1489,14 @@ rpmtxn rpmtxnEnd(rpmtxn txn)
 	delete txn;
     }
     return NULL;
+}
+
+rpmts rpmtxnTs(rpmtxn txn)
+{
+    return txn ? txn->ts : NULL;
+}
+
+const char *rpmtxnRootDir(rpmtxn txn)
+{
+    return txn ? rpmtsRootDir(txn->ts) : NULL;
 }
