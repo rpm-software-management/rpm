@@ -679,9 +679,34 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
     return rc;
 }
 
+static rpmRC rpmKeystoreImportPubkey(rpmtxn txn, rpmPubkey key, int replace = 0)
+{
+    rpmRC rc = RPMRC_FAIL;
+    rpmts ts = rpmtxnTs(txn);
+    Header h = NULL;
+
+    if (makePubkeyHeader(ts, key, &h) != 0)
+	return rc;
+
+    rpm_tid_t tid = rpmtsGetTid(ts);
+    headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
+    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
+
+    /* Add header to database. */
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	if (ts->keyringtype == KEYRING_FS)
+	    rc = rpmtsImportFSKey(txn, h, 0, replace);
+	else
+	    rc = rpmtsImportDBKey(txn, h, 0, replace);
+    } else {
+	rc = RPMRC_OK;
+    }
+    headerFree(h);
+    return rc;
+}
+
 rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 {
-    Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
@@ -742,29 +767,13 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rpm_tid_t tid = rpmtsGetTid(ts);
-
-	if (makePubkeyHeader(ts, pubkey, &h) != 0)
-	    goto exit;
-
-	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
-	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-
-	/* Add header to database. */
-	rc = RPMRC_OK;
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    if (ts->keyringtype == KEYRING_FS)
-		rc = rpmtsImportFSKey(txn, h, 0, oldkey ? 1 : 0);
-	    else
-		rc = rpmtsImportDBKey(txn, h, 0, oldkey ? 1 : 0);
-	}
+	rc = rpmKeystoreImportPubkey(txn, pubkey, oldkey ? 1 : 0);
     } else {
 	rc = RPMRC_OK;		/* already have key */
     }
 
 exit:
     /* Clean up. */
-    headerFree(h);
     rpmPubkeyFree(pubkey);
     for (i = 0; i < subkeysCount; i++)
 	rpmPubkeyFree(subkeys[i]);
