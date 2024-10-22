@@ -269,7 +269,7 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-static int rpmtsLoadKeyringFromFiles(rpmts ts)
+static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
@@ -291,7 +291,7 @@ static int rpmtsLoadKeyringFromFiles(rpmts ts)
 	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
 	    continue;
 	}
-	if (rpmKeyringAddKey(ts->keyring, key) == 0) {
+	if (rpmKeyringAddKey(keyring, key) == 0) {
 	    nkeys++;
 	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
 	}
@@ -301,7 +301,7 @@ static int rpmtsLoadKeyringFromFiles(rpmts ts)
 	for (i = 0; i < subkeysCount; i++) {
 	    rpmPubkey subkey = subkeys[i];
 
-	    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+	    if (rpmKeyringAddKey(keyring, subkey) == 0) {
 		rpmlog(RPMLOG_DEBUG,
 		    "added subkey %d of main key %s to keyring\n",
 		    i, *f);
@@ -318,7 +318,7 @@ exit:
     return nkeys;
 }
 
-static int rpmtsLoadKeyringFromDB(rpmts ts)
+static int rpmtsLoadKeyringFromDB(rpmts ts, rpmKeyring keyring)
 {
     Header h;
     rpmdbMatchIterator mi;
@@ -342,7 +342,7 @@ static int rpmtsLoadKeyringFromDB(rpmts ts)
 		int subkeysCount, i;
 		rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 
-		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
+		if (rpmKeyringAddKey(keyring, key) == 0) {
 		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
 		    free(nvr);
@@ -353,7 +353,7 @@ static int rpmtsLoadKeyringFromDB(rpmts ts)
 		for (i = 0; i < subkeysCount; i++) {
 		    rpmPubkey subkey = subkeys[i];
 
-		    if (rpmKeyringAddKey(ts->keyring, subkey) == 0) {
+		    if (rpmKeyringAddKey(keyring, subkey) == 0) {
 			char *nvr = headerGetAsString(h, RPMTAG_NVR);
 			rpmlog(RPMLOG_DEBUG,
 			    "added subkey %d of main key %s to keyring\n",
@@ -392,19 +392,26 @@ static int getKeyringType(void)
     return kt;
 }
 
+static int rpmKeystoreLoad(rpmts ts, rpmKeyring keyring)
+{
+    int nkeys = 0;
+    if (!ts->keyringtype)
+	ts->keyringtype = getKeyringType();
+    if (ts->keyringtype == KEYRING_FS) {
+	nkeys = rpmtsLoadKeyringFromFiles(ts, keyring);
+    } else {
+	nkeys = rpmtsLoadKeyringFromDB(ts, keyring);
+    }
+    return nkeys;
+}
+
 static void loadKeyring(rpmts ts)
 {
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keyring = rpmKeyringNew();
-	if (!ts->keyringtype)
-	    ts->keyringtype = getKeyringType();
-	if (ts->keyringtype == KEYRING_FS) {
-	    rpmtsLoadKeyringFromFiles(ts);
-	} else {
-	    rpmtsLoadKeyringFromDB(ts);
-	}
+	rpmKeystoreLoad(ts, ts->keyring);
     }
 }
 
