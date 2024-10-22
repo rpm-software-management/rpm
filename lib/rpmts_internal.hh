@@ -143,4 +143,9 @@ int rpmtsNotifyChange(rpmts ts, int event, rpmte te, rpmte other);
 RPM_GNUC_INTERNAL
 rpm_time_t rpmtsGetTime(rpmts ts, time_t step);
 
+RPM_GNUC_INTERNAL
+rpmts rpmtxnTs(rpmtxn txn);
+
+RPM_GNUC_INTERNAL
+const char *rpmtxnRootDir(rpmtxn txn);
 #endif /* _RPMTS_INTERNAL_H */
