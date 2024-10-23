@@ -39,6 +39,23 @@ runroot --setenv  XDG_CONFIG_HOME "~/.zzz" rpm --showrc | awk '/^Macro path/{pri
 RPMTEST_CLEANUP
 
 # ------------------------------
+AT_SETUP([macro path: skip editor backups])
+AT_KEYWORDS([macros])
+RPMTEST_SETUP
+RPMTEST_CHECK([
+echo '%this that' > $RPMTEST/$RPM_CONFIGDIR_PATH/macros.d/macros.this
+runroot rpm --eval '%{this}'
+mv $RPMTEST/$RPM_CONFIGDIR_PATH/macros.d/macros.this{,~}
+runroot rpm --eval '%{this}'
+],
+[0],
+[that
+%{this}
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
 AT_SETUP([simple rpm --eval])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
