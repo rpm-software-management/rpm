@@ -2072,9 +2072,11 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
 	/* Read macros from each file. */
 	for (path = files; *path; path++) {
+	    size_t len = strlen(*path);
 	    if (rpmFileHasSuffix(*path, ".rpmnew") || 
 		rpmFileHasSuffix(*path, ".rpmsave") ||
-		rpmFileHasSuffix(*path, ".rpmorig")) {
+		rpmFileHasSuffix(*path, ".rpmorig") ||
+		(len > 0 && !risalnum((*path)[len - 1]))) {
 		continue;
 	    }
 	    (void) loadMacroFile(mc, *path);
