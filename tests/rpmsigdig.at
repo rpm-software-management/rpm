@@ -159,7 +159,7 @@ echo "%_keyring fs" >> "${RPMTEST}"/root/.rpmmacros
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other mv /var/lib/rpm/pubkeys/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key /var/lib/rpm/pubkeys/gpg-pubkey-1964c5fc-58e63918.key
+runroot_other mv /var/lib/rpm/pubkeys/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key /var/lib/rpm/pubkeys/gpg-pubkey-1964c5fc-58e63918.key
 runroot_other ls /var/lib/rpm/pubkeys/
 runroot rpmkeys --list
 ],
@@ -180,7 +180,7 @@ RPMTEST_CHECK([
 runroot_other ls /var/lib/rpm/pubkeys/
 ],
 [0],
-[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key
+[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key
 ],
 [])
 RPMTEST_CLEANUP
@@ -495,7 +495,7 @@ runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
 	--define "_keyring fs" \
 	--import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other cat /tmp/kr/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918.key | grep -v 'Version: '
+runroot_other cat /tmp/kr/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key | grep -v 'Version: '
 ],
 [0],
 [-----BEGIN PGP PUBLIC KEY BLOCK-----
