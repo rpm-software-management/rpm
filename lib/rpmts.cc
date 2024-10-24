@@ -291,11 +291,9 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
-    rpmPubkey *subkeys = NULL;
     rpmPubkey oldkey = NULL;
-    int subkeysCount = 0;
     rpmKeyring keyring = NULL;
-    int krc, i;
+    int krc;
 
     if (txn == NULL)
 	return rc;
@@ -337,14 +335,10 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 	rpmPubkeyFree(pubkey);
 	pubkey = mergedkey;
     }
-    if ((subkeys = rpmGetSubkeys(pubkey, &subkeysCount)) == NULL)
-	goto exit;
 
     krc = rpmKeyringModify(keyring, pubkey, oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
     if (krc < 0)
 	goto exit;
-    for (i = 0; i < subkeysCount; i++)
-	rpmKeyringModify(keyring, subkeys[i], oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
@@ -356,9 +350,6 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 exit:
     /* Clean up. */
     rpmPubkeyFree(pubkey);
-    for (i = 0; i < subkeysCount; i++)
-	rpmPubkeyFree(subkeys[i]);
-    free(subkeys);
     rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);

@@ -134,11 +134,32 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	    break;
     }
     if (item != range.second && (mode == RPMKEYRING_DELETE || mode == RPMKEYRING_REPLACE)) {
+	/* remove subkeys */
+	auto it = keyring->keys.begin();
+	while (it != keyring->keys.end()) {
+	    if (it->second->primarykey == item->second) {
+		rpmPubkeyFree(it->second);
+		it = keyring->keys.erase(it);
+	    } else {
+		++it;
+	    }
+	}
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
     } else if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
+	int subkeysCount = 0;
+	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
+	rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", rpmPubkeyFingerprintAsHex(key));
+	/* add subkeys */
+	for (int i = 0; i < subkeysCount; i++) {
+	    rpmPubkey subkey = subkeys[i];
+	    keyring->keys.insert({subkey->keyid, subkey});
+	    rpmlog(RPMLOG_DEBUG,
+		   "added subkey %d of main key %s to keyring\n", i, rpmPubkeyFingerprintAsHex(key));
+	}
+	free(subkeys);
 	rc = 0;
     }
 
