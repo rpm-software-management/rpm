@@ -27,6 +27,8 @@ enum {
     KEYRING_FS		= 2,
 };
 
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
+
 static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
@@ -63,7 +65,7 @@ exit:
 static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & newname = "")
 {
     rpmRC rc = RPMRC_NOTFOUND;
-    string keyglob = "gpg-pubkey-" + keyid + "-*.key";
+    string keyglob = "gpg-pubkey-" + keyid + "*.key";
     ARGV_t files = NULL;
     char *pkpath = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", keyglob.c_str());
     if (rpmGlob(pkpath, NULL, &files) == 0) {
@@ -84,11 +86,12 @@ static rpmRC rpmtsDeleteFSKey(rpmtxn txn, rpmPubkey key)
     return rpmtsDeleteFSKey(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
+static rpmRC rpmtsImportFSKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
-    char *keyfmt = headerFormat(h, "%{nvr}.key", NULL);
-    char *keyval = headerGetAsString(h, RPMTAG_DESCRIPTION);
+    const char *fp = rpmPubkeyFingerprintAsHex(key);
+    char *keyfmt = rstrscat(NULL, "gpg-pubkey-", fp, ".key", NULL);
+    char *keyval = rpmPubkeyArmorWrap(key);
     char *path = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", keyfmt);
     char *tmppath = NULL;
 
@@ -121,13 +124,10 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	char *keyid = headerFormat(h, "%{version}", NULL);
-	if (rpmtsDeleteFSKey(txn, keyid, keyfmt) == RPMRC_NOTFOUND) {
+	if (rpmtsDeleteFSKey(txn, fp, keyfmt) == RPMRC_NOTFOUND) {
 	    /* make sure an old, short keyid version gets removed */
-	    rpmtsDeleteFSKey(txn, keyid+32, keyfmt);
+	    rpmtsDeleteFSKey(txn, fp+32, keyfmt);
 	}
-	free(keyid);
-
     }
 
 exit:
@@ -208,9 +208,15 @@ static rpmRC rpmtsDeleteDBKey(rpmtxn txn, rpmPubkey key)
     return rpmtsDeleteDBKey(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
+static rpmRC rpmtsImportDBKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
 {
-    rpmRC rc = rpmtsImportHeader(txn, h, 0);
+    Header h = NULL;
+    rpmRC rc = RPMRC_FAIL;
+
+    if (makePubkeyHeader(rpmtxnTs(txn), key, &h) != 0)
+	return rc;
+
+    rc = rpmtsImportHeader(txn, h, 0);
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
@@ -222,6 +228,7 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, Header h, rpmFlags flags, int replace)
 	}
 	free(keyid);
     }
+    headerFree(h);
 
     return rc;
 }
@@ -358,6 +365,11 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     if (h != NULL) {
 	*hdrp = headerLink(h);
 	rc = 0;
+
+	/* Add install time/tid as icing on the cake */
+	rpm_tid_t tid = rpmtsGetTid(ts);
+	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
+	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
     }
 
 exit:
@@ -374,25 +386,16 @@ rpmRC rpmKeystoreImportPubkey(rpmtxn txn, rpmPubkey key, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
     rpmts ts = rpmtxnTs(txn);
-    Header h = NULL;
-
-    if (makePubkeyHeader(ts, key, &h) != 0)
-	return rc;
-
-    rpm_tid_t tid = rpmtsGetTid(ts);
-    headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
-    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 
     /* Add header to database. */
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	if (ts->keyringtype == KEYRING_FS)
-	    rc = rpmtsImportFSKey(txn, h, 0, replace);
+	    rc = rpmtsImportFSKey(txn, key, 0, replace);
 	else
-	    rc = rpmtsImportDBKey(txn, h, 0, replace);
+	    rc = rpmtsImportDBKey(txn, key, 0, replace);
     } else {
 	rc = RPMRC_OK;
     }
-    headerFree(h);
     return rc;
 }
 
