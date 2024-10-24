@@ -27,6 +27,30 @@ enum {
     KEYRING_FS		= 2,
 };
 
+static int keyringAdd(rpmKeyring keyring, rpmPubkey key, const char *name)
+{
+    int nkeys = 0;
+    if (rpmKeyringAddKey(keyring, key) == 0) {
+	nkeys++;
+	rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", name);
+
+	int subkeysCount = 0;
+	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
+	for (int i = 0; i < subkeysCount; i++) {
+	    rpmPubkey subkey = subkeys[i];
+
+	    if (rpmKeyringAddKey(keyring, subkey) == 0) {
+		rpmlog(RPMLOG_DEBUG,
+		    "added subkey %d of main key %s to keyring\n", i, name);
+		nkeys++;
+	    }
+	    rpmPubkeyFree(subkey);
+	}
+	free(subkeys);
+    }
+    return nkeys;
+}
+
 static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
@@ -41,34 +65,15 @@ static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
     }
 
     for (char **f = files; *f; f++) {
-	int subkeysCount, i;
-	rpmPubkey *subkeys;
 	rpmPubkey key = rpmPubkeyRead(*f);
 
 	if (!key) {
 	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
 	    continue;
 	}
-	if (rpmKeyringAddKey(keyring, key) == 0) {
-	    nkeys++;
-	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
-	}
-	subkeys = rpmGetSubkeys(key, &subkeysCount);
+
+	nkeys += keyringAdd(keyring, key, *f);
 	rpmPubkeyFree(key);
-
-	for (i = 0; i < subkeysCount; i++) {
-	    rpmPubkey subkey = subkeys[i];
-
-	    if (rpmKeyringAddKey(keyring, subkey) == 0) {
-		rpmlog(RPMLOG_DEBUG,
-		    "added subkey %d of main key %s to keyring\n",
-		    i, *f);
-
-		nkeys++;
-	    }
-	    rpmPubkeyFree(subkey);
-	}
-	free(subkeys);
     }
 exit:
     free(pkpath);
@@ -169,41 +174,22 @@ static int rpmtsLoadKeyringFromDB(rpmts ts, rpmKeyring keyring)
 	if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
 	   continue;
 
+	char *nevr = headerGetAsString(h, RPMTAG_NEVR);
 	while ((key = rpmtdNextString(&pubkeys))) {
 	    uint8_t *pkt;
 	    size_t pktlen;
 
 	    if (rpmBase64Decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
-		int subkeysCount, i;
-		rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 
-		if (rpmKeyringAddKey(keyring, key) == 0) {
-		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
-		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
-		    free(nvr);
-		    nkeys++;
+		if (key) {
+		    nkeys += keyringAdd(keyring, key, nevr);
+		    rpmPubkeyFree(key);
 		}
-		rpmPubkeyFree(key);
-
-		for (i = 0; i < subkeysCount; i++) {
-		    rpmPubkey subkey = subkeys[i];
-
-		    if (rpmKeyringAddKey(keyring, subkey) == 0) {
-			char *nvr = headerGetAsString(h, RPMTAG_NVR);
-			rpmlog(RPMLOG_DEBUG,
-			    "added subkey %d of main key %s to keyring\n",
-			    i, nvr);
-
-			free(nvr);
-			nkeys++;
-		    }
-		    rpmPubkeyFree(subkey);
-		}
-		free(subkeys);
 		free(pkt);
 	    }
 	}
+	free(nevr);
 	rpmtdFreeData(&pubkeys);
     }
     rpmdbFreeIterator(mi);
