@@ -27,30 +27,6 @@ enum {
     KEYRING_FS		= 2,
 };
 
-static int keyringAdd(rpmKeyring keyring, rpmPubkey key, const char *name)
-{
-    int nkeys = 0;
-    if (rpmKeyringAddKey(keyring, key) == 0) {
-	nkeys++;
-	rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", name);
-
-	int subkeysCount = 0;
-	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
-	for (int i = 0; i < subkeysCount; i++) {
-	    rpmPubkey subkey = subkeys[i];
-
-	    if (rpmKeyringAddKey(keyring, subkey) == 0) {
-		rpmlog(RPMLOG_DEBUG,
-		    "added subkey %d of main key %s to keyring\n", i, name);
-		nkeys++;
-	    }
-	    rpmPubkeyFree(subkey);
-	}
-	free(subkeys);
-    }
-    return nkeys;
-}
-
 static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
@@ -72,7 +48,10 @@ static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
 	    continue;
 	}
 
-	nkeys += keyringAdd(keyring, key, *f);
+	if (rpmKeyringAddKey(keyring, key) == 0) {
+	    rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", *f);
+	    nkeys++;
+	}
 	rpmPubkeyFree(key);
     }
 exit:
@@ -183,7 +162,10 @@ static int rpmtsLoadKeyringFromDB(rpmts ts, rpmKeyring keyring)
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
 
 		if (key) {
-		    nkeys += keyringAdd(keyring, key, nevr);
+		    if (rpmKeyringAddKey(keyring, key) == 0) {
+			rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", nevr);
+			nkeys++;
+		    }
 		    rpmPubkeyFree(key);
 		}
 		free(pkt);
