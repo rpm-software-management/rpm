@@ -133,15 +133,11 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	if (item->second->fp == key->fp)
 	    break;
     }
-    if (item != range.second && mode == RPMKEYRING_DELETE) {
+    if (item != range.second && (mode == RPMKEYRING_DELETE || mode == RPMKEYRING_REPLACE)) {
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
-    } else if (item != range.second && mode == RPMKEYRING_REPLACE) {
-	rpmPubkeyFree(item->second);
-	item->second = rpmPubkeyLink(key);
-	rc = 0;
-    } else if (item == range.second && (mode == RPMKEYRING_ADD || mode == RPMKEYRING_REPLACE) ) {
+    } else if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
 	rc = 0;
     }
