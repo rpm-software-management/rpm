@@ -177,10 +177,17 @@ Arbitrary number of sources may be declared, for example:
 	Source1: mysoft-data-1.0.zip
 ```
 
+Source numbers do not need to be consecutive and may include leading zeroes.
+Unnumbered source tag `Source:` is also supported and is automatically assigned
+the next available integer.
+
 #### Patch
 
 Used to declare patches applied on top of sources. All patches declared
-will be packaged into source rpms.
+will be packaged into source rpms. Just like sources, patches can be
+numbered or unnumbered and are indexed the same way. Unless there is a
+specific reason to use numbered patches, the recommended approach is to use
+unnumbered patches and apply them using `%autosetup` or `%autopatch`.
 
 #### Icon
 
@@ -471,6 +478,18 @@ variants of the same content (eg minimal and full versions of the same
 software). 
 
 ### Sub-sections
+
+#### `%sourcelist`
+
+List of sources, one per line. Handled like unnumbered Source tags. For
+clarity, mixing Source tags and `%sourcelist` in one specfile is not
+recommended.
+
+#### `%patchlist`
+
+List of patches, one per line. Handled like unnumbered Patch tags. For
+clarity, mixing Patch tags and `%patchlist` in one specfile is not
+recommended.
 
 #### `%package [-n]<name>`
 
