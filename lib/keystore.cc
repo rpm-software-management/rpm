@@ -15,16 +15,16 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmtypes.h>
 
-#include "keystore.hh"
 #include "rpmts_internal.hh"
 
 #include "debug.h"
 
 using std::string;
+using namespace rpm;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
-static rpmRC rpmtsLoadKeyringFromFiles(rpmtxn txn, rpmKeyring keyring)
+rpmRC keystore_fs::load_keys(rpmtxn txn, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
@@ -55,7 +55,7 @@ exit:
     return RPMRC_OK;
 }
 
-static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & newname = "")
+rpmRC keystore_fs::delete_key(rpmtxn txn, const string & keyid, const string & newname)
 {
     rpmRC rc = RPMRC_NOTFOUND;
     string keyglob = "gpg-pubkey-" + keyid + "*.key";
@@ -74,12 +74,12 @@ static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & n
     return rc;
 }
 
-static rpmRC rpmtsDeleteFSKey(rpmtxn txn, rpmPubkey key)
+rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return rpmtsDeleteFSKey(txn, rpmPubkeyFingerprintAsHex(key));
+    return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-static rpmRC rpmtsImportFSKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
+rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
 {
     rpmRC rc = RPMRC_FAIL;
     const char *fp = rpmPubkeyFingerprintAsHex(key);
@@ -117,9 +117,9 @@ static rpmRC rpmtsImportFSKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int rep
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	if (rpmtsDeleteFSKey(txn, fp, keyfmt) == RPMRC_NOTFOUND) {
+	if (delete_key(txn, fp, keyfmt) == RPMRC_NOTFOUND) {
 	    /* make sure an old, short keyid version gets removed */
-	    rpmtsDeleteFSKey(txn, fp+32, keyfmt);
+	    delete_key(txn, fp+32, keyfmt);
 	}
     }
 
@@ -131,7 +131,7 @@ exit:
     return rc;
 }
 
-static rpmRC rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
+rpmRC keystore_rpmdb::load_keys(rpmtxn txn, rpmKeyring keyring)
 {
     Header h;
     rpmdbMatchIterator mi;
@@ -170,7 +170,7 @@ static rpmRC rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
     return RPMRC_OK;
 }
 
-static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int newinstance = 0)
+rpmRC keystore_rpmdb::delete_key(rpmtxn txn, const string & keyid, unsigned int newinstance)
 {
     rpmts ts = rpmtxnTs(txn);
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
@@ -194,12 +194,12 @@ static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int new
     return rc;
 }
 
-static rpmRC rpmtsDeleteDBKey(rpmtxn txn, rpmPubkey key)
+rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return rpmtsDeleteDBKey(txn, rpmPubkeyFingerprintAsHex(key));
+    return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-static rpmRC rpmtsImportDBKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
+rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
 {
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;
@@ -213,9 +213,9 @@ static rpmRC rpmtsImportDBKey(rpmtxn txn, rpmPubkey key, rpmFlags flags, int rep
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
 	char *keyid = headerFormat(h, "%{version}", NULL);
-	if (rpmtsDeleteDBKey(txn, keyid, newinstance) == RPMRC_NOTFOUND) {
+	if (delete_key(txn, keyid, newinstance) == RPMRC_NOTFOUND) {
 	    /* make sure an old, short keyid version gets removed */
-	    rpmtsDeleteDBKey(txn, keyid+32, newinstance);
+	    delete_key(txn, keyid+32, newinstance);
 	}
 	free(keyid);
     }
@@ -372,44 +372,3 @@ exit:
 
     return rc;
 }
-
-rpmRC rpmKeystoreImportPubkey(rpmtxn txn, rpmPubkey key, int replace)
-{
-    rpmRC rc = RPMRC_FAIL;
-    rpmts ts = rpmtxnTs(txn);
-
-    /* Add header to database. */
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	if (ts->keyringtype == KEYRING_FS)
-	    rc = rpmtsImportFSKey(txn, key, 0, replace);
-	else
-	    rc = rpmtsImportDBKey(txn, key, 0, replace);
-    } else {
-	rc = RPMRC_OK;
-    }
-    return rc;
-}
-
-rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key)
-{
-    rpmRC rc = RPMRC_FAIL;
-    rpmts ts = rpmtxnTs(txn);
-    if (ts->keyringtype == KEYRING_FS)
-	rc = rpmtsDeleteFSKey(txn, key);
-    else
-	rc = rpmtsDeleteDBKey(txn, key);
-    return rc;
-}
-
-rpmRC rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring)
-{
-    rpmRC rc = RPMRC_FAIL;
-    rpmts ts = rpmtxnTs(txn);
-    if (ts->keyringtype == KEYRING_FS) {
-	rc = rpmtsLoadKeyringFromFiles(txn, keyring);
-    } else {
-	rc = rpmtsLoadKeyringFromDB(txn, keyring);
-    }
-    return rc;
-}
-

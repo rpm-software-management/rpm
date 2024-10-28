@@ -36,6 +36,7 @@
 #include "debug.h"
 
 using std::string;
+using namespace rpm;
 
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
@@ -264,21 +265,25 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-static int getKeyringType(void)
+static keystore *getKeystore(rpmts ts)
 {
-    int kt = KEYRING_RPMDB;
-    char *krtype = rpmExpand("%{?_keyring}", NULL);
+    if (ts->keystore == NULL) {
+	char *krtype = rpmExpand("%{?_keyring}", NULL);
 
-    if (rstreq(krtype, "fs")) {
-	kt = KEYRING_FS;
-    } else if (*krtype && !rstreq(krtype, "rpmdb")) {
-	/* Fall back to using rpmdb if unknown, for now at least */
-	rpmlog(RPMLOG_WARNING,
-		_("unknown keyring type: %s, using rpmdb\n"), krtype);
+	if (rstreq(krtype, "fs")) {
+	    ts->keystore = new keystore_fs();
+	} else if (rstreq(krtype, "rpmdb")) {
+	    ts->keystore = new keystore_rpmdb();
+	} else {
+	    /* Fall back to using rpmdb if unknown, for now at least */
+	    rpmlog(RPMLOG_WARNING,
+		    _("unknown keyring type: %s, using rpmdb\n"), krtype);
+	    ts->keystore = new keystore_rpmdb();
+	}
+	free(krtype);
     }
-    free(krtype);
 
-    return kt;
+    return ts->keystore;
 }
 
 static void loadKeyring(rpmts ts)
@@ -286,12 +291,11 @@ static void loadKeyring(rpmts ts)
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
-	if (!ts->keyringtype)
-	    ts->keyringtype = getKeyringType();
+	ts->keystore = getKeystore(ts);
 	ts->keyring = rpmKeyringNew();
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
 	if (txn) {
-	    rpmKeystoreLoad(txn, ts->keyring);
+	    ts->keystore->load_keys(txn, ts->keyring);
 	    rpmtxnEnd(txn);
 	}
     }
@@ -365,7 +369,7 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rc = rpmKeystoreImportPubkey(txn, pubkey, oldkey ? 1 : 0);
+	rc = ts->keystore->import_key(txn, pubkey, 0, oldkey ? 1 : 0);
     } else {
 	rc = RPMRC_OK;		/* already have key */
     }
@@ -395,7 +399,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	if ((rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	    rc = RPMRC_OK;
 	} else {
-	    rc = rpmKeystoreDeletePubkey(txn, key);
+	    rc = ts->keystore->delete_key(txn, key);
 	}
 	rc = RPMRC_OK;
 	rpmKeyringFree(keyring);
@@ -554,6 +558,7 @@ rpmts rpmtsFree(rpmts ts)
     (void) rpmtsCloseDB(ts);
 
     delete ts->members;
+    delete ts->keystore;
 
     if (ts->scriptFd != NULL) {
 	ts->scriptFd = fdFree(ts->scriptFd);
@@ -961,7 +966,6 @@ rpmts rpmtsCreate(void)
 
     ts->rootDir = NULL;
     ts->keyring = NULL;
-    ts->keyringtype = 0;
     ts->vfyflags = rpmExpandNumeric("%{?_pkgverify_flags}");
     ts->vfylevel = vfylevel_init();
 
