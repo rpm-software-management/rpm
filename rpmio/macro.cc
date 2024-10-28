@@ -1740,15 +1740,15 @@ exit:
 
 /* =============================================================== */
 
-static int doExpandMacros(rpmMacroContext mc, const char *src, int flags,
-			char **target)
+static int doExpandMacros(rpmMacroContext mc, const string & src, int flags,
+			string *target)
 {
     rpmMacroBuf mb = mbCreate(mc, flags);
     int rc = 0;
 
-    rc = expandMacro(mb, src, 0);
+    rc = expandMacro(mb, src.c_str(), 0);
 
-    *target = xstrdup(mb->buf.c_str());
+    *target = mb->buf;
 
     delete mb;
     return rc;
@@ -1882,7 +1882,7 @@ static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
 
 int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int flags)
 {
-    char *target = NULL;
+    string target;
     int rc;
 
     mc = rpmmctxAcquire(mc);
@@ -1891,10 +1891,9 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
     rc = doExpandMacros(mc, sbuf, flags, &target);
 
     if (rc) {
-	free(target);
 	return -1;
     } else {
-	*obuf = target;
+	*obuf = xstrdup(target.c_str());
 	return 1;
     }
 }
@@ -1902,7 +1901,7 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
 int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, char ** obuf, int flags)
 {
     rpmMacroEntry mep;
-    char *target = NULL;
+    string target;
     int rc = 1; /* assume failure */
 
     mc = rpmmctxAcquire(mc);
@@ -1912,14 +1911,13 @@ int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, ch
     if (mep) {
 	rpmMacroBuf mb = mbCreate(mc, flags);
 	rc = expandThisMacro(mb, mep, args, flags);
-	target = xstrdup(mb->buf.c_str());
+	target = mb->buf;
 	delete mb;
     }
     if (rc) {
-	free(target);
 	return -1;
     } else {
-	*obuf = target;
+	*obuf = xstrdup(target.c_str());
 	return 1;
     }
 }
@@ -2105,8 +2103,7 @@ rpmExpand(const char *arg, ...)
     if (arg == NULL)
 	return xstrdup("");
 
-    std::string buf;
-    char *ret = NULL;
+    std::string buf, ret;
     va_list ap;
 
     va_start(ap, arg);
@@ -2117,9 +2114,9 @@ rpmExpand(const char *arg, ...)
     rpmMacroContext mc = rpmmctxAcquire(NULL);
     wrlock lock(mc->mutex);
 
-    (void) doExpandMacros(mc, buf.c_str(), 0, &ret);
+    (void) doExpandMacros(mc, buf, 0, &ret);
 
-    return ret;
+    return xstrdup(ret.c_str());
 }
 
 int
