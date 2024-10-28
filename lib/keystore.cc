@@ -79,7 +79,7 @@ rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key)
     return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
+rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
 {
     rpmRC rc = RPMRC_FAIL;
     const char *fp = rpmPubkeyFingerprintAsHex(key);
@@ -199,7 +199,7 @@ rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key)
     return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
 }
 
-rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags, int replace)
+rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
 {
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;

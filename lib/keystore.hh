@@ -11,7 +11,7 @@ namespace rpm {
 class keystore {
 public:
     virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring) = 0;
-    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1) = 0;
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, int replace = 1, rpmFlags flags = 0) = 0;
     virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key) = 0;
 
     virtual ~keystore() = default;
@@ -20,7 +20,7 @@ public:
 class keystore_fs : public keystore {
 public:
     virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring);
-    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1);
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, int replace = 1, rpmFlags flags = 0);
     virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
 
 private:
@@ -30,7 +30,7 @@ private:
 class keystore_rpmdb : public keystore {
 public:
     virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring);
-    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1);
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, int replace = 1, rpmFlags flags = 0);
     virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
 
 private:

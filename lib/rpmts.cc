@@ -369,7 +369,7 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rc = ts->keystore->import_key(txn, pubkey, 0, oldkey ? 1 : 0);
+	rc = ts->keystore->import_key(txn, pubkey, oldkey ? 1 : 0);
     } else {
 	rc = RPMRC_OK;		/* already have key */
     }
