@@ -24,12 +24,11 @@ using std::string;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
-static int rpmtsLoadKeyringFromFiles(rpmtxn txn, rpmKeyring keyring)
+static rpmRC rpmtsLoadKeyringFromFiles(rpmtxn txn, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
     char *pkpath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/*.key", NULL);
-    int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
     if (rpmGlob(pkpath, NULL, &files)) {
@@ -47,14 +46,13 @@ static int rpmtsLoadKeyringFromFiles(rpmtxn txn, rpmKeyring keyring)
 
 	if (rpmKeyringAddKey(keyring, key) == 0) {
 	    rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", *f);
-	    nkeys++;
 	}
 	rpmPubkeyFree(key);
     }
 exit:
     free(pkpath);
     argvFree(files);
-    return nkeys;
+    return RPMRC_OK;
 }
 
 static rpmRC rpmtsDeleteFSKey(rpmtxn txn, const string & keyid, const string & newname = "")
@@ -133,11 +131,10 @@ exit:
     return rc;
 }
 
-static int rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
+static rpmRC rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
 {
     Header h;
     rpmdbMatchIterator mi;
-    int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
     mi = rpmtsInitIterator(rpmtxnTs(txn), RPMDBI_NAME, "gpg-pubkey", 0);
@@ -159,7 +156,6 @@ static int rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
 		if (key) {
 		    if (rpmKeyringAddKey(keyring, key) == 0) {
 			rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", nevr);
-			nkeys++;
 		    }
 		    rpmPubkeyFree(key);
 		}
@@ -171,7 +167,7 @@ static int rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
     }
     rpmdbFreeIterator(mi);
 
-    return nkeys;
+    return RPMRC_OK;
 }
 
 static rpmRC rpmtsDeleteDBKey(rpmtxn txn, const string & keyid, unsigned int newinstance = 0)
@@ -405,15 +401,15 @@ rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key)
     return rc;
 }
 
-int rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring)
+rpmRC rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring)
 {
-    int nkeys = 0;
+    rpmRC rc = RPMRC_FAIL;
     rpmts ts = rpmtxnTs(txn);
     if (ts->keyringtype == KEYRING_FS) {
-	nkeys = rpmtsLoadKeyringFromFiles(txn, keyring);
+	rc = rpmtsLoadKeyringFromFiles(txn, keyring);
     } else {
-	nkeys = rpmtsLoadKeyringFromDB(txn, keyring);
+	rc = rpmtsLoadKeyringFromDB(txn, keyring);
     }
-    return nkeys;
+    return rc;
 }
 
