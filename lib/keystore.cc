@@ -24,11 +24,11 @@ using std::string;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
-static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
+static int rpmtsLoadKeyringFromFiles(rpmtxn txn, rpmKeyring keyring)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
-    char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
+    char *pkpath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/*.key", NULL);
     int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
@@ -133,14 +133,14 @@ exit:
     return rc;
 }
 
-static int rpmtsLoadKeyringFromDB(rpmts ts, rpmKeyring keyring)
+static int rpmtsLoadKeyringFromDB(rpmtxn txn, rpmKeyring keyring)
 {
     Header h;
     rpmdbMatchIterator mi;
     int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
-    mi = rpmtsInitIterator(ts, RPMDBI_NAME, "gpg-pubkey", 0);
+    mi = rpmtsInitIterator(rpmtxnTs(txn), RPMDBI_NAME, "gpg-pubkey", 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	struct rpmtd_s pubkeys;
 	const char *key;
@@ -405,13 +405,14 @@ rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key)
     return rc;
 }
 
-int rpmKeystoreLoad(rpmts ts, rpmKeyring keyring)
+int rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring)
 {
     int nkeys = 0;
+    rpmts ts = rpmtxnTs(txn);
     if (ts->keyringtype == KEYRING_FS) {
-	nkeys = rpmtsLoadKeyringFromFiles(ts, keyring);
+	nkeys = rpmtsLoadKeyringFromFiles(txn, keyring);
     } else {
-	nkeys = rpmtsLoadKeyringFromDB(ts, keyring);
+	nkeys = rpmtsLoadKeyringFromDB(txn, keyring);
     }
     return nkeys;
 }

@@ -289,7 +289,11 @@ static void loadKeyring(rpmts ts)
 	if (!ts->keyringtype)
 	    ts->keyringtype = getKeyringType();
 	ts->keyring = rpmKeyringNew();
-	rpmKeystoreLoad(ts, ts->keyring);
+	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+	if (txn) {
+	    rpmKeystoreLoad(txn, ts->keyring);
+	    rpmtxnEnd(txn);
+	}
     }
 }
 

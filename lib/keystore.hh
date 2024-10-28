@@ -9,7 +9,7 @@ enum {
 };
 
 RPM_GNUC_INTERNAL
-int rpmKeystoreLoad(rpmts ts, rpmKeyring keyring);
+int rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmKeystoreImportPubkey(rpmtxn txn, rpmPubkey key, int replace = 0);
