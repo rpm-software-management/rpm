@@ -1,6 +1,12 @@
 #ifndef _H_MACRO_INTERNAL
 #define	_H_MACRO_INTERNAL
 
+#include <mutex>
+#include <string>
+#include <utility>
+#include <initializer_list>
+
+#include <rpm/rpmmacro.h>
 #include <rpm/rpmutil.h>
 #include <rpm/argv.h>
 
@@ -29,5 +35,58 @@ void splitQuoted(ARGV_t *av, const char * str, const char * seps);
 
 RPM_GNUC_INTERNAL
 char *unsplitQuoted(ARGV_const_t av, const char *sep);
+
+namespace rpm {
+
+/*
+ * This is basically a RAII proxy C++ native macro interface, prefer it
+ * over the public C API for all internal needs.
+ * The constructor grabs a lock on the underlying macro context and
+ * automatically unlocks when the handle goes out of scope. This allows
+ * multiple macro operations on a single lock/unlock cycle, while also
+ * making sure locking and unlocking are not forgotten. Use as local
+ * variable only and in the smallest possible scope to get the job
+ * done, mind what other code gets called while holding the handle.
+ *
+ * Generally the method names and arguments map to the C API in obvious ways,
+ * exceptions noted below.
+ */
+class macros {
+public:
+    /* Clear all macro definitions in this context, like rpmFreeMacros() */
+    void clear();
+    /* Copy all macros from this context to another one */
+    void copy(rpm::macros & dest, int level);
+    int define(const char *macro, int level);
+    void dump(FILE *fp = stderr);
+    /* Expand macros to a C++ string, with a return code (rc, string) */
+    std::pair<int,std::string> expand(const std::string & src, int flags = 0);
+    std::pair<int,std::string> expand(const std::initializer_list<std::string> src,
+					int flags = 0);
+    std::pair<int,std::string> expand_this(const char *n, ARGV_const_t args,
+					int flags = 0);
+    /* Expand macros to numeric value, with a return code (rc, number) */
+    std::pair<int,int> expand_numeric(const std::string & src, int flags = 0);
+    std::pair<int,int> expand_numeric(const std::initializer_list<std::string> & src,
+					int flags = 0);
+    void init(const char *macrofiles);
+    bool is_defined(const char *n);
+    bool is_parametric(const char *n);
+    int load(const char *fn);
+    int pop(const char *n);
+    int push(const char *n, const char *o, const char *b,
+		int level, int flags = RPMMACRO_DEFAULT);
+    int push_aux(const char *n, const char *o,
+		macroFunc f, void *priv, int nargs,
+		int level, int flags = RPMMACRO_DEFAULT);
+
+    macros(rpmMacroContext mctx = rpmGlobalMacroContext);
+    ~macros() = default;
+private:
+    rpmMacroContext mc;
+    std::lock_guard<std::recursive_mutex> lock;
+};
+
+}; /* namespace rpm */
 
 #endif	/* _H_ MACRO_INTERNAL */
