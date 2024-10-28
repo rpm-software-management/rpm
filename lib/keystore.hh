@@ -1,20 +1,42 @@
 #ifndef _KEYSTORE_H
+#define _KEYSTORE_H
+
+#include <string>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
 
-enum {
-    KEYRING_RPMDB 	= 1,
-    KEYRING_FS		= 2,
+namespace rpm {
+
+class keystore {
+public:
+    virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring) = 0;
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1) = 0;
+    virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key) = 0;
+
+    virtual ~keystore() = default;
 };
 
-RPM_GNUC_INTERNAL
-rpmRC rpmKeystoreLoad(rpmtxn txn, rpmKeyring keyring);
+class keystore_fs : public keystore {
+public:
+    virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring);
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1);
+    virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
 
-RPM_GNUC_INTERNAL
-rpmRC rpmKeystoreImportPubkey(rpmtxn txn, rpmPubkey key, int replace = 0);
+private:
+    rpmRC delete_key(rpmtxn txn, const std::string & keyid, const std::string & newname = "");
+};
 
-RPM_GNUC_INTERNAL
-rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key);
+class keystore_rpmdb : public keystore {
+public:
+    virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring);
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, rpmFlags flags = 0, int replace = 1);
+    virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
+
+private:
+    rpmRC delete_key(rpmtxn txn, const std::string & keyid, unsigned int newinstance = 0);
+};
+
+}; /* namespace */
 
 #endif /* _KEYSTORE_H */

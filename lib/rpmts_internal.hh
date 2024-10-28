@@ -11,6 +11,7 @@
 
 #include "rpmal.hh"		/* XXX availablePackage */
 #include "fprint.hh"
+#include "keystore.hh"
 #include "rpmlock.hh"
 #include "rpmdb_internal.hh"
 #include "rpmscript.hh"
@@ -84,7 +85,7 @@ struct rpmts_s {
     rpmVSFlags vfyflags;	/*!< Package verification flags */
     int vfylevel;		/*!< Package verification level */
     rpmKeyring keyring;		/*!< Keyring in use. */
-    int keyringtype;		/*!< Keyring type */
+    rpm::keystore *keystore;	/*! <Keystore in use. */
 
     ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
     ARGV_t installLangs;	/*!< From %{_install_langs} */
