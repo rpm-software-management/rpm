@@ -3,6 +3,11 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
 
+enum {
+    KEYRING_RPMDB 	= 1,
+    KEYRING_FS		= 2,
+};
+
 RPM_GNUC_INTERNAL
 int rpmKeystoreLoad(rpmts ts, rpmKeyring keyring);
 

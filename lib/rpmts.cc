@@ -264,11 +264,30 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
+static int getKeyringType(void)
+{
+    int kt = KEYRING_RPMDB;
+    char *krtype = rpmExpand("%{?_keyring}", NULL);
+
+    if (rstreq(krtype, "fs")) {
+	kt = KEYRING_FS;
+    } else if (*krtype && !rstreq(krtype, "rpmdb")) {
+	/* Fall back to using rpmdb if unknown, for now at least */
+	rpmlog(RPMLOG_WARNING,
+		_("unknown keyring type: %s, using rpmdb\n"), krtype);
+    }
+    free(krtype);
+
+    return kt;
+}
+
 static void loadKeyring(rpmts ts)
 {
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
+	if (!ts->keyringtype)
+	    ts->keyringtype = getKeyringType();
 	ts->keyring = rpmKeyringNew();
 	rpmKeystoreLoad(ts, ts->keyring);
     }
