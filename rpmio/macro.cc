@@ -40,6 +40,7 @@
 #include "debug.h"
 
 using std::string;
+using namespace rpm;
 
 enum macroFlags_e {
     ME_NONE	= 0,
@@ -130,18 +131,6 @@ static void pushMacro(rpmMacroContext mc,
 static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
-
-static void freeMacros(rpmMacroContext mc)
-{
-    mc->tab.clear();
-}
-
-static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
-{
-    if (mc == NULL)
-	mc = rpmGlobalMacroContext;
-    return mc;
-}
 
 /**
  * Find entry in macro table.
@@ -1882,13 +1871,7 @@ static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
 
 int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int flags)
 {
-    string target;
-    int rc;
-
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-
-    rc = doExpandMacros(mc, sbuf, flags, &target);
+    auto [ rc, target ] = macros(mc).expand(sbuf, flags);
 
     if (rc) {
 	return -1;
@@ -1900,20 +1883,8 @@ int rpmExpandMacros(rpmMacroContext mc, const char * sbuf, char ** obuf, int fla
 
 int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, char ** obuf, int flags)
 {
-    rpmMacroEntry mep;
-    string target;
-    int rc = 1; /* assume failure */
+    auto [ rc, target ] = macros(mc).expand_this(n, args, flags);
 
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-
-    mep = findEntry(mc, n, 0, NULL);
-    if (mep) {
-	rpmMacroBuf mb = mbCreate(mc, flags);
-	rc = expandThisMacro(mb, mep, args, flags);
-	target = mb->buf;
-	delete mb;
-    }
     if (rc) {
 	return -1;
     } else {
@@ -1925,10 +1896,128 @@ int rpmExpandThisMacro(rpmMacroContext mc, const char *n,  ARGV_const_t args, ch
 void
 rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    if (fp == NULL) fp = stderr;
-    
+    macros(mc).dump(fp);
+}
+
+int rpmPushMacroFlags(rpmMacroContext mc,
+	      const char * n, const char * o, const char * b,
+	      int level, rpmMacroFlags flags)
+{
+    return macros(mc).push(n, o, b, level, flags);
+}
+
+int rpmPushMacro(rpmMacroContext mc,
+	      const char * n, const char * o, const char * b, int level)
+{
+    return rpmPushMacroFlags(mc, n, o, b, level, RPMMACRO_DEFAULT);
+}
+
+int rpmPushMacroAux(rpmMacroContext mc,
+		const char * n, const char * o,
+		macroFunc f, void *priv, int nargs,
+		int level, rpmMacroFlags flags)
+{
+    return macros(mc).push_aux(n, o, f, priv, nargs, level, flags);
+}
+
+int rpmPopMacro(rpmMacroContext mc, const char * n)
+{
+    return macros(mc).pop(n);
+}
+
+int
+rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
+{
+    return macros(mc).define(macro, level);
+}
+
+int rpmMacroIsDefined(rpmMacroContext mc, const char *n)
+{
+    return macros(mc).is_defined(n);
+}
+
+int rpmMacroIsParametric(rpmMacroContext mc, const char *n)
+{
+    return macros(mc).is_parametric(n);
+}
+
+void *rpmMacroEntryPriv(rpmMacroEntry me)
+{
+    return (me != NULL) ? me->priv : NULL;
+}
+
+void
+rpmLoadMacros(rpmMacroContext mc, int level)
+{
+    if (mc == NULL || mc == rpmGlobalMacroContext)
+	return;
+
+    macros global(rpmGlobalMacroContext);
+    macros(mc).copy(global, level);
+}
+
+int
+rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
+{
+    return macros(mc).load(fn);
+}
+
+void
+rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
+{
+    macros(mc).init(macrofiles);
+}
+
+void
+rpmFreeMacros(rpmMacroContext mc)
+{
+    macros(mc).clear();
+}
+
+char *
+rpmExpand(const char *arg, ...)
+{
+    if (arg == NULL)
+	return xstrdup("");
+
+    std::string buf;
+    va_list ap;
+
+    va_start(ap, arg);
+    for (const char *s = arg; s != NULL; s = va_arg(ap, const char *))
+	buf += s;
+    va_end(ap);
+
+    auto [ ign, res ] = macros().expand(buf);
+    return xstrdup(res.c_str());
+}
+
+int
+rpmExpandNumeric(const char *arg)
+{
+    if (arg == NULL)
+	return 0;
+    auto [ ign, val ] = macros().expand_numeric(arg);
+    return val;
+}
+
+void macros::clear()
+{
+    mc->tab.clear();
+}
+
+void macros::copy(rpm::macros & dest, int level)
+{
+    copyMacros(mc, dest.mc, level);
+}
+
+int macros::define(const char *macro, int level)
+{
+    return defineMacro(mc, macro, level);
+}
+
+void macros::dump(FILE *fp)
+{
     fprintf(fp, "========================\n");
     for (auto & entry : mc->tab) {
 	auto const & me = entry.second.top();
@@ -1944,191 +2033,45 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 		mc->tab.size(), 0);
 }
 
-int rpmPushMacroFlags(rpmMacroContext mc,
-	      const char * n, const char * o, const char * b,
-	      int level, rpmMacroFlags flags)
+std::pair<int,std::string>
+macros::expand(const std::string & src, int flags)
 {
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
-    return 0;
+    string ret;
+    int rc = doExpandMacros(mc, src, flags, &ret);
+    return std::make_pair(rc, ret);
 }
 
-int rpmPushMacro(rpmMacroContext mc,
-	      const char * n, const char * o, const char * b, int level)
+std::pair<int,std::string>
+macros::expand(const std::initializer_list<std::string> src, int flags)
 {
-    return rpmPushMacroFlags(mc, n, o, b, level, RPMMACRO_DEFAULT);
-}
-
-int rpmPushMacroAux(rpmMacroContext mc,
-		const char * n, const char * o,
-		macroFunc f, void *priv, int nargs,
-		int level, rpmMacroFlags flags)
-{
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
-		level, flags|ME_FUNC);
-    return 0;
-}
-
-int rpmPopMacro(rpmMacroContext mc, const char * n)
-{
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    popMacro(mc, n);
-    return 0;
-}
-
-int
-rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
-{
-    int rc;
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    rc = defineMacro(mc, macro, level);
-    return rc;
-}
-
-int rpmMacroIsDefined(rpmMacroContext mc, const char *n)
-{
-    int defined = 0;
-    if ((mc = rpmmctxAcquire(mc)) != NULL) {
-	wrlock lock(mc->mutex);
-	if (findEntry(mc, n, 0, NULL))
-	    defined = 1;
-    }
-    return defined;
-}
-
-int rpmMacroIsParametric(rpmMacroContext mc, const char *n)
-{
-    int parametric = 0;
-    if ((mc = rpmmctxAcquire(mc)) != NULL) {
-	wrlock lock(mc->mutex);
-	rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
-	if (mep && mep->opts)
-	    parametric = 1;
-    }
-    return parametric;
-}
-
-void *rpmMacroEntryPriv(rpmMacroEntry me)
-{
-    return (me != NULL) ? me->priv : NULL;
-}
-
-void
-rpmLoadMacros(rpmMacroContext mc, int level)
-{
-    rpmMacroContext gmc;
-    if (mc == NULL || mc == rpmGlobalMacroContext)
-	return;
-
-    gmc = rpmmctxAcquire(NULL);
-    mc = rpmmctxAcquire(mc);
-    wrlock glock(gmc->mutex);
-    wrlock lock(mc->mutex);
-
-    copyMacros(mc, gmc, level);
-}
-
-int
-rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
-{
-    int rc;
-
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    rc = loadMacroFile(mc, fn);
-
-    return rc;
-}
-
-void
-rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
-{
-    ARGV_t pattern, globs = NULL;
-    rpmMacroContext climc;
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-
-    /* Define built-in macros */
-    for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
-		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
-    }
-
-    argvSplit(&globs, macrofiles, ":");
-    for (pattern = globs; pattern && *pattern; pattern++) {
-	ARGV_t path, files = NULL;
-    
-	/* Glob expand the macro file path element, expanding ~ to $HOME. */
-	if (rpmGlob(*pattern, NULL, &files) != 0) {
-	    continue;
-	}
-
-	/* Read macros from each file. */
-	for (path = files; *path; path++) {
-	    size_t len = strlen(*path);
-	    if (rpmFileHasSuffix(*path, ".rpmnew") || 
-		rpmFileHasSuffix(*path, ".rpmsave") ||
-		rpmFileHasSuffix(*path, ".rpmorig") ||
-		(len > 0 && !risalnum((*path)[len - 1]))) {
-		continue;
-	    }
-	    (void) loadMacroFile(mc, *path);
-	}
-	argvFree(files);
-    }
-    argvFree(globs);
-
-    /* Reload cmdline macros */
-    climc = rpmmctxAcquire(rpmCLIMacroContext);
-    wrlock clilock(climc->mutex);
-    copyMacros(climc, mc, RMIL_CMDLINE);
-}
-
-void
-rpmFreeMacros(rpmMacroContext mc)
-{
-    mc = rpmmctxAcquire(mc);
-    wrlock lock(mc->mutex);
-    freeMacros(mc);
-}
-
-char * 
-rpmExpand(const char *arg, ...)
-{
-    if (arg == NULL)
-	return xstrdup("");
-
-    std::string buf, ret;
-    va_list ap;
-
-    va_start(ap, arg);
-    for (const char *s = arg; s != NULL; s = va_arg(ap, const char *))
+    string buf;
+    for (auto const & s : src)
 	buf += s;
-    va_end(ap);
-
-    rpmMacroContext mc = rpmmctxAcquire(NULL);
-    wrlock lock(mc->mutex);
-
-    (void) doExpandMacros(mc, buf, 0, &ret);
-
-    return xstrdup(ret.c_str());
+    return expand(buf, flags);
 }
 
-int
-rpmExpandNumeric(const char *arg)
+std::pair<int,std::string>
+macros::expand_this(const char *n, ARGV_const_t args, int flags)
 {
-    char *val;
-    int rc;
+    string target;
+    int rc = 1; /* assume failure */
 
-    if (arg == NULL)
-	return 0;
+    rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
+    if (mep) {
+	rpmMacroBuf mb = mbCreate(mc, flags);
+	rc = expandThisMacro(mb, mep, args, flags);
+	target = mb->buf;
+	delete mb;
+    }
+    return std::make_pair(rc, target);
+}
 
-    val = rpmExpand(arg, NULL);
+std::pair<int,int>
+macros::expand_numeric(const std::string & src, int flags)
+{
+    auto [ exrc, s ] = macros().expand(src, flags);
+    const char *val = s.c_str();
+    int rc = 0;
     if (!(val && *val != '%'))
 	rc = 0;
     else if (*val == 'Y' || *val == 'y')
@@ -2141,7 +2084,95 @@ rpmExpandNumeric(const char *arg)
 	if (!(end && *end == '\0'))
 	    rc = 0;
     }
-    free(val);
-
-    return rc;
+    return std::make_pair(exrc, rc);
 }
+
+std::pair<int,int>
+macros::expand_numeric(const std::initializer_list<std::string> & src, int flags)
+{
+    string buf;
+    for (auto const & s : src)
+	buf += s;
+    return expand_numeric(buf, flags);
+}
+
+void macros::init(const char *macrofiles)
+{
+    /* Define built-in macros */
+    for (const struct builtins_s *b = builtinmacros; b->name; b++) {
+	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
+		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
+    }
+
+    ARGV_t pattern, globs = NULL;
+    argvSplit(&globs, macrofiles, ":");
+    for (pattern = globs; pattern && *pattern; pattern++) {
+	ARGV_t path, files = NULL;
+
+	/* Glob expand the macro file path element, expanding ~ to $HOME. */
+	if (rpmGlob(*pattern, NULL, &files) != 0) {
+	    continue;
+	}
+
+	/* Read macros from each file. */
+	for (path = files; *path; path++) {
+	    size_t len = strlen(*path);
+	    if (rpmFileHasSuffix(*path, ".rpmnew") ||
+		rpmFileHasSuffix(*path, ".rpmsave") ||
+		rpmFileHasSuffix(*path, ".rpmorig") ||
+		(len > 0 && !risalnum((*path)[len - 1]))) {
+		continue;
+	    }
+	    (void) loadMacroFile(mc, *path);
+	}
+	argvFree(files);
+    }
+    argvFree(globs);
+
+    /* Reload cmdline macros */
+    macros cli(rpmCLIMacroContext);
+    copyMacros(cli.mc, mc, RMIL_CMDLINE);
+}
+
+bool macros::is_defined(const char *n)
+{
+    return (findEntry(mc, n, 0, NULL) != NULL);
+}
+
+bool macros::is_parametric(const char *n)
+{
+    rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
+    return (mep && mep->opts);
+}
+int macros::load(const char *fn)
+{
+    return loadMacroFile(mc, fn);
+}
+
+int macros::pop(const char *n)
+{
+    popMacro(mc, n);
+    return 0;
+}
+
+int macros::push(const char *n, const char *o, const char *b,
+		int level, int flags)
+{
+    pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
+    return 0;
+}
+
+int macros::push_aux(const char *n, const char *o,
+		    macroFunc f, void *priv, int nargs,
+		    int level, int flags)
+{
+    pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
+		level, flags|ME_FUNC);
+    return 0;
+}
+
+macros::macros(rpmMacroContext mctx) :
+	mc(mctx ? mctx : rpmGlobalMacroContext), lock(mc->mutex)
+{
+}
+
