@@ -22,11 +22,6 @@
 
 using std::string;
 
-enum {
-    KEYRING_RPMDB 	= 1,
-    KEYRING_FS		= 2,
-};
-
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
 static int rpmtsLoadKeyringFromFiles(rpmts ts, rpmKeyring keyring)
@@ -410,28 +405,9 @@ rpmRC rpmKeystoreDeletePubkey(rpmtxn txn, rpmPubkey key)
     return rc;
 }
 
-static int getKeyringType(void)
-{
-    int kt = KEYRING_RPMDB;
-    char *krtype = rpmExpand("%{?_keyring}", NULL);
-
-    if (rstreq(krtype, "fs")) {
-	kt = KEYRING_FS;
-    } else if (*krtype && !rstreq(krtype, "rpmdb")) {
-	/* Fall back to using rpmdb if unknown, for now at least */
-	rpmlog(RPMLOG_WARNING,
-		_("unknown keyring type: %s, using rpmdb\n"), krtype);
-    }
-    free(krtype);
-
-    return kt;
-}
-
 int rpmKeystoreLoad(rpmts ts, rpmKeyring keyring)
 {
     int nkeys = 0;
-    if (!ts->keyringtype)
-	ts->keyringtype = getKeyringType();
     if (ts->keyringtype == KEYRING_FS) {
 	nkeys = rpmtsLoadKeyringFromFiles(ts, keyring);
     } else {
