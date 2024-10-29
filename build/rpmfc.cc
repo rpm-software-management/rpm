@@ -25,11 +25,13 @@
 
 #include "rpmfi_internal.hh"		/* rpmfiles stuff for now */
 #include "rpmbuild_internal.hh"
+#include "rpmmacro_internal.hh"
 
 #include "debug.h"
 
 using std::string;
 using std::vector;
+using namespace rpm;
 
 struct matchRule {
     regex_t *path;
@@ -239,9 +241,8 @@ static rpmds rpmdsSingleNS(rpmstrPool pool,
 {
     rpmds ds = NULL;
     if (namespc) {
-	char *NSN = rpmExpand(namespc, "(", N, ")", NULL);
-	ds = rpmdsSinglePool(pool, tagN, NSN, EVR, Flags);
-	free(NSN);
+	auto [ ign, NSN ] = macros().expand({namespc, "(", N, ")",});
+	ds = rpmdsSinglePool(pool, tagN, NSN.c_str(), EVR, Flags);
     } else {
 	ds = rpmdsSinglePool(pool, tagN, N, EVR, Flags);
     }
