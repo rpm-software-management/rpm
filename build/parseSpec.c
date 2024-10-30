@@ -1426,7 +1426,7 @@ static rpmRC parseSpecParts(rpmSpec spec, const char *pattern,
     /* rpmGlob returns files sorted */
     if (rpmGlob(pattern, &argc, &argv) == 0) {
 	for (int i = 0; i < argc; i++) {
-	    rpmlog(RPMLOG_NOTICE, "Reading %s\n", argv[i]);
+	    rpmlog(RPMLOG_INFO, "Reading %s\n", argv[i]);
 	    pushOFI(spec, argv[i]);
 	    snprintf(spec->fileStack->readBuf, spec->fileStack->readBufLen,
 		     "# Spec part read from %s\n\n", argv[i]);
