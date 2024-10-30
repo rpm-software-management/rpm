@@ -43,7 +43,13 @@ static struct poptOption signOptsTable[] = {
 #endif
     { "rpmv3", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_RPMV3,
-	N_("create rpm v3 header+payload signatures") },
+	N_("request legacy rpm v3 header+payload signatures on v4 packages") },
+    { "rpmv4", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&sargs.signflags, RPMSIGN_FLAG_RPMV4,
+	N_("request legacy rpm v4 header signatures on v6 packages") },
+    { "rpmv6", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&sargs.signflags, RPMSIGN_FLAG_RPMV6,
+	N_("request rpm v6 header signature on v4 packages") },
 #ifdef WITH_IMAEVM
     { "signfiles", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_IMA,
@@ -207,8 +213,10 @@ int main(int argc, char *argv[])
 #endif
 
     switch (mode) {
-    case MODE_ADDSIGN:
     case MODE_RESIGN:
+	sargs.signflags |= RPMSIGN_FLAG_RESIGN;
+	/* fallthrough */
+    case MODE_ADDSIGN:
 	ec = doSign(optCon, &sargs);
 	break;
     case MODE_DELSIGN:
