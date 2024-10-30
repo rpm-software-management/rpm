@@ -79,7 +79,7 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -b buildsystem])
-AT_KEYWORDS([build])
+AT_KEYWORDS([build buildsystem])
 RPMDB_INIT
 
 cp "${RPMTEST}/data/macros.buildsystem" "${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/"
@@ -186,6 +186,13 @@ runroot rpmbuild -bb \
 [error: line 11: Required parametric macro %buildsystem_autotools_build not defined for buildsystem autotools
 ])
 
+RPMTEST_CHECK([
+runroot rpmspec -q --qf "%{nvr}\n" /data/SPECS/amhello.spec
+],
+[0],
+[amhello-1.0-1
+],
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmbuild -b steps])
