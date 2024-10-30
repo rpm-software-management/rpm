@@ -131,6 +131,30 @@ exit:
     return valid;
 }
 
+static int hashalgoValid(int algo)
+{
+    int rc = 0;
+
+    switch(algo) {
+    case RPM_HASH_MD5:
+    case RPM_HASH_SHA1:
+    case RPM_HASH_RIPEMD160:
+    case RPM_HASH_MD2:
+    case RPM_HASH_TIGER192:
+    case RPM_HASH_HAVAL_5_160:
+    case RPM_HASH_SHA256:
+    case RPM_HASH_SHA384:
+    case RPM_HASH_SHA512:
+    case RPM_HASH_SHA224:
+	rc = 1;
+	break;
+    default:
+	break;
+    }
+
+    return rc;
+}
+
 static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 			  const struct vfytag_s *tinfo,
 			  rpmtd td,  const char *origin,
@@ -213,6 +237,12 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    free(lints);
 	}
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
+	if (!hashalgoValid(sinfo->hashalgo)) {
+	    rasprintf(&sinfo->msg,
+		      _("%s tag %u: invalid hash algorithm"),
+		      origin, td->tag);
+	    goto exit;
+	}
 	sinfo->keyid = rpmhex(pgpDigParamsSignID(sinfo->sig), PGP_KEYID_LEN);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
 	if (td->type == RPM_BIN_TYPE) {
