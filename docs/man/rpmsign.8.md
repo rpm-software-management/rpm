@@ -25,22 +25,25 @@ SIGNING PACKAGES:
 rpmsign-options
 ---------------
 
-\[**\--rpmv3**\] \[**\--fskpath** *KEY*\] \[**\--signfiles**\]
+\[**\--rpmv3**\] \[**\--rpmv4**\] \[**\--rpmv6**\] \[**\--fskpath ***KEY*\] \[**\--signfiles**\]
 
 DESCRIPTION
 ===========
 
-Both of the **\--addsign** and **\--resign** options generate and insert
-new signatures for each package *PACKAGE\_FILE* given, replacing any
-existing signatures. There are two options for historical reasons, there
-is no difference in behavior currently.
+**rpmsign** **\--addsign** generates and inserts a new OpenPGP signature
+for each *PACKAGE\_FILE* given unless a signature with identical
+parameters already exists, in which case no action is taken.
+Arbitrary number of V6 signatures can be added.
+
+**rpmsign** **\--resign** generates and inserts a new OpenPGP signature
+for each *PACKAGE\_FILE*, replacing any and all previous signatures.
 
 To create a signature rpmsign needs to verify the package\'s checksum. As a
-result packages with a MD5/SHA1 checksums cannot be signed in FIPS mode.
+result V4 packages with MD5/SHA1 checksums cannot be signed in FIPS mode.
 
 **rpmsign** **\--delsign** *PACKAGE\_FILE \...*
 
-Delete all signatures from each package *PACKAGE\_FILE* given.
+Delete all OpenPGP signatures from each package *PACKAGE\_FILE* given.
 
 **rpmsign** **\--delfilesign** *PACKAGE\_FILE \...*
 
@@ -52,14 +55,41 @@ SIGN OPTIONS
 
 **\--rpmv3**
 
-:   Force RPM V3 header+payload signature addition. These are expensive
+:   Request RPM V3 header+payload signature addition on V4 packages.
+    These signatures are expensive
     and redundant baggage on packages where a separate payload digest
     exists (packages built with rpm \>= 4.14). Rpmsign will automatically
     detect the need for V3 signatures, but this option can be used to
-    force their creation if the packages must be fully signature
+    request their creation if the packages must be fully signature
     verifiable with rpm \< 4.14 or other interoperability reasons.
 
-**\--fskpath** *KEY*
+    Has no effect when signing V6 packages.
+
+**\--rpmv4**
+
+:   Request RPM V4 header signature addition on V6 packages.
+    Useful for making V6 packages signature verifiable
+    with rpm 4.x versions.
+
+    V4 compatibility signatures are only ever added if the signing algorithm
+    is one of those known to V4: RSA, EcDSA, EdDSA (and original DSA).
+    Only one V4 signature can be present in a package, so this is
+    added only on the first **\--addsign** with a V4 compatible
+    algorithm, and ignored otherwise.
+
+    Has no effect when signing V4 packages.
+
+**\--rpmv6**
+
+:   Request RPM V6 header signature addition on V4 packages.
+
+    This generally always succeeds as there can be arbitrary number of
+    V6 signatures on a package. A V3/V4 compatibility signatures are
+    added usign the same logic as **\--rpmv4** on a V6 package.
+
+    Has no effect when signing V6 packages.
+
+**\--fskpath ***KEY*
 
 :   Used with **\--signfiles**, use file signing key *KEY*.
 
