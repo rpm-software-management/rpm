@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <rpm/rpmbase64.h>
 #include <rpm/rpmkeyring.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
@@ -26,6 +27,7 @@ struct vfytag_s {
 };
 
 static const struct vfytag_s rpmvfytags[] = {
+    {	RPMTAG_OPENPGP,			RPM_STRING_ARRAY_TYPE,	0,	0, },
     {	RPMSIGTAG_SIZE,			RPM_BIN_TYPE,		0,	0, },
     {	RPMSIGTAG_PGP,			RPM_BIN_TYPE,		0,	0, },
     {	RPMSIGTAG_MD5,			RPM_BIN_TYPE,		0,	16, },
@@ -50,6 +52,9 @@ struct vfyinfo_s {
 };
 
 static const struct vfyinfo_s rpmvfyitems[] = {
+    {	RPMTAG_OPENPGP,			1,
+	{ RPMSIG_SIGNATURE_TYPE,	RPMVSF_NOOPENPGP,
+	(RPMSIG_HEADER),		0, 0, }, },
     {	RPMSIGTAG_SIZE,			1,
 	{ RPMSIG_OTHER_TYPE,		0,
 	(RPMSIG_HEADER|RPMSIG_PAYLOAD), 0, 0, }, },
@@ -131,7 +136,7 @@ exit:
     return valid;
 }
 
-static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
+static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
 			  const struct vfytag_s *tinfo,
 			  rpmtd td,  const char *origin,
 			  struct rpmsinfo_s *sinfo)
@@ -139,6 +144,8 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rpmRC rc = RPMRC_FAIL;
     const void *data = NULL;
     rpm_count_t dlen = 0;
+    uint8_t *pkt = NULL;
+    size_t pktlen = 0;
 
     *sinfo = vinfo->vi; /* struct assignment */
     sinfo->wrapped = (vinfo->sigh == 0);
@@ -193,6 +200,16 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     }
 
     if (sinfo->type == RPMSIG_SIGNATURE_TYPE) {
+	if (td->type == RPM_STRING_ARRAY_TYPE) {
+	    if (rpmBase64Decode((const char *)data, (void **)&pkt, &pktlen)) {
+		rasprintf(&sinfo->msg, _("%s tag %u: invalid base64"),
+			origin, td->tag);
+		goto exit;
+	    }
+	    data = pkt;
+	    dlen = pktlen;
+	}
+
 	char *lints = NULL;
         int ec = pgpPrtParams2((const uint8_t *)data, dlen, PGPTAG_SIGNATURE,
 				&sinfo->sig, &lints);
@@ -234,8 +251,10 @@ static void rpmsinfoInit(const struct vfyinfo_s *vinfo,
     rc = RPMRC_OK;
 
 exit:
+    if (pkt && pkt != td->data)
+	free(pkt);
     sinfo->rc = rc;
-    return;
+    return rc;
 }
 
 static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
@@ -291,11 +310,16 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 			rangeName(sinfo->range), t);
 		free(t);
 	    } else {
-		rasprintf(&sinfo->descr, _("%s OpenPGP %s%s %s"),
-			rangeName(sinfo->range),
-			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
-			sinfo->alt ? " ALT" : "",
-			_("signature"));
+		if (sinfo->sigalgo) {
+		    rasprintf(&sinfo->descr, _("%s OpenPGP %s %s"),
+			    rangeName(sinfo->range),
+			    pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
+			    _("signature"));
+		} else {
+		    rasprintf(&sinfo->descr, _("%s OpenPGP %s"),
+			    rangeName(sinfo->range),
+			    _("signature"));
+		}
 	    }
 	    break;
 	}
@@ -348,7 +372,13 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 
     if (!rpmsinfoDisabled(&vi->vi, sis->vsflags) && rc == RPMRC_OK) {
 	while (rpmtdNext(&td) >= 0) {
-	    rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs]);
+	    if (!rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs])) {
+		/* Don't bother with v3/v4 sigs when v6 sigs exist */
+		if (td.tag == RPMSIGTAG_OPENPGP) {
+		    sis->vsflags |= (RPMVSF_NODSAHEADER|RPMVSF_NORSAHEADER);
+		    sis->vsflags |= (RPMVSF_NODSA|RPMVSF_NORSA);
+		}
+	    }
 	    sis->nsigs++;
 	}
     } else {
