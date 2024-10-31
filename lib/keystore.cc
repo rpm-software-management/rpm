@@ -24,11 +24,11 @@ using namespace rpm;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
-rpmRC keystore_fs::load_keys(rpmtxn txn, rpmKeyring keyring)
+static rpmRC load_keys_from_glob(rpmtxn txn, rpmKeyring keyring, string glob)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
-    char *pkpath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/*.key", NULL);
+    char *pkpath = rpmGetPath(rpmtxnRootDir(txn), glob.c_str(), NULL);
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
     if (rpmGlob(pkpath, NULL, &files)) {
@@ -53,6 +53,53 @@ exit:
     free(pkpath);
     argvFree(files);
     return RPMRC_OK;
+}
+
+static rpmRC write_key_to_disk(rpmPubkey key, string & dir, string & filename, int replace, rpmFlags flags)
+{
+    rpmRC rc = RPMRC_FAIL;
+    char *keyval = rpmPubkeyArmorWrap(key);
+    string tmppath = "";
+    string path = dir + "/" + filename;
+
+    if (replace) {
+	tmppath =  dir + "/" + filename + ".new";
+	unlink(tmppath.c_str());
+    }
+
+    if (rpmMkdirs(NULL, dir.c_str())) {
+	rpmlog(RPMLOG_ERR, _("failed to create keyring directory %s: %s\n"),
+	       path.c_str(), strerror(errno));
+	goto exit;
+    }
+
+    if (FD_t fd = Fopen(replace ? tmppath.c_str() : path.c_str(), "wx")) {
+	size_t keylen = strlen(keyval);
+	if (Fwrite(keyval, 1, keylen, fd) == keylen)
+	    rc = RPMRC_OK;
+	Fclose(fd);
+    }
+    if (!rc && replace && rename(tmppath.c_str(), path.c_str()) != 0)
+	rc = RPMRC_FAIL;
+
+    if (rc) {
+	rpmlog(RPMLOG_ERR, _("failed to import key: %s: %s\n"),
+	       replace ? tmppath.c_str() : path.c_str(), strerror(errno));
+	if (replace)
+	    unlink(tmppath.c_str());
+    }
+
+exit:
+    free(keyval);
+    return rc;
+}
+
+
+/*****************************************************************************/
+
+rpmRC keystore_fs::load_keys(rpmtxn txn, rpmKeyring keyring)
+{
+    return load_keys_from_glob(txn, keyring, "%{_keyringpath}/*.key");
 }
 
 rpmRC keystore_fs::delete_key(rpmtxn txn, const string & keyid, const string & newname)
@@ -82,52 +129,22 @@ rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key)
 rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
 {
     rpmRC rc = RPMRC_FAIL;
-    const char *fp = rpmPubkeyFingerprintAsHex(key);
-    char *keyfmt = rstrscat(NULL, "gpg-pubkey-", fp, ".key", NULL);
-    char *keyval = rpmPubkeyArmorWrap(key);
-    char *path = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", keyfmt);
-    char *tmppath = NULL;
+    string fp = rpmPubkeyFingerprintAsHex(key);
+    string keyfmt = "gpg-pubkey-" + fp + ".key";
+    char *dir = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", NULL);
+    string dirstr = dir;
 
-    if (replace) {
-	rasprintf(&tmppath, "%s.new", path);
-	unlink(tmppath);
-    }
-
-    if (rpmMkdirs(rpmtxnRootDir(txn), "%{_keyringpath}")) {
-	rpmlog(RPMLOG_ERR, _("failed to create keyring directory %s: %s\n"),
-		path, strerror(errno));
-	goto exit;
-    }
-
-    if (FD_t fd = Fopen(tmppath ? tmppath : path, "wx")) {
-	size_t keylen = strlen(keyval);
-	if (Fwrite(keyval, 1, keylen, fd) == keylen)
-	    rc = RPMRC_OK;
-	Fclose(fd);
-    }
-    if (!rc && tmppath && rename(tmppath, path) != 0)
-	rc = RPMRC_FAIL;
-
-    if (rc) {
-	rpmlog(RPMLOG_ERR, _("failed to import key: %s: %s\n"),
-		tmppath ? tmppath : path, strerror(errno));
-	if (tmppath)
-	    unlink(tmppath);
-    }
+    rc = write_key_to_disk(key, dirstr, keyfmt, replace, flags);
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	if (delete_key(txn, fp, keyfmt) == RPMRC_NOTFOUND) {
 	    /* make sure an old, short keyid version gets removed */
-	    delete_key(txn, fp+32, keyfmt);
+	    delete_key(txn, fp.substr(32), keyfmt);
 	}
     }
 
-exit:
-    free(path);
-    free(keyval);
-    free(keyfmt);
-    free(tmppath);
+    free(dir);
     return rc;
 }
 
