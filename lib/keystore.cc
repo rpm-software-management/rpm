@@ -3,6 +3,8 @@
 #include <string>
 
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/file.h>
 
 #include <rpm/header.h>
 #include <rpm/rpmbase64.h>
@@ -147,6 +149,93 @@ rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags f
     free(dir);
     return rc;
 }
+
+/*****************************************************************************/
+
+static int acquire_write_lock(rpmtxn txn)
+{
+    char * keyringpath = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", NULL);
+    char * lockpath = rpmGenPath(rpmtxnRootDir(txn), "%{_keyringpath}/", "writelock");
+    int fd = -1;
+
+    if (rpmMkdirs(NULL, keyringpath)) {
+	rpmlog(RPMLOG_ERR, _("failed to create keyring directory %s: %s\n"),
+	       keyringpath, strerror(errno));
+	goto exit;
+    }
+
+    if ((fd = open(lockpath, O_WRONLY|O_CREAT)) == -1) {
+	rpmlog(RPMLOG_ERR, _("Can't create writelock for keyring at %s: %s\n"), keyringpath, strerror(errno));
+    } else if (flock(fd, LOCK_EX|LOCK_NB)) {
+	rpmlog(RPMLOG_ERR, _("Can't acquire writelock for keyring at %s\n"), keyringpath);
+	close(fd);
+	fd = -1;
+    }
+
+ exit:
+    free(keyringpath);
+    free(lockpath);
+    return fd;
+}
+
+static void free_write_lock(int fd)
+{
+    flock(fd, LOCK_UN);
+}
+
+rpmRC keystore_openpgp_cert_d::load_keys(rpmtxn txn, rpmKeyring keyring)
+{
+    return load_keys_from_glob(txn, keyring, "%{_keyringpath}/*/*");
+}
+
+rpmRC keystore_openpgp_cert_d::delete_key(rpmtxn txn, rpmPubkey key)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    int lock_fd = -1;
+
+    if ((lock_fd = acquire_write_lock(txn)) == -1)
+	return RPMRC_FAIL;
+
+    string fp = rpmPubkeyFingerprintAsHex(key);
+    string dir = fp.substr(0, 2);
+    string filename = fp.substr(2);
+    char * filepath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/", dir.c_str(), "/", filename.c_str(), NULL);
+    char * dirpath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/", dir.c_str(), NULL);
+
+    if (!access(filepath, F_OK))
+	rc = unlink(filepath) ? RPMRC_FAIL : RPMRC_OK;
+    /* delete directory if empty */
+    rmdir(dirpath);
+
+    free(filepath);
+    free(dirpath);
+    free_write_lock(lock_fd);
+    return rc;
+}
+
+rpmRC keystore_openpgp_cert_d::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    int lock_fd = -1;
+
+    if ((lock_fd = acquire_write_lock(txn)) == -1)
+	return RPMRC_FAIL;
+
+    string fp = rpmPubkeyFingerprintAsHex(key);
+    string dir = fp.substr(0, 2);
+    string filename = fp.substr(2);
+    char *dirpath = rpmGetPath(rpmtxnRootDir(txn), "%{_keyringpath}/", dir.c_str(), NULL);
+    string dirstr = dirpath;
+
+    rc = write_key_to_disk(key, dirstr, filename, replace, flags);
+
+    free_write_lock(lock_fd);
+    free(dirpath);
+
+    return rc;
+}
+
+/*****************************************************************************/
 
 rpmRC keystore_rpmdb::load_keys(rpmtxn txn, rpmKeyring keyring)
 {

@@ -264,6 +264,83 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 RPMTEST_CLEANUP
 
 
+AT_SETUP([rpmkeys key update (openpgp)])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+# root's .rpmmacros used to keep this build prefix independent
+echo "%_keyring openpgp" >> "${RPMTEST}"/root/.rpmmacros
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[1],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key ID 6323c42711450b6c: NOKEY
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CHECK([
+runroot_other touch /usr/lib/sysimage/rpm/pubkeys/writelock
+runroot_other flock -x /usr/lib/sysimage/rpm/pubkeys/writelock -c "rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc"
+runroot_other rm /usr/lib/sysimage/rpm/pubkeys/writelock
+],
+[0],
+[],
+[error: Can't acquire writelock for keyring at /usr/lib/sysimage/rpm/pubkeys
+error: /data/keys/rpm.org-rsa-2048-add-subkey.asc: key 1 import failed.
+])
+
+
+RPMTEST_CHECK([
+runroot rpmkeys --list | wc -l
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys --list | wc -l
+],
+[0],
+[1
+1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
+],
+[0],
+[/data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
+],
+[1],
+[],
+[error: invalid key id: abcd
+error: invalid key id: gimmekey
+error: key not found: 1111aaaa2222bbbb
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete 1964c5fc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list | wc -l
+],
+[0],
+[0
+],
+[])
+RPMTEST_CLEANUP
+
 AT_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
 RPMDB_INIT
