@@ -295,6 +295,7 @@ endif()
 
 if (WITH_IMAEVM)
 	list(APPEND REQFUNCS lsetxattr)
+	check_library_exists(imaevm imaevm_signhash "" HAVE_IMAEVM_SIGNHASH)
 	add_library(IMA::IMA UNKNOWN IMPORTED)
 	find_path(IMA_INCLUDE_DIR NAMES imaevm.h REQUIRED)
 	find_library(IMA_LIBRARY NAMES imaevm REQUIRED)
