@@ -275,6 +275,8 @@ static keystore *getKeystore(rpmts ts)
 	    ts->keystore = new keystore_fs();
 	} else if (rstreq(krtype, "rpmdb")) {
 	    ts->keystore = new keystore_rpmdb();
+	} else if (rstreq(krtype, "openpgp")) {
+	    ts->keystore = new keystore_openpgp_cert_d();
 	} else {
 	    /* Fall back to using rpmdb if unknown, for now at least */
 	    rpmlog(RPMLOG_WARNING,

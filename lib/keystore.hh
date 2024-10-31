@@ -37,6 +37,13 @@ private:
     rpmRC delete_key(rpmtxn txn, const std::string & keyid, unsigned int newinstance = 0);
 };
 
+class keystore_openpgp_cert_d : public keystore {
+public:
+    virtual rpmRC load_keys(rpmtxn txn, rpmKeyring keyring);
+    virtual rpmRC import_key(rpmtxn txn, rpmPubkey key, int replace = 1, rpmFlags flags = 0);
+    virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
+};
+
 }; /* namespace */
 
 #endif /* _KEYSTORE_H */
