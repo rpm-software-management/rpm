@@ -53,7 +53,16 @@ const char *key, char *keypass, uint32_t *siglenp)
     signature[0] = '\x03';
 
     /* calculate file signature */
+#if HAVE_IMAEVM_SIGNHASH
+    struct imaevm_ossl_access access_info = {
+	.type = IMAEVM_OSSL_ACCESS_TYPE_NONE,
+    };
+    siglen = imaevm_signhash(algo, fdigest, diglen, key, keypass, signature+1, 0, &access_info, 0);
+
+#else
     siglen = sign_hash(algo, fdigest, diglen, key, keypass, signature+1);
+#endif
+
     if (siglen < 0) {
 	rpmlog(RPMLOG_ERR, _("sign_hash failed\n"));
 	return NULL;
