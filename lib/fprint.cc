@@ -311,7 +311,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 }
 
 /* Check file for to be installed symlinks in their path and correct their fp */
-static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, fingerPrint *fp)
+static void fpLookupSubdir(rpmFpHash & symlinks, fingerPrintCache fpc, fingerPrint *fp)
 {
     struct fingerPrint current_fp;
     const char *currentsubdir;
