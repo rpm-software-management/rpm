@@ -1301,7 +1301,7 @@ RPMTEST_CLEANUP
 # stderr is ignored due to noisy failures from gpgconf which we don't
 # care about in this test...
 AT_SETUP([rpmsign --addsign sequoia])
-AT_KEYWORDS([rpmsign signature])
+AT_KEYWORDS([rpmsign sequoia signature])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
@@ -1311,7 +1311,7 @@ cat << EOF > ${HOME}/.rpmmacros
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
 
-runroot_other sq key import /data/keys/rpm.org-rsa-2048-test.secret
+runroot_other sq key import /data/keys/*.secret
 ],
 [0],
 [ignore],
@@ -1338,6 +1338,18 @@ POST-IMPORT
     Header V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmsign --addsign --key-id 152bb32fd9ca982797e835cfb0645aec757bf69e /tmp/hello-2.0-1.x86_64.rpm > /dev/null
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header V4 EdDSA/SHA512 signature, key ID b0645aec757bf69e: NOKEY
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
 ],
 [ignore])
 RPMTEST_CLEANUP
