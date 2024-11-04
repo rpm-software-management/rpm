@@ -60,7 +60,7 @@ char *pgpIdentItem(pgpDigParams digp)
 				pgpDigParamsAlgo(digp, PGPVAL_PUBKEYALGO)),
                   pgpValString(PGPVAL_HASHALGO,
 				pgpDigParamsAlgo(digp, PGPVAL_HASHALGO)),
-                  (pgpSignatureType(digp) == -1) ? "Public Key" : "Signature",
+                  (pgpSignatureType(digp) == -1) ? "public key" : "signature",
                   signid);
         free(signid);
     } else {

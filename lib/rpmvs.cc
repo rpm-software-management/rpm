@@ -313,7 +313,7 @@ char *rpmsinfoMsg(struct rpmsinfo_s *sinfo)
 	fphex = rpmPubkeyFingerprintAsHex(sinfo->key);
     }
     if (fphex) {
-	rasprintf(&fpmsg, _(", Key Fingerprint: %s"), fphex);
+	rasprintf(&fpmsg, _(", key fingerprint: %s"), fphex);
 	char * pos = strstr(descr, ", key ID");
 	if (pos)
 	    *pos = '\0';
