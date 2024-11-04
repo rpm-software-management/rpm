@@ -217,7 +217,7 @@ rpmbuild alias --nodebuginfo	--define 'debug_package %{nil}' \
 rpmbuild alias --build-in-place --define '_build_in_place 1' \
 	--POPTdesc=$"run build in current directory on checked out sources"
 
-rpmsign alias --key-id  --define '_gpg_name !#:+' \
+rpmsign alias --key-id  --define '_openpgp_sign_id !#:+' \
 	--POPTdesc=$"key id/name to sign with" \
 	--POPTargs=$"<id>"
 rpmsign alias --digest-algo --define '_gpg_digest_algo !#:+' \
