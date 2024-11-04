@@ -340,7 +340,7 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 
     if (stat(sigfile, &st)) {
 	/* External command failed to write signature */
-	rpmlog(RPMLOG_ERR, _("failed to write signature\n"));
+	rpmlog(RPMLOG_ERR, _("failed to write signature: %s\n"), sigfile);
 	goto exit;
     }
 
@@ -357,7 +357,8 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
 	    (void) Fclose(fd);
 	}
 	if (rc != pktlen) {
-	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
+	    rpmlog(RPMLOG_ERR, _("unable to read the signature: %s\n"),
+			sigfile);
 	    goto exit;
 	}
     }
@@ -595,8 +596,6 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     int insSig = 0;
     rpmTagVal reserveTag = RPMSIGTAG_RESERVEDSPACE;
 
-    fprintf(stdout, "%s:\n", rpm);
-
     if (manageFile(&fd, rpm, O_RDWR))
 	goto exit;
 
@@ -626,7 +625,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     }
 
     if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages\n"));
+	rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages: %s\n"), rpm);
 	goto exit;
     }
 
@@ -725,7 +724,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	rasprintf(&trpm, "%s.XXXXXX", rpm);
 	ofd = rpmMkTemp(trpm);
 	if (ofd == NULL || Ferror(ofd)) {
-	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed: %s\n"), trpm);
 	    goto exit;
 	}
 
@@ -767,6 +766,9 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    }
 	}
     }
+
+    if (res == 0)
+	rpmlog(RPMLOG_INFO, "%s\n", rpm);
 
 exit:
     if (fd)	(void) closeFile(&fd);
