@@ -443,7 +443,7 @@ int rpmlogOnce (uint64_t domain, const char * key, int code, const char *fmt, ..
 	char *msg = NULL;
 	va_start(ap, fmt);
 	if (rvasprintf(&msg, fmt, ap) >= 0) {
-	    rpmlog(code, msg);
+	    rpmlog(code, "%s", msg);
 	    free(msg);
 	}
 	va_end(ap);
