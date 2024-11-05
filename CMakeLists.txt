@@ -394,7 +394,7 @@ configure_file(config.h.in config.h)
 
 add_compile_definitions(HAVE_CONFIG_H)
 
-add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body)
+add_compile_options(-Wall -Wpointer-arith -Wmissing-prototypes -Wstrict-prototypes -Wempty-body -Wformat-security)
 if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
