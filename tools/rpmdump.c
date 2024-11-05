@@ -80,7 +80,7 @@ static int readlead(int fd)
     printf("Version %d.%d\n", lead.major, lead.minor);
     printf("Type: %hu\n", ntohs(lead.type));
     printf("Name: %s\n", lead.name);
-    printf("Arch: %hu\n", ntohs(lead.osnum));
+    printf("Arch: %hu\n", ntohs(lead.archnum));
     printf("OS: %hu\n", ntohs(lead.osnum));
     printf("Sigtype: %hu\n", ntohs(lead.signature_type));
     printf("\n");
