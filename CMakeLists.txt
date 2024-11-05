@@ -399,7 +399,7 @@ configure_file(config.h.in config.h)
 
 add_compile_definitions(HAVE_CONFIG_H)
 
-add_compile_options(-Wall -Wpointer-arith -Wempty-body)
+add_compile_options(-Wall -Wpointer-arith -Wempty-body -Wformat-security)
 if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
