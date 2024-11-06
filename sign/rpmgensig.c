@@ -402,6 +402,11 @@ static int haveSignature(rpmtd sigtd, Header h)
     return rc;
 }
 
+static int putSignature(Header sigh, rpmtd sigtd)
+{
+    return (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0);
+}
+
 static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 {
     int rc = -1;
@@ -419,7 +424,7 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
     /* Nuke all signature tags */
     deleteSigs(sigh);
 
-    if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
+    if (putSignature(sigh, sigtd))
 	goto exit;
 
     if (sigt_v3) {
@@ -429,7 +434,7 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 	if ((sigtd = makeGPGSignature(0, sigt_v3)) == NULL)
 	    goto exit;
 
-	if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
+	if (putSignature(sigh, sigtd))
 	    goto exit;
     }
 
