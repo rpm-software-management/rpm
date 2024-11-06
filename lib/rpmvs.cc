@@ -278,7 +278,7 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
     if (sinfo->descr == NULL) {
 	switch (sinfo->type) {
 	case RPMSIG_DIGEST_TYPE:
-	    rasprintf(&sinfo->descr, _("%s%s%s %s"),
+	    rasprintf(&sinfo->descr, _("%s %s%s %s"),
 		    rangeName(sinfo->range),
 		    pgpValString(PGPVAL_HASHALGO, sinfo->hashalgo),
 		    sinfo->alt ? " ALT" : "",
@@ -287,11 +287,11 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 	case RPMSIG_SIGNATURE_TYPE:
 	    if (sinfo->sig) {
 		char *t = pgpIdentItem(sinfo->sig);
-		rasprintf(&sinfo->descr, _("%sOpenPGP %s"),
+		rasprintf(&sinfo->descr, _("%s OpenPGP %s"),
 			rangeName(sinfo->range), t);
 		free(t);
 	    } else {
-		rasprintf(&sinfo->descr, _("%sOpenPGP %s%s %s"),
+		rasprintf(&sinfo->descr, _("%s OpenPGP %s%s %s"),
 			rangeName(sinfo->range),
 			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
 			sinfo->alt ? " ALT" : "",
@@ -571,11 +571,11 @@ static const char * rpmSigString(rpmRC res)
 static const char *rangeName(int range)
 {
     switch (range) {
-    case RPMSIG_HEADER:				return _("Header ");
-    case RPMSIG_PAYLOAD:			return _("Payload ");
+    case RPMSIG_HEADER:				return _("Header");
+    case RPMSIG_PAYLOAD:			return _("Payload");
     }
-    /* trad. output for (RPMSIG_HEADER|RPMSIG_PAYLOAD) range is "" */
-    return "";
+    /* (RPMSIG_HEADER|RPMSIG_PAYLOAD) */
+    return "Legacy";
 }
 
 static rpmRC verifyDigest(struct rpmsinfo_s *sinfo)

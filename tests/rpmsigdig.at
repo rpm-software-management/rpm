@@ -54,7 +54,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-1.0-1.i386.rpm
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
-    MD5 digest: NOTFOUND
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -301,7 +301,7 @@ runroot rpmkeys --define "_pkgverify_flags 0" -Kv /tmp/hello-uc.rpm
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 ALT digest: OK
-    MD5 digest: BAD (Expected 055607c4dee6464b9415ae726e7d81a7 != 839d24c30e5188e0b83599fbe3865919)
+    Legacy MD5 digest: BAD (Expected 055607c4dee6464b9415ae726e7d81a7 != 839d24c30e5188e0b83599fbe3865919)
 ],
 [])
 RPMTEST_CLEANUP
@@ -336,7 +336,7 @@ runroot rpmkeys -Kv --define "_pkgverify_flags 0" /tmp/${pkg}
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+    Legacy MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 ],
 [])
 RPMTEST_CLEANUP
@@ -358,7 +358,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    MD5 digest: NOTFOUND
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -381,7 +381,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
-    MD5 digest: NOTFOUND
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -559,8 +559,8 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Importing key:
 0
@@ -577,8 +577,8 @@ Checking package after importing key, no digest:
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Checking package after importing key, no signature:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
@@ -617,8 +617,8 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Importing key:
 0
@@ -635,8 +635,8 @@ RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
@@ -647,8 +647,8 @@ RPMOUTPUT_SEQUOIA([      because: The subkey is not live])dnl
 RPMOUTPUT_SEQUOIA([      because: Expired on 2022-04-12T00:00:15Z])dnl
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header OpenPGP DSA signature: NOTFOUND
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Checking package after importing key, no signature:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
@@ -687,8 +687,8 @@ runroot rpmkeys --define '_pkgverify_level all' -Kv --nosignature /data/RPMS/hel
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Importing key:
 0
@@ -703,8 +703,8 @@ RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Checking package after importing key, no digest:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
@@ -713,8 +713,8 @@ RPMOUTPUT_SEQUOIA([error: Verifying a signature using certificate B6542F92F30650
 RPMOUTPUT_SEQUOIA([  Key 1F71177215217EE0 is invalid: key is revoked])dnl
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: b6542f92f30650c36b6f41bcb3a771bfeb04e625: NOTTRUSTED
     Header OpenPGP DSA signature: NOTFOUND
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
 1
 Checking package after importing key, no signature:
 /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm:
@@ -895,34 +895,34 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo
     Header OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+    Legacy OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 1
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 1
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
     Header OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
     Header OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 0
 /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm:
     Header SHA256 digest: OK
@@ -962,7 +962,7 @@ RPMOUTPUT_SEQUOIA([      because: Signature appears to be created by a non-confo
 RPMOUTPUT_SEQUOIA([      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))])dnl
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 /tmp/hello-2.0-1.x86_64-signed.rpm:
 RPMOUTPUT_LEGACY([    Header OpenPGP RSA signature: BAD (package tag 268: invalid OpenPGP signature: signature without creation time)])dnl
 RPMOUTPUT_SEQUOIA([    Header OpenPGP RSA signature: BAD (package tag 268: invalid OpenPGP signature: Parsing an OpenPGP packet:])dnl
@@ -971,7 +971,7 @@ RPMOUTPUT_SEQUOIA([      because: Signature appears to be created by a non-confo
 RPMOUTPUT_SEQUOIA([      because: Malformed MPI: leading bit is not set: expected bit 1 to be set in        0 (0))])dnl
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 ],
 [])
 RPMTEST_CLEANUP
@@ -999,15 +999,15 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 63a0502eb7f5eaa07d43fe8fa805665b86e58d53db38ccf625bbbf01e3cd67ab)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
+    Legacy MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-v3-signed.rpm:
     Header OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 63a0502eb7f5eaa07d43fe8fa805665b86e58d53db38ccf625bbbf01e3cd67ab)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -1034,15 +1034,15 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
+    Legacy MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -1070,16 +1070,16 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
+    Legacy MD5 digest: NOTFOUND
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
-    OpenPGP DSA signature: NOTFOUND
-    MD5 digest: NOTFOUND
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
+    Legacy OpenPGP DSA signature: NOTFOUND
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 RPMTEST_CLEANUP
@@ -1110,16 +1110,16 @@ dorpm -Kv
 /data/RPMS/hello-2.0-1.x86_64-corrupted.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
     Header SHA256 digest: OK
-    MD5 digest: OK
+    Legacy MD5 digest: OK
 /data/RPMS/hello-2.0-1.x86_64-corrupted.rpm: DIGESTS SIGNATURES NOT OK
 /data/RPMS/hello-2.0-1.x86_64-corrupted.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
-    OpenPGP RSA signature: NOTFOUND
-    OpenPGP DSA signature: NOTFOUND
-    MD5 digest: OK
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
+    Legacy MD5 digest: OK
 ]],
 [])
 RPMTEST_CLEANUP
@@ -1151,11 +1151,11 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
 [PRE-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 POST-IMPORT
 /tmp/hello-2.0-1.x86_64.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
-    OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
@@ -1249,7 +1249,7 @@ runroot rpmsign --define "_pkgverify_flags 0" --key-id 4344591E1964C5FC --digest
 ],
 [1],
 [],
-[error: not signing corrupt package /tmp/hello-2.0-1.x86_64.rpm: MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+[error: not signing corrupt package /tmp/hello-2.0-1.x86_64.rpm: Legacy MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 ])
 
 RPMTEST_CHECK([
@@ -1260,7 +1260,7 @@ runroot rpmkeys -Kv --define "_pkgverify_flags 0" /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
+    Legacy MD5 digest: BAD (Expected 007ca1d8b35cca02a1854ba301c5432e != 137ca1d8b35cca02a1854ba301c5432e)
 ],
 [])
 
@@ -1287,7 +1287,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
     Payload SHA256 ALT digest: NOTFOUND
-    MD5 digest: NOTFOUND
+    Legacy MD5 digest: NOTFOUND
 ],
 [])
 gpgconf --kill gpg-agent
@@ -1375,7 +1375,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
 [PRE-DELSIGN
 /tmp/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-    OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+    Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64-signed.rpm:
 ],
