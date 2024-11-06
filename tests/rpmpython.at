@@ -367,8 +367,8 @@ public key not available
 public key not available
 public key not available
 ],
-[warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header V4 RSA/SHA512 signature, key ID 1f71177215217ee0: NOKEY
-warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header V4 RSA/SHA512 signature, key ID 1f71177215217ee0: NOKEY]
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header OpenPGP V4 RSA/SHA512 signature, key ID 1f71177215217ee0: NOKEY
+warning: /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm: Header OpenPGP V4 RSA/SHA512 signature, key ID 1f71177215217ee0: NOKEY]
 )
 
 RPMPY_TEST([transaction callback 1],[

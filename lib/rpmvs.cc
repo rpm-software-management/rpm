@@ -287,11 +287,11 @@ const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo)
 	case RPMSIG_SIGNATURE_TYPE:
 	    if (sinfo->sig) {
 		char *t = pgpIdentItem(sinfo->sig);
-		rasprintf(&sinfo->descr, _("%s%s"),
+		rasprintf(&sinfo->descr, _("%sOpenPGP %s"),
 			rangeName(sinfo->range), t);
 		free(t);
 	    } else {
-		rasprintf(&sinfo->descr, _("%s%s%s %s"),
+		rasprintf(&sinfo->descr, _("%sOpenPGP %s%s %s"),
 			rangeName(sinfo->range),
 			pgpValString(PGPVAL_PUBKEYALGO, sinfo->sigalgo),
 			sinfo->alt ? " ALT" : "",
