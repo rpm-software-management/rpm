@@ -408,7 +408,8 @@ static int putSignature(Header sigh, rpmtd sigtd)
     return (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0);
 }
 
-static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
+static int replaceSignature(Header sigh, rpmSignFlags flags,
+			sigTarget sigt_v3, sigTarget sigt_v4)
 {
     int rc = -1;
     rpmtd sigtd = NULL;
@@ -428,7 +429,7 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
     if (putSignature(sigh, sigtd))
 	goto exit;
 
-    if (sigt_v3) {
+    if (flags & RPMSIGN_FLAG_RPMV3) {
 	rpmtdFree(sigtd);
 
 	/* Assume the same signature test holds for v3 signature too */
@@ -647,7 +648,6 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	deleteSigs(sigh);
     } else {
 	/* Signature target containing header + payload */
-	int v3 = (flags & RPMSIGN_FLAG_RPMV3);
 	sigt_v3.fd = fd;
 	sigt_v3.start = headerStart;
 	sigt_v3.fileName = rpm;
@@ -657,7 +657,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	sigt_v4 = sigt_v3;
 	sigt_v4.size = headerSizeof(h, HEADER_MAGIC_YES);
 
-	res = replaceSignature(sigh, v3 ? &sigt_v3 : NULL, &sigt_v4);
+	res = replaceSignature(sigh, flags, &sigt_v3, &sigt_v4);
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
