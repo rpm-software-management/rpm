@@ -129,13 +129,8 @@ exit:
     return rc;
 }
 
-/*
- * Validate generated signature and insert to header if it looks sane.
- * RPM doesn't support everything GPG does. Basic tests to see if the
- * generated signature is something we can use.
- * Return generated signature tag data on success, NULL on failure.
- */
-static rpmtd makeSigTag(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
+/* Wrap a raw signature in an rpmtd and sanity check, return NULL on fail */
+static rpmtd makeSigTag(int ishdr, uint8_t *pkt, size_t pktlen)
 {
     pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
@@ -319,15 +314,8 @@ exit_nowait:
     return rc;
 }
 
-/**
- * Generate GPG signature(s) for a header+payload file.
- * @param sigh		signature header
- * @param ishdr		header-only signature?
- * @param sigt		signature target
- * @param passPhrase	private key pass phrase
- * @return		generated sigtag on success, 0 on failure
- */
-static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
+/* Generate an OpenPGP signature(s) for a target */
+static rpmtd makeGPGSignature(int ishdr, sigTarget sigt)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
@@ -366,7 +354,7 @@ static rpmtd makeGPGSignature(Header sigh, int ishdr, sigTarget sigt)
     rpmlog(RPMLOG_DEBUG, "Got %zd bytes of OpenPGP sig\n", pktlen);
 
     /* Parse the signature, change signature tag as appropriate. */
-    sigtd = makeSigTag(sigh, ishdr, pkt, pktlen);
+    sigtd = makeSigTag(ishdr, pkt, pktlen);
 exit:
     (void) unlink(sigfile);
     free(sigfile);
@@ -421,7 +409,7 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
     rpmtd sigtd = NULL;
     
     /* Make the cheaper v4 signature first */
-    if ((sigtd = makeGPGSignature(sigh, 1, sigt_v4)) == NULL)
+    if ((sigtd = makeGPGSignature(1, sigt_v4)) == NULL)
 	goto exit;
 
     /* See if we already have a signature by the same key and parameters */
@@ -439,7 +427,7 @@ static int replaceSignature(Header sigh, sigTarget sigt_v3, sigTarget sigt_v4)
 	rpmtdFree(sigtd);
 
 	/* Assume the same signature test holds for v3 signature too */
-	if ((sigtd = makeGPGSignature(sigh, 0, sigt_v3)) == NULL)
+	if ((sigtd = makeGPGSignature(0, sigt_v3)) == NULL)
 	    goto exit;
 
 	if (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0)
