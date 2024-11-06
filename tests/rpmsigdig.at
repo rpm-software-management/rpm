@@ -203,13 +203,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
-# XXX rpmkeys --list doesn't yet work with fs keystore
-runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
+runroot rpmkeys --list | wc -l
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys --list | wc -l
 runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
 ],
 [0],
 [1
+1
 1
 ],
 [])
@@ -243,8 +244,7 @@ runroot rpmkeys --delete 1964c5fc
 [])
 
 RPMTEST_CHECK([
-# XXX rpmkeys --list doesn't yet work with fs keystore
-runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
+runroot rpmkeys --list | wc -l
 ],
 [0],
 [0
