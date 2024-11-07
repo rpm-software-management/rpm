@@ -19,13 +19,13 @@ DESCRIPTION
 
 The general forms of rpm digital signature commands are
 
-**rpmkeys** **\--list** \[*KEYFINGERPRINT \...*\]
+**rpmkeys** **\--list** \[*FINGERPRINT \...*\]
 
-**rpmkeys** **\--export** \[*KEYFINGERPRINT \...*\]
+**rpmkeys** **\--export** \[*FINGERPRINT \...*\]
 
 **rpmkeys** **\--import** *PUBKEY \...*
 
-**rpmkeys** **\--delete** *KEYHASH \...*
+**rpmkeys** **\--delete** *FINGERPRINT \...*
 
 **rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
 
@@ -36,34 +36,33 @@ read, and **\--checksig** is useful to verify all of the digests and
 signatures associated with a package.
 
 Digital signatures cannot be verified without a public key. An ASCII
-armored public key can be added to the **rpm** database using
-**\--import**. An imported public key is carried in a header, and key
-ring management is performed exactly like package management. For
-example, all currently imported public keys can be displayed by:
+armored public key can be added to the **rpm** persistent keyring using
+**\--import**.
 
-**rpm -q gpg-pubkey**
+The following commands are available for manipulating the persistent
+rpm keyring:
 
-A more convenient way to display them is
+**rpmkeys** **\--list** \[*FINGERPRINT \...*\]
 
-**rpmkeys** **\--list**
+List currently imported public key(s) (aka certificates) by their
+fingerprint and user ID. If no fingerprints are specified, list all keys.
 
-More details about a specific public key, when imported, can be displayed by
-querying. Here\'s information about the Red Hat GPG/DSA key:
+The fingerprint is the handle used for all operations on the keys.
 
-**rpm -qi gpg-pubkey-db42a60e**
+**rpmkeys** **\--export** \[*FINGERPRINT \...*\]
 
-Finally, public keys can be erased after importing just like packages.
-Here\'s how to remove the Red Hat GPG/DSA key:
+Output the key(s) using an ASCII-armor encoding.
 
-**rpmkeys** **\--export**
+Exporting allows for inspecting the data with specialized tools, such
+as Sequoia or GnuPG. For example:
 
-Write the keys in an armor wrapped text format to standard out.
+**rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect **
 
-**rpmkeys** **\--delete db42a60e**
+**rpmkeys** **\--delete** *FINGERPRINT \...*
 
-Or alternatively:
+Delete the key(s) designated by *FINGERPRINT*. For example:
 
-**rpm -e gpg-pubkey-db42a60e**
+**rpmkeys** **\--delete 771b18d3d7baa28734333c424344591e1964c5fc**
 
 SEE ALSO
 ========
