@@ -18,6 +18,7 @@
 #include <rpm/argv.h>
 
 #include "rpmio_internal.hh"
+#include "rpmmacro_internal.hh"
 
 #include "debug.h"
 
@@ -306,79 +307,34 @@ char *rpmCleanPath(char * path)
     return path;
 }
 
-/* Merge 3 args into path, any or all of which may be a url. */
+/* Merge 3 args into path */
 
 char * rpmGenPath(const char * urlroot, const char * urlmdir,
 		const char *urlfile)
 {
-    char * xroot = rpmGetPath(urlroot, NULL);
-    const char * root = xroot;
-    char * xmdir = rpmGetPath(urlmdir, NULL);
-    const char * mdir = xmdir;
-    char * xfile = rpmGetPath(urlfile, NULL);
-    const char * file = xfile;
-    char * result;
-    char * url = NULL;
-    int nurl = 0;
-    int ut;
-
-    ut = urlPath(xroot, &root);
-    if (url == NULL && ut > URL_IS_DASH) {
-	url = xroot;
-	nurl = root - xroot;
-    }
-    if (root == NULL || *root == '\0') root = "/";
-
-    ut = urlPath(xmdir, &mdir);
-    if (url == NULL && ut > URL_IS_DASH) {
-	url = xmdir;
-	nurl = mdir - xmdir;
-    }
-    if (mdir == NULL || *mdir == '\0') mdir = "/";
-
-    ut = urlPath(xfile, &file);
-    if (url == NULL && ut > URL_IS_DASH) {
-	url = xfile;
-	nurl = file - xfile;
-    }
-
-    if (url && nurl > 0) {
-	char *t = rstrcat(NULL, url);
-	t[nurl] = '\0';
-	url = t;
-    } else
-	url = xstrdup("");
-
-    result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
-
-    free(xroot);
-    free(xmdir);
-    free(xfile);
-    free(url);
-    return result;
+    std::string path = rpm::join_path({ urlroot ? urlroot : "",
+					urlmdir ? urlmdir : "",
+					urlfile ? urlfile : "" });
+    return xstrdup(path.c_str());
 }
 
 /* Return concatenated and expanded canonical path. */
 
 char * rpmGetPath(const char *path, ...)
 {
-    va_list ap;
-    char *dest = NULL, *res;
-    const char *s;
 
     if (path == NULL)
 	return xstrdup("");
 
+    std::string dest;
+    va_list ap;
     va_start(ap, path);
-    for (s = path; s; s = va_arg(ap, const char *)) {
-	rstrcat(&dest, s);
-    }
+    for (const char *s = path; s; s = va_arg(ap, const char *))
+	dest += s;
     va_end(ap);
 
-    res = rpmExpand(dest, NULL);
-    free(dest);
-
-    return rpmCleanPath(res);
+    auto p = rpm::expand_path({dest});
+    return xstrdup(p.c_str());
 }
 
 static char * rpmEscapeChars(const char *s, const char *accept, int (*fn)(int))
@@ -486,4 +442,34 @@ const char *rpmConfigDir(void)
 {
     static rpmConfDir confDir {};
     return confDir.path.c_str();
+}
+
+std::string
+rpm::join_path(const std::initializer_list<std::string> & args, bool expand)
+{
+    std::string path;
+    for (auto const & a : args) {
+	/* rpmGenPath() can call us with empty arguments */
+	if (!a.empty()) {
+	    std::string s = expand ? rpm::expand_path({a}) : a;
+	    path += s + '/';
+	}
+    }
+    return rpm::normalize_path(path);
+}
+
+std::string
+rpm::expand_path(const std::initializer_list<std::string> & args)
+{
+    auto [ rc, s ] = macros().expand(args);
+    return rpm::normalize_path(s);
+}
+
+std::string
+rpm::normalize_path(const std::string & arg)
+{
+    std::string path = fs::path(arg).lexically_normal();
+    if (path.size() > 1 && path.back() == '/')
+	path.pop_back();
+    return path;
 }

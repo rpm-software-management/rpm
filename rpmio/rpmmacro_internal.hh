@@ -87,6 +87,16 @@ private:
     std::lock_guard<std::recursive_mutex> lock;
 };
 
+/* Join args into a / separated normalized path. Optionally expand args first */
+std::string join_path(const std::initializer_list<std::string> & args,
+			bool expand = true);
+
+/* Same as expand() but return as normalized path */
+std::string expand_path(const std::initializer_list<std::string> & args);
+
+/* Normalize a path. */
+std::string normalize_path(const std::string & args);
+
 }; /* namespace rpm */
 
 #endif	/* _H_ MACRO_INTERNAL */
