@@ -1924,3 +1924,171 @@ hello-1.0.tar.gz:(none)
 ],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([keyring rebuild rpmdb])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-ed25519-test.pub
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring openpgp" \
+        --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/alice.asc
+
+RPMTEST_CHECK([[
+runroot rpmkeys --define "_keyring rpmdb" --rebuild
+]],
+[2],
+[],
+[error: public key backend fs is not empty
+])
+
+RPMTEST_CHECK([[
+runroot rpmkeys --define "_keyring rpmdb" --rebuild --include_backend fs --include_backend openpgp
+runroot rpm -qa gpg-pubkey
+runroot rpmkeys --define "_keyring rpmdb" --list
+echo "==============================================="
+runroot rpmkeys --define "_keyring fs" --list
+runroot rpmkeys --define "_keyring openpgp" --list
+runroot rpmkeys --define "_keyring rpmdb" -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm | grep "Header OpenPGP"
+]],
+[0],
+[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+gpg-pubkey-152bb32fd9ca982797e835cfb0645aec757bf69e-661d22a8
+gpg-pubkey-b6542f92f30650c36b6f41bcb3a771bfeb04e625-62521e00
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+152bb32fd9ca982797e835cfb0645aec757bf69e rpm.org ed25519 testkey <ed25519@rpm.org> public key
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
+===============================================
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+],
+[ignore])
+RPMTEST_CLEANUP
+
+AT_SETUP([keyring rebuild rpmdb 2])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-ed25519-test.pub
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring openpgp" \
+        --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/alice.asc
+
+RPMTEST_CHECK([[
+runroot rpmkeys --define "_keyring rpmdb" --rebuild --include_backend openpgp --drop_backends
+runroot rpm -qa gpg-pubkey
+runroot rpmkeys --define "_keyring rpmdb" --list
+echo "==============================================="
+runroot rpmkeys --define "_keyring fs" --list
+runroot rpmkeys --define "_keyring openpgp" --list
+runroot rpmkeys --define "_keyring rpmdb" -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm | grep "Header OpenPGP"
+]],
+[0],
+[gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918
+gpg-pubkey-152bb32fd9ca982797e835cfb0645aec757bf69e-661d22a8
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+152bb32fd9ca982797e835cfb0645aec757bf69e rpm.org ed25519 testkey <ed25519@rpm.org> public key
+===============================================
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+],
+[ignore])
+RPMTEST_CLEANUP
+
+AT_SETUP([keyring rebuild fs])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-ed25519-test.pub
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring openpgp" \
+        --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/alice.asc
+
+RPMTEST_CHECK([[
+runroot rpmkeys --define "_keyring fs" --rebuild --include_backend rpmdb --include_backend openpgp
+runroot rpmkeys --define "_keyring fs" --list
+echo "==============================================="
+runroot rpmkeys --define "_keyring rpmdb" --list
+runroot rpmkeys --define "_keyring openpgp" --list
+runroot rpmkeys --define "_keyring fs" -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm | grep "Header OpenPGP"
+]],
+[0],
+[771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+152bb32fd9ca982797e835cfb0645aec757bf69e rpm.org ed25519 testkey <ed25519@rpm.org> public key
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
+===============================================
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+],
+[ignore])
+
+RPMTEST_CLEANUP
+
+AT_SETUP([keyring rebuild openpgp])
+AT_KEYWORDS([rpmkeys signature])
+RPMDB_INIT
+
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring rpmdb" \
+        --import /data/keys/rpm.org-ed25519-test.pub
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpmkeys \
+        --define "_keyring openpgp" \
+        --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys \
+        --define "_keyring fs" \
+        --import /data/keys/alice.asc
+
+RPMTEST_CHECK([[
+runroot rpmkeys --define "_keyring openpgp" --rebuild --include_backend fs --include_backend rpmdb
+runroot rpmkeys --define "_keyring openpgp" --list
+echo "==============================================="
+runroot rpmkeys --define "_keyring fs" --list
+runroot rpmkeys --define "_keyring rpmdb" --list
+runroot rpmkeys --define "_keyring openpgp" -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm | grep "Header OpenPGP"
+]],
+[0],
+[771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+152bb32fd9ca982797e835cfb0645aec757bf69e rpm.org ed25519 testkey <ed25519@rpm.org> public key
+b6542f92f30650c36b6f41bcb3a771bfeb04e625 Alice <alice@example.org> public key
+===============================================
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+],
+[ignore])
+
+RPMTEST_CLEANUP
