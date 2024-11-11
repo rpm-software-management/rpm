@@ -15,6 +15,7 @@ enum modes {
     MODE_DELKEY		= (1 << 2),
     MODE_LISTKEY	= (1 << 3),
     MODE_EXPORTKEY	= (1 << 4),
+    MODE_REBUILD	= (1 << 5),
 };
 
 static int mode = 0;
@@ -35,6 +36,8 @@ static struct poptOption keyOptsTable[] = {
 	N_("Erase keys from RPM keyring"), NULL },
     { "list", 'l', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
 	N_("list keys from RPM keyring"), NULL },
+    { "rebuild", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_REBUILD,
+	N_("rebuild the keyring - convert to current backend"), NULL },
     POPT_TABLEEND
 };
 
@@ -149,7 +152,8 @@ int main(int argc, char *argv[])
 
     args = (ARGV_const_t) poptGetArgs(optCon);
 
-    if (args == NULL && mode != MODE_LISTKEY && mode != MODE_EXPORTKEY)
+    if (args == NULL && mode != MODE_LISTKEY && mode != MODE_EXPORTKEY &&
+	mode != MODE_REBUILD)
 	argerror(_("no arguments given"));
 
     ts = rpmtsCreate();
@@ -181,6 +185,11 @@ int main(int argc, char *argv[])
     case MODE_LISTKEY:
     {
 	ec = matchingKeys(ts, args, printKey);
+	break;
+    }
+    case MODE_REBUILD:
+    {
+	ec = rpmtsRebuildKeystore(ts);
 	break;
     }
     default:
