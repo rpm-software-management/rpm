@@ -98,10 +98,9 @@ int rpmMkdirs(const char *root, const char *pathstr);
 char * rpmCleanPath	(char * path);
 
 /** \ingroup rpmfileutil
- * Merge 3 args into path, any or all of which may be a url.
- * The leading part of the first URL encountered is used
- * for the result, other URL prefixes are discarded, permitting
- * a primitive form of URL inheiritance.
+ * Merge 3 args into path.
+ * Contrary to what the argument names and older API docs claim,
+ * THIS DOES NOT HANDLE URL's.
  * @param urlroot	root URL (often path to chroot, or NULL)
  * @param urlmdir	directory URL (often a directory, or NULL)
  * @param urlfile	file URL (often a file, or NULL)

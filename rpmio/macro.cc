@@ -2172,4 +2172,3 @@ macros::macros(rpmMacroContext mctx) :
 	mc(mctx ? mctx : rpmGlobalMacroContext), lock(mc->mutex)
 {
 }
-
