@@ -400,6 +400,43 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     return rc;
 }
 
+rpmRC rpmtsRebuildKeystore(rpmtxn txn, const char * from)
+{
+    rpmts ts = rpmtxnTs(txn);
+    rpmRC rc = RPMRC_OK;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmKeyringIterator iter = NULL;
+
+    if (from) {
+	keystore * ks = getKeystore(from);
+
+	if (!ks) {
+	    rpmlog(RPMLOG_ERR, _("unknown keyring type: %s\n"),
+		   from);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+
+	rpmKeyringFree(keyring);
+	keyring = rpmKeyringNew();
+	ks->load_keys(txn, keyring);
+	ks->delete_store(txn);
+	delete ks;
+    }
+
+    ts->keystore->delete_store(txn);
+
+    for (iter = rpmKeyringInitIterator(keyring, 0); auto key = rpmKeyringIteratorNext(iter);) {
+	ts->keystore->import_key(txn, key, 0, 0);
+    }
+    rpmKeyringIteratorFree(iter);
+
+ exit:
+
+    rpmKeyringFree(keyring);
+    return rc;
+}
+
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds key, const void * data),
 		const void * solveData)
