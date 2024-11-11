@@ -20,9 +20,6 @@
 #include <sys/personality.h>
 #endif
 
-#if !defined(isblank)
-#define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
-#endif
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
 #define MACROBUFSIZ (BUFSIZ * 2)
@@ -182,7 +179,7 @@ rdcl(char * buf, size_t size, FILE *f)
 	if (*q == 0)
 	    break;			/* no newline found, EOF */
 	if (p == buf) {
-            while (*p && isblank(*p))
+            while (*p && risblank(*p))
                 p++;
             if (*p != '%') {		/* only parse actual macro */
                 *q = '\0';		/* trim trailing \r, \n */
@@ -342,11 +339,11 @@ printExpansion(rpmMacroBuf mb, rpmMacroEntry me, const char * t, const char * te
 }
 
 #define	SKIPBLANK(_s, _c)	\
-	while (((_c) = *(_s)) && isblank(_c)) \
+	while (((_c) = *(_s)) && risblank(_c)) \
 		(_s)++;		\
 
 #define	SKIPNONBLANK(_s, _c)	\
-	while (((_c) = *(_s)) && !(isblank(_c) || iseol(_c))) \
+	while (((_c) = *(_s)) && !(risblank(_c) || iseol(_c))) \
 		(_s)++;		\
 
 #define	COPYNAME(_ne, _s, _c)	\
@@ -676,7 +673,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	}
 
 	/* Trim trailing blanks/newlines */
-	while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
+	while (--be >= b && (c = *be) && (risblank(c) || iseol(c)))
 	    {};
 	*(++be) = '\0';	/* one too far */
     }
@@ -694,7 +691,7 @@ doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *par
 	goto exit;
     }
 
-    if (!isblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
+    if (!risblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
 	rpmMacroBufErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
 
     if (expandbody) {
@@ -1545,7 +1542,7 @@ expandMacro(rpmMacroBuf mb, const char *src, size_t slen)
 	    f = s = setNegateAndCheck(s, &negate, &chkexist);
 	    fe = se;
 	    /* For "%name " macros ... */
-	    if ((c = *fe) && isblank(c))
+	    if ((c = *fe) && risblank(c))
 		if ((lastc = strchr(fe,'\n')) == NULL)
 		    lastc = strchr(fe, '\0');
 	    break;
