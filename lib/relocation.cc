@@ -9,6 +9,7 @@
 #include <rpm/rpmstring.h>
 
 #include "rpmfs.hh"
+#include "rpmmacro_internal.hh"
 #include "misc.hh"
 
 #include "debug.h"
@@ -319,16 +320,16 @@ assert(fn != NULL);		/* XXX can't happen */
 		continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
-		char *t = NULL;
-		rstrscat(&t, relocations[j].newPath, (dirNames[i] + len), NULL);
-		/* Unfortunately rpmCleanPath strips the trailing slash.. */
-		(void) rpmCleanPath(t);
-		rstrcat(&t, "/");
+		std::string t = rpm::join_path( { relocations[j].newPath,
+						  (dirNames[i] + len) },
+						false);
+		/* join_path() strips the trailing slash, add it back */
+		t += '/';
 
-		rpmlog(RPMLOG_DEBUG,
-		       "relocating directory %s to %s\n", dirNames[i], t);
+		rpmlog(RPMLOG_DEBUG, "relocating directory %s to %s\n",
+				     dirNames[i], t.c_str());
 		free(dirNames[i]);
-		dirNames[i] = t;
+		dirNames[i] = xstrdup(t.c_str());
 		nrelocated++;
 	    }
 	}
