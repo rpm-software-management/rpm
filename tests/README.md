@@ -155,3 +155,13 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
       `runroot_user -n <name>` to run a binary as a specific user
 * If no snapshot was used, just call the RPM binaries normally
 * Store any working files in the current directory (it's always writable)
+
+### Tips & Tricks
+
+* Sometimes, you may need to specify a literal square bracket, such as in RPM
+  commands using `--qf` format strings.  Do that by wrapping the whole script
+  (or expected output) in double square brackets, for example:
+
+    RPMTEST_CHECK([[
+    runroot rpm -q --qf '[%{FILENAMES}\n]' ...
+    ]])
