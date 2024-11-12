@@ -162,6 +162,8 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
   commands using `--qf` format strings.  Do that by wrapping the whole script
   (or expected output) in double square brackets, for example:
 
+    ```
     RPMTEST_CHECK([[
     runroot rpm -q --qf '[%{FILENAMES}\n]' ...
     ]])
+    ```
