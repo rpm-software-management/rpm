@@ -161,8 +161,10 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (fs)])
 AT_KEYWORDS([rpmkeys rpmdb])
+# use a keyring specific to this test
+krpath=${PWD}/kr
 echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
-krpath="$(rpm --eval %{_keyringpath})"
+echo "%_keyringpath ${krpath}" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -273,8 +275,10 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys key update (openpgp)])
 AT_KEYWORDS([rpmkeys signature])
+# use a keyring specific to this test
+krpath=${PWD}/kr
 echo "%_keyring openpgp" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
-krpath=$(rpm --eval "%{_keyringpath}")
+echo "%_keyringpath ${krpath}" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -1213,11 +1217,12 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import ${RPMTEST}/data/keys/rpm.org-rsa-2048-test.secret
 
 # rpmsign --addsign --rpmv3 <unsigned>
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --rpmv3 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
@@ -1246,7 +1251,7 @@ POST-DELSIGN
 
 # rpmsign --addsign <unsigned>
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
@@ -1273,7 +1278,7 @@ POST-DELSIGN
 
 # test --delsign restores the old package bit-per-bit
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 ORIG="/data/RPMS/hello-2.0-1.x86_64.rpm"
 NEW="/tmp/hello-2.0-1.x86_64.rpm"
@@ -1309,7 +1314,7 @@ error: /gnus/not/here exec failed (1)
 
 # rpmsign --addsign <signed>
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
@@ -1322,7 +1327,7 @@ runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/he
 # This is behaves counter-intuitively / is buggy if md5 verification is
 # disabled, see https://github.com/rpm-software-management/rpm/issues/3291
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1349,7 +1354,7 @@ runroot rpmkeys -Kv --define "_pkgverify_flags 0" /tmp/hello-2.0-1.x86_64.rpm
 
 # rpmsign --addsign corrupted payload
 RPMTEST_CHECK([
-RPMDB_RESET
+RPMKEYRING_RESET
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1564,10 +1569,10 @@ runroot rpmkeys --import /data/keys/*.pub
 [ignore])
 
 RPMTEST_CHECK([
+# automatically signed now
 runroot rpmbuild -bb --quiet \
 	--define "_rpmformat 6" \
 	/data/SPECS/attrtest.spec
-runroot rpmsign --addsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],
 [0],
 [],
@@ -1676,6 +1681,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([Ed25519 signatures])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
 
@@ -1705,6 +1711,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([NIST P-256 signatures])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
@@ -1733,6 +1740,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([key id collision])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision1.asc
 RPMTEST_CHECK([
 
@@ -1768,6 +1776,8 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([key id collision])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
+
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision2.asc
 RPMTEST_CHECK([
 
@@ -1803,6 +1813,7 @@ AT_KEYWORDS([rpmsign ima signature])
 RPMTEST_SKIP_IF([$IMA_DISABLED])
 
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
 gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
 

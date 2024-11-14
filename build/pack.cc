@@ -15,12 +15,14 @@
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmsign.h>
 
 #include "rpmio_internal.hh"	/* fdInitDigest, fdFiniDigest */
 #include "signature.hh"
 #include "rpmlead.hh"
 #include "rpmbuild_internal.hh"
 #include "rpmbuild_misc.hh"
+#include "rpmmacro_internal.hh"
 
 #include "debug.h"
 
@@ -664,6 +666,23 @@ static rpmRC checkPackageSet(Package pkgs)
     return rc;
 }
 
+static rpmRC signPackage(const char *fn)
+{
+    int rc = 0; /* fall merrily through if signer not defined */
+    auto [ ign, sign_id ] = rpm::macros().expand("%{?_openpgp_autosign_id}");
+    if (sign_id.empty() == false) {
+	struct rpmSignArgs sa = {
+	    .keyid = const_cast<char *>(sign_id.c_str()),
+	    .hashalgo = {},
+	    .signflags = {},
+	};
+	rc = rpmPkgSign(fn, &sa);
+	rpmlog(RPMLOG_DEBUG, "signing %s with %s: %d\n",
+			    fn, sign_id.c_str(), rc);
+    }
+    return rc ? RPMRC_FAIL : RPMRC_OK;
+}
+
 /* watchout, argument is modified */
 static rpmRC ensureDir(char *binRpm)
 {
@@ -799,6 +818,16 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     if (rc == RPMRC_OK)
 	rc = checkPackageSet(spec->packages);
 
+    /* Finally, sign the packages. Signing is currently NOT thread-safe... */
+    if (rc == RPMRC_OK) {
+	for (auto & pkg : tasks) {
+	    if (pkg->filename)
+		rc = signPackage(pkg->filename);
+	    if (rc)
+		break;
+	}
+    }
+
     return rc;
 }
 
@@ -831,6 +860,9 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
 	    rc = checkPackages(pkgcheck);
 	}
+
+	if (rc == RPMRC_OK)
+	    rc = signPackage(sourcePkg->filename);
 
 	free(pkgcheck);
     }

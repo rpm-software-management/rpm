@@ -4,3 +4,4 @@
 %_tmppath %{getenv:RPMTEST}/var/tmp
 %_dbpath /var/lib/rpm-testsuite
 %_keyring openpgp
+%_keyringpath /var/lib/rpm-keyring
