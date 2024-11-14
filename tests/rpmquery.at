@@ -1172,7 +1172,7 @@ import json
 s = open('stdout').read()
 print(len(json.loads(s)))
 ],
-[58
+[59
 ],
 [])
 RPMTEST_CLEANUP

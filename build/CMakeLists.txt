@@ -24,7 +24,7 @@ target_include_directories(librpmbuild
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-target_link_libraries(librpmbuild PUBLIC librpmio librpm)
+target_link_libraries(librpmbuild PUBLIC librpmio librpm librpmsign)
 target_link_libraries(librpmbuild PRIVATE
 	libmisc
 	PkgConfig::POPT

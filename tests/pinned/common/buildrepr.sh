@@ -8,5 +8,6 @@ runroot rpmbuild -ba --quiet \
 	--define "source_date_epoch_from_changelog 1" \
 	--define "build_mtime_policy clamp_to_source_date_epoch" \
 	--define "_use_weak_usergroup_deps 0" \
+	--define "_openpgp_autosign_id %{nil}" \
 	/data/SPECS/attrtest.spec
 

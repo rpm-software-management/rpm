@@ -29,6 +29,10 @@ rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
 runroot rpm --initdb
 ])
 
+m4_define([RPMKEYRING_RESET],[
+rm -rf "${RPMTEST}"`rpm --eval '%_keyringpath'`
+])
+
 m4_define([RPMPY_RUN],[[
 cat << EOF > test.py
 # coding=utf-8
