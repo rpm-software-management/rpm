@@ -421,8 +421,8 @@ if (ENABLE_ASAN OR ENABLE_UBSAN)
 	add_compile_options(-fno-omit-frame-pointer)
 endif()
 
-# try to ensure some compiler sanity
-foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks)
+# try to ensure some compiler sanity and hardening options where supported
+foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened)
 	check_c_compiler_flag(${flag} found)
 	if (found)
 		add_compile_options(${flag})
