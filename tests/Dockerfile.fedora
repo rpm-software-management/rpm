@@ -62,7 +62,11 @@ RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
            /usr/bin/pkg-config
 
 # Self-destruct stock rpm
-RUN if ! which dnf5; then \
+RUN if which dnf5; then \
+	# Fedora 41+ \
+	rpm -e --nodeps --nodb \
+	    rpm-plugin-ima; \
+    else \
 	# Fedora 40 \
 	rpm -e --nodeps --nodb \
 	    rpm-sign-libs \
