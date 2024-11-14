@@ -164,7 +164,7 @@ static int acquire_write_lock(rpmtxn txn)
 	goto exit;
     }
 
-    if ((fd = open(lockpath, O_WRONLY|O_CREAT)) == -1) {
+    if ((fd = open(lockpath, O_WRONLY|O_CREAT, 644)) == -1) {
 	rpmlog(RPMLOG_ERR, _("Can't create writelock for keyring at %s: %s\n"), keyringpath, strerror(errno));
     } else if (flock(fd, LOCK_EX|LOCK_NB)) {
 	rpmlog(RPMLOG_ERR, _("Can't acquire writelock for keyring at %s\n"), keyringpath);
