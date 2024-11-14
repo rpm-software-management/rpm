@@ -1,8 +1,10 @@
 #include "system.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <libaudit.h>
 
+#include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmplugin.h>
@@ -82,8 +84,16 @@ static rpmRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 	    rasprintf(&eventTxt,
 		    "op=%s %s sw_type=rpm key_enforce=%u gpg_res=%u %s",
 		    op, nevra, enforce, verified, dir);
-	    audit_log_user_comm_message(auditFd, AUDIT_SOFTWARE_UPDATE,
-				    eventTxt, NULL, NULL, NULL, NULL, result);
+
+	    if (audit_log_user_comm_message(auditFd, AUDIT_SOFTWARE_UPDATE,
+				eventTxt, NULL, NULL, NULL, NULL, result) <= 0)
+	    {
+		/* Filter out noise from containers and other novelties */
+		int ignore = (errno == ECONNREFUSED || errno == EPERM);
+		rpmlog(ignore ? RPMLOG_DEBUG : RPMLOG_WARNING,
+			_("logging an audit message failed: %s\n"),
+			strerror(errno));
+	    }
 	    free(nevra);
 	    free(eventTxt);
 	}
