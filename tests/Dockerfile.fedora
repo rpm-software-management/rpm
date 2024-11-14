@@ -1,4 +1,4 @@
-# Supported Fedora releases: 39 40 41
+# Supported Fedora releases: 40 41
 FROM registry.fedoraproject.org/fedora:40 AS base
 MAINTAINER rpm-maint@lists.rpm.org
 
@@ -47,12 +47,14 @@ RUN dnf -y install \
   tar unzip gzip bzip2 cpio xz p7zip \
   pkgconfig \
   /usr/bin/systemd-sysusers \
+  gdb-headless \
   dwz \
   fsverity-utils fsverity-utils-devel \
   pandoc \
   sequoia-sq \
   libasan \
-  libubsan
+  libubsan \
+  && dnf clean all
 
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 
@@ -61,17 +63,14 @@ RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
 RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
            /usr/bin/pkg-config
 
-# F40 and older (no dnf5) require special handling
-RUN if which dnf5; then \
-        dnf -y install gdb-headless; \
-        dnf clean all; \
-    else \
-        dnf -y install "gdb-headless < 15"; \
-        dnf clean all; \
-        rpm -e --nodeps --nodb rpm-sign-libs python3-rpm; \
-    fi
-
-RUN rpm -e --nodeps --nodb \
+# Self-destruct stock rpm
+RUN if ! which dnf5; then \
+	# Fedora 40 \
+	rpm -e --nodeps --nodb \
+	    rpm-sign-libs \
+	    python3-rpm; \
+    fi; \
+    rpm -e --nodeps --nodb \
 	rpm \
 	rpm-libs \
 	rpm-build-libs
