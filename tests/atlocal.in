@@ -110,16 +110,11 @@ setup_env()
     fi
 }
 
-run()
-{
-    "$@"
-}
-
 rundebug()
 {
     export RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
-    run "$@"
+    "$@"
     rm -f ${RPM_CONFIGDIR}/macros.d/macros.debug
     unset RPM_CONFIGDIR
 }

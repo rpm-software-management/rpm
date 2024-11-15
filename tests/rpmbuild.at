@@ -25,7 +25,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   --define "packager Iam" \
   -ba ${RPMDATA}/SPECS/hello.spec
 ],
@@ -339,7 +339,7 @@ AT_SETUP([rpmbuild dir layout])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
-run rpmbuild \
+rpmbuild \
 	-bi --target noarch --quiet \
 	${RPMDATA}/SPECS/simple.spec
 runroot_other find /build/BUILD|sort
@@ -357,7 +357,7 @@ runroot_other find /build/BUILD|sort
 [ignore])
 
 RPMTEST_CHECK([
-run rpmbuild \
+rpmbuild \
 	-bi --target noarch --quiet \
 	--with setup \
 	${RPMDATA}/SPECS/simple.spec
@@ -386,7 +386,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   -ba ${RPMDATA}/SPECS/hello-auto.spec
 ],
 [0],
@@ -399,7 +399,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild -D="nopatches 1" \
+rpmbuild -D="nopatches 1" \
   -bp ${RPMDATA}/SPECS/hello-auto.spec
 ],
 [0],
@@ -526,7 +526,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-noroot.spec
 ],
 [0],
@@ -535,7 +535,7 @@ run rpmbuild \
 
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-singleroot.spec
 ],
 [0],
@@ -543,7 +543,7 @@ run rpmbuild \
 [ignore])
 
 RPMTEST_CHECK([
-run rpmbuild \
+rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-singleroot1.spec
 ],
 [0],
@@ -551,7 +551,7 @@ run rpmbuild \
 [ignore])
 
 RPMTEST_CHECK([
-run rpmbuild \
+rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-singleroot2.spec
 ],
 [0],
@@ -564,7 +564,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   -ba --quiet ${RPMDATA}/SPECS/hello-autopatch.spec
 ],
 [0],
@@ -639,7 +639,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   --define "packager Iam" \
   --rebuild ${RPMDATA}/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -661,8 +661,8 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild -bi ${RPMDATA}/SPECS/hello.spec &> /dev/null
-run rpmbuild --quiet -bl --short-circuit ${RPMDATA}/SPECS/hello.spec
+rpmbuild -bi ${RPMDATA}/SPECS/hello.spec &> /dev/null
+rpmbuild --quiet -bl --short-circuit ${RPMDATA}/SPECS/hello.spec
 ],
 [0],
 [],
@@ -763,7 +763,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   -ta "${RPMDATA}/SOURCES/hello-2.0.tar.gz"
 ],
 [0],
@@ -2653,7 +2653,7 @@ AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
 
-run rpmbuild \
+rpmbuild \
   --quiet -bd ${RPMDATA}/SPECS/hello.spec
 ls ls ${RPMTEST}/build/*/*.rpm | wc --lines
 ],
