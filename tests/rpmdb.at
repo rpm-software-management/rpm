@@ -341,9 +341,9 @@ runroot rpmkeys --list XXX
 ])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete 1964c5fc
-runroot rpmkeys --delete 757bf69e
-runroot rpmkeys --delete eb04e625
+runroot rpmkeys --erase 1964c5fc
+runroot rpmkeys --erase 757bf69e
+runroot rpmkeys --erase eb04e625
 runroot rpmkeys --list
 ],
 [0],
