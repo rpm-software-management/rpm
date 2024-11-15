@@ -29,8 +29,11 @@ static struct poptOption keyOptsTable[] = {
 	N_("export an public key"), NULL },
     { "test", 't', POPT_ARG_NONE, &test, 0,
 	N_("don't import, but tell if it would work or not"), NULL },
-    { "delete", 'd', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
-	N_("delete keys from RPM keyring"), NULL },
+    { "delete", 'd', (POPT_ARG_VAL|POPT_ARGFLAG_OR|POPT_ARGFLAG_DOC_HIDDEN),
+        &mode, MODE_DELKEY,
+	N_("Erase keys from RPM keyring"), NULL },
+    { "erase", 'e', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
+	N_("Erase keys from RPM keyring"), NULL },
     { "list", 'l', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
 	N_("list keys from RPM keyring"), NULL },
     POPT_TABLEEND

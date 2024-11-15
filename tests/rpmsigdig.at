@@ -100,7 +100,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys -d abcd gimmekey 1111aaaa2222bbbb
+runroot rpmkeys -e abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
@@ -110,7 +110,7 @@ error: key not found: 1111aaaa2222bbbb
 ])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete 1964c5fc
+runroot rpmkeys --erase 1964c5fc
 ],
 [0],
 [],
@@ -227,7 +227,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
+runroot rpmkeys --erase abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
@@ -237,7 +237,7 @@ error: key not found: 1111aaaa2222bbbb
 ])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete 1964c5fc
+runroot rpmkeys --erase 1964c5fc
 ],
 [0],
 [],
@@ -324,7 +324,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
+runroot rpmkeys --erase abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
@@ -334,7 +334,7 @@ error: key not found: 1111aaaa2222bbbb
 ])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete 1964c5fc
+runroot rpmkeys --erase 1964c5fc
 ],
 [0],
 [],
