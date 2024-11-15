@@ -112,8 +112,7 @@ setup_env()
 
 run()
 {
-    "$@" \
-         --define "_tmppath ${RPMTEST}/tmp"
+    "$@"
 }
 
 rundebug()
@@ -127,7 +126,8 @@ rundebug()
 
 runroot()
 {
-    snapshot exec "$@"
+    snapshot exec "$@" \
+             --define "_tmppath /var/tmp"
 }
 
 runroot_other()
