@@ -19,13 +19,13 @@ DESCRIPTION
 
 The general forms of rpm digital signature commands are
 
-**rpmkeys** **\--list** \[*FINGERPRINT \...*\]
+**rpmkeys** {**-l\|\--list**} \[*FINGERPRINT \...*\]
 
-**rpmkeys** **\--export** \[*FINGERPRINT \...*\]
+**rpmkeys** {**-x\|\--export**} \[*FINGERPRINT \...*\]
 
-**rpmkeys** **\--import** *PUBKEY \...*
+**rpmkeys** {**-i\|\--import**} *PUBKEY \...*
 
-**rpmkeys** **\--delete** *FINGERPRINT \...*
+**rpmkeys** {**-d\|\--delete**} *FINGERPRINT \...*
 
 **rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
 
@@ -42,14 +42,14 @@ armored public key can be added to the **rpm** persistent keyring using
 The following commands are available for manipulating the persistent
 rpm keyring:
 
-**rpmkeys** **\--list** \[*FINGERPRINT \...*\]
+**rpmkeys** {**-l\|\--list**} \[*FINGERPRINT \...*\]
 
 List currently imported public key(s) (aka certificates) by their
 fingerprint and user ID. If no fingerprints are specified, list all keys.
 
 The fingerprint is the handle used for all operations on the keys.
 
-**rpmkeys** **\--export** \[*FINGERPRINT \...*\]
+**rpmkeys** {**-x\|\--export**} \[*FINGERPRINT \...*\]
 
 Output the key(s) using an ASCII-armor encoding.
 
@@ -58,7 +58,7 @@ as Sequoia or GnuPG. For example:
 
 **rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect **
 
-**rpmkeys** **\--delete** *FINGERPRINT \...*
+**rpmkeys** {**-d\|\--delete**} *FINGERPRINT \...*
 
 Delete the key(s) designated by *FINGERPRINT*. For example:
 
