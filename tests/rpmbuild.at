@@ -34,6 +34,14 @@ run rpmbuild \
 [ignore])
 
 RPMTEST_CHECK([
+runroot rpm -qp --qf "%{buildhost}\n" /build/SRPMS/hello-1.0-1.src.rpm
+],
+[0],
+[testhost
+],
+[])
+
+RPMTEST_CHECK([
 
 runroot rpm -qp --qf "%{license}\n" /build/SRPMS/hello-1.0-1.src.rpm
 runroot rpm -qp --qf "%{license}\n" /build/RPMS/*/hello-1.0-1.*.rpm
