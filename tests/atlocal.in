@@ -112,7 +112,6 @@ setup_env()
 
 run()
 {
-    setup_env
     "$@" \
          --define "_tmppath ${RPMTEST}/tmp" \
          --define "_db_backend ${DBFORMAT}" \
@@ -121,7 +120,6 @@ run()
 
 rundebug()
 {
-    setup_env
     export RPM_CONFIGDIR=${RPMTEST}/@RPM_CONFIGDIR@
     cp ${RPMDATA}/macros.debug ${RPM_CONFIGDIR}/macros.d/
     run "$@"
@@ -131,13 +129,11 @@ rundebug()
 
 runroot()
 {
-    setup_env
     snapshot exec "$@"
 }
 
 runroot_other()
 {
-    setup_env
     snapshot exec "$@"
 }
 
@@ -149,7 +145,6 @@ runroot_user()
             shift 2
         ;;
     esac
-    setup_env
     runroot_other --new-session sudo -iu $RPMUSER "$@"
 }
 

@@ -30,10 +30,12 @@ LD_PRELOAD=${ASANLIB} ASAN_OPTIONS=detect_leaks=0 ${PYTHON} test.py
 ]])
 
 m4_define([RPMTEST_CHECK],[
+setup_env
 AT_CHECK($@)
 ])
 
 m4_define([RPMTEST_CHECK_UNQUOTED],[
+setup_env
 AT_CHECK_UNQUOTED($@)
 ])
 
@@ -61,6 +63,7 @@ RPMTEST_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 m4_define([RPMPY_TEST],[
 AT_SETUP([$1])
 AT_KEYWORDS([python])
+setup_env
 RPMDB_INIT
 RPMPY_CHECK([$2], [$3], [$4])
 RPMTEST_CLEANUP
