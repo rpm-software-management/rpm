@@ -508,3 +508,20 @@ runroot rpm -q 'versiontest-1.0~2-1'
 [])
 
 RPMTEST_CLEANUP
+
+# ------------------------------
+AT_SETUP([rpmdb vacuum])
+AT_KEYWORDS([install rpmdb sqlite])
+RPMDB_INIT
+RPMTEST_CHECK([
+runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
+  /data/RPMS/hello-1.0-1.i386.rpm
+runroot rpm -D "_sqlite_vacuum_kb 1" -vv -U --noscripts --nodeps --ignorearch \
+  /data/RPMS/hello-2.0-1.i686.rpm 2>&1 | grep VACUUM
+],
+[0],
+[D: VACUUM: 0
+D: rpmdb sqlite backend VACUUM maxfree: 1kB, free: 8kB -> 0kB
+],
+[])
+RPMTEST_CLEANUP
