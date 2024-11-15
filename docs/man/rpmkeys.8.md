@@ -12,7 +12,7 @@ rpmkeys - RPM Keyring
 SYNOPSIS
 ========
 
-**rpmkeys** {**\--list\|\--import\|\--erase\|\--checksig**}
+**rpmkeys** {**\--list\|\--import\|\--erase\|\--delete\|\--checksig**}
 
 DESCRIPTION
 ===========
@@ -25,7 +25,7 @@ The general forms of rpm digital signature commands are
 
 **rpmkeys** {**-i\|\--import**} *PUBKEY \...*
 
-**rpmkeys** {**-e\|\--erase**} *FINGERPRINT \...*
+**rpmkeys** {**-e\|\--erase\|-d\|\--delete**} *FINGERPRINT \...*
 
 **rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
 
@@ -58,7 +58,7 @@ as Sequoia or GnuPG. For example:
 
 **rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect **
 
-**rpmkeys** {**-e\|\--erase**} *FINGERPRINT \...*
+**rpmkeys** {**-e\|\--erase\|-d\|\--delete**} *FINGERPRINT \...*
 
 Erase the key(s) designated by *FINGERPRINT*. For example:
 
