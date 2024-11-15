@@ -23,4 +23,7 @@ make_install()
 
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
+
+    # append in case Dockerfile put something in there already
+    cat @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv >> $DESTDIR/root/.rpmmacros
 }

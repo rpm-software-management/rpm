@@ -1,0 +1,3 @@
+# root's macro config in the test-environment
+%_buildhost testhost
+%_topdir %{getenv:RPMTEST}/build
