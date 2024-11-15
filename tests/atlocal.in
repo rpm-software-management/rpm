@@ -113,9 +113,8 @@ setup_env()
 run()
 {
     setup_env
-    "$@" --define "_buildhost testhost" \
+    "$@" \
          --define "_tmppath ${RPMTEST}/tmp" \
-         --define "_topdir ${RPMTEST}/build" \
          --define "_db_backend ${DBFORMAT}" \
          --dbpath="${RPMTEST}/var/lib/rpm/"
 }
@@ -133,9 +132,7 @@ rundebug()
 runroot()
 {
     setup_env
-    snapshot exec "$@" \
-             --define "_buildhost testhost" \
-             --define "_topdir /build"
+    snapshot exec "$@"
 }
 
 runroot_other()
