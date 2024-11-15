@@ -2,6 +2,7 @@
 
 #include <sqlite3.h>
 #include <fcntl.h>
+#include <inttypes.h>
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
@@ -185,6 +186,21 @@ exit:
     return rc;
 }
 
+static int64_t sqlite_free_space_kb(sqlite3 * db)
+{
+    int64_t result = 0;
+    sqlite3_stmt *s = NULL;
+    const char *cmd = "SELECT (freelist_count*page_size) as FreeSizeEstimate"
+	" FROM pragma_freelist_count, pragma_page_size";
+    if (sqlite3_prepare_v2(db, cmd, -1, &s, NULL) == SQLITE_OK) {
+	while (sqlite3_step(s) == SQLITE_ROW) {
+	    result = sqlite3_column_int64(s, 0);
+	}
+	sqlite3_finalize(s);
+    }
+    return result / 1024;
+}
+
 static int sqlite_fini(rpmdb rdb)
 {
     int rc = 0;
@@ -194,8 +210,21 @@ static int sqlite_fini(rpmdb rdb)
 	    rdb->db_opens--;
 	} else {
 	    if (sqlite3_db_readonly(sdb, NULL) == 0) {
+
 		sqlexec(sdb, "PRAGMA optimize");
 		sqlexec(sdb, "PRAGMA wal_checkpoint = TRUNCATE");
+
+		int max_size = rpmExpandNumeric("%{?_sqlite_vacuum_kb}");
+		if (max_size <= 0)
+		    max_size = 20*1024;
+		int64_t free_space = sqlite_free_space_kb(sdb);
+
+		if (free_space > max_size) {
+		    sqlexec(sdb, "VACUUM");
+		    rpmlog(RPMLOG_DEBUG, "rpmdb sqlite backend VACUUM maxfree:"
+			   " %ikB, free: %" PRIu64 "kB -> %" PRIu64 "kB\n",
+			   max_size, free_space, sqlite_free_space_kb(sdb));
+		}
 	    }
 	    rdb->db_dbenv = NULL;
 	    int xx = sqlite3_close(sdb);
