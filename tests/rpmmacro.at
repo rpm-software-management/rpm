@@ -1118,7 +1118,7 @@ AT_SETUP([lua library path])
 AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
 RPMDB_INIT
-f=$(run rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
+f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
 echo "bar = 'graak'" > ${RPMTEST}/${f}
 runroot rpm \
   --eval '%{lua:require "foo"; print(bar)}'
@@ -1396,7 +1396,7 @@ thing
 %bad-name 123
 EOF
 
-run rpm --macros "macros.bad" --eval "%foo"
+rpm --macros "macros.bad" --eval "%foo"
 ],
 [0],
 [bar
@@ -1664,7 +1664,7 @@ AT_SETUP([rpmlua hooks])
 AT_KEYWORDS([lua])
 
 RPMTEST_CHECK([
-run rpm --load /data/macros.hooks \
+rpm --load /data/macros.hooks \
 	--eval "%hook_this"
 ],
 [0],
