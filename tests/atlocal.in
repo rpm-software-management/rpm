@@ -113,9 +113,7 @@ setup_env()
 run()
 {
     "$@" \
-         --define "_tmppath ${RPMTEST}/tmp" \
-         --define "_db_backend ${DBFORMAT}" \
-         --dbpath="${RPMTEST}/var/lib/rpm/"
+         --define "_tmppath ${RPMTEST}/tmp"
 }
 
 rundebug()
