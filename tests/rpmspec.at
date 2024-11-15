@@ -12,7 +12,7 @@ AT_BANNER([RPM Spec Tool])
 AT_SETUP([rpmspec --query Requires])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex}\n]' \
   /data/SPECS/test-parsebits.spec
 ]],
@@ -37,7 +37,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(,)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(,): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -52,7 +52,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(;)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(;): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -67,7 +67,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -82,7 +82,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre,junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre,junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -97,7 +97,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(junk,pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(junk,pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -112,7 +112,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(,pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(,pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -127,7 +127,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre,)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre,): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -142,7 +142,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre,,postun)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre,,postun): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -157,7 +157,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre,,junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre,,junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -172,7 +172,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(;pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(;pre): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -187,7 +187,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre;)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre;): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -202,7 +202,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre;postun)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre;postun): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -217,7 +217,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --query Requires(pre;junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
-runroot rpmspec --query \
+rpmspec --query \
   --define 'extra Requires(pre;junk): bad' \
   --qf '[%{REQUIRENAME} %{REQUIREFLAGS:hex} %{REQUIREVERSION}\n]' \
   /data/SPECS/test-parsebits.spec
@@ -231,7 +231,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
-RPMTEST_CHECK([runroot rpmspec --parse /data/SPECS/foo.spec],
+RPMTEST_CHECK([rpmspec --parse /data/SPECS/foo.spec],
 [0],
 [
 
@@ -273,8 +273,8 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec --srpm provides])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([
-runroot rpmspec -q --srpm --provides /data/SPECS/foo.spec
-runroot rpmspec -q --srpm --provides --with bus /data/SPECS/foo.spec
+rpmspec -q --srpm --provides /data/SPECS/foo.spec
+rpmspec -q --srpm --provides --with bus /data/SPECS/foo.spec
 ],
 [0],
 [foo = 1.0-1
@@ -363,7 +363,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpmspec -q --rpms and --srpm])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([
-runroot rpmspec -q --rpms --target s390x \
+rpmspec -q --rpms --target s390x \
 	/data/SPECS/hello.spec
 ],
 [0],
@@ -372,7 +372,7 @@ runroot rpmspec -q --rpms --target s390x \
 [])
 
 RPMTEST_CHECK([
-runroot rpmspec -q --srpm \
+rpmspec -q --srpm \
 	/data/SPECS/hello.spec
 ],
 [0],
