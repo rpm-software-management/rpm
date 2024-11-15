@@ -23,15 +23,15 @@ static int test = 0;
 static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
 	N_("verify package signature(s)"), NULL },
-    { "import", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
+    { "import", 'i', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
 	N_("import an armored public key"), NULL },
-    { "export", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_EXPORTKEY,
+    { "export", 'x', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_EXPORTKEY,
 	N_("export an public key"), NULL },
-    { "test", '\0', POPT_ARG_NONE, &test, 0,
+    { "test", 't', POPT_ARG_NONE, &test, 0,
 	N_("don't import, but tell if it would work or not"), NULL },
-    { "delete", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
+    { "delete", 'd', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELKEY,
 	N_("delete keys from RPM keyring"), NULL },
-    { "list", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
+    { "list", 'l', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
 	N_("list keys from RPM keyring"), NULL },
     POPT_TABLEEND
 };

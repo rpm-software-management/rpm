@@ -79,8 +79,8 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 
 RPMTEST_CHECK([
 runroot rpmkeys --list|wc -l
-runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
-runroot rpmkeys --list|wc -l
+runroot rpmkeys -i /data/keys/rpm.org-rsa-2048-add-subkey.asc
+runroot rpmkeys -l|wc -l
 ],
 [0],
 [1
@@ -100,7 +100,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
+runroot rpmkeys -d abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],

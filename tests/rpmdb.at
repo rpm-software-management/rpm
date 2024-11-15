@@ -296,7 +296,7 @@ runroot rpmkeys --list 4344591e1964c5fc
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys --export 4344591e1964c5fc
+runroot rpmkeys -x 4344591e1964c5fc
 ],
 [0],
 [-----BEGIN PGP PUBLIC KEY BLOCK-----
