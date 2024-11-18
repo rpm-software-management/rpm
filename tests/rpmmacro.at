@@ -338,8 +338,7 @@ RPMTEST_CLEANUP
 AT_SETUP([uncompress 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-RPMDB_INIT
-runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
+${RPM_CONFIGDIR_PATH}/rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
 ],
 [0],
 [hello-2.0/
@@ -356,8 +355,8 @@ AT_SETUP([uncompress 2])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
 RPMDB_INIT
-echo xxxxxxxxxxxxxxxxxxxxxxxxx > ${RPMTEST}/tmp/"some%%ath"
-runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress "/tmp/some%%ath"
+echo xxxxxxxxxxxxxxxxxxxxxxxxx > "some%%ath"
+${RPM_CONFIGDIR_PATH}/rpmuncompress "some%%ath"
 ],
 [0],
 [xxxxxxxxxxxxxxxxxxxxxxxxx
@@ -366,40 +365,39 @@ RPMTEST_CLEANUP
 
 AT_SETUP([uncompress 3])
 AT_KEYWORDS([macros rpmuncompress])
-RPMDB_INIT
 
 RPMTEST_CHECK([
-runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C /tmp/test-1.2.3 /data/SOURCES/test-1.2.3.zip
+${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C test-1.2.3 /data/SOURCES/test-1.2.3.zip
 ],
 [0],
 [])
 
 RPMTEST_CHECK([
-runroot_other ${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C /tmp/test-1.2.3-7 /data/SOURCES/test-1.2.3.7z
+${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C test-1.2.3-7 /data/SOURCES/test-1.2.3.7z
 ],
 [0],
 [])
 
 
 RPMTEST_CHECK([
-runroot_other find /tmp/test-1.2.3 | sort
+find test-1.2.3 | sort
 ],
 [0],
-[/tmp/test-1.2.3
-/tmp/test-1.2.3/.gitignore
-/tmp/test-1.2.3/README.txt
-/tmp/test-1.2.3/src
-/tmp/test-1.2.3/src/README.txt
+[test-1.2.3
+test-1.2.3/.gitignore
+test-1.2.3/README.txt
+test-1.2.3/src
+test-1.2.3/src/README.txt
 ])
 RPMTEST_CHECK([
-runroot_other find /tmp/test-1.2.3-7 | sort
+find test-1.2.3-7 | sort
 ],
 [0],
-[/tmp/test-1.2.3-7
-/tmp/test-1.2.3-7/.gitignore
-/tmp/test-1.2.3-7/README.txt
-/tmp/test-1.2.3-7/src
-/tmp/test-1.2.3-7/src/README.txt
+[test-1.2.3-7
+test-1.2.3-7/.gitignore
+test-1.2.3-7/README.txt
+test-1.2.3-7/src
+test-1.2.3-7/src/README.txt
 ])
 RPMTEST_CLEANUP
 
@@ -949,10 +947,9 @@ RPMTEST_CLEANUP
 
 AT_SETUP([lua glob])
 RPMTEST_CHECK([
-RPMDB_INIT
-runroot_other mkdir -p aaa/{123,223,323,322,321}
-runroot rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/3*')) do print(p..'\\n') end}"
-runroot rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/b*', 'c')) do print(p..'\\n') end}"
+mkdir -p aaa/{123,223,323,322,321}
+rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/3*')) do print(p..'\\n') end}"
+rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/b*', 'c')) do print(p..'\\n') end}"
 ],
 [0],
 [aaa/321
@@ -1525,7 +1522,7 @@ AT_SETUP([rpmlua])
 AT_KEYWORDS([lua])
 RPMTEST_SETUP
 RPMTEST_CHECK([
-runroot_other rpmlua /data/t1.lua a b
+rpmlua /data/t1.lua a b
 ],
 [0],
 [hello world
@@ -1538,7 +1535,7 @@ b
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua --opts=ot: /data/t1.lua -- -t1 a
+rpmlua --opts=ot: /data/t1.lua -- -t1 a
 ],
 [0],
 [hello world
@@ -1550,7 +1547,7 @@ a
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua -e "print(macros.basename('/some/thing'))"
+rpmlua -e "print(macros.basename('/some/thing'))"
 ],
 [0],
 [thing
@@ -1558,7 +1555,7 @@ runroot_other rpmlua -e "print(macros.basename('/some/thing'))"
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua -e "for i, v in ipairs({'true', 'false', 'grue'}) do print(rpm.execute('/bin/'..v)) end"
+rpmlua -e "for i, v in ipairs({'true', 'false', 'grue'}) do print(rpm.execute('/bin/'..v)) end"
 ],
 [0],
 [0.0
@@ -1568,7 +1565,7 @@ nil	No such file or directory	2.0
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); print(string.format("%s\t%s\t%s", a,b,c)); io.flush() else posix.wait(pid) end'
+rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); print(string.format("%s\t%s\t%s", a,b,c)); io.flush() else posix.wait(pid) end'
 ],
 [0],
 [nil	Bad file descriptor	9.0
@@ -1591,9 +1588,8 @@ RPMTEST_CLEANUP
 
 AT_SETUP([lua rpm spawn])
 AT_KEYWORDS([macros lua])
-RPMDB_INIT
 RPMTEST_CHECK([
-runroot_other rpmlua -e "rpm.spawn({'echo', '1', '2', '3'})"
+rpmlua -e "rpm.spawn({'echo', '1', '2', '3'})"
 ],
 [0],
 [1 2 3
@@ -1601,7 +1597,7 @@ runroot_other rpmlua -e "rpm.spawn({'echo', '1', '2', '3'})"
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua \
+rpmlua \
 	-e "rpm.spawn({'echo', '1', '2', '3'}, {stdout='/dev/null'})"
 ],
 [0],
@@ -1609,7 +1605,7 @@ runroot_other rpmlua \
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua \
+rpmlua \
 	-e "rpm.spawn({'ls', '/notthere'})"
 ],
 [0],
@@ -1618,7 +1614,7 @@ runroot_other rpmlua \
 ])
 
 RPMTEST_CHECK([
-runroot_other rpmlua \
+rpmlua \
 	-e "rpm.spawn({'ls', '/notthere'}, {stderr='/dev/null'})"
 ],
 [0],
@@ -1626,7 +1622,7 @@ runroot_other rpmlua \
 [])
 
 RPMTEST_CHECK([
-runroot_other rpmlua \
+rpmlua \
 	-e "rpm.spawn({'ls', '/notthere'}, {garbage='bbb'})"
 ],
 [255],
@@ -1635,7 +1631,7 @@ runroot_other rpmlua \
 ]])
 
 RPMTEST_CHECK([
-runroot_other rpmlua -e "rpm.spawn('echo', '1', '2', '3')"
+rpmlua -e "rpm.spawn('echo', '1', '2', '3')"
 ],
 [255],
 [],
@@ -1643,7 +1639,7 @@ runroot_other rpmlua -e "rpm.spawn('echo', '1', '2', '3')"
 ]])
 
 RPMTEST_CHECK([
-runroot_other rpmlua -e "print(rpm.spawn({'cat'}, {stdin='aaa'}))"
+rpmlua -e "print(rpm.spawn({'cat'}, {stdin='aaa'}))"
 ],
 [0],
 [nil	No such file or directory	2.0
@@ -1651,8 +1647,8 @@ runroot_other rpmlua -e "print(rpm.spawn({'cat'}, {stdin='aaa'}))"
 [])
 
 RPMTEST_CHECK([
-echo 1 2 3 > ${RPMTEST}/aaa
-runroot_other rpmlua -e "rpm.spawn({'cat'}, {stdin='aaa'})"
+echo 1 2 3 > aaa
+rpmlua -e "rpm.spawn({'cat'}, {stdin='aaa'})"
 ],
 [0],
 [1 2 3
