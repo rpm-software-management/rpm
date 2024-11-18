@@ -1335,7 +1335,7 @@ end
     name = arg[2]
     if arg[1] == 'g' then
         type = 'group'
-    elseif arg[1] == 'u' then
+    elseif arg[1] == 'u' or arg[1] == 'u!' then
         type = 'user'
     elseif arg[1] == 'm' and #arg >=3 then
         type = 'groupmember'

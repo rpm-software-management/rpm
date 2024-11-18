@@ -72,6 +72,7 @@ user() {
 	local group="$4"
 	local home="$5"
 	local shell="$6"
+	local expire="$7"
 
 	[ "$desc" = '-' ] && desc=
 	{ [ "$home" = '-' ] || [ "$home" = '' ]; } && home=/
@@ -89,6 +90,10 @@ user() {
 				useradd -R "$ROOT" -r -g "${group}" -d "${home}" -s "${shell}" -c "${desc}" "${user}" || :
 			fi
 		fi
+	fi
+
+	if [[ $expire ]]; then
+	    usermod -e 1 "${user}"
 	fi
 }
 
@@ -109,13 +114,13 @@ addtogroup() {
 	local group="$2"
 	
 	group "${group}" "-"
-	user "${user}" "-" "" "${group}" "" ""
+	user "${user}" "-" "" "${group}" "" "" ""
 
 	usermod -R "$ROOT" -a -G "${group}" "$user" || :
 }
 
 parse() {
-	local line arr
+	local line arr expire
 
 	while read -r line || [ -n "$line" ] ; do
 		{ [ "${line:0:1}" = '#' ] || [ "${line:0:1}" = ';' ]; } && continue
@@ -123,13 +128,19 @@ parse() {
 		[ -z "$line" ] && continue
 		mapfile -t arr < <(xargs -n1 <<<"$line")
 
+		expire=""
+
 		case "${arr[0]}" in
-			('u')
+			('u' | 'u!')
+				if [[ "${arr[0]}" == 'u!' ]]; then
+					expire="1";
+				fi
+
 				if [[ "${arr[2]}" == *":"* ]]; then
-					user "${arr[1]}" "${arr[2]%:*}" "${arr[3]}" "${arr[2]#*:}" "${arr[4]}" "${arr[5]}"
+					user "${arr[1]}" "${arr[2]%:*}" "${arr[3]}" "${arr[2]#*:}" "${arr[4]}" "${arr[5]}" $expire
 				else
 					group "${arr[1]}" "${arr[2]}"
-					user "${arr[1]}" "${arr[2]}" "${arr[3]}" "${arr[1]}" "${arr[4]}" "${arr[5]}"
+					user "${arr[1]}" "${arr[2]}" "${arr[3]}" "${arr[1]}" "${arr[4]}" "${arr[5]}" $expire
 				fi
 				;;
 			('g')
