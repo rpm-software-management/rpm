@@ -1589,7 +1589,7 @@ group(klong) = ZyBrbG9uZyAt
 group(plong)
 groupmember(klangd/klong) = bSBrbGFuZ2Qga2xvbmcA
 user(klangd) = dSBrbGFuZ2QgLSAiS2xhbmcgc2VydmVyIiAvdmFyL2xpYi9rbGFuZ2QgL3NiaW4vbm9sb2dpbgAA
-user(plong) = dSBwbG9uZyAtICJQbG9uZyBmdSIgL3Zhci9saWIvcGxvbmcgL3NiaW4vbm9sb2dpbgAA
+user(plong) = dSEgcGxvbmcgLSAiUGxvbmcgZnUiIC92YXIvbGliL3Bsb25nIC9zYmluL25vbG9naW4A
 ],
 [warning: ignoring unsupported sysuser type: r
 ])
@@ -1618,7 +1618,7 @@ group(klong) = ZyBrbG9uZyAt
 group(plong)
 groupmember(klangd/klong) = bSBrbGFuZ2Qga2xvbmcA
 user(klangd) = dSBrbGFuZ2QgLSAiS2xhbmcgc2VydmVyIiAvdmFyL2xpYi9rbGFuZ2QgL3NiaW4vbm9sb2dpbgAA
-user(plong) = dSBwbG9uZyAtICJQbG9uZyBmdSIgL3Zhci9saWIvcGxvbmcgL3NiaW4vbm9sb2dpbgAA
+user(plong) = dSEgcGxvbmcgLSAiUGxvbmcgZnUiIC92YXIvbGliL3Bsb25nIC9zYmluL25vbG9naW4A
 ],
 [warning: ignoring unsupported sysuser type: r
 ])
@@ -1660,15 +1660,19 @@ runroot rpm -V ${VERIFYOPTS} klang-client klang-common
 RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/klang-server-1.0-1.noarch.rpm
 runroot_other grep ^klangd /etc/passwd | cut -f1 -d:
+runroot_other chage -l klangd | grep "Account expires" | cut -f2 -d:
 runroot_other grep ^klangd /etc/group | cut -f1 -d:
 runroot_other grep ^plong /etc/passwd | cut -f1 -d:
+runroot_other chage -l plong | grep "Account expires" | cut -f2 -d:
 runroot_other grep ^klong /etc/group | cut -f4 -d:
 runroot rpm -V ${VERIFYOPTS} klang-server
 ],
 [0],
 [klangd
+ never
 klangd
 plong
+ Jan 02, 1970
 klangd
 ],
 [ignore])

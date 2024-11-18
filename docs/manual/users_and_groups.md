@@ -41,10 +41,10 @@ to weaken these into recommends-dependencies by setting
 
 ## Limitations
 
-At this time, rpm only supports the `u`, `g` and (since RPM 4.20) `m`
-directives of sysusers.d format and ignores others. If other
-directives are needed, the package will need to call systemd-sysusers
-with the correct arguments manually.
+At this time, rpm only supports the `u`, `g`, (since RPM 4.20) `m`
+and (since RPM 6.0) the `u!` directives of sysusers.d format and
+ignores others. If other directives are needed, the package will need
+to call systemd-sysusers with the correct arguments manually.
 
 ## Technical details
 
