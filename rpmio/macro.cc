@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <algorithm>
+#include <cinttypes>
 #include <map>
 #include <mutex>
 #include <string>
@@ -1995,7 +1997,12 @@ rpmExpandNumeric(const char *arg)
     if (arg == NULL)
 	return 0;
     auto [ ign, val ] = macros().expand_numeric(arg);
-    return val;
+    int res = std::clamp(val, (int64_t) INT_MIN, (int64_t) INT_MAX);
+    if (res != val)
+	rpmlog(RPMLOG_WARNING, _("macro value out of range for int: %"
+				 PRIu64 " using %i instead.\n"), val, res);
+
+    return res;
 }
 
 void macros::clear()
@@ -2063,12 +2070,12 @@ macros::expand_this(const char *n, ARGV_const_t args, int flags)
     return std::make_pair(rc, target);
 }
 
-std::pair<int,int>
+std::pair<int,int64_t>
 macros::expand_numeric(const std::string & src, int flags)
 {
     auto [ exrc, s ] = macros().expand(src, flags);
     const char *val = s.c_str();
-    int rc = 0;
+    int64_t rc = 0;
     if (!(val && *val != '%'))
 	rc = 0;
     else if (*val == 'Y' || *val == 'y')
@@ -2077,14 +2084,14 @@ macros::expand_numeric(const std::string & src, int flags)
 	rc = 0;
     else {
 	char *end;
-	rc = strtol(val, &end, 0);
+	rc = strtoll(val, &end, 0);
 	if (!(end && *end == '\0'))
 	    rc = 0;
     }
     return std::make_pair(exrc, rc);
 }
 
-std::pair<int,int>
+std::pair<int,int64_t>
 macros::expand_numeric(const std::initializer_list<std::string> & src, int flags)
 {
     string buf;
