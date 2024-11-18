@@ -2,7 +2,7 @@
 
 m4_define([RPMVERCMP],[
 RPMTEST_CHECK([
-runroot rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
+rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
 ], [])
 ])
 
