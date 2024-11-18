@@ -66,8 +66,8 @@ public:
     std::pair<int,std::string> expand_this(const char *n, ARGV_const_t args,
 					int flags = 0);
     /* Expand macros to numeric value, with a return code (rc, number) */
-    std::pair<int,int> expand_numeric(const std::string & src, int flags = 0);
-    std::pair<int,int> expand_numeric(const std::initializer_list<std::string> & src,
+    std::pair<int,int64_t> expand_numeric(const std::string & src, int flags = 0);
+    std::pair<int,int64_t> expand_numeric(const std::initializer_list<std::string> & src,
 					int flags = 0);
     void init(const char *macrofiles);
     bool is_defined(const char *n);
