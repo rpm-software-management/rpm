@@ -83,7 +83,7 @@ AT_KEYWORDS([rpmdb])
 
 # This needs to run *without* RPMDB_INIT to test behavior on read-only mount
 RPMTEST_CHECK([
-run rpmdb --exportdb --dbpath ${RPMTEST}/data/misc/ > rdonly.list
+run rpmdb --exportdb > rdonly.list
 test -s rdonly.list
 ],
 [0],
