@@ -47,7 +47,7 @@ EOF
 cat << EOF > ${RPM_BUILD_ROOT}/%{_sysusersdir}/plong.conf
 
 # Real life files have all sorts of anomalies
-u plong - "Plong fu" /var/lib/plong /sbin/nologin
+u! plong - "Plong fu" /var/lib/plong /sbin/nologin
 #...such as empty lines
 
 # and comments comments
