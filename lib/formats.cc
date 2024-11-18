@@ -419,12 +419,12 @@ static char *jsonFormat(rpmtd td, char **emsg)
 }
 
 /* signature fingerprint and time formatting */
-static char * pgpsigFormat(rpmtd td, char **emsg)
+static char * pgpsigFormatOne(uint8_t *pkt, size_t pktlen, char **emsg)
 {
     char * val = NULL;
     pgpDigParams sigp = NULL;
 
-    if (pgpPrtParams((uint8_t*)td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
+    if (pgpPrtParams(pkt, pktlen, PGPTAG_SIGNATURE, &sigp)) {
 	*emsg = xstrdup(_("(not an OpenPGP signature)"));
     } else {
 	char dbuf[BUFSIZ];
@@ -448,6 +448,24 @@ static char * pgpsigFormat(rpmtd td, char **emsg)
 	pgpDigParamsFree(sigp);
     }
 
+    return val;
+}
+
+static char * pgpsigFormat(rpmtd td, char **emsg)
+{
+    char *val = NULL;
+    if (rpmtdType(td) == RPM_BIN_TYPE) {
+	val = pgpsigFormatOne((uint8_t *)td->data, td->count, emsg);
+    } else if (rpmtdType(td) == RPM_STRING_ARRAY_TYPE) {
+	uint8_t *pkt = NULL;
+	size_t pktlen = 0;
+	if (rpmBase64Decode(rpmtdGetString(td), (void **)&pkt, &pktlen) == 0) {
+	    val = pgpsigFormatOne(pkt, pktlen, emsg);
+	    free(pkt);
+	}
+    } else {
+	*emsg = xstrdup(_("(invalid type)"));
+    }
     return val;
 }
 
@@ -581,7 +599,7 @@ static const struct headerFmt_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_BASE64,	"base64",
 	RPM_BINARY_CLASS,	base64Format },
     { RPMTD_FORMAT_PGPSIG,	"pgpsig",
-	RPM_BINARY_CLASS,	pgpsigFormat },
+	RPM_NULL_CLASS,		pgpsigFormat },
     { RPMTD_FORMAT_DEPFLAGS,	"depflags",
 	RPM_NUMERIC_CLASS, depflagsFormat },
     { RPMTD_FORMAT_DEPTYPE,	"deptype",
