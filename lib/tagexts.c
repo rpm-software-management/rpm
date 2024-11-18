@@ -1003,6 +1003,39 @@ static int sysusersTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (td->count > 0);
 }
 
+static void trySigTag(Header h, rpmTagVal tag, ARGV_t *sigs)
+{
+    struct rpmtd_s td;
+    if (headerGet(h, tag, &td, HEADERGET_ALLOC)) {
+	char *b64 = rpmBase64Encode((uint8_t *)td.data, td.count, 0);
+	if (b64) {
+	    argvAdd(sigs, b64);
+	    free(b64);
+	}
+	rpmtdFreeData(&td);
+    }
+}
+
+static int openpgpTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    if (headerGet(h, RPMTAG_OPENPGP, td, HEADERGET_ALLOC))
+	return 1;
+
+    ARGV_t sigs = NULL;
+    trySigTag(h, RPMTAG_RSAHEADER, &sigs);
+    trySigTag(h, RPMTAG_DSAHEADER, &sigs);
+    trySigTag(h, RPMTAG_SIGPGP, &sigs);
+    trySigTag(h, RPMTAG_SIGGPG, &sigs);
+
+    if (sigs) {
+	td->data = sigs;
+	td->count = argvCount(sigs);
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->flags = RPMTD_ALLOCED|RPMTD_PTR_ALLOCED;
+    }
+    return td->count != 0;
+}
+
 static int rpmformatTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     if (headerGet(h, RPMTAG_RPMFORMAT, td, HEADERGET_ALLOC))
@@ -1059,6 +1092,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { RPMTAG_FILENLINKS,	filenlinksTag },
     { RPMTAG_SYSUSERS,		sysusersTag },
+    { RPMTAG_OPENPGP,		openpgpTag },
     { RPMTAG_RPMFORMAT,		rpmformatTag },
     { 0, 			NULL }
 };
