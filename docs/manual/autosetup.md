@@ -78,6 +78,7 @@ range with options, or pass patch numbers as arguments.  The supported
 options are
 
 * `-v` verbose operation
+* `-q` don't warn if there are no matching patches
 * `-p<number>` argument to control patch prefix stripping (same as
   `-p` to `%patch`, normally passed down from `%autosetup`)
 * `-m<number>` Apply patches starting from `<number>` range
