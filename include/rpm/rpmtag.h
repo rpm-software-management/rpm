@@ -390,6 +390,7 @@ typedef enum rpmTag_e {
     RPMTAG_SYSUSERS		= 5109, /* s[] extension */
     RPMTAG_BUILDSYSTEM		= 5110, /* internal */
     RPMTAG_BUILDOPTION		= 5111, /* internal */
+    RPMTAG_RPMFORMAT		= 5114, /* i */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

@@ -1003,6 +1003,22 @@ static int sysusersTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (td->count > 0);
 }
 
+static int rpmformatTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    if (headerGet(h, RPMTAG_RPMFORMAT, td, HEADERGET_ALLOC))
+	return 1;
+
+    uint32_t *nump = (uint32_t *)xcalloc(1, sizeof(*nump));
+    *nump = headerIsEntry(h, RPMTAG_HEADERIMMUTABLE) ? 4 : 3;
+
+    td->data = nump;
+    td->count = 1;
+    td->type = RPM_INT32_TYPE;
+    td->flags = RPMTD_ALLOCED;
+
+    return 1;
+}
+
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -1043,6 +1059,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { RPMTAG_FILENLINKS,	filenlinksTag },
     { RPMTAG_SYSUSERS,		sysusersTag },
+    { RPMTAG_RPMFORMAT,		rpmformatTag },
     { 0, 			NULL }
 };
 

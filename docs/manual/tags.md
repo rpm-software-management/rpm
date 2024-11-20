@@ -451,6 +451,7 @@ Obsoletenevrs         | 5043 | string array | Formatted `name [op version]` obso
 Enhancenevrs          | 5061 | string array | Formatted `name [op version]` enhance dependency strings.
 Recommendnevrs        | 5058 | string array | Formatted `name [op version]` recommend dependency strings.
 Requirenevrs          | 5041 | string array | Formatted `name [op version]` require dependency strings.
+Rpmformat             | 5114 | int32        | Detected rpm format version (3/4/6)
 Suggestnevrs          | 5059 | string array | Formatted `name [op version]` suggest dependency strings.
 Supplementnevrs       | 5060 | string array | Formatted `name [op version]` supplement dependency strings.
 Sysusers              | 5109 | string array | Formatted systemd-sysusers lines for the package. |
