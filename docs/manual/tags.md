@@ -72,6 +72,7 @@ Policyflags        | 5033 | int32 array
 Policynames        | 5030 | string array
 Policytypes        | 5031 | string array
 Policytypesindexes | 5032 | int32 array
+Rpmformat          | 5114 | int32        | Rpm package format version
 Rpmversion         | 1064 | string       | Version of rpm used to build the package.
 Sourcepkgid        | 1146 | bin
 Sourcerpm          | 1044 | string       | Package source rpm file name.
