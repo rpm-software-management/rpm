@@ -1820,3 +1820,28 @@ POST-IMPORT
 
 gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
+
+AT_SETUP([ima])
+AT_KEYWORDS([rpmsign file signature])
+
+RPMTEST_SETUP
+cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
+gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
+rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
+
+RPMTEST_CHECK([[
+rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /tmp/hello-2.0-1.x86_64.rpm | sed 's/:.\+$/:(...)/'
+rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
+]],
+[0],
+[/usr/bin/hello:(...)
+/usr/share/doc/hello-2.0:
+/usr/share/doc/hello-2.0/COPYING:(...)
+/usr/share/doc/hello-2.0/FAQ:(...)
+/usr/share/doc/hello-2.0/README:(...)
+/usr/share/example1:030204a598255400483046022100e5117bdafa73baaeb1f1dc46ecaa46981a62d417745a33532572b63dc6d95d16022100c789107ac5b91e2d915e1df3c7b78414f6b3f50899d44c1de381d0e938dfc82b
+/usr/share/example2:030204a598255400473045022100c10943795bff5d9c0db53dd4f8e4b845615fd08a2be295c30a80f5bdb4e6a41302203038840cc6abaab92acb56cb3e3ce520b17f22ff7444a8d5d0f703a44d5307a3
+],
+[ignore])
+
+RPMTEST_CLEANUP
