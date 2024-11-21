@@ -1177,7 +1177,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 			rpmstrPoolStr(fl->pool, flp->gname));
 
 	/* Use 64bit filesizes always on v6, on older only if required. */
-	if (pkg->rpmver >= 6 || fl->largeFiles) {
+	if (pkg->rpmformat >= 6 || fl->largeFiles) {
 	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
 	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
             (void) rpmlibNeedsFeature(pkg, "LargeFiles", "4.12.0-1");
@@ -1281,7 +1281,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
     pkg->dpaths[npaths] = NULL;
 
     /* Use 64bit sizes always on v6, on older only if required. */
-    if (pkg->rpmver < 6 && totalFileSize < UINT32_MAX) {
+    if (pkg->rpmformat < 6 && totalFileSize < UINT32_MAX) {
 	rpm_off_t totalsize = totalFileSize;
 	headerPutUint32(h, RPMTAG_SIZE, &totalsize, 1);
     } else {

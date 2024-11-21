@@ -1578,7 +1578,7 @@ runroot rpmkeys --import /data/keys/*.pub
 
 RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet \
-	--define "_rpmfilever 6" \
+	--define "_rpmformat 6" \
 	/data/SPECS/attrtest.spec
 runroot rpmsign --addsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],

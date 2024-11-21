@@ -476,8 +476,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
-    if (pkg->rpmver >= 6)
-	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &(pkg->rpmver), 1);
+    if (pkg->rpmformat >= 6)
+	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &(pkg->rpmformat), 1);
 
     /* Create a dummy payload digests to get the header size right */
     pld = (char *)nullDigest(pld_algo, 1);
@@ -485,7 +485,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, pld);
     pld = _free(pld);
-    if (pkg->rpmver >= 6) {
+    if (pkg->rpmformat >= 6) {
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
     }
@@ -512,12 +512,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     sigStart = Ftell(fd);
 
     /* Generate and write a placeholder signature header */
-    if (pkg->rpmver < 6) {
+    if (pkg->rpmformat < 6) {
 	SHA1 = (char *)nullDigest(RPM_HASH_SHA1, 1);
 	MD5 = (uint8_t *)nullDigest(RPM_HASH_MD5, 0);
     }
     SHA256 = (char *)nullDigest(RPM_HASH_SHA256, 1);
-    if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, pkg->rpmver))
+    if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, pkg->rpmformat))
 	goto exit;
     SHA1 = _free(SHA1);
     SHA256 = _free(SHA256);
@@ -548,7 +548,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, upld);
     pld = _free(pld);
 
-    if (pkg->rpmver >= 6) {
+    if (pkg->rpmformat >= 6) {
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZE);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZEALT);
@@ -562,7 +562,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
 
     /* Calculate the digests */
-    if (pkg->rpmver < 6) {
+    if (pkg->rpmformat < 6) {
 	/* SHA1 and legacy MD5 on header + payload only in v4 */
 	fdInitDigestID(fd, RPM_HASH_MD5, RPMTAG_SIGMD5, 0);
 	fdInitDigestID(fd, RPM_HASH_SHA1, RPMTAG_SHA1HEADER, 0);
@@ -582,7 +582,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Generate the signature. Now with right values */
     if (rpmGenerateSignature(SHA256, SHA1, MD5, payloadEnd - hdrStart,
-				archiveSize, fd, pkg->rpmver)) {
+				archiveSize, fd, pkg->rpmformat)) {
 	goto exit;
     }
 

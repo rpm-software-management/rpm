@@ -1,5 +1,5 @@
 AT_SETUP([rpm v4 format])
-AT_KEYWORDS([pkgformat v4])
+AT_KEYWORDS([rpmformat v4])
 RPMDB_INIT
 
 RPMTEST_CHECK([
@@ -16,7 +16,7 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
 RPMTEST_CLEANUP
 
 AT_SETUP([rpm v6 format])
-AT_KEYWORDS([pkgformat v6])
+AT_KEYWORDS([rpmformat v6])
 RPMDB_INIT
 
 RPMTEST_CHECK([
@@ -33,7 +33,7 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
 RPMTEST_CLEANUP
 
 AT_SETUP([rpm v3 format])
-AT_KEYWORDS([pkgformat install query v3])
+AT_KEYWORDS([rpmformat install query v3])
 RPMDB_INIT
 RPMTEST_CHECK([
 runroot rpm -qpl /data/RPMS/hello-1.0-1.x86_64.rpm-v3

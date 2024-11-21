@@ -1,5 +1,5 @@
 runroot rpmbuild -bb --quiet \
-	--define "_rpmfilever ${ver}" \
+	--define "_rpmformat ${ver}" \
 	--define "_rpmdir %{_topdir}/RPMS/${ver}" \
 	--define "optflags -O2 -g" \
 	--define "_target_platform noarch-linux" \

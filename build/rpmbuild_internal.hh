@@ -189,7 +189,7 @@ struct Package_s {
     rpmds dependencies[PACKAGE_NUM_DEPS];
     rpmfiles cpioList;
     ARGV_t dpaths;
-    unsigned int rpmver;	/* v4, v6? */
+    unsigned int rpmformat;	/* v4, v6? */
 
     struct Source * icon;
 
