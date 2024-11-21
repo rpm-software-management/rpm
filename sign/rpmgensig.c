@@ -587,7 +587,8 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     struct sigTarget_s sigt_v4;
     unsigned int origSigSize;
     int insSig = 0;
-    rpmTagVal reserveTag = RPMSIGTAG_RESERVEDSPACE;
+    int rpmformat = 0;
+    rpmTagVal reserveTag = 0;
 
     fprintf(stdout, "%s:\n", rpm);
 
@@ -619,8 +620,10 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	goto exit;
     }
 
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages\n"));
+    rpmformat = headerGetNumber(h, RPMTAG_RPMFORMAT);
+
+    if (rpmformat < 4) {
+	rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages: %s\n"), rpm);
 	goto exit;
     }
 
@@ -630,10 +633,28 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	flags |= RPMSIGN_FLAG_RPMV3;
     }
 
+
     if (headerIsSource(h)) {
 	rpmlog(RPMLOG_DEBUG,
 	    _("File signatures not applicable to src.rpm: %s\n"), rpm);
 	flags &= ~(RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY);
+    }
+
+    if (rpmformat >= 6) {
+	flags |= RPMSIGN_FLAG_RPMV6;
+	reserveTag = RPMSIGTAG_RESERVED;
+	/* v3 signatures are not welcome in v6 packages */
+	if (flags & RPMSIGN_FLAG_RPMV3) {
+	    rpmlog(RPMLOG_WARNING,
+		_("not generating v3 signature for v6 package: %s\n"), rpm);
+	    flags &= ~RPMSIGN_FLAG_RPMV3;
+	}
+    } else {
+	flags |= RPMSIGN_FLAG_RPMV4;
+	reserveTag = RPMSIGTAG_RESERVEDSPACE;
+	/* Ensure only one legacy signature is added if adding v6 signatures */
+	if ((flags & RPMSIGN_FLAG_RPMV6) && haveLegacySig(sigh))
+	    flags &= ~(RPMSIGN_FLAG_RPMV4|RPMSIGN_FLAG_RPMV3);
     }
 
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
