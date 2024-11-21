@@ -1206,7 +1206,7 @@ gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
 
 RPMTEST_CHECK([[
-rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /tmp/hello-2.0-1.x86_64.rpm | sed 's/:.\+$/:(...)/'
+rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /tmp/hello-2.0-1.x86_64.rpm | sed 's/:[^(none)].\+$/:(...)/'
 rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
 ]],
 [0],
