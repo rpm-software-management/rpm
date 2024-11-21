@@ -164,6 +164,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmte te = NULL;
+    rpmPlugins origplugins = NULL;
     rpmRC rpmrc;
     int specix = -1;
 
@@ -218,12 +219,20 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    rpmfsSetAction(fs, i, FA_CREATE);
     }
 
+    /* Don't run any plugins */
+    origplugins = ts->plugins;
+    ts->plugins = rpmpluginsNew(ts);
+
     psm = rpmpsmNew(ts, te, PKG_INSTALL);
 
     if (rpmpsmUnpack(psm) == RPMRC_OK)
 	rpmrc = RPMRC_OK;
 
     rpmpsmFree(psm);
+
+    /* Restore plugins */
+    rpmpluginsFree(ts->plugins);
+    ts->plugins = origplugins;
 
 exit:
     if (rpmrc == RPMRC_OK && specix >= 0) {
