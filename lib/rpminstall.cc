@@ -420,6 +420,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     struct rpmEIU * eiu = (struct rpmEIU *)xcalloc(1, sizeof(*eiu));
     rpmRelocation * relocations;
     char * fileURL = NULL;
+    rpmtransFlags tsflags, otsflags;
     rpmVSFlags vsflags, ovsflags;
     rpmVSFlags ovfyflags;
     int rc;
@@ -667,16 +668,23 @@ restart:
 	rpmcliProgressState = 0;
 	rpmcliProgressTotal = 0;
 	rpmcliProgressCurrent = 0;
+
+	tsflags = rpmtsFlags(ts);
+	otsflags = rpmtsSetFlags(ts, (tsflags | RPMTRANS_FLAG_NOPLUGINS));
+
 	rpmtsEmpty(ts);
+
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    if (eiu->sourceURL[i] != NULL) {
 	        rc = RPMRC_OK;
-		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+		if (!(tsflags & RPMTRANS_FLAG_TEST))
 		    rc = rpmInstallSource(ts, eiu->sourceURL[i], NULL, NULL);
 		if (rc != 0)
 		    eiu->numFailed++;
 	    }
 	}
+
+	rpmtsSetFlags(ts, otsflags);
     }
 
 exit:
