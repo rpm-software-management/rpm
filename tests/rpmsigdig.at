@@ -1823,6 +1823,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([ima])
 AT_KEYWORDS([rpmsign file signature])
+AT_SKIP_IF([$IMA_DISABLED])
 
 RPMTEST_SETUP
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
