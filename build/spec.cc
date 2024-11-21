@@ -102,7 +102,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->policyList = NULL;
     p->pool = rpmstrPoolLink(pool);
     p->dpaths = NULL;
-    p->rpmver = rpmExpandNumeric("%_rpmfilever");
+    p->rpmformat = rpmExpandNumeric("%_rpmformat");
 
     if (name)
 	p->name = rpmstrPoolId(p->pool, name, 1);

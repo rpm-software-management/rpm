@@ -1360,7 +1360,7 @@ RPMDB_INIT
 RPMTEST_CHECK([[
 # v4 packages
 runroot rpmbuild -bb --quiet \
-		--define "_rpmfilever 4" /data/SPECS/filetypes.spec
+		--define "_rpmformat 4" /data/SPECS/filetypes.spec
 runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
 ]],
 [0],
@@ -1385,7 +1385,7 @@ runroot rpm -qp --filemime /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -
 # v6 variants of the same
 RPMTEST_CHECK([[
 runroot rpmbuild -bb --quiet \
-		--define "_rpmfilever 6" \
+		--define "_rpmformat 6" \
 		/data/SPECS/filetypes.spec
 runroot rpm -qp --fileclass /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm | sed -e 's/[[:space:]]*$//'
 ]],

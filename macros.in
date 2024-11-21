@@ -264,7 +264,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	This does NOT generate actual v6 format, the exact format
 #	hasn't been finalized yet.
 #	Which rpm format go generate (4 or 6)
-%_rpmfilever 4
+%_rpmformat 4
 
 #	The directory where sources/patches from a source package will be
 #	installed. This is also where sources/patches are found when building.
