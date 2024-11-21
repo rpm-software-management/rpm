@@ -43,6 +43,11 @@ if [ "@WITH_CAP@" == "ON" ]; then
 else
     CAP_DISABLED=true;
 fi
+if [ "@WITH_IMAEVM@" == "ON" ]; then
+    IMA_DISABLED=false;
+else
+    IMA_DISABLED=true;
+fi
 if mknod foodev c 123 123 2>/dev/null; then
    MKNOD_DISABLED=false
    rm -f foodev
