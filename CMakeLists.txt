@@ -376,6 +376,7 @@ if (LIBELF_FOUND)
 endif()
 if (LIBDW_FOUND)
 	set(HAVE_LIBDW 1)
+	check_library_exists(dw dwelf_elf_begin "" HAVE_DWELF_ELF_BEGIN)
 endif()
 
 check_symbol_exists(GLOB_ONLYDIR "glob.h" HAVE_GLOB_ONLYDIR)
