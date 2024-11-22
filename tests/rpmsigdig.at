@@ -1386,8 +1386,6 @@ gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
 
 # Signing test(s) using Sequoia
-# stderr is ignored due to noisy failures from gpgconf which we don't
-# care about in this test...
 AT_SETUP([rpmsign --addsign sequoia])
 AT_KEYWORDS([rpmsign sequoia signature])
 AT_SKIP_IF([test x$PGP = xdummy])
@@ -1433,7 +1431,7 @@ DELSIGN
 POST-DELSIGN
 /tmp/hello-2.0-1.x86_64.rpm:
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmsign --addsign --key-id 152bb32fd9ca982797e835cfb0645aec757bf69e /tmp/hello-2.0-1.x86_64.rpm
@@ -1445,7 +1443,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
-[ignore])
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmsign --addsign multisig v4])
@@ -1584,7 +1582,7 @@ runroot rpmsign --addsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
 ],
 [0],
 [],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
@@ -1614,7 +1612,7 @@ runroot rpmsign --resign --rpmv4 \
 ],
 [0],
 [],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
