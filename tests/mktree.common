@@ -26,4 +26,7 @@ make_install()
 
     # append in case Dockerfile put something in there already
     cat @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv >> $DESTDIR/root/.rpmmacros
+    # gpg-connect-agent is very, very unhappy if this doesn't exist
+    mkdir -p $DESTDIR/root/.gnupg
+    chmod 700 $DESTDIR/root/.gnupg
 }
