@@ -23,7 +23,8 @@ extern "C" {
 typedef enum rpmKeyringModifyMode_e {
     RPMKEYRING_ADD	= 1,
     RPMKEYRING_REPLACE	= 2,
-    RPMKEYRING_DELETE	= 3
+    RPMKEYRING_DELETE	= 3,
+    RPMKEYRING_MERGE	= 4,
 } rpmKeyringModifyMode;
 
 
