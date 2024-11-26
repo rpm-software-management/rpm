@@ -321,7 +321,6 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
-    rpmPubkey oldkey = NULL;
     rpmKeyring keyring = NULL;
     int krc;
 
@@ -353,26 +352,13 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
 
-    oldkey = rpmKeyringLookupKey(keyring, pubkey);
-    if (oldkey) {
-	rpmPubkey mergedkey = NULL;
-	if (rpmPubkeyMerge(oldkey, pubkey, &mergedkey) != RPMRC_OK)
-	    goto exit;
-	if (!mergedkey) {
-	    rc = RPMRC_OK;		/* already have key */
-	    goto exit;
-	}
-	rpmPubkeyFree(pubkey);
-	pubkey = mergedkey;
-    }
-
-    krc = rpmKeyringModify(keyring, pubkey, oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
+    krc = rpmKeyringModify(keyring, pubkey, RPMKEYRING_ADD);
     if (krc < 0)
 	goto exit;
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rc = ts->keystore->import_key(txn, pubkey, oldkey ? 1 : 0);
+	rc = ts->keystore->import_key(txn, pubkey, 1);
     } else {
 	rc = RPMRC_OK;		/* already have key */
     }
@@ -380,7 +366,6 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 exit:
     /* Clean up. */
     rpmPubkeyFree(pubkey);
-    rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);
     return rc;

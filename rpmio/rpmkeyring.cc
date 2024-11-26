@@ -120,10 +120,25 @@ rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator)
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode)
 {
     int rc = 1; /* assume already seen key */
+    rpmPubkey mergedkey = NULL;
     if (keyring == NULL || key == NULL)
 	return -1;
-    if (mode != RPMKEYRING_ADD && mode != RPMKEYRING_DELETE && mode != RPMKEYRING_REPLACE)
+    if (mode != RPMKEYRING_ADD && mode != RPMKEYRING_DELETE)
 	return -1;
+
+    if (mode == RPMKEYRING_ADD) {
+	rpmPubkey oldkey = rpmKeyringLookupKey(keyring, key);
+	if (oldkey) {
+	    if (rpmPubkeyMerge(oldkey, key, &mergedkey) != RPMRC_OK) {
+		rpmPubkeyFree(oldkey);
+		return -1;
+	    }
+	    if (mergedkey) {
+		key = mergedkey;
+	    }
+	    rpmPubkeyFree(oldkey);
+	}
+    }
 
     /* check if we already have this key, but always wrlock for simplicity */
     wrlock lock(keyring->mutex);
@@ -133,7 +148,7 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	if (item->second->fp == key->fp)
 	    break;
     }
-    if (item != range.second && (mode == RPMKEYRING_DELETE || mode == RPMKEYRING_REPLACE)) {
+    if (item != range.second) {
 	/* remove subkeys */
 	auto it = keyring->keys.begin();
 	while (it != keyring->keys.end()) {
@@ -147,7 +162,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
-    } else if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
+    }
+    if (mode == RPMKEYRING_ADD) {
 	int subkeysCount = 0;
 	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
@@ -162,6 +178,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	free(subkeys);
 	rc = 0;
     }
+    /* strip initial nref */
+    rpmPubkeyFree(mergedkey);
 
     return rc;
 }
