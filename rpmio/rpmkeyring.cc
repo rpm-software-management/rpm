@@ -167,7 +167,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
-    } else if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
+    }
+    if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
 	int subkeysCount = 0;
 	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
