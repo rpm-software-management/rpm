@@ -16,14 +16,12 @@ extern "C" {
 
 /** \ingroup rpmkeyring
   * Operation mode definitions for rpmKeyringModify
-  *   ADD: add a new key, do nothing if the key is already present
-  *   REPLACE: add a key, replace if already present
+  *   ADD: add a new key, merge with pre-existing key
   *   DELETE: delete an existing key
   */
 typedef enum rpmKeyringModifyMode_e {
     RPMKEYRING_ADD	= 1,
-    RPMKEYRING_REPLACE	= 2,
-    RPMKEYRING_DELETE	= 3
+    RPMKEYRING_DELETE	= 2,
 } rpmKeyringModifyMode;
 
 
