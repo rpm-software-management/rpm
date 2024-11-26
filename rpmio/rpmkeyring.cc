@@ -120,10 +120,30 @@ rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator)
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode)
 {
     int rc = 1; /* assume already seen key */
+    rpmPubkey mergedkey = NULL;
     if (keyring == NULL || key == NULL)
 	return -1;
-    if (mode != RPMKEYRING_ADD && mode != RPMKEYRING_DELETE && mode != RPMKEYRING_REPLACE)
+    if (mode < RPMKEYRING_ADD || mode > RPMKEYRING_MERGE)
 	return -1;
+
+    if (mode == RPMKEYRING_MERGE) {
+	rpmPubkey oldkey = rpmKeyringLookupKey(keyring, key);
+	if (oldkey) {
+	    if (rpmPubkeyMerge(oldkey, key, &mergedkey) != RPMRC_OK) {
+		rpmPubkeyFree(oldkey);
+		return -1;
+	    }
+	    if (!mergedkey) {
+		mode = RPMKEYRING_ADD;
+	    } else {
+		key = mergedkey;
+		mode = RPMKEYRING_REPLACE;
+	    }
+	    rpmPubkeyFree(oldkey);
+	} else {
+	    mode = RPMKEYRING_ADD;
+	}
+    }
 
     /* check if we already have this key, but always wrlock for simplicity */
     wrlock lock(keyring->mutex);
@@ -162,6 +182,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	free(subkeys);
 	rc = 0;
     }
+    /* strip initial nref */
+    rpmPubkeyFree(mergedkey);
 
     return rc;
 }
