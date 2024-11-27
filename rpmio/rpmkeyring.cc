@@ -366,6 +366,17 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key)
     return key;
 }
 
+void rpmPubkeyRawData(rpmPubkey key, unsigned const char ** pkt, size_t * pktlen)
+{
+    if (key) {
+	*pkt = key->pkt.data();
+	*pktlen = key->pkt.size();
+    } else {
+	*pkt = NULL;
+	*pktlen = 0;
+    }
+}
+
 char * rpmPubkeyBase64(rpmPubkey key)
 {
     char *enc = NULL;
