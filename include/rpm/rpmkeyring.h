@@ -134,6 +134,15 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key);
  */
 rpmPubkey rpmPubkeyLink(rpmPubkey key);
 
+
+/** \ingroup rpmkeyring
+ * Return pubkey as raw bytes
+ * @param key           Pubkey
+ * @param pkt		key data
+ * @param pktlen	Length of key data
+ */
+void rpmPubkeyRawData(rpmPubkey key, unsigned const char ** pkt, size_t * pktlen);
+
 /** \ingroup rpmkeyring
  * Return base64 encoding of pubkey
  * @param key           Pubkey
