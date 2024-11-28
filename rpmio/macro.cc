@@ -595,7 +595,7 @@ exit:
  * @return		number of consumed characters
  */
 static void
-doDefine(rpmMacroBuf mb, const char * se, int level, int expandbody, size_t *parsed)
+doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *parsed)
 {
     const char *start = se;
     const char *s = se;
@@ -1799,7 +1799,7 @@ static void popMacro(rpmMacroContext mc, const std::string & n)
 	mc->tab.erase(entry);
 }
 
-static int defineMacro(rpmMacroContext mc, const char * macro, int level)
+static int defineMacro(rpmMacroContext mc, const std::string macro, int level)
 {
     rpmMacroBuf mb = new rpmMacroBuf_s {};
     int rc;
@@ -1807,7 +1807,7 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    doDefine(mb, macro, level, 0, &parsed);
+    doDefine(mb, macro.c_str(), level, 0, &parsed);
     rc = mb->error;
     delete mb;
     return rc;
@@ -2023,7 +2023,7 @@ void macros::copy(rpm::macros & dest, int level)
     copyMacros(mc, dest.mc, level);
 }
 
-int macros::define(const char *macro, int level)
+int macros::define(const std::string & macro, int level)
 {
     return defineMacro(mc, macro, level);
 }
