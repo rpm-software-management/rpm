@@ -74,9 +74,9 @@ public:
     bool is_parametric(const std::string & n);
     int load(const char *fn);
     int pop(const std::string & n);
-    int push(const char *n, const char *o, const char *b,
+    int push(const std::string & n, const char *o, const std::string & b,
 		int level, int flags = RPMMACRO_DEFAULT);
-    int push_aux(const char *n, const char *o,
+    int push_aux(const std::string & n, const char *o,
 		macroFunc f, void *priv, int nargs,
 		int level, int flags = RPMMACRO_DEFAULT);
 
