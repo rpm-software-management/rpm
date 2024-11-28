@@ -2144,14 +2144,14 @@ void macros::init(const std::string & macrofiles)
     copyMacros(cli.mc, mc, RMIL_CMDLINE);
 }
 
-bool macros::is_defined(const char *n)
+bool macros::is_defined(const std::string & n)
 {
-    return (findEntry(mc, n, 0, NULL) != NULL);
+    return (findEntry(mc, n, NULL) != NULL);
 }
 
-bool macros::is_parametric(const char *n)
+bool macros::is_parametric(const std::string & n)
 {
-    rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
+    rpmMacroEntry mep = findEntry(mc, n, NULL);
     return (mep && mep->opts);
 }
 int macros::load(const char *fn)

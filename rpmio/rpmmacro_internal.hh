@@ -70,8 +70,8 @@ public:
     std::pair<int,int64_t> expand_numeric(const std::initializer_list<std::string> & src,
 					int flags = 0);
     void init(const std::string & macrofiles);
-    bool is_defined(const char *n);
-    bool is_parametric(const char *n);
+    bool is_defined(const std::string & n);
+    bool is_parametric(const std::string & n);
     int load(const char *fn);
     int pop(const char *n);
     int push(const char *n, const char *o, const char *b,
