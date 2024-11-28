@@ -332,10 +332,10 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Default to %_gpg_name for backwards compatibility
 %_openpgp_sign_id %{?_gpg_name}
 
-#	GnuPG signing additionally supports specifying the location of
-#	its configuration files (GNUPGHOME) via %_gpg_path if needed
+#	Optional alternative path for GnuPG configuration, same as setting
+#	GNUPGHOME environment variable or passing --homedir to gpg.
 #
-#%_gpg_path
+#%_gpg_path /some/path
 
 #	The port and machine name of an HTTP proxy host (used for FTP/HTTP).
 #
