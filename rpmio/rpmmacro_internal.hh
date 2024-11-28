@@ -63,7 +63,7 @@ public:
     std::pair<int,std::string> expand(const std::string & src, int flags = 0);
     std::pair<int,std::string> expand(const std::initializer_list<std::string> src,
 					int flags = 0);
-    std::pair<int,std::string> expand_this(const char *n, ARGV_const_t args,
+    std::pair<int,std::string> expand_this(const std::string & n, ARGV_const_t args,
 					int flags = 0);
     /* Expand macros to numeric value, with a return code (rc, number) */
     std::pair<int,int64_t> expand_numeric(const std::string & src, int flags = 0);

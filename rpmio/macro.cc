@@ -2061,12 +2061,12 @@ macros::expand(const std::initializer_list<std::string> src, int flags)
 }
 
 std::pair<int,std::string>
-macros::expand_this(const char *n, ARGV_const_t args, int flags)
+macros::expand_this(const std::string & n, ARGV_const_t args, int flags)
 {
     string target;
     int rc = 1; /* assume failure */
 
-    rpmMacroEntry mep = findEntry(mc, n, 0, NULL);
+    rpmMacroEntry mep = findEntry(mc, n, NULL);
     if (mep) {
 	rpmMacroBuf mb = mbCreate(mc, flags);
 	rc = expandThisMacro(mb, mep, args, flags);
