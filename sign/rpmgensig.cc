@@ -237,14 +237,9 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	int using_gpg = (strstr(out, "GnuPG") != NULL);
 	if (using_gpg) {
 	    const char *tty = ttyname(STDIN_FILENO);
-	    const char *gpg_path = NULL;
 
 	    if (!getenv("GPG_TTY") && (!tty || setenv("GPG_TTY", tty, 0)))
 		rpmlog(RPMLOG_WARNING, _("Could not set GPG_TTY to stdin: %m\n"));
-
-	    gpg_path = rpmExpand("%{?_gpg_path}", NULL);
-	    if (gpg_path && *gpg_path != '\0')
-		(void) setenv("GNUPGHOME", gpg_path, 1);
 	}
 	free(out);
 
