@@ -635,7 +635,6 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
         --detached --output %{shescape:%{?__signature_filename}} \
         %{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
 
-%__openpgp_sign_path %{expand:%{__%{_openpgp_sign}}}
 %__openpgp_sign_cmd %{expand:%{__%{_openpgp_sign}_sign_cmd}}
 
 #==============================================================================
