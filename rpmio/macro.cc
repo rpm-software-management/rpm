@@ -129,7 +129,7 @@ static void pushMacro(rpmMacroContext mc,
 	const std::string & n, const char * o, const std::string & b,
 	int level, int flags);
 static void popMacro(rpmMacroContext mc, const std::string & n);
-static int loadMacroFile(rpmMacroContext mc, const char * fn);
+static int loadMacroFile(rpmMacroContext mc, const std::string fn);
 /* =============================================================== */
 
 static rpmMacroEntry
@@ -1824,9 +1824,9 @@ static void linenoMacro(rpmMacroBuf mb,
     }
 }
 
-static int loadMacroFile(rpmMacroContext mc, const char * fn)
+static int loadMacroFile(rpmMacroContext mc, const std::string fn)
 {
-    FILE *fd = fopen(fn, "r");
+    FILE *fd = fopen(fn.c_str(), "r");
     size_t blen = MACROBUFSIZ;
     std::vector<char> buf(blen);
     int rc = -1;
@@ -2156,7 +2156,7 @@ bool macros::is_parametric(const std::string & n)
     rpmMacroEntry mep = findEntry(mc, n, NULL);
     return (mep && mep->opts);
 }
-int macros::load(const char *fn)
+int macros::load(const string & fn)
 {
     return loadMacroFile(mc, fn);
 }
