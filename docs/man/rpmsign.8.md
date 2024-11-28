@@ -153,6 +153,10 @@ Implementation specific macros:
 :   Legacy macro for configuring user id with GnuPG. Use the implementation
     independent and non-ambiguous **%\_openpgp_sign_id** instead.
 
+**%\_sq\_path**
+
+:   The location of your Sequoia configuration if not the default.
+
 For example, to configure rpm to sign with Sequoia PGP using a key with
 fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
 
