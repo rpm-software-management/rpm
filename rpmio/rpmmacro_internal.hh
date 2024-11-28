@@ -73,7 +73,7 @@ public:
     bool is_defined(const std::string & n);
     bool is_parametric(const std::string & n);
     int load(const char *fn);
-    int pop(const char *n);
+    int pop(const std::string & n);
     int push(const char *n, const char *o, const char *b,
 		int level, int flags = RPMMACRO_DEFAULT);
     int push_aux(const char *n, const char *o,
