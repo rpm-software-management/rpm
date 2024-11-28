@@ -337,6 +337,11 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 #%_gpg_path /some/path
 
+#	Optional alternative path for Sequoia-sq configuration, same as
+#	passing --home to sq.
+#
+#%_sq_path /some/path
+
 #	The port and machine name of an HTTP proxy host (used for FTP/HTTP).
 #
 #%_httpport
@@ -630,6 +635,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %__sq @__SQ@
 %__sq_sign_cmd		%{shescape:%{__sq}} \
 	%{__sq} sign \
+	%{?_sq_path:--homedir %{shescape:%{_sq_path}}} \
         %{?_openpgp_sign_id:--signer-key %{_openpgp_sign_id}} \
 	%{?_sq_sign_cmd_extra_args} \
         --binary --detached --output %{shescape:%{?__signature_filename}} \
