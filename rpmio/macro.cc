@@ -126,7 +126,8 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
 static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
 static void pushMacro(rpmMacroContext mc,
-	const char * n, const char * o, const char * b, int level, int flags);
+	const std::string & n, const char * o, const std::string & b,
+	int level, int flags);
 static void popMacro(rpmMacroContext mc, const std::string & n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
@@ -1749,7 +1750,7 @@ static int doExpandMacros(rpmMacroContext mc, const string & src, int flags,
 }
 
 static void pushMacroAny(rpmMacroContext mc,
-	const char * n, const char * o, const char * b,
+	const string & n, const char * o, const string & b,
 	macroFunc f, void *priv, int nargs, int level, int flags)
 {
     auto res = mc->tab.insert({n, {}});
@@ -1780,7 +1781,8 @@ static void pushMacroAny(rpmMacroContext mc,
 }
 
 static void pushMacro(rpmMacroContext mc,
-	const char * n, const char * o, const char * b, int level, int flags)
+		const string & n, const char * o, const string & b,
+		int level, int flags)
 {
     return pushMacroAny(mc, n, o, b, NULL, NULL, 0, level, flags);
 }
@@ -2165,14 +2167,14 @@ int macros::pop(const std::string & n)
     return 0;
 }
 
-int macros::push(const char *n, const char *o, const char *b,
+int macros::push(const std::string & n, const char *o, const std::string & b,
 		int level, int flags)
 {
     pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
     return 0;
 }
 
-int macros::push_aux(const char *n, const char *o,
+int macros::push_aux(const std::string & n, const char *o,
 		    macroFunc f, void *priv, int nargs,
 		    int level, int flags)
 {
