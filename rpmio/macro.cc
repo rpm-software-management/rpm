@@ -2106,7 +2106,7 @@ macros::expand_numeric(const std::initializer_list<std::string> & src, int flags
     return expand_numeric(buf, flags);
 }
 
-void macros::init(const char *macrofiles)
+void macros::init(const std::string & macrofiles)
 {
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
@@ -2115,7 +2115,7 @@ void macros::init(const char *macrofiles)
     }
 
     ARGV_t pattern, globs = NULL;
-    argvSplit(&globs, macrofiles, ":");
+    argvSplit(&globs, macrofiles.c_str(), ":");
     for (pattern = globs; pattern && *pattern; pattern++) {
 	ARGV_t path, files = NULL;
 
