@@ -57,7 +57,7 @@ public:
     void clear();
     /* Copy all macros from this context to another one */
     void copy(rpm::macros & dest, int level);
-    int define(const char *macro, int level);
+    int define(const std::string & macro, int level);
     void dump(FILE *fp = stderr);
     /* Expand macros to a C++ string, with a return code (rc, string) */
     std::pair<int,std::string> expand(const std::string & src, int flags = 0);
