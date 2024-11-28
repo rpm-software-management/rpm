@@ -619,27 +619,26 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #==============================================================================
 # ---- OpenPGP signature macros.
 #	Macro(s) to hold the arguments passed to the cmd implementing package
-#	signing.  Expansion result is parsed by popt, so be sure to use
+#	signing. Input path passed as the first argument, output as second.
+#	Expansion result is parsed by popt, so be sure to use
 #	%{shescape} where needed.
 #
 %__gpg			@__GPG@
-%__gpg_sign_cmd			%{shescape:%{__gpg}} \
+%__gpg_sign_cmd()	%{shescape:%{__gpg}} \
 	--no-verbose --no-armor --no-secmem-warning \
 	%{?_gpg_path:--homedir %{shescape:%{_gpg_path}}} \
 	%{?_gpg_digest_algo:--digest-algo=%{_gpg_digest_algo}} \
 	%{?_gpg_sign_cmd_extra_args} \
 	%{?_openpgp_sign_id:-u %{shescape:%{_openpgp_sign_id}}} \
-	-sbo %{shescape:%{?__signature_filename}} \
-	%{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
+	-sbo %{shescape:%{2}} -- %{shescape:%{1}}
 
 %__sq @__SQ@
-%__sq_sign_cmd		%{shescape:%{__sq}} \
+%__sq_sign_cmd()	%{shescape:%{__sq}} \
 	sign \
 	%{?_sq_path:--homedir %{shescape:%{_sq_path}}} \
         %{?_openpgp_sign_id:--signer-key %{_openpgp_sign_id}} \
 	%{?_sq_sign_cmd_extra_args} \
-        --binary --detached --output %{shescape:%{?__signature_filename}} \
-        %{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
+        --binary --detached --output %{shescape:%{2}} -- %{shescape:%{1}}
 
 %__openpgp_sign_cmd %{expand:%{__%{_openpgp_sign}_sign_cmd}}
 
