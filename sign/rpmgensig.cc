@@ -29,6 +29,7 @@
 
 #include "rpmlead.hh"
 #include "signature.hh"
+#include "rpmmacro_internal.hh"
 #include "rpmvs.hh"
 
 #include "debug.h"
@@ -192,21 +193,21 @@ static char ** signCmd(const char *sigfile)
 {
     int argc = 0;
     char **argv = NULL;
+    auto mctx = rpm::macros();
+    auto [ ign, name ] = mctx.expand({"__", "%{_openpgp_sign}", "_sign_cmd"});
+    const char * const margs[] = { "-", sigfile, NULL };
 
-    rpmPushMacro(NULL, "__plaintext_filename", NULL, "-", -1);
-    rpmPushMacro(NULL, "__signature_filename", NULL, sigfile, -1);
-
-    char *cmd = rpmExpand("%{?__openpgp_sign_cmd}", NULL);
-
-    rpmPopMacro(NULL, "__plaintext_filename");
-    rpmPopMacro(NULL, "__signature_filename");
-
-    if (poptParseArgvString(cmd, &argc, (const char ***)&argv) < 0 || argc < 2) {
-	rpmlog(RPMLOG_ERR, _("Invalid sign command: %s\n"), cmd);
-	argv = _free(argv);
+    auto [ rc, cmd ] = mctx.expand_this(name, (ARGV_const_t)margs, 0);
+    if (rc) {
+	rpmlog(RPMLOG_ERR, _("Expanding signing macro %s failed\n"),
+		name.c_str());
+	return NULL;
     }
 
-    free(cmd);
+    if (poptParseArgvString(cmd.c_str(), &argc, (const char ***)&argv) < 0 || argc < 2) {
+	rpmlog(RPMLOG_ERR, _("Invalid sign command: %s\n"), cmd.c_str());
+	argv = _free(argv);
+    }
 
     return argv;
 }
