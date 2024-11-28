@@ -72,7 +72,7 @@ public:
     void init(const std::string & macrofiles);
     bool is_defined(const std::string & n);
     bool is_parametric(const std::string & n);
-    int load(const char *fn);
+    int load(const std::string & fn);
     int pop(const std::string & n);
     int push(const std::string & n, const char *o, const std::string & b,
 		int level, int flags = RPMMACRO_DEFAULT);
