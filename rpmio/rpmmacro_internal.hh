@@ -69,7 +69,7 @@ public:
     std::pair<int,int64_t> expand_numeric(const std::string & src, int flags = 0);
     std::pair<int,int64_t> expand_numeric(const std::initializer_list<std::string> & src,
 					int flags = 0);
-    void init(const char *macrofiles);
+    void init(const std::string & macrofiles);
     bool is_defined(const char *n);
     bool is_parametric(const char *n);
     int load(const char *fn);
