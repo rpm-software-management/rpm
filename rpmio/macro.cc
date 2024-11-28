@@ -127,7 +127,7 @@ static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
 static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level, int flags);
-static void popMacro(rpmMacroContext mc, const char * n);
+static void popMacro(rpmMacroContext mc, const std::string & n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
 
@@ -1786,7 +1786,7 @@ static void pushMacro(rpmMacroContext mc,
 }
 
 /* Return pointer to the _previous_ macro definition (or NULL) */
-static void popMacro(rpmMacroContext mc, const char * n)
+static void popMacro(rpmMacroContext mc, const std::string & n)
 {
     auto const & entry = mc->tab.find(n);
     if (entry == mc->tab.end())
@@ -2159,7 +2159,7 @@ int macros::load(const char *fn)
     return loadMacroFile(mc, fn);
 }
 
-int macros::pop(const char *n)
+int macros::pop(const std::string & n)
 {
     popMacro(mc, n);
     return 0;
