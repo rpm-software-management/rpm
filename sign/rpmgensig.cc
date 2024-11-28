@@ -246,7 +246,7 @@ static int runGPG(sigTarget sigt, const char *sigfile)
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[1]);
 
-	rc = execve(argv[0], argv+1, environ);
+	rc = execve(argv[0], argv, environ);
 
 	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), argv[0],
 		strerror(errno));

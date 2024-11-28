@@ -624,7 +624,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 %__gpg			@__GPG@
 %__gpg_sign_cmd			%{shescape:%{__gpg}} \
-	gpg --no-verbose --no-armor --no-secmem-warning \
+	--no-verbose --no-armor --no-secmem-warning \
 	%{?_gpg_path:--homedir %{shescape:%{_gpg_path}}} \
 	%{?_gpg_digest_algo:--digest-algo=%{_gpg_digest_algo}} \
 	%{?_gpg_sign_cmd_extra_args} \
@@ -634,7 +634,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 
 %__sq @__SQ@
 %__sq_sign_cmd		%{shescape:%{__sq}} \
-	%{__sq} sign \
+	sign \
 	%{?_sq_path:--homedir %{shescape:%{_sq_path}}} \
         %{?_openpgp_sign_id:--signer-key %{_openpgp_sign_id}} \
 	%{?_sq_sign_cmd_extra_args} \
