@@ -131,6 +131,15 @@ static void popMacro(rpmMacroContext mc, const char * n);
 static int loadMacroFile(rpmMacroContext mc, const char * fn);
 /* =============================================================== */
 
+static rpmMacroEntry
+findEntry(rpmMacroContext mc, const string & n, size_t *pos)
+{
+    auto const & entry = mc->tab.find(n);
+    if (entry == mc->tab.end())
+	return NULL;
+    return &entry->second.top();
+}
+
 /**
  * Find entry in macro table.
  * @param mc		macro context
@@ -145,10 +154,7 @@ findEntry(rpmMacroContext mc, const char *name, size_t namelen, size_t *pos)
     if (namelen == 0)
 	namelen = strlen(name);
     string n(name, namelen);
-    auto const & entry = mc->tab.find(n);
-    if (entry == mc->tab.end())
-	return NULL;
-    return &entry->second.top();
+    return findEntry(mc, n, pos);
 }
 
 /* =============================================================== */
