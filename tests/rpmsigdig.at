@@ -1220,5 +1220,26 @@ rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /data/RPMS/imatest-1.0-1.fc34.
 /usr/share/example2:030204a598255400473045022100c10943795bff5d9c0db53dd4f8e4b845615fd08a2be295c30a80f5bdb4e6a41302203038840cc6abaab92acb56cb3e3ce520b17f22ff7444a8d5d0f703a44d5307a3
 ],
 [ignore])
+RPMTEST_CLEANUP
 
+
+AT_SETUP([--delsign with misplaced ima signature])
+AT_KEYWORDS([rpmsign file signature])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+RPMTEST_CHECK([
+cp /data/RPMS/hello-2.0-1.x86_64-badima.rpm .
+rpmsign --delsign hello-2.0-1.x86_64-badima.rpm
+],
+[0],
+[hello-2.0-1.x86_64-badima.rpm:
+],
+[])
+
+RPMTEST_CHECK([
+rpm -qp hello-2.0-1.x86_64-badima.rpm
+],
+[0],
+[hello-2.0-1.x86_64
+],
+[])
 RPMTEST_CLEANUP
