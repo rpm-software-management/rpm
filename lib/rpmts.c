@@ -335,8 +335,15 @@ static int loadKeyringFromDB(rpmts ts)
 	struct rpmtd_s pubkeys;
 	const char *key;
 
-	if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
-	   continue;
+	/* don't allow normal packages named gpg-pubkey */
+	if (headerIsEntry(h, RPMTAG_ARCH) || headerIsEntry(h, RPMTAG_OS) ||
+	    !headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
+	{
+	    char *nevr = headerGetAsString(h, RPMTAG_NEVR);
+	    rpmlog(RPMLOG_WARNING, _("%s is not a valid public key\n"), nevr);
+	    free(nevr);
+	    continue;
+	}
 
 	while ((key = rpmtdNextString(&pubkeys))) {
 	    uint8_t *pkt;
