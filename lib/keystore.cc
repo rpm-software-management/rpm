@@ -247,11 +247,17 @@ rpmRC keystore_rpmdb::load_keys(rpmtxn txn, rpmKeyring keyring)
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	struct rpmtd_s pubkeys;
 	const char *key;
-
-	if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
-	   continue;
-
 	char *nevr = headerGetAsString(h, RPMTAG_NEVR);
+
+	/* don't allow normal packages named gpg-pubkey */
+	if (headerIsEntry(h, RPMTAG_ARCH) || headerIsEntry(h, RPMTAG_OS) ||
+	    !headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
+	{
+	    rpmlog(RPMLOG_WARNING, _("%s is not a valid public key\n"), nevr);
+	    free(nevr);
+	    continue;
+	}
+
 	while ((key = rpmtdNextString(&pubkeys))) {
 	    uint8_t *pkt;
 	    size_t pktlen;
