@@ -161,6 +161,11 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 	(p->type != TR_REMOVED || !rstreq(p->name, "gpg-pubkey")))
 	    goto exit;
 
+    if (p->type != TR_REMOVED && rstreq(p->name, "gpg-pubkey")) {
+	rpmlog(RPMLOG_ERR, _("public keys can not be installed as gpg-pubkey packages; use rpmkeys --import <keyfile> for that\n"));
+	goto exit;
+    }
+
     p->isSource = headerIsSource(h);
     
     p->NEVR = headerGetAsString(h, RPMTAG_NEVR);
