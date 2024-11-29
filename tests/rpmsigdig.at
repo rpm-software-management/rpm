@@ -1847,7 +1847,6 @@ RPMTEST_CLEANUP
 
 AT_SETUP([--delsign with misplaced ima signature])
 AT_KEYWORDS([rpmsign file signature])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMTEST_CHECK([
 cp /data/RPMS/hello-2.0-1.x86_64-badima.rpm .
 rpmsign --delsign hello-2.0-1.x86_64-badima.rpm
