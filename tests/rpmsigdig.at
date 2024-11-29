@@ -130,7 +130,8 @@ runroot rpm -qa gpg-pubkey
 ],
 [0],
 [],
-[])
+[warning: erasing gpg-pubkey packages is deprecated; use rpmkeys --delete 771b18d3d7baa28734333c424344591e1964c5fc
+])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys migrate from keyid to fingerprint (rpmdb)])

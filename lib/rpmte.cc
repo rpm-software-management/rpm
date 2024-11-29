@@ -159,9 +159,13 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->arch = headerGetAsString(h, RPMTAG_ARCH);
     p->os = headerGetAsString(h, RPMTAG_OS);
 
-    /* gpg-pubkey's dont have os or arch (sigh), for others they are required */
-    if (!rstreq(p->name, "gpg-pubkey") && (p->arch == NULL || p->os == NULL))
-	goto exit;
+    if (p->arch == NULL || p->os == NULL) {
+	if (p->type == TR_REMOVED && rstreq(p->name, "gpg-pubkey")) {
+	    rpmlog(RPMLOG_WARNING, _("erasing gpg-pubkey packages is deprecated; use rpmkeys --delete %s\n"), p->version);
+	} else {
+	    goto exit;
+	}
+    }
 
     p->isSource = headerIsSource(h);
     
