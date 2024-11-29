@@ -698,8 +698,8 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    flags &= ~(RPMSIGN_FLAG_RPMV4|RPMSIGN_FLAG_RPMV3);
     }
 
-    unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+    unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
 
     if (flags & RPMSIGN_FLAG_IMA) {
 	if (includeFileSignatures(&sigh, &h))
@@ -745,12 +745,13 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 
     /* Adjust reserved size for added/removed signatures */
     if (headerGet(sigh, reserveTag, &utd, HEADERGET_MINMEM)) {
-	int diff = headerSizeof(sigh, HEADER_MAGIC_YES) - origSigSize;
+	unsigned newSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+	int diff = newSize - origSigSize;
 
 	/* diff can be zero if nothing was added or removed */
 	if (diff) {
 	    utd.count -= diff;
-	    if (utd.count > 0 && utd.count < origSigSize) {
+	    if (utd.count > 0 && newSize + utd.count <= origSigSize) {
 		uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
 		utd.data = zeros;
 		headerMod(sigh, &utd);
