@@ -122,6 +122,15 @@ runroot rpmkeys --list
 [0],
 [],
 [])
+
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+RPMTEST_CHECK([
+runroot rpm -e gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc
+runroot rpm -qa gpg-pubkey
+],
+[0],
+[],
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmkeys migrate from keyid to fingerprint (rpmdb)])
