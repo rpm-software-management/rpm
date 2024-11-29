@@ -360,6 +360,23 @@ adding upgrade to transaction failed
 ],
 [])
 
+RPMPY_TEST([add bogus package to transaction 4],[
+
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
+del h["name"]
+h["name"] = "gpg-pubkey"
+try:
+    ts.addInstall(h, 'foo', 'u')
+except rpm.error as err:
+    myprint(err)
+for e in ts:
+    myprint(e.NEVRA())
+],
+[adding upgrade to transaction failed
+],
+[error: public keys can not be installed as gpg-pubkey packages; use rpmkeys --import <keyfile> for that
+])
+
 RPMPY_TEST([transaction element userdata],[
 mydata = { 'foo': 'bar', 'capstest': 'lock' }
 ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'u')
