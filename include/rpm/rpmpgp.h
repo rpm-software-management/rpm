@@ -143,10 +143,13 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_MD2		=  5,	/*!< MD2 */
     PGPHASHALGO_TIGER192	=  6,	/*!< TIGER192 */
     PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
-    PGPHASHALGO_SHA256		=  8,	/*!< SHA256 */
-    PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
-    PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
-    PGPHASHALGO_SHA224		= 11,	/*!< SHA224 */
+    PGPHASHALGO_SHA256		=  8,	/*!< SHA2-256 */
+    PGPHASHALGO_SHA384		=  9,	/*!< SHA2-384 */
+    PGPHASHALGO_SHA512		= 10,	/*!< SHA2-512 */
+    PGPHASHALGO_SHA224		= 11,	/*!< SHA2-224 */
+    PGPHASHALGO_SHA3_256	= 12,	/*!< SHA3-256 */
+					/*!< 13 reserved */
+    PGPHASHALGO_SHA3_512	= 14,	/*!< SHA3-256 */
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp

@@ -395,6 +395,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	8	SHA256 (default)
 #	9	SHA384
 #	10	SHA512
+#	12	SHA3-256
+#	14	SHA3-512
 #
 %_source_filedigest_algorithm	8
 %_binary_filedigest_algorithm	8
