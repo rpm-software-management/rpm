@@ -66,6 +66,12 @@ static const EVP_MD *getEVPMD(int hashalgo)
     case RPM_HASH_SHA224:
         return EVP_sha224();
 
+    case RPM_HASH_SHA3_256:
+        return EVP_sha3_256();
+
+    case RPM_HASH_SHA3_512:
+        return EVP_sha3_512();
+
     default:
         return EVP_md_null();
     }

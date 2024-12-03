@@ -23,10 +23,13 @@ typedef enum rpmHashAlgo_e {
     RPM_HASH_MD2		=  5,	/*!< MD2 */
     RPM_HASH_TIGER192		=  6,	/*!< TIGER192 */
     RPM_HASH_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
-    RPM_HASH_SHA256		=  8,	/*!< SHA256 */
-    RPM_HASH_SHA384		=  9,	/*!< SHA384 */
-    RPM_HASH_SHA512		= 10,	/*!< SHA512 */
-    RPM_HASH_SHA224		= 11,	/*!< SHA224 */
+    RPM_HASH_SHA256		=  8,	/*!< SHA2-256 */
+    RPM_HASH_SHA384		=  9,	/*!< SHA2-384 */
+    RPM_HASH_SHA512		= 10,	/*!< SHA2-512 */
+    RPM_HASH_SHA224		= 11,	/*!< SHA2-224 */
+    RPM_HASH_SHA3_256		= 12,	/*!< SHA3-256 */
+					/*!< reserved */
+    RPM_HASH_SHA3_512		= 14,	/*!< SHA3-512 */
 } rpmHashAlgo;
 
 /** \ingroup rpmcrypto
