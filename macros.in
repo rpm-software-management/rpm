@@ -370,7 +370,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #%packager
 
 #	Compression type and level for source/binary package payloads.
-#		"w9.gzdio"	gzip level 9 (default).
+#		"w9.gzdio"	gzip level 9 (v4 and srpm default)
 #		"w9.bzdio"	bzip2 level 9.
 #		"w6.xzdio"	xz level 6, xz's default.
 #		"w7T16.xzdio"	xz level 7 using 16 threads
@@ -380,10 +380,11 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #		"w3.zstdio"	zstd level 3, zstd's default
 #		"w19T8.zstdio"	zstd level 19 using 8 threads
 #		"w7T0.zstdio"	zstd level 7 using %{getncpus} threads
+#		"w19.zstdio"	zstd level 19 (v6 default)
 #		"w.ufdio"	uncompressed
 #
 #%_source_payload	w9.gzdio
-#%_binary_payload	w9.gzdio
+%_binary_payload	%[ %_rpmformat >=6 ? "w19.zstdio" : "w9.gzdio" ]
 
 #	Algorithm to use for generating file checksum digests on build.
 #	If not specified or 0, MD5 is used.
