@@ -38,9 +38,12 @@ _macro path_ uses this to achieve the following hierarchy of settings:
 
 The default _macro path_ can be inspected with *rpm --showrc|grep ^Macro*.
 
-In older versions of rpm, the path of per-user macros was _~/.rpmmacros_.
-This is still processed if it exists and the new configuration directory
-does not exist.
+In older versions of rpm, the path of per-user macros was
+_~/.rpmmacros_.  RPM will try to move this file to the new
+locations. If this is not possible it will create
+_~/.rpmconfig_migration_lock_ to prevent attempting the migration over
+and over again. In this case the file is still processed if it exists
+and the new configuration directory does not exist.
 
 # CONFIGURATION
 The following configurables are supported for the *rpm* runtime (as
