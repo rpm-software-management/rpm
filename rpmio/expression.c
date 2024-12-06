@@ -593,7 +593,7 @@ static Value doFunction(ParseState state)
   if (!strncmp(vname->data.s, "lua:", 4))
     v = doLuaFunction(state, vname->data.s + 4, narg, varg);
   else
-    exprErr(state, _("unsupported funcion"), state->p);
+    exprErr(state, _("unsupported function"), state->p);
 
 exit:
   for (i = 0; i < narg; i++)
