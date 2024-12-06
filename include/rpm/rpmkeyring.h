@@ -23,7 +23,8 @@ extern "C" {
 typedef enum rpmKeyringModifyMode_e {
     RPMKEYRING_ADD	= 1,
     RPMKEYRING_REPLACE	= 2,
-    RPMKEYRING_DELETE	= 3
+    RPMKEYRING_DELETE	= 3,
+    RPMKEYRING_MERGE	= 4,
 } rpmKeyringModifyMode;
 
 
@@ -132,6 +133,15 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key);
  * @return		new pubkey reference
  */
 rpmPubkey rpmPubkeyLink(rpmPubkey key);
+
+
+/** \ingroup rpmkeyring
+ * Return pubkey as raw bytes
+ * @param key           Pubkey
+ * @param pkt		key data
+ * @param pktlen	Length of key data
+ */
+void rpmPubkeyRawData(rpmPubkey key, unsigned const char ** pkt, size_t * pktlen);
 
 /** \ingroup rpmkeyring
  * Return base64 encoding of pubkey
