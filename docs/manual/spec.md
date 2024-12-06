@@ -170,17 +170,26 @@ Short (< 70 characters) summary of the package.
 
 Used to declare source(s) used to build the package. All sources will
 will be packaged into source rpms.
-Arbitrary number of sources may be declared, for example:
+Arbitrary number of sources may be declared. A numbered source is
+indexed by the given integer, while an unnumbered source is indexed by
+the next available integer.
+For example, these sources:
 
 ```
-	Source0: mysoft-1.0.tar.gz
-	Source1: mysoft-data-1.0.zip
+	Source:    mysoft-1.0.tar.gz
+	Source02:  mysoft-data-1.0.zip
+	Source:    next.txt
+	Source05:  five.txt
 ```
+
+get indices 0, 2, 3, and 5. For clarity, mixing numbered and unnumbered
+sources in one specfile is not recommended.
 
 #### Patch
 
 Used to declare patches applied on top of sources. All patches declared
-will be packaged into source rpms.
+will be packaged into source rpms. Just like sources, patches can be
+numbered or unnumbered and are indexed in the same way.
 
 #### Icon
 
@@ -471,6 +480,18 @@ variants of the same content (eg minimal and full versions of the same
 software). 
 
 ### Sub-sections
+
+#### `%sourcelist`
+
+List of sources, one per row. Handled like unnumbered Source tags. For
+clarity, mixing Source tags and `%sourcelist` in one specfile is not
+recommended.
+
+#### `%patchlist`
+
+List of patches, one per row. Handled like unnumbered Patch tags. For
+clarity, mixing Patch tags and `%patchlist` in one specfile is not
+recommended.
 
 #### `%package [-n]<name>`
 
