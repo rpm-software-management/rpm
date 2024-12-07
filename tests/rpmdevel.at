@@ -43,6 +43,9 @@ runroot rpmbuild --quiet -bb \
 	/data/SPECS/simple.spec \
 	/data/SPECS/fakeshell.spec
 
+runroot rpmbuild --quiet -bs \
+	/data/SPECS/simple.spec
+
 runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
 
 cmake /data/debugplugin && make && make install DESTDIR=${RPMTEST}
@@ -70,5 +73,14 @@ debug_psm_post: simple-1.0-1.noarch:0
 debug_tsm_post: 0
 debug_cleanup
 ])
-RPMTEST_CLEANUP
 
+RPMTEST_CHECK([
+runroot rpm -i /build/SRPMS/simple-1.0-1.src.rpm
+],
+[0],
+[],
+[debug_init
+debug_cleanup
+])
+
+RPMTEST_CLEANUP

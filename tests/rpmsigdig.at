@@ -1908,4 +1908,19 @@ rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" hello-2.0-1.x86_64-badima.rpm
 /usr/share/doc/hello-2.0/README:(none)
 ],
 [])
+
+RPMTEST_CHECK([
+cp /data/SRPMS/hello-1.0-1.src.rpm /tmp/
+rpmsign --debug --key-id 4344591E1964C5FC \
+	--addsign --signfiles --fskpath=/data/keys/privkey.pem \
+	/tmp/hello-1.0-1.src.rpm 2>&1 | grep "File signatures not applicable"
+# Avoid spurious NOKEY warning
+rpmsign --delsign /tmp/hello-1.0-1.src.rpm
+rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /tmp/hello-1.0-1.src.rpm
+],
+[0],
+[D: File signatures not applicable to src.rpm: /tmp/hello-1.0-1.src.rpm
+hello-1.0.tar.gz:(none)
+],
+[])
 RPMTEST_CLEANUP

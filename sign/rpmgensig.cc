@@ -698,6 +698,12 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    flags &= ~(RPMSIGN_FLAG_RPMV4|RPMSIGN_FLAG_RPMV3);
     }
 
+    if (headerIsSource(h)) {
+	rpmlog(RPMLOG_DEBUG,
+	    _("File signatures not applicable to src.rpm: %s\n"), rpm);
+	flags &= ~(RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY);
+    }
+
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
     unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
 

@@ -875,13 +875,21 @@ static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
     return rpmfiFree(fi);
 }
 
+static rpmPlugins fsmPlugins(rpmts ts, rpmte te)
+{
+    Header h = rpmteHeader(te);
+    int isSource = headerIsSource(h);
+    headerFree(h);
+    return (isSource ? NULL : rpmtsPlugins(ts));
+}
+
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     FD_t payload = rpmtePayload(te);
     rpmfi fi = NULL;
     rpmfs fs = rpmteGetFileStates(te);
-    rpmPlugins plugins = rpmtsPlugins(ts);
+    rpmPlugins plugins = fsmPlugins(ts, te);
     int rc = 0;
     int fx = -1;
     int fc = rpmfilesFC(files);
@@ -1123,7 +1131,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     struct diriter_s di = { -1, -1 };
     rpmfi fi = fsmIter(NULL, files, RPMFI_ITER_BACK, &di);
     rpmfs fs = rpmteGetFileStates(te);
-    rpmPlugins plugins = rpmtsPlugins(ts);
+    rpmPlugins plugins = fsmPlugins(ts, te);
     int fc = rpmfilesFC(files);
     int fx = -1;
     struct filedata_s *fdata = (struct filedata_s *)xcalloc(fc, sizeof(*fdata));

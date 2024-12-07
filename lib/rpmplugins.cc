@@ -34,6 +34,8 @@ struct rpmPlugins_s {
 
 static rpmPlugin rpmpluginsGetPlugin(rpmPlugins plugins, const char *name)
 {
+    if (!plugins)
+	return NULL;
     for (auto & plugin : plugins->plugins) {
 	if (rstreq(plugin->name, name)) {
 	    return plugin;
@@ -136,6 +138,9 @@ void rpmPluginSetData(rpmPlugin plugin, void *data)
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
+    if (plugins == NULL)
+	return RPMRC_OK;
+
     rpmRC rc;
     rpmPlugin plugin = rpmPluginNew(name, path, opts);
 
@@ -235,6 +240,9 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
     plugin_tsm_pre_func hookFunc;
     rpmRC rc = RPMRC_OK;
 
+    if (!plugins)
+	return rc;
+
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(tsm_pre);
 	if (hookFunc && hookFunc(plugin, ts) == RPMRC_FAIL) {
@@ -251,6 +259,9 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
     plugin_tsm_post_func hookFunc;
     rpmRC rc = RPMRC_OK;
 
+    if (!plugins)
+	return rc;
+
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(tsm_post);
 	if (hookFunc && hookFunc(plugin, ts, res) == RPMRC_FAIL) {
@@ -265,6 +276,9 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
 {
     plugin_psm_pre_func hookFunc;
     rpmRC rc = RPMRC_OK;
+
+    if (!plugins)
+	return rc;
 
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(psm_pre);
@@ -282,6 +296,9 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
     plugin_psm_post_func hookFunc;
     rpmRC rc = RPMRC_OK;
 
+    if (!plugins)
+	return rc;
+
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(psm_post);
 	if (hookFunc && hookFunc(plugin, te, res) == RPMRC_FAIL) {
@@ -296,6 +313,9 @@ rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int typ
 {
     plugin_scriptlet_pre_func hookFunc;
     rpmRC rc = RPMRC_OK;
+
+    if (!plugins)
+	return rc;
 
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_pre);
@@ -313,6 +333,9 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
     plugin_scriptlet_fork_post_func hookFunc;
     rpmRC rc = RPMRC_OK;
 
+    if (!plugins)
+	return rc;
+
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_fork_post);
 	if (hookFunc && hookFunc(plugin, path, type) == RPMRC_FAIL) {
@@ -328,6 +351,9 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
 {
     plugin_scriptlet_post_func hookFunc;
     rpmRC rc = RPMRC_OK;
+
+    if (!plugins)
+	return rc;
 
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(scriptlet_post);
@@ -352,8 +378,11 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char *path,
 {
     plugin_fsm_file_pre_func hookFunc;
     rpmRC rc = RPMRC_OK;
-    char *apath = abspath(fi, path);
 
+    if (!plugins)
+	return rc;
+
+    char *apath = abspath(fi, path);
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_pre);
 	if (hookFunc && hookFunc(plugin, fi, apath, file_mode, op) == RPMRC_FAIL) {
@@ -371,8 +400,11 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char *path,
 {
     plugin_fsm_file_post_func hookFunc;
     rpmRC rc = RPMRC_OK;
-    char *apath = abspath(fi, path);
 
+    if (!plugins)
+	return rc;
+
+    char *apath = abspath(fi, path);
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_post);
 	if (hookFunc && hookFunc(plugin, fi, apath, file_mode, op, res) == RPMRC_FAIL) {
@@ -390,8 +422,11 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
 {
     plugin_fsm_file_prepare_func hookFunc;
     rpmRC rc = RPMRC_OK;
-    char *apath = abspath(fi, path);
 
+    if (!plugins)
+	return rc;
+
+    char *apath = abspath(fi, path);
     for (auto & plugin : plugins->plugins) {
 	RPMPLUGINS_SET_HOOK_FUNC(fsm_file_prepare);
 	if (hookFunc && hookFunc(plugin, fi, fd, apath, dest, file_mode, op) == RPMRC_FAIL) {
