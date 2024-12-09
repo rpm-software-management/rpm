@@ -603,14 +603,19 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpm \
+rpm \
+  --define "_topdir $PWD/build" \
   -U /data/SRPMS/hello-1.0-1.src.rpm
+ls build/*
 ],
 [0],
-[ignore],
-[ignore])
+[build/SOURCES:
+hello-1.0.tar.gz
+
+build/SPECS:
+hello.spec
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
@@ -618,14 +623,46 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm -i *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
+rpm \
+  --define "_topdir $PWD/build" \
+  -i /data/SRPMS/hello-1.0-1.src.rpm
+ls build/*
+],
+[0],
+[build/SOURCES:
+hello-1.0.tar.gz
+
+build/SPECS:
+hello.spec
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
+# Check if rpm -i *.src.rpm *.rpm works
+AT_SETUP([rpm -i *.src.rpm *.rpm])
+AT_KEYWORDS([install])
+RPMTEST_CHECK([
 RPMDB_INIT
 
 runroot rpm \
-  -i /data/SRPMS/hello-1.0-1.src.rpm
+  --define "_topdir /tmp/build" \
+  --ignorearch --ignoreos --nodeps \
+  -i /data/SRPMS/hello-1.0-1.src.rpm \
+     /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q hello; echo
+runroot_other sh -c 'ls /tmp/build/*'
 ],
 [0],
-[ignore],
-[ignore])
+[hello-2.0-1.x86_64
+
+/tmp/build/SOURCES:
+hello-1.0.tar.gz
+
+/tmp/build/SPECS:
+hello.spec
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
