@@ -639,6 +639,33 @@ hello.spec
 RPMTEST_CLEANUP
 
 # ------------------------------
+# Check if rpm -i *.src.rpm *.rpm works
+AT_SETUP([rpm -i *.src.rpm *.rpm])
+AT_KEYWORDS([install])
+RPMTEST_CHECK([
+RPMDB_INIT
+
+runroot_other sh -c 'rm /build/*/*'
+runroot rpm \
+  --ignorearch --ignoreos --nodeps \
+  -i /data/SRPMS/hello-1.0-1.src.rpm \
+     /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q hello; echo
+runroot_other sh -c 'ls /build/*'
+],
+[0],
+[hello-2.0-1.x86_64
+
+/build/SOURCES:
+hello-1.0.tar.gz
+
+/build/SPECS:
+hello.spec
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
 # Various error behavior tests
 #
 AT_SETUP([rpm -i <nonexistent file>])

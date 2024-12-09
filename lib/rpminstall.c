@@ -661,6 +661,7 @@ restart:
 	rpmcliProgressState = 0;
 	rpmcliProgressTotal = 0;
 	rpmcliProgressCurrent = 0;
+	rpmtsEmpty(ts);
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    if (eiu->sourceURL[i] != NULL) {
 	        rc = RPMRC_OK;
