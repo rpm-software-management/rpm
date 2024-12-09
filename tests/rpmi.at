@@ -603,14 +603,19 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpm \
+rpm \
+  --define "_topdir $PWD/build" \
   -U /data/SRPMS/hello-1.0-1.src.rpm
+ls build/*
 ],
 [0],
-[ignore],
-[ignore])
+[build/SOURCES:
+hello-1.0.tar.gz
+
+build/SPECS:
+hello.spec
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
@@ -618,14 +623,19 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm -i *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMDB_INIT
-
-runroot rpm \
+rpm \
+  --define "_topdir $PWD/build" \
   -i /data/SRPMS/hello-1.0-1.src.rpm
+ls build/*
 ],
 [0],
-[ignore],
-[ignore])
+[build/SOURCES:
+hello-1.0.tar.gz
+
+build/SPECS:
+hello.spec
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
