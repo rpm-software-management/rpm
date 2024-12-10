@@ -8,6 +8,8 @@
 
 namespace rpm {
 
+rpmRC check_backends(rpmtxn txn, rpmts ts);
+
 class keystore {
 public:
     virtual std::string get_name() { return "None"; };

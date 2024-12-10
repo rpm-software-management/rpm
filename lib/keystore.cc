@@ -96,6 +96,27 @@ exit:
     return rc;
 }
 
+rpmRC rpm::check_backends(rpmtxn txn, rpmts ts)
+{
+    rpmRC rc = RPMRC_OK;
+
+    keystore_fs ks_fs = {};
+    keystore_rpmdb ks_rpmdb = {};
+    keystore_openpgp_cert_d ks_opengpg = {};
+
+    for (keystore *ks : std::vector<keystore*> {&ks_fs, &ks_rpmdb, &ks_opengpg}) {
+	if (ks->get_name() == ts->keystore->get_name())
+	    continue;
+	rpmKeyring keyring = rpmKeyringNew();
+	ks->load_keys(txn, keyring);
+	if (!rpmKeyringIsEmpty(keyring)) {
+	    rpmlog(RPMLOG_WARNING, _("there are public keys in the %s backend which is not the one configured (%s); use rpmkeys --rebuild to integrate or discard them\n"), ks->get_name().c_str(), ts->keystore->get_name().c_str());
+	    rc = RPMRC_FAIL;
+	}
+	rpmKeyringFree(keyring);
+    }
+    return rc;
+}
 
 /*****************************************************************************/
 

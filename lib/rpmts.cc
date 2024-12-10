@@ -299,6 +299,7 @@ static void loadKeyring(rpmts ts)
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
 	if (txn) {
 	    ts->keystore->load_keys(txn, ts->keyring);
+	    check_backends(txn, ts);
 	    rpmtxnEnd(txn);
 	}
     }
