@@ -41,6 +41,13 @@ rpmKeyring rpmKeyringNew(void);
 rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
+ * Check if there are no keys in the keyring.
+ * @param keyring	keyring handle
+ * @return		1 if keyring is empy, 0 otherwise
+ */
+int rpmKeyringIsEmpty(rpmKeyring keyring);
+
+/** \ingroup rpmkeyring
  * Add a public key to keyring.
  * @param keyring	keyring handle
  * @param key		pubkey handle

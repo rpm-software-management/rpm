@@ -71,6 +71,14 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
+int rpmKeyringIsEmpty(rpmKeyring keyring)
+{
+    if (!keyring) return 1;
+    rdlock lock(keyring->mutex);
+    return keyring->keys.empty();
+}
+
+
 rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused)
 {
     if (!keyring || unused != 0)
