@@ -525,7 +525,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba,
     }
 
     /* Create build tree if necessary */
-    if (rpmMkdirs(root, "%{_topdir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}"))
+    if (rpmMkdirs(root, "%{_topdir}:%{_top_builddir}:%{_rpmdir}:%{_srcrpmdir}"))
 	goto exit;
 
     if ((rc = rpmSpecBuild(ts, spec, ba))) {

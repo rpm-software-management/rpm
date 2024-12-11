@@ -68,6 +68,14 @@ runroot rpmbuild -bs \
 [ignore],
 [ignore])
 
+# -bs must not leave junk behind
+RPMTEST_CHECK([
+ls ${RPMTEST}/build/BUILD
+],
+[0],
+[],
+[])
+
 RPMTEST_CHECK([
 runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
 ],

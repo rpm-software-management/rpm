@@ -140,6 +140,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	mTemplate = "%{__spec_builddir_template}";
 	mPost = "%{__spec_builddir_post}";
 	mCmd = "%{__spec_builddir_cmd}";
+	break;
     case RPMBUILD_PREP:
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
