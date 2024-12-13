@@ -1842,6 +1842,14 @@ void rpmFreeRpmrc(void)
     return;
 }
 
+static void printEquivs(FILE *fp, const char *title, machEquivTable table)
+{
+    fprintf(fp, "%s", title);
+    for (int i = 0; i < table->count; i++)
+	fprintf(fp," %s", table->list[i].name);
+    fprintf(fp, "\n");
+}
+
 int rpmShowRC(FILE * fp)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire();
@@ -1850,25 +1858,18 @@ int rpmShowRC(FILE * fp)
     const struct rpmOption *opt;
     rpmds ds = NULL;
     int i;
-    machEquivTable equivTable;
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");
     fprintf(fp, "build arch            : %s\n", ctx->current[ARCH]);
 
-    fprintf(fp, "compatible build archs:");
-    equivTable = &ctx->tables[RPM_MACHTABLE_BUILDARCH].equiv;
-    for (i = 0; i < equivTable->count; i++)
-	fprintf(fp," %s", equivTable->list[i].name);
-    fprintf(fp, "\n");
+    printEquivs(fp, "compatible build archs:",
+		&ctx->tables[RPM_MACHTABLE_BUILDARCH].equiv);
 
     fprintf(fp, "build os              : %s\n", ctx->current[OS]);
 
-    fprintf(fp, "compatible build os's :");
-    equivTable = &ctx->tables[RPM_MACHTABLE_BUILDOS].equiv;
-    for (i = 0; i < equivTable->count; i++)
-	fprintf(fp," %s", equivTable->list[i].name);
-    fprintf(fp, "\n");
+    printEquivs(fp, "compatible build os's :",
+		&ctx->tables[RPM_MACHTABLE_BUILDOS].equiv);
 
     rpmSetTables(ctx, RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetMachine(ctx, NULL, NULL);	/* XXX WTFO? Why bother? */
@@ -1876,17 +1877,11 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "install arch          : %s\n", ctx->current[ARCH]);
     fprintf(fp, "install os            : %s\n", ctx->current[OS]);
 
-    fprintf(fp, "compatible archs      :");
-    equivTable = &ctx->tables[RPM_MACHTABLE_INSTARCH].equiv;
-    for (i = 0; i < equivTable->count; i++)
-	fprintf(fp," %s", equivTable->list[i].name);
-    fprintf(fp, "\n");
+    printEquivs(fp, "compatible archs      :",
+		&ctx->tables[RPM_MACHTABLE_INSTARCH].equiv);
 
-    fprintf(fp, "compatible os's       :");
-    equivTable = &ctx->tables[RPM_MACHTABLE_INSTOS].equiv;
-    for (i = 0; i < equivTable->count; i++)
-	fprintf(fp," %s", equivTable->list[i].name);
-    fprintf(fp, "\n");
+    printEquivs(fp, "compatible os's       :",
+		&ctx->tables[RPM_MACHTABLE_INSTOS].equiv);
 
     dbShowRC(fp);
 
