@@ -4,6 +4,7 @@
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <fcntl.h>
 #include <stdarg.h>
@@ -62,15 +63,11 @@ typedef struct machCache_s {
     int size;
 } * machCache;
 
-typedef struct machEquivInfo_s {
-    char * name;
+struct machEquivInfo {
+    std::string name;
     int score;
-} * machEquivInfo;
-
-typedef struct machEquivTable_s {
-    int count;
-    machEquivInfo list;
-} * machEquivTable;
+    machEquivInfo(std::string name, int score) : name(name), score(score) {};
+};
 
 struct rpmvarValue {
     char * value;
@@ -100,6 +97,7 @@ struct canonEntry {
 
 using defaultsTable = std::unordered_map<std::string,std::string>;
 using canonsTable = std::unordered_map<std::string,canonEntry>;
+using machEquivTable = std::vector<machEquivInfo>;
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
  *
@@ -109,7 +107,7 @@ typedef struct tableType_s {
     const char *key;
     const int hasCanon;
     const int hasTranslate;
-    struct machEquivTable_s equiv;
+    machEquivTable equiv;
     struct machCache_s cache;
     defaultsTable defaults;
     canonsTable canons;
@@ -263,38 +261,27 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     return 0;
 }
 
-static machEquivInfo
-machEquivSearch(const machEquivTable table, const char * name)
+static const machEquivInfo *
+machEquivSearch(const machEquivTable & table, const char * name)
 {
-    int i;
-
-    for (i = 0; i < table->count; i++)
-	if (!rstrcasecmp(table->list[i].name, name))
-	    return table->list + i;
+    for (size_t i = 0; i < table.size(); i++)
+	if (!rstrcasecmp(table[i].name.c_str(), name))
+	    return &table[i];
 
     return NULL;
 }
 
-static void machAddEquiv(machEquivTable table, const char * name,
+static void machAddEquiv(machEquivTable & table, const char * name,
 			   int distance)
 {
-    machEquivInfo equiv;
-
-    equiv = machEquivSearch(table, name);
+    const machEquivInfo * equiv = machEquivSearch(table, name);
     if (!equiv) {
-	if (table->count)
-	    table->list = xrealloc(table->list, (table->count + 1)
-				    * sizeof(*table->list));
-	else
-	    table->list = (machEquivInfo)xmalloc(sizeof(*table->list));
-
-	table->list[table->count].name = xstrdup(name);
-	table->list[table->count++].score = distance;
+	table.emplace_back(name, distance);
     }
 }
 
 static void machCacheEntryVisit(machCache cache,
-		machEquivTable table, const char * name, int distance)
+		machEquivTable & table, const char * name, int distance)
 {
     machCacheEntry entry;
     int i;
@@ -313,7 +300,7 @@ static void machCacheEntryVisit(machCache cache,
     }
 }
 
-static void machFindEquivs(machCache cache, machEquivTable table,
+static void machFindEquivs(machCache cache, machEquivTable & table,
 		const char * key)
 {
     int i;
@@ -321,19 +308,13 @@ static void machFindEquivs(machCache cache, machEquivTable table,
     for (i = 0; i < cache->size; i++)
 	cache->cache[i].visited = 0;
 
-    while (table->count > 0) {
-	--table->count;
-	table->list[table->count].name = _free(table->list[table->count].name);
-    }
-    table->count = 0;
-    table->list = _free(table->list);
+    table.clear();
 
     /*
      *	We have a general graph built using strings instead of pointers.
      *	Yuck. We have to start at a point at traverse it, remembering how
      *	far away everything is.
      */
-   	/* FIX: table->list may be NULL. */
     machAddEquiv(table, key, 1);
     machCacheEntryVisit(cache, table, key, 2);
     return;
@@ -1555,7 +1536,7 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
     machFindEquivs(&ctx->tables[ctx->currTables[type]].cache,
-		   &ctx->tables[ctx->currTables[type]].equiv,
+		   ctx->tables[ctx->currTables[type]].equiv,
 		   name);
 }
 
@@ -1791,12 +1772,7 @@ void rpmFreeRpmrc(void)
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
 	tableType t;
 	t = ctx->tables + i;
-	if (t->equiv.list) {
-	    for (j = 0; j < t->equiv.count; j++)
-		t->equiv.list[j].name = _free(t->equiv.list[j].name);
-	    t->equiv.list = _free(t->equiv.list);
-	    t->equiv.count = 0;
-	}
+	t->equiv.clear();
 	if (t->cache.cache) {
 	    for (j = 0; j < t->cache.size; j++) {
 		machCacheEntry e;
@@ -1842,11 +1818,11 @@ void rpmFreeRpmrc(void)
     return;
 }
 
-static void printEquivs(FILE *fp, const char *title, machEquivTable table)
+static void printEquivs(FILE *fp, const char *title, const machEquivTable & table)
 {
     fprintf(fp, "%s", title);
-    for (int i = 0; i < table->count; i++)
-	fprintf(fp," %s", table->list[i].name);
+    for (auto const & e : table)
+	fprintf(fp," %s", e.name.c_str());
     fprintf(fp, "\n");
 }
 
@@ -1864,12 +1840,12 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "build arch            : %s\n", ctx->current[ARCH]);
 
     printEquivs(fp, "compatible build archs:",
-		&ctx->tables[RPM_MACHTABLE_BUILDARCH].equiv);
+		ctx->tables[RPM_MACHTABLE_BUILDARCH].equiv);
 
     fprintf(fp, "build os              : %s\n", ctx->current[OS]);
 
     printEquivs(fp, "compatible build os's :",
-		&ctx->tables[RPM_MACHTABLE_BUILDOS].equiv);
+		ctx->tables[RPM_MACHTABLE_BUILDOS].equiv);
 
     rpmSetTables(ctx, RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetMachine(ctx, NULL, NULL);	/* XXX WTFO? Why bother? */
@@ -1878,10 +1854,10 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "install os            : %s\n", ctx->current[OS]);
 
     printEquivs(fp, "compatible archs      :",
-		&ctx->tables[RPM_MACHTABLE_INSTARCH].equiv);
+		ctx->tables[RPM_MACHTABLE_INSTARCH].equiv);
 
     printEquivs(fp, "compatible os's       :",
-		&ctx->tables[RPM_MACHTABLE_INSTOS].equiv);
+		ctx->tables[RPM_MACHTABLE_INSTOS].equiv);
 
     dbShowRC(fp);
 
@@ -1918,7 +1894,7 @@ int rpmMachineScore(int type, const char * name)
     if (name) {
 	rpmrcCtx ctx = rpmrcCtxAcquire();
 	rdlock lock(ctx->mutex);
-	machEquivInfo info = machEquivSearch(&ctx->tables[type].equiv, name);
+	const machEquivInfo *info = machEquivSearch(ctx->tables[type].equiv, name);
 	if (info)
 	    score = info->score;
     }
