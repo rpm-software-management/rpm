@@ -118,7 +118,7 @@
 %_builddir		%{_topdir}/BUILD
 
 #	The interpreter used for build scriptlets.
-%_buildshell		/bin/sh
+%_buildshell		/bin/bash --posix
 
 #	The location of the rpm database file(s).
 %_dbpath		%{_var}/lib/rpm
