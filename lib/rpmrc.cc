@@ -92,13 +92,14 @@ static struct rpmat_s {
     uint64_t hwcap;
 } rpmat;
 
-typedef struct canonEntry_s {
-    char * name;
-    char * short_name;
-    short num;
-} * canonEntry;
+struct canonEntry {
+    std::string short_name;
+    int num;
+    canonEntry(std::string sn, int num) : short_name(sn), num(num) {};
+};
 
 using defaultsTable = std::unordered_map<std::string,std::string>;
+using canonsTable = std::unordered_map<std::string,canonEntry>;
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
  *
@@ -111,8 +112,7 @@ typedef struct tableType_s {
     struct machEquivTable_s equiv;
     struct machCache_s cache;
     defaultsTable defaults;
-    canonEntry canons;
-    int canonsLength;
+    canonsTable canons;
 } * tableType;
 
 /* XXX get rid of this stuff... */
@@ -339,23 +339,13 @@ static void machFindEquivs(machCache cache, machEquivTable table,
     return;
 }
 
-static rpmRC addCanon(canonEntry * table, int * tableLen, char * line,
-		    const char * fn, int lineNum)
+static rpmRC addCanon(canonsTable & table,
+		    char * line, const char * fn, int lineNum)
 {
-    canonEntry t;
-    char *s, *s1;
-    const char * tname;
-    const char * tshort_name;
-    int tnum;
+    const char *tname = strtok(line, ": \t");
+    const char *tshort_name = strtok(NULL, " \t");
+    char *s = strtok(NULL, " \t");
 
-    (*tableLen) += 2;
-    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
-
-    t = & ((*table)[*tableLen - 2]);
-
-    tname = strtok(line, ": \t");
-    tshort_name = strtok(NULL, " \t");
-    s = strtok(NULL, " \t");
     if (! (tname && tshort_name && s)) {
 	rpmlog(RPMLOG_ERR, _("Incomplete data line at %s:%d\n"),
 		fn, lineNum);
@@ -367,22 +357,16 @@ static rpmRC addCanon(canonEntry * table, int * tableLen, char * line,
 	return RPMRC_FAIL;
     }
 
-    tnum = strtoul(s, &s1, 10);
+    char *s1 = NULL;
+    int tnum = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
 	rpmlog(RPMLOG_ERR, _("Bad arch/os number: %s (%s:%d)\n"), s,
 	      fn, lineNum);
 	return RPMRC_FAIL;
     }
 
-    t[0].name = xstrdup(tname);
-    t[0].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[0].num = tnum;
-
-    /* From A B C entry */
-    /* Add  B B C entry */
-    t[1].name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[1].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
-    t[1].num = tnum;
+    table.try_emplace(tname, tshort_name, tnum);
+    table.try_emplace(tshort_name, tshort_name, tnum);
 
     return RPMRC_OK;
 }
@@ -408,15 +392,12 @@ static rpmRC addDefault(defaultsTable & table, char * line,
     return RPMRC_OK;
 }
 
-static canonEntry lookupInCanonTable(const char * name,
-		const canonEntry table, int tableLen)
+static const canonEntry * lookupInCanonTable(const char * name,
+		const canonsTable & table)
 {
-    while (tableLen) {
-	tableLen--;
-	if (!rstreq(name, table[tableLen].name))
-	    continue;
-	return &(table[tableLen]);
-    }
+    auto it = table.find(name);
+    if (it != table.end())
+	return &it->second;
 
     return NULL;
 }
@@ -625,8 +606,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		    gotit = 1;
 		} else if (ctx->tables[i].hasCanon &&
 			   rstreq(rest, "canon")) {
-		    if (addCanon(&ctx->tables[i].canons,
-				 &ctx->tables[i].canonsLength,
+		    if (addCanon(ctx->tables[i].canons,
 				 se, fn, linenum))
 			goto exit;
 		    gotit = 1;
@@ -1124,7 +1104,6 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
     const char * const platform_path = SYSCONFDIR "/rpm/platform";
     static struct utsname un;
     char * chptr;
-    canonEntry canon;
     int rc;
 
 #if defined(__linux__)
@@ -1424,17 +1403,15 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #endif
 
 	/* the uname() result goes through the arch_canon table */
-	canon = lookupInCanonTable(un.machine,
-			   ctx->tables[RPM_MACHTABLE_INSTARCH].canons,
-			   ctx->tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+	const canonEntry * canon = lookupInCanonTable(un.machine,
+			   ctx->tables[RPM_MACHTABLE_INSTARCH].canons);
 	if (canon)
-	    rstrlcpy(un.machine, canon->short_name, sizeof(un.machine));
+	    rstrlcpy(un.machine, canon->short_name.c_str(), sizeof(un.machine));
 
 	canon = lookupInCanonTable(un.sysname,
-			   ctx->tables[RPM_MACHTABLE_INSTOS].canons,
-			   ctx->tables[RPM_MACHTABLE_INSTOS].canonsLength);
+			   ctx->tables[RPM_MACHTABLE_INSTOS].canons);
 	if (canon)
-	    rstrlcpy(un.sysname, canon->short_name, sizeof(un.sysname));
+	    rstrlcpy(un.sysname, canon->short_name.c_str(), sizeof(un.sysname));
 	ctx->machDefaults = 1;
 	break;
     }
@@ -1585,19 +1562,17 @@ static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 static void getMachineInfo(rpmrcCtx ctx,
 			   int type, const char ** name, int * num)
 {
-    canonEntry canon;
     int which = ctx->currTables[type];
 
     /* use the normal canon tables, even if we're looking up build stuff */
     if (which >= 2) which -= 2;
 
-    canon = lookupInCanonTable(ctx->current[type],
-			       ctx->tables[which].canons,
-			       ctx->tables[which].canonsLength);
+    const canonEntry * canon = lookupInCanonTable(ctx->current[type],
+			       ctx->tables[which].canons);
 
     if (canon) {
 	if (num) *num = canon->num;
-	if (name) *name = canon->short_name;
+	if (name) *name = canon->short_name.c_str();
     } else {
 	if (num) *num = 255;
 	if (name) *name = ctx->current[type];
@@ -1839,14 +1814,7 @@ void rpmFreeRpmrc(void)
 	    t->cache.size = 0;
 	}
 	t->defaults.clear();
-	if (t->canons) {
-	    for (j = 0; j < t->canonsLength; j++) {
-		t->canons[j].name = _free(t->canons[j].name);
-		t->canons[j].short_name = _free(t->canons[j].short_name);
-	    }
-	    t->canons = _free(t->canons);
-	    t->canonsLength = 0;
-	}
+	t->canons.clear();
     }
 
     for (i = 0; i < RPMVAR_NUM; i++) {
@@ -1966,9 +1934,8 @@ int rpmIsKnownArch(const char *name)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire();
     rdlock lock(ctx->mutex);
-    canonEntry canon = lookupInCanonTable(name,
-			    ctx->tables[RPM_MACHTABLE_INSTARCH].canons,
-			    ctx->tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+    const canonEntry *canon = lookupInCanonTable(name,
+			    ctx->tables[RPM_MACHTABLE_INSTARCH].canons);
     int known = (canon != NULL || rstreq(name, "noarch"));
     return known;
 }
