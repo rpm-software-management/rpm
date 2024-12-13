@@ -1265,8 +1265,12 @@ GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_time
 	%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
 
 # Git, using "git am" (-m is unused)
+%__scm_configure_git_am %{nil}
+
 %__scm_setup_git_am(q)\
-%{expand:%__scm_setup_git %{-q}}
+%{expand:%__scm_init_git %{-q}}\
+%{expand:%__scm_configure_git_am}\
+%{expand:%__scm_import_git %{-q}}
 
 %__scm_apply_git_am(qp:m:)\
 GIT_COMMITTER_DATE=%{__scm_source_timestamp}\\\
