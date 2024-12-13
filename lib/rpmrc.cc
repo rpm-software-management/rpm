@@ -51,17 +51,10 @@ using rdlock = std::shared_lock<std::shared_mutex>;
 static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
 
-typedef struct machCacheEntry_s {
-    char * name;
-    int count;
-    char ** equivs;
-    int visited;
-} * machCacheEntry;
-
-typedef struct machCache_s {
-    machCacheEntry cache;
-    int size;
-} * machCache;
+struct machCacheEntry {
+    std::vector<std::string> equivs {};
+    int visited { 0 };
+};
 
 struct machEquivInfo {
     std::string name;
@@ -98,6 +91,7 @@ struct canonEntry {
 using defaultsTable = std::unordered_map<std::string,std::string>;
 using canonsTable = std::unordered_map<std::string,canonEntry>;
 using machEquivTable = std::vector<machEquivInfo>;
+using machCache = std::unordered_map<std::string,machCacheEntry>;
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
  *
@@ -108,7 +102,7 @@ typedef struct tableType_s {
     const int hasCanon;
     const int hasTranslate;
     machEquivTable equiv;
-    struct machCache_s cache;
+    machCache cache;
     defaultsTable defaults;
     canonsTable canons;
 } * tableType;
@@ -182,25 +176,23 @@ static int optionCompare(const void * a, const void * b)
 		      ((const struct rpmOption *) b)->name);
 }
 
-static machCacheEntry
-machCacheFindEntry(const machCache cache, const char * key)
+static machCacheEntry *
+machCacheFindEntry(machCache & cache, const std::string & key)
 {
-    int i;
-
-    for (i = 0; i < cache->size; i++)
-	if (rstreq(cache->cache[i].name, key)) return cache->cache + i;
+    auto it = cache.find(key);
+    if (it != cache.end())
+	return &it->second;
 
     return NULL;
 }
 
 static int machCompatCacheAdd(char * name, const char * fn, int linenum,
-				machCache cache)
+				machCache & cache)
 {
-    machCacheEntry entry = NULL;
+    machCacheEntry *entry = NULL;
     char * chptr;
     char * equivs;
     int delEntry = 0;
-    int i;
 
     while (*name && risspace(*name)) name++;
 
@@ -223,23 +215,16 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	delEntry = 1;
     }
 
-    if (cache->size) {
+    if (cache.empty() == false) {
 	entry = machCacheFindEntry(cache, name);
 	if (entry) {
-	    for (i = 0; i < entry->count; i++)
-		entry->equivs[i] = _free(entry->equivs[i]);
-	    entry->equivs = _free(entry->equivs);
-	    entry->count = 0;
+	    entry->equivs.clear();
 	}
     }
 
     if (!entry) {
-	cache->cache = xrealloc(cache->cache,
-			       (cache->size + 1) * sizeof(*cache->cache));
-	entry = cache->cache + cache->size++;
-	entry->name = xstrdup(name);
-	entry->count = 0;
-	entry->visited = 0;
+	auto ret = cache.try_emplace(name);
+	entry = &ret.first->second;
     }
 
     if (delEntry) return 0;
@@ -248,30 +233,23 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	equivs = NULL;
 	if (chptr[0] == '\0')	/* does strtok() return "" ever?? */
 	    continue;
-	if (entry->count)
-	    entry->equivs = xrealloc(entry->equivs, sizeof(*entry->equivs)
-					* (entry->count + 1));
-	else
-	    entry->equivs = (char **)xmalloc(sizeof(*entry->equivs));
-
-	entry->equivs[entry->count] = xstrdup(chptr);
-	entry->count++;
+	entry->equivs.emplace_back(chptr);
     }
 
     return 0;
 }
 
 static const machEquivInfo *
-machEquivSearch(const machEquivTable & table, const char * name)
+machEquivSearch(const machEquivTable & table, const std::string & name)
 {
     for (size_t i = 0; i < table.size(); i++)
-	if (!rstrcasecmp(table[i].name.c_str(), name))
+	if (!rstrcasecmp(table[i].name.c_str(), name.c_str()))
 	    return &table[i];
 
     return NULL;
 }
 
-static void machAddEquiv(machEquivTable & table, const char * name,
+static void machAddEquiv(machEquivTable & table, const std::string & name,
 			   int distance)
 {
     const machEquivInfo * equiv = machEquivSearch(table, name);
@@ -281,32 +259,28 @@ static void machAddEquiv(machEquivTable & table, const char * name,
 }
 
 static void machCacheEntryVisit(machCache cache,
-		machEquivTable & table, const char * name, int distance)
+		machEquivTable & table, const std::string & name, int distance)
 {
-    machCacheEntry entry;
-    int i;
+    machCacheEntry *entry = machCacheFindEntry(cache, name);
 
-    entry = machCacheFindEntry(cache, name);
     if (!entry || entry->visited) return;
 
     entry->visited = 1;
 
-    for (i = 0; i < entry->count; i++) {
-	machAddEquiv(table, entry->equivs[i], distance);
+    for (auto const & e: entry->equivs) {
+	machAddEquiv(table, e, distance);
     }
 
-    for (i = 0; i < entry->count; i++) {
-	machCacheEntryVisit(cache, table, entry->equivs[i], distance + 1);
+    for (auto const & e: entry->equivs) {
+	machCacheEntryVisit(cache, table, e, distance + 1);
     }
 }
 
-static void machFindEquivs(machCache cache, machEquivTable & table,
+static void machFindEquivs(machCache & cache, machEquivTable & table,
 		const char * key)
 {
-    int i;
-
-    for (i = 0; i < cache->size; i++)
-	cache->cache[i].visited = 0;
+    for (auto & [k, e] : cache)
+	e.visited = 0;
 
     table.clear();
 
@@ -577,7 +551,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 
 		if (rstreq(rest, "compat")) {
 		    if (machCompatCacheAdd(se, fn, linenum,
-						&ctx->tables[i].cache))
+						ctx->tables[i].cache))
 			goto exit;
 		    gotit = 1;
 		} else if (ctx->tables[i].hasTranslate &&
@@ -1535,7 +1509,7 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
 static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
-    machFindEquivs(&ctx->tables[ctx->currTables[type]].cache,
+    machFindEquivs(ctx->tables[ctx->currTables[type]].cache,
 		   ctx->tables[ctx->currTables[type]].equiv,
 		   name);
 }
@@ -1765,7 +1739,7 @@ void rpmFreeRpmrc(void)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire();
     wrlock lock(ctx->mutex);
-    int i, j, k;
+    int i;
 
     ctx->platpat = argvFree(ctx->platpat);
 
@@ -1773,22 +1747,7 @@ void rpmFreeRpmrc(void)
 	tableType t;
 	t = ctx->tables + i;
 	t->equiv.clear();
-	if (t->cache.cache) {
-	    for (j = 0; j < t->cache.size; j++) {
-		machCacheEntry e;
-		e = t->cache.cache + j;
-		if (e == NULL)
-		    continue;
-		e->name = _free(e->name);
-		if (e->equivs) {
-		    for (k = 0; k < e->count; k++)
-			e->equivs[k] = _free(e->equivs[k]);
-		    e->equivs = _free(e->equivs);
-		}
-	    }
-	    t->cache.cache = _free(t->cache.cache);
-	    t->cache.size = 0;
-	}
+	t->cache.clear();
 	t->defaults.clear();
 	t->canons.clear();
     }
