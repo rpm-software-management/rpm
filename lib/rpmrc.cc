@@ -62,13 +62,6 @@ struct machEquivInfo {
     machEquivInfo(std::string name, int score) : name(name), score(score) {};
 };
 
-struct rpmvarValue {
-    char * value;
-    /* eventually, this arch will be replaced with a generic condition */
-    char * arch;
-struct rpmvarValue * next;
-};
-
 struct rpmOption {
     const char * name;
     int var;
@@ -107,14 +100,11 @@ typedef struct tableType_s {
     canonsTable canons;
 } * tableType;
 
-/* XXX get rid of this stuff... */
-/* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
+/* Stuff for maintaining per arch "variables" like optflags */
 #define RPMVAR_OPTFLAGS                 3
 #define RPMVAR_ARCHCOLOR                42
 #define RPMVAR_INCLUDE                  43
 #define RPMVAR_MACROFILES               49
-
-#define RPMVAR_NUM                      55      /* number of RPMVAR entries */
 
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, macroize, localize */
@@ -136,7 +126,7 @@ struct rpmrcCtx_s {
     ARGV_t platpat;
     char *current[2];
     int currTables[2];
-    struct rpmvarValue values[RPMVAR_NUM];
+    std::unordered_map<int,std::unordered_map<std::string,std::string>> values;
     struct tableType_s tables[RPM_MACHTABLE_COUNT];
     int machDefaults;
     int pathDefaults;
@@ -1378,57 +1368,22 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 static
 const char * rpmGetVarArch(rpmrcCtx ctx, int var, const char * arch)
 {
-    const struct rpmvarValue * next;
-
     if (arch == NULL) arch = ctx->current[ARCH];
 
-    if (arch) {
-	next = &ctx->values[var];
-	while (next) {
-	    if (next->arch && rstreq(next->arch, arch)) return next->value;
-	    next = next->next;
+    auto vit = ctx->values.find(var);
+    if (vit != ctx->values.end()) {
+	auto ait = vit->second.find(arch);
+	if (ait != vit->second.end()) {
+	    return ait->second.c_str();
 	}
     }
-
-    next = ctx->values + var;
-    while (next && next->arch) next = next->next;
-
-    return next ? next->value : NULL;
+    return NULL;
 }
 
 static void rpmSetVarArch(rpmrcCtx ctx,
 			  int var, const char * val, const char * arch)
 {
-    struct rpmvarValue * next = ctx->values + var;
-
-    if (next->value) {
-	if (arch) {
-	    while (next->next) {
-		if (next->arch && rstreq(next->arch, arch)) break;
-		next = next->next;
-	    }
-	} else {
-	    while (next->next) {
-		if (!next->arch) break;
-		next = next->next;
-	    }
-	}
-
-	if (next->arch && arch && rstreq(next->arch, arch)) {
-	    next->value = _free(next->value);
-	    next->arch = _free(next->arch);
-	} else if (next->arch || arch) {
-	    next->next = (struct rpmvarValue *)xmalloc(sizeof(*next->next));
-	    next = next->next;
-	    next->value = NULL;
-	    next->arch = NULL;
-	    next->next = NULL;
-	}
-    }
-
-    next->value = _free(next->value);
-    next->value = xstrdup(val);
-    next->arch = (arch ? xstrdup(arch) : NULL);
+    ctx->values[var][arch] = val;
 }
 
 static void rpmSetTables(rpmrcCtx ctx, int archTable, int osTable)
@@ -1752,17 +1707,7 @@ void rpmFreeRpmrc(void)
 	t->canons.clear();
     }
 
-    for (i = 0; i < RPMVAR_NUM; i++) {
-	struct rpmvarValue * vp;
-	while ((vp = ctx->values[i].next) != NULL) {
-	    ctx->values[i].next = vp->next;
-	    vp->value = _free(vp->value);
-	    vp->arch = _free(vp->arch);
-	    vp = _free(vp);
-	}
-	ctx->values[i].value = _free(ctx->values[i].value);
-	ctx->values[i].arch = _free(ctx->values[i].arch);
-    }
+    ctx->values.clear();
     ctx->current[OS] = _free(ctx->current[OS]);
     ctx->current[ARCH] = _free(ctx->current[ARCH]);
     ctx->machDefaults = 0;
