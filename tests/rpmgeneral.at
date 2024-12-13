@@ -53,8 +53,51 @@ RPMTEST_CLEANUP
 # ------------------------------
 AT_SETUP([rpm --showrc])
 AT_KEYWORDS([basic])
-RPMTEST_CHECK([runroot rpm --showrc],[0],
-[ignore])
+RPMDB_INIT
+RPMTEST_CHECK([
+mkdir -p ${RPMTEST}/${RPMSYSCONFDIR}
+echo x86_64_v3-Linux > ${RPMTEST}/${RPMSYSCONFDIR}/platform
+runroot rpm --showrc | head -17 | sed '/backend/d'
+],
+[0],
+[ARCHITECTURE AND OS:
+build arch            : x86_64
+compatible build archs: x86_64_v3 x86_64_v2 x86_64 noarch
+build os              : Linux
+compatible build os's : Linux
+install arch          : x86_64_v3
+install os            : Linux
+compatible archs      : x86_64_v3 x86_64_v2 x86_64 amd64 em64t athlon noarch i686 i586 i486 i386 fat
+compatible os's       : Linux
+
+BACKEND:
+
+RPMRC VALUES:
+archcolor             : 2
+optflags              : -O2 -g -march=x86-64-v3
+])
+
+RPMTEST_CHECK([
+echo ppc64le-Linux > ${RPMTEST}/${RPMSYSCONFDIR}/platform
+runroot rpm --showrc | head -17 | sed '/backend/d'
+],
+[0],
+[ARCHITECTURE AND OS:
+build arch            : ppc64le
+compatible build archs: ppc64le noarch fat
+build os              : Linux
+compatible build os's : Linux
+install arch          : ppc64le
+install os            : Linux
+compatible archs      : ppc64le noarch fat
+compatible os's       : Linux
+
+BACKEND:
+
+RPMRC VALUES:
+archcolor             : 2
+optflags              : -O2 -g
+])
 RPMTEST_CLEANUP
 
 # ------------------------------
