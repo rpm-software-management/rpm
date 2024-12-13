@@ -837,3 +837,17 @@ v1.0 == v1.0: True
 v1.0 == v2.0: False
 v1.0 != v2.0: True
 ])
+
+RPMPY_TEST([archscore],[
+print(rpm.archscore('ppc64') == 0)
+print(rpm.archscore('x86_64') > 0)
+print(rpm.archscore('x86_64') < rpm.archscore('i686'))
+print(rpm.archscore('i686') < rpm.archscore('i386'))
+print(rpm.archscore('x86_64') == rpm.archscore('noarch'))
+],
+[True
+True
+True
+True
+True
+]);
