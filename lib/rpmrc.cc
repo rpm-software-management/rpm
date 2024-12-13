@@ -2,6 +2,8 @@
 
 #include <mutex>
 #include <shared_mutex>
+#include <string>
+#include <unordered_map>
 
 #include <fcntl.h>
 #include <stdarg.h>
@@ -90,16 +92,13 @@ static struct rpmat_s {
     uint64_t hwcap;
 } rpmat;
 
-typedef struct defaultEntry_s {
-    char * name;
-    char * defName;
-} * defaultEntry;
-
 typedef struct canonEntry_s {
     char * name;
     char * short_name;
     short num;
 } * canonEntry;
+
+using defaultsTable = std::unordered_map<std::string,std::string>;
 
 /* tags are 'key'canon, 'key'translate, 'key'compat
  *
@@ -111,9 +110,8 @@ typedef struct tableType_s {
     const int hasTranslate;
     struct machEquivTable_s equiv;
     struct machCache_s cache;
-    defaultEntry defaults;
+    defaultsTable defaults;
     canonEntry canons;
-    int defaultsLength;
     int canonsLength;
 } * tableType;
 
@@ -389,19 +387,12 @@ static rpmRC addCanon(canonEntry * table, int * tableLen, char * line,
     return RPMRC_OK;
 }
 
-static rpmRC addDefault(defaultEntry * table, int * tableLen, char * line,
+static rpmRC addDefault(defaultsTable & table, char * line,
 			const char * fn, int lineNum)
 {
-    defaultEntry t;
-
-    (*tableLen)++;
-    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
-
-    t = & ((*table)[*tableLen - 1]);
-
-    t->name = strtok(line, ": \t");
-    t->defName = strtok(NULL, " \t");
-    if (! (t->name && t->defName)) {
+    const char *name = strtok(line, ": \t");
+    const char *defName = strtok(NULL, " \t");
+    if (! (name && defName)) {
 	rpmlog(RPMLOG_ERR, _("Incomplete default line at %s:%d\n"),
 		 fn, lineNum);
 	return RPMRC_FAIL;
@@ -412,8 +403,7 @@ static rpmRC addDefault(defaultEntry * table, int * tableLen, char * line,
 	return RPMRC_FAIL;
     }
 
-    t->name = xstrdup(t->name);
-    t->defName = (t->defName ? xstrdup(t->defName) : NULL);
+    table.insert({name, defName});
 
     return RPMRC_OK;
 }
@@ -433,13 +423,11 @@ static canonEntry lookupInCanonTable(const char * name,
 
 static
 const char * lookupInDefaultTable(const char * name,
-		const defaultEntry table, int tableLen)
+		const defaultsTable & table)
 {
-    while (tableLen) {
-	tableLen--;
-	if (table[tableLen].name && rstreq(name, table[tableLen].name))
-	    return table[tableLen].defName;
-    }
+    auto it = table.find(name);
+    if (it != table.end())
+	return it->second.c_str();
 
     return name;
 }
@@ -632,9 +620,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		    gotit = 1;
 		} else if (ctx->tables[i].hasTranslate &&
 			   rstreq(rest, "translate")) {
-		    if (addDefault(&ctx->tables[i].defaults,
-				   &ctx->tables[i].defaultsLength,
-				   se, fn, linenum))
+		    if (addDefault(ctx->tables[i].defaults, se, fn, linenum))
 			goto exit;
 		    gotit = 1;
 		} else if (ctx->tables[i].hasCanon &&
@@ -1552,8 +1538,7 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 	arch = host_cpu;
 	if (ctx->tables[ctx->currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
-			    ctx->tables[ctx->currTables[ARCH]].defaults,
-			    ctx->tables[ctx->currTables[ARCH]].defaultsLength);
+			    ctx->tables[ctx->currTables[ARCH]].defaults);
     }
     if (arch == NULL) return;	/* XXX can't happen */
 
@@ -1561,8 +1546,7 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 	os = host_os;
 	if (ctx->tables[ctx->currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
-			    ctx->tables[ctx->currTables[OS]].defaults,
-			    ctx->tables[ctx->currTables[OS]].defaultsLength);
+			    ctx->tables[ctx->currTables[OS]].defaults);
     }
     if (os == NULL) return;	/* XXX can't happen */
 
@@ -1854,14 +1838,7 @@ void rpmFreeRpmrc(void)
 	    t->cache.cache = _free(t->cache.cache);
 	    t->cache.size = 0;
 	}
-	if (t->defaults) {
-	    for (j = 0; j < t->defaultsLength; j++) {
-		t->defaults[j].name = _free(t->defaults[j].name);
-		t->defaults[j].defName = _free(t->defaults[j].defName);
-	    }
-	    t->defaults = _free(t->defaults);
-	    t->defaultsLength = 0;
-	}
+	t->defaults.clear();
 	if (t->canons) {
 	    for (j = 0; j < t->canonsLength; j++) {
 		t->canons[j].name = _free(t->canons[j].name);
@@ -2012,8 +1989,7 @@ int rpmGetArchColor(const char *arch)
     int color_i = -1; /* assume failure */
 
     arch = lookupInDefaultTable(arch,
-			    ctx->tables[ctx->currTables[ARCH]].defaults,
-			    ctx->tables[ctx->currTables[ARCH]].defaultsLength);
+			    ctx->tables[ctx->currTables[ARCH]].defaults);
     color = rpmGetVarArch(ctx, RPMVAR_ARCHCOLOR, arch);
     if (color) {
 	color_i = strtol(color, &e, 10);
