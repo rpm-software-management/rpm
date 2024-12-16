@@ -32,8 +32,9 @@ strip_elf_binaries()
   local nlinks="${1}"
   local nprocs="${2}"
 
-  find "$RPM_BUILD_ROOT" -type f \
-    ! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" \
+  cd "$RPM_BUILD_ROOT" || return 0
+  find . -type f \
+    ! -regex '\./usr/lib/debug.*' \
     ! -name "*.py" ! -name "*.js" ! -name "*.rb" \
     ! -name "*.go" -links "${nlinks}" -print0 | \
     xargs -0 -r -P${nprocs} -n${MAX_ARGS} sh -c "file \"\$@\" | \

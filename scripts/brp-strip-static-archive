@@ -13,5 +13,6 @@ Darwin*) exit 0 ;;
 esac
 
 # Strip static libraries.
-find "$RPM_BUILD_ROOT" -type f \! -regex "${RPM_BUILD_ROOT}/*usr/lib/debug.*" -print0 | \
+cd "$RPM_BUILD_ROOT" || exit 0
+find . -type f \! -regex '\./usr/lib/debug.*' -print0 | \
     xargs -0 -r -P$NCPUS -n32 sh -c "file \"\$@\" | sed 's/:  */: /' | grep 'current ar archive' | sed -n -e 's/^\(.*\):[  ]*current ar archive/\1/p' | xargs -d '\n' -I\{\} $STRIP -g \{\}" ARG0
