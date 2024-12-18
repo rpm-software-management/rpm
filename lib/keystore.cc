@@ -1,6 +1,8 @@
 #include "system.h"
 
+#include <filesystem>
 #include <string>
+#include <set>
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -18,11 +20,13 @@
 #include <rpm/rpmtypes.h>
 
 #include "rpmts_internal.hh"
+#include "rpmmacro_internal.hh"
 
 #include "debug.h"
 
 using std::string;
 using namespace rpm;
+namespace fs = std::filesystem;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
@@ -96,6 +100,63 @@ exit:
     return rc;
 }
 
+rpmRC rpm::check_backends(rpmtxn txn, rpmts ts)
+{
+    rpmRC rc = RPMRC_OK;
+
+    keystore_fs ks_fs = {};
+    keystore_rpmdb ks_rpmdb = {};
+    keystore_openpgp_cert_d ks_opengpg = {};
+
+    for (keystore *ks : std::vector<keystore*> {&ks_fs, &ks_rpmdb, &ks_opengpg}) {
+	if (ks->get_name() == ts->keystore->get_name())
+	    continue;
+	rpmKeyring keyring = rpmKeyringNew();
+	ks->load_keys(txn, keyring);
+	if (!rpmKeyringIsEmpty(keyring)) {
+	    rpmlog(RPMLOG_WARNING, _("there are public keys in the %s backend which is not the one configured (%s); use rpmkeys --rebuild to integrate or discard them\n"), ks->get_name().c_str(), ts->keystore->get_name().c_str());
+	    rc = RPMRC_FAIL;
+	}
+	rpmKeyringFree(keyring);
+    }
+    return rc;
+}
+
+rpmRC rebuild_dir(rpmtxn txn, keystore * store, rpmKeyring keys)
+{
+
+    auto macros = rpm::macros();
+    std::string keyringpath = rpm::expand_path({"%{_keyringpath}"});
+    std::string path = rpm::expand_path({rpmtxnRootDir(txn), keyringpath});
+    std::string oldpath = path + ".rpmold/";
+    std::error_code ec = {};
+    rpmRC rc = RPMRC_OK;
+    macros.push("_keyringpath", "", (keyringpath + ".tmp/").c_str(), 0);
+
+    rpmPubkey key = NULL;
+    auto iter = rpmKeyringInitIterator(keys, 0);
+    while ((rc == RPMRC_OK) && (key = rpmKeyringIteratorNext(iter))) {
+	rc = store->import_key(txn, key, 0, 0);
+    }
+    rpmKeyringIteratorFree(iter);
+
+    if (rc != RPMRC_OK)
+	goto exit;
+
+    /* Ignore errors from (re)moving old directory as it might not exist */
+    fs::rename(path, oldpath, ec);
+    fs::rename(path + ".tmp", path, ec);
+    if (ec) {
+	rpmlog(RPMLOG_ERR, _("can't move new key store to %s: %s.\n"), path.c_str(), ec.message().c_str());
+	rc = RPMRC_FAIL;
+    }
+    fs::remove_all(oldpath);
+
+ exit:
+    macros.pop("_keyringpath");
+
+    return rc;
+}
 
 /*****************************************************************************/
 
@@ -148,6 +209,11 @@ rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags f
 
     free(dir);
     return rc;
+}
+
+rpmRC keystore_fs::rebuild(rpmtxn txn, rpmKeyring keys)
+{
+    return rebuild_dir(txn, this, keys);
 }
 
 /*****************************************************************************/
@@ -234,6 +300,12 @@ rpmRC keystore_openpgp_cert_d::import_key(rpmtxn txn, rpmPubkey key, int replace
 
     return rc;
 }
+
+rpmRC keystore_openpgp_cert_d::rebuild(rpmtxn txn, rpmKeyring keys)
+{
+    return rebuild_dir(txn, this, keys);
+}
+
 
 /*****************************************************************************/
 
@@ -333,6 +405,51 @@ rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlag
     }
     headerFree(h);
 
+    return rc;
+}
+
+rpmRC keystore_rpmdb::rebuild(rpmtxn txn, rpmKeyring keys)
+{
+    rpmRC rc = RPMRC_OK;
+    std::set<unsigned int> packages = {};
+    Header h = NULL;
+    rpmPubkey key = NULL;
+
+    auto iter = rpmKeyringInitIterator(keys, 0);
+    while ((key = rpmKeyringIteratorNext(iter))) {
+	if (makePubkeyHeader(rpmtxnTs(txn), key, &h) != 0) {
+	    rpmlog(RPMLOG_ERR, _("can't create header for key %s\n"),
+		   rpmPubkeyFingerprintAsHex(key));
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+	if ((rc = rpmtsImportHeader(txn, h, 0)) != RPMRC_OK) {
+	    headerFree(h);
+	    rpmlog(RPMLOG_ERR, _("can't add header to rpmdb for key %s\n"),
+		   rpmPubkeyFingerprintAsHex(key));
+	    break;
+	}
+	packages.insert(headerGetInstance(h));
+	headerFree(h);
+    }
+    rpmKeyringIteratorFree(iter);
+
+    if (rc != RPMRC_OK) {
+	return rc;
+    }
+    
+    rpmdbMatchIterator mi = rpmtsInitIterator(rpmtxnTs(txn), RPMDBI_NAME, "gpg-pubkey", 0);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	if (!packages.count(headerGetInstance(h))) {
+	    rpmRC rrc = rpmdbRemove(rpmtsGetRdb(rpmtxnTs(txn)), headerGetInstance(h)) ?
+                RPMRC_FAIL : RPMRC_OK;
+	    if (rc != RPMRC_OK) {
+		rpmlog(RPMLOG_WARNING, "can't remove key %s", headerGetString(h, RPMTAG_NEVR));
+		rc = rrc;
+	    }
+	}
+    }
+    rpmdbFreeIterator(mi);
     return rc;
 }
 
