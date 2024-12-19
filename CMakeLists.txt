@@ -448,6 +448,9 @@ if (ENABLE_PYTHON)
 	add_subdirectory(python)
 endif()
 
+set(RPM_PLUGINDIR ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins
+       CACHE PATH "rpm plugin directory")
+
 if (ENABLE_PLUGINS)
 	add_subdirectory(plugins)
 endif()
