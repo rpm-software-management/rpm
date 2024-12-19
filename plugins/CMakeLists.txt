@@ -42,9 +42,6 @@ if (HAVE_UNSHARE)
 	add_library(unshare MODULE unshare.c)
 endif()
 
-set(RPM_PLUGINDIR ${CMAKE_INSTALL_FULL_LIBDIR}/rpm-plugins
-	CACHE PATH "rpm plugin directory")
-
 get_property(plugins DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
 foreach(plugin ${plugins})
 	target_link_libraries(${plugin} PRIVATE librpmio librpm ${Intl_LIBRARIES})
