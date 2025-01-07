@@ -923,7 +923,7 @@ attribute marker:
     m %missingok file missing is not a verify failure.
     n %%config(noreplace) (do not replace file).
     r %readme readme file.
-    s RPM specfile (marks 1st file in srpm).
+    s specfile in source package.
 
 from the package header, followed by the file name. Each of the 9
 characters denotes the result of a comparison of attribute(s) of the
