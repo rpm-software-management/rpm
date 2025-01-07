@@ -915,13 +915,15 @@ unique to verify mode are:
 The format of the output is a string of 9 characters, a possible
 attribute marker:
 
-    a %artifact a build side-effect file (such as buildid links)
+    a %artifact a build side-effect file (such as buildid links).
     c %config configuration file.
     d %doc documentation file.
     g %ghost file (i.e. the file contents are not included in the package payload).
     l %license license file.
     m %missingok file missing is not a verify failure.
+    n %%config(noreplace) (do not replace file).
     r %readme readme file.
+    s specfile in source package.
 
 from the package header, followed by the file name. Each of the 9
 characters denotes the result of a comparison of attribute(s) of the
