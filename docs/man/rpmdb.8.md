@@ -23,8 +23,8 @@ DESCRIPTION
 
 The general form of an rpmdb command is
 
-**rpm** {**\--initdb\|\--rebuilddb**} \[**-v**\] \[**\--dbpath
-***DIRECTORY*\] \[**\--root ***DIRECTORY*\]
+**rpm** {**\--initdb\|\--rebuilddb**} \[**-v**\] \[**\--dbpath**
+*DIRECTORY*\] \[**\--root** *DIRECTORY*\]
 
 Use **\--initdb** to create a new database if one doesn\'t already exist
 (existing database is not overwritten), use **\--rebuilddb** to rebuild

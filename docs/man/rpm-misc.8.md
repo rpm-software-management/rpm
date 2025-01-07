@@ -9,7 +9,7 @@ NAME rpm - lesser need options for rpm(8)
 OPTIONS
 =======
 
-**\--predefine**=\'*MACRO EXPR***\'**
+**\--predefine=\'***MACRO EXPR***\'**
 
 :   Defines *MACRO* with value *EXPR*. before loading macro files.
 
