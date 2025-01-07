@@ -25,7 +25,7 @@ SIGNING PACKAGES:
 rpmsign-options
 ---------------
 
-\[**\--rpmv3**\] \[**\--fskpath ***KEY*\] \[**\--signfiles**\]
+\[**\--rpmv3**\] \[**\--fskpath** *KEY*\] \[**\--signfiles**\]
 
 DESCRIPTION
 ===========
@@ -59,15 +59,15 @@ SIGN OPTIONS
     force their creation if the packages must be fully signature
     verifiable with rpm \< 4.14 or other interoperability reasons.
 
-**\--fskpath ***KEY*
+**\--fskpath** *KEY*
 
 :   Used with **\--signfiles**, use file signing key *Key*.
 
-**\--certpath ***CERT*
+**\--certpath** *CERT*
 
 :   Used with **\--signverity**, use file signing certificate *Cert*.
 
-**\--verityalgo ***ALG*
+**\--verityalgo** *ALG*
 
 :   Used with **\--signverity**, to specify the signing algorithm.
     sha256 and sha512 are supported, with sha256 being the default if

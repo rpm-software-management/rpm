@@ -50,23 +50,23 @@ MISCELLANEOUS:
 select-options
 --------------
 
-\[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file
-***FILE*\] \[**\--path ***PATH*\] \[**-g,\--group ***GROUP*\] \[**-p,\--package
-***PACKAGE\_FILE*\] \[**\--hdrid ***SHA1*\] \[**\--pkgid ***MD5*\]
-\[**\--tid ***TID*\] \[**\--querybynumber ***HDRNUM*\]
-\[**\--triggeredby ***PACKAGE\_NAME*\] \[**\--whatprovides
-***CAPABILITY*\] \[**\--whatrequires ***CAPABILITY*\]
-\[**\--whatrecommends ***CAPABILITY*\] \[**\--whatsuggests
-***CAPABILITY*\] \[**\--whatsupplements ***CAPABILITY*\]
-\[**\--whatenhances ***CAPABILITY*\] \[**\--whatobsoletes
-***CAPABILITY*\] \[**\--whatconflicts ***CAPABILITY*\]
+\[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file**
+*FILE*\] \[**\--path** *PATH*\] \[**-g,\--group** *GROUP*\] \[**-p,\--package**
+*PACKAGE\_FILE*\] \[**\--hdrid** *SHA1*\] \[**\--pkgid** *MD5*\]
+\[**\--tid** *TID*\] \[**\--querybynumber** *HDRNUM*\]
+\[**\--triggeredby** *PACKAGE\_NAME*\] \[**\--whatprovides**
+*CAPABILITY*\] \[**\--whatrequires** *CAPABILITY*\]
+\[**\--whatrecommends** *CAPABILITY*\] \[**\--whatsuggests**
+*CAPABILITY*\] \[**\--whatsupplements** *CAPABILITY*\]
+\[**\--whatenhances** *CAPABILITY*\] \[**\--whatobsoletes**
+*CAPABILITY*\] \[**\--whatconflicts** *CAPABILITY*\]
 
 query-options
 -------------
 
 General: \[**\--changelog**\] \[**\--changes**\] \[**\--dupes**\]
-\[**-i,\--info**\] \[**\--last**\] \[**\--qf,\--queryformat
-***QUERYFMT*\] \[**\--xml**\] \[**\--json**\]
+\[**-i,\--info**\] \[**\--last**\] \[**\--qf,\--queryformat**
+*QUERYFMT*\] \[**\--xml**\] \[**\--json**\]
 
 Dependencies: \[**\--conflicts**\] \[**\--enhances**\]
 \[**\--obsoletes**\] \[**\--provides**\] \[**\--recommends**\]
@@ -93,15 +93,15 @@ verify-options
 install-options
 ---------------
 
-\[**\--allfiles**\] \[**\--badreloc**\] \[**\--excludepath ***OLDPATH*\]
+\[**\--allfiles**\] \[**\--badreloc**\] \[**\--excludepath** *OLDPATH*\]
 \[**\--excludedocs**\] \[**\--force**\] \[**-h,\--hash**\]
 \[**\--ignoresize**\] \[**\--ignorearch**\] \[**\--ignoreos**\]
 \[**\--includedocs**\] \[**\--justdb**\] \[**--nodb**\] \[**\--nodeps**\]
 \[**\--nodigest**\] \[**\--noplugins**\] \[**\--nocaps**\]
 \[**\--noorder**\] \[**\--noverify**\] \[**\--nosignature**\]
 \[**\--noscripts**\] \[**\--notriggers**\] \[**\--oldpackage**\]
-\[**\--percent**\] \[**\--prefix ***NEWPATH*\] \[**\--relocate
-***OLDPATH***=***NEWPATH*\] \[**\--replacefiles**\]
+\[**\--percent**\] \[**\--prefix** *NEWPATH*\] \[**\--relocate**
+*OLDPATH***=***NEWPATH*\] \[**\--replacefiles**\]
 \[**\--replacepkgs**\] \[**\--test**\]
 
 DESCRIPTION
@@ -148,30 +148,30 @@ These options can be used in all the different modes.
 
 :   Print lots of ugly debugging information.
 
-**\--rcfile ***FILELIST*
+**\--rcfile** *FILELIST*
 
 :   Replace the default list of configuration files to be read with *FILELIST*.
     See **rpmrc Configuration** for details.
 
-**\--load ***FILE*
+**\--load** *FILE*
 
 :   Load an individual macro file.
 
-**\--macros ***FILELIST*
+**\--macros** *FILELIST*
 
 :   Replace the list of macro files to be loaded with *FILELIST*.
     See **Macro Configuration** for details.
 
-**\--pipe ***CMD*
+**\--pipe** *CMD*
 
 :   Pipes the output of **rpm** to the command *CMD*.
 
-**\--dbpath ***DIRECTORY*
+**\--dbpath** *DIRECTORY*
 
 :   Use the database in *DIRECTORY* rather than the default path
     */var/lib/rpm*
 
-**\--root ***DIRECTORY*
+**\--root** *DIRECTORY*
 
 :   Use the file system tree rooted at *DIRECTORY* for all operations.
     Note that this means the database within *DIRECTORY* will be used
@@ -246,7 +246,7 @@ This reinstalls a previously installed package.
     just those *OLDPATH*\'s included in the binary package relocation
     hint(s).
 
-**\--excludepath ***OLDPATH*
+**\--excludepath** *OLDPATH*
 
 :   Don\'t install files whose name begins with *OLDPATH*.
 
@@ -367,13 +367,13 @@ and turns off execution of the corresponding **%triggerprein**,
 :   Print percentages as files are unpacked from the package archive.
     This is intended to make **rpm** easy to run from other tools.
 
-**\--prefix ***NEWPATH*
+**\--prefix** *NEWPATH*
 
 :   For relocatable binary packages, translate all file paths that start
     with the installation prefix in the package relocation hint(s) to
     *NEWPATH*.
 
-**\--relocate ***OLDPATH***=***NEWPATH*
+**\--relocate** *OLDPATH***=***NEWPATH*
 
 :   For relocatable binary packages, translate all file paths that start
     with *OLDPATH* in the package relocation hint(s) to *NEWPATH*. This
@@ -591,7 +591,7 @@ PACKAGE SELECTION OPTIONS:
     package more precisely the package name may be followed by the
     version or version and release both separated by a dash or an
     architecture name separated by a dot. See the output of **rpm -qa**
-    or **rpm -qp ***PACKAGE\_FILE* as an example.
+    or **rpm -qp** *PACKAGE\_FILE* as an example.
 
 ```{=html}
 <!-- -->
@@ -609,7 +609,7 @@ name starts with \"b\".
 
 :   List duplicated packages.
 
-**-f, \--file ***FILE*
+**-f, \--file** *FILE*
 
 :   Query package owning installed *FILE*.
 
@@ -634,16 +634,16 @@ name starts with \"b\".
 
 :   List file names with their requires.
 
-**-g, \--group ***GROUP*
+**-g, \--group** *GROUP*
 
 :   Query packages with the group of *GROUP*.
 
-**\--hdrid ***SHA1*
+**\--hdrid** *SHA1*
 
 :   Query package that contains a given header identifier, i.e. the
     *SHA1* digest of the immutable header region.
 
-**-p, \--package ***PACKAGE\_FILE*
+**-p, \--package** *PACKAGE\_FILE*
 
 :   Query an (uninstalled) package *PACKAGE\_FILE*. The *PACKAGE\_FILE*
     may be specified as an **ftp** or **http** style URL, in which case
@@ -658,70 +658,70 @@ name starts with \"b\".
     substituted in place of the package manifest as additional
     *PACKAGE\_FILE* arguments to the query.
 
-**\--path ***PATH*
+**\--path** *PATH*
 
 :   Query package(s) owning *PATH*, whether the file is installed or not.
     Multiple packages may own a *PATH*, but the file is only owned by the
     package installed last.
 
-**\--pkgid ***MD5*
+**\--pkgid** *MD5*
 
 :   Query package that contains a given package identifier, i.e. the
     *MD5* digest of the combined header and payload contents.
 
-**\--querybynumber ***HDRNUM*
+**\--querybynumber** *HDRNUM*
 
 :   Query the *HDRNUM*th database entry directly; this is useful only
     for debugging.
 
-**\--specfile ***SPECFILE*
+**\--specfile** *SPECFILE*
 
 :   Parse and query *SPECFILE* as if it were a package. Although not all
     the information (e.g. file lists) is available, this type of query
     permits rpm to be used to extract information from spec files
     without having to write a specfile parser.
 
-**\--tid ***TID*
+**\--tid** *TID*
 
 :   Query package(s) that have a given *TID* transaction identifier. A
     unix time stamp is currently used as a transaction identifier. All
     package(s) installed or erased within a single transaction have a
     common identifier.
 
-**\--triggeredby ***PACKAGE\_NAME*
+**\--triggeredby** *PACKAGE\_NAME*
 
 :   Query packages that are triggered by package(s) *PACKAGE\_NAME*.
 
-**\--whatobsoletes ***CAPABILITY*
+**\--whatobsoletes** *CAPABILITY*
 
 :   Query all packages that obsolete *CAPABILITY* for proper
     functioning.
 
-**\--whatprovides ***CAPABILITY*
+**\--whatprovides** *CAPABILITY*
 
 :   Query all packages that provide the *CAPABILITY* capability.
 
-**\--whatrequires ***CAPABILITY*
+**\--whatrequires** *CAPABILITY*
 
 :   Query all packages that require *CAPABILITY* for proper functioning.
 
-**\--whatconflicts ***CAPABILITY*
+**\--whatconflicts** *CAPABILITY*
 
 :   Query all packages that conflict with *CAPABILITY*.
 
-**\--whatrecommends ***CAPABILITY*
+**\--whatrecommends** *CAPABILITY*
 
 :   Query all packages that recommend *CAPABILITY*.
 
-**\--whatsuggests ***CAPABILITY*
+**\--whatsuggests** *CAPABILITY*
 
 :   Query all packages that suggest *CAPABILITY*.
 
-**\--whatsupplements ***CAPABILITY*
+**\--whatsupplements** *CAPABILITY*
 
 :   Query all packages that supplement *CAPABILITY*.
 
-**\--whatenhances ***CAPABILITY*
+**\--whatenhances** *CAPABILITY*
 
 :   Query all packages that enhance *CAPABILITY*.
 
@@ -991,13 +991,13 @@ If both the user and password are omitted, anonymous **ftp** is used.
 
 :   **http** and **ftp** URLs:
 
-**\--httpproxy ***HOST*
+**\--httpproxy** *HOST*
 
 :   The host *HOST* will be used as a proxy server for all **http** and
     **ftp** transfers. This option may also be specified by configuring
     the macro **%\_httpproxy**.
 
-**\--httpport ***PORT*
+**\--httpport** *PORT*
 
 :   The TCP *PORT* number to use for the **http** connection on the
     proxy http server instead of the default port. This option may also
