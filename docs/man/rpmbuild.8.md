@@ -34,11 +34,11 @@ MISCELLANEOUS:
 rpmbuild-options
 ----------------
 
-\[**\--buildroot ***DIRECTORY*\] \[**\--clean**\] \[**\--nobuild**\]
+\[**\--buildroot** *DIRECTORY*\] \[**\--clean**\] \[**\--nobuild**\]
 \[**\--rmsource**\] \[**\--rmspec**\] \[**\--short-circuit**\]
 \[**\--build-in-place**\] \[**\--noprep**\] \[**\--noclean**\]
-\[**\--nocheck**\] \[**\--rpmfcdebug**\] \[**\--target ***PLATFORM*\]
-\[**\--with ***OPTION*\] \[**\--without ***OPTION*\]
+\[**\--nocheck**\] \[**\--rpmfcdebug**\] \[**\--target** *PLATFORM*\]
+\[**\--with** *OPTION*\] \[**\--without** *OPTION*\]
 
 DESCRIPTION
 ===========
@@ -87,30 +87,30 @@ These options can be used in all the different modes.
 
 :   Enables to debug dependencies generation.
 
-**\--rcfile ***FILELIST*
+**\--rcfile** *FILELIST*
 
 :   Replace default list of configuration files to be read with *FILELIST*.
     See **rpmrc Configuration** in **rpm**(8) for details.
 
-**\--load ***FILE*
+**\--load** *FILE*
 
 :   Load an individual macro file.
 
-**\--macros ***FILELIST*
+**\--macros** *FILELIST*
 
 :   Replace the list of macro files to be loaded with *FILELIST*.
     See **Macro Configuration** in **rpm**(8) for details.
 
-**\--pipe ***CMD*
+**\--pipe** *CMD*
 
 :   Pipes the output of **rpm** to the command *CMD*.
 
-**\--dbpath ***DIRECTORY*
+**\--dbpath** *DIRECTORY*
 
 :   Use the database in *DIRECTORY* rather than the default path
     */var/lib/rpm*
 
-**\--root ***DIRECTORY*
+**\--root** *DIRECTORY*
 
 :   Use the file system tree rooted at *DIRECTORY* for all operations.
     Note that this means the database within *DIRECTORY* will be used
@@ -211,7 +211,7 @@ all the stages preceding it), and is one of:
 
 The following options may also be used:
 
-**\--buildroot ***DIRECTORY* (DEPRECATED)
+**\--buildroot** *DIRECTORY* (DEPRECATED)
 
 :   When building a package, override rpm's buildroot to *DIRECTORY*.
     This option is deprecated and will be removed in the future, do
@@ -270,17 +270,17 @@ The following options may also be used:
     but %builddir/%buildsubdir points back to the current working
     directory. %prep is skipped entirely.
 
-**\--target ***PLATFORM*
+**\--target** *PLATFORM*
 
 :   When building the package, interpret *PLATFORM* as
     **arch-vendor-os** and set the macros **%\_target**,
     **%\_target\_cpu**, and **%\_target\_os** accordingly.
 
-**\--with ***OPTION*
+**\--with** *OPTION*
 
 :   Enable configure *OPTION* for build.
 
-**\--without ***OPTION*
+**\--without** *OPTION*
 
 :   Disable configure *OPTION* for build.
 
