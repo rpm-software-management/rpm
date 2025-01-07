@@ -48,8 +48,8 @@ select-options
 query-options
 -------------
 
-\[**\--qf,\--queryformat ***QUERYFMT*\] \[**\--target
-***TARGET\_PLATFORM*\]
+\[**\--qf,\--queryformat** *QUERYFMT*\] \[**\--target**
+*TARGET\_PLATFORM*\]
 
 QUERY OPTIONS
 -------------
