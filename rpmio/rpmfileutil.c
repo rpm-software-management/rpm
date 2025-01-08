@@ -120,22 +120,24 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     for (;(de=strchr(de+1,'/'));) {
 	struct stat st;
 	*de = '\0';
-	rc = stat(d, &st);
-	if (rc) {
-	    if (errno != ENOENT)
-		goto exit;
-	    rc = mkdir(d, mode);
+	rc = mkdir(d, mode);
+	if (rc && errno == EEXIST) {
+	    rc = stat(d, &st);
 	    if (rc)
 		goto exit;
+	    if (!S_ISDIR(st.st_mode)) {
+		rc = ENOTDIR;
+		goto exit;
+	    }
+	} else if (rc) {
+	    goto exit;
+	} else {
 	    rpmlog(RPMLOG_DEBUG, "created directory(s) %s mode 0%o\n", path, mode);
 	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
 		rc = chown(d, uid, gid);
 		if (rc)
 		    goto exit;
 	    }
-	} else if (!S_ISDIR(st.st_mode)) {
-	    rc = ENOTDIR;
-	    goto exit;
 	}
 	*de = '/';
     }
