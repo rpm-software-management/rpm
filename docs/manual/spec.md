@@ -4,6 +4,37 @@ title: rpm.org - Spec file format
 ---
 # Spec file format
 
+Spec files describe how software is build and packaged.
+
+### Contents and Links
+
+* [Generic syntax](#generic-syntax)
+  * [→ Macro syntax](macros.md)
+  * [Comments](#comments)
+  * [Conditionals](#conditionals)
+  * [→ Conditional Builds](conditionalbuilds.md)
+  * [Sections](#sections)
+* [Preamble](#preamble)
+  * [Dependencies](#dependencies)
+    * [→ Dependencies Basics](dependencies.md)
+    * [→ More on Dependencies](more_dependencies.md)
+    * [→ Boolean Dependencies](boolean_dependencies.md)
+    * [→ Architecture Dependencies](arch_dependencies.md)
+    * [→ Installation Order](tsort.md)
+    * [→ Automatic Dependency Generation](dependency_generators.md)
+  * [→ Declarative builds](buildsystem.md)
+  * [→ Relocatable Packages](relocatable.md)
+  * [Sub-sections](#sub-sections)
+* [Build scriptlets](#build-scriptlets)
+  * [→ Autosetup](autosetup.md)
+* [Runtime scriptlets](#runtime-scriptlets)
+  * [→ Triggers](triggers.md)
+  * [→ File Triggers](file_triggers.md)
+  * [→ Scriptlet Expansion](scriptlet_expansion.md)
+* [%files section](#files-section)
+  * [→ Users and Groups](users_and_groups.md)
+* [%changelog section](changelog-section)
+
 ## Generic syntax
 
 ### Macros
@@ -81,6 +112,14 @@ other conditionals.
 
 %if-conditionals are not macros, and are unlikely to yield expected results
 if used in them.
+
+
+### Conditional Builds ###
+
+Conditionals can be made available for users building the package.
+[Conditional Builds](conditionalbuilds.md) add `--with` and `--without`
+command line options to `rpmbuild` that can be used inside the spec
+file.
 
 ### Sections ###
 
@@ -460,7 +499,8 @@ unexpected results, in particular with `%global`.
 #### Prefixes (or Prefix)
 
 Specify prefixes this package may be installed into, used to make
-packages relocatable. Very few packages are.
+packages relocatable. Very few packages are. See [Relocatable Packages](relocatable.md) for details.
+
 
 #### DocDir
 
@@ -476,6 +516,14 @@ level.
 Used for creating sub-packages with conflicting files, such as different
 variants of the same content (eg minimal and full versions of the same
 software). 
+
+#### More Dependencies related Topics
+  * [Dependencies Basics](dependencies.md)
+  * [More on Dependencies](more_dependencies.md)
+  * [Boolean Dependencies](boolean_dependencies.md)
+  * [Architecture Dependencies](arch_dependencies.md)
+  * [Installation Order](tsort.md)
+  * [Automatic Dependency Generation](dependency_generators.md)
 
 ### Sub-sections
 
