@@ -86,13 +86,13 @@ options are
 
 Some examples:
 
-# Apply patches with number >= 100
+### Apply patches with number >= 100
 `%autopatch -m 100`
-# Apply patches with number <= 400
+### Apply patches with number <= 400
 `%autopatch -M 400`
-# Apply patches 80 to 99, inclusive
+### Apply patches 80 to 99, inclusive
 `%autopatch -m 80 -M 99`
-# Apply patches 1, 4 and 6
+### Apply patches 1, 4 and 6
 `%autopatch 1 4 6`
 
 ## Automating patch (and source) declarations
