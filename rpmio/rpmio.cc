@@ -462,6 +462,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
 	unlink(dest);
     } else {
 	fd = NULL;
+	errno = ENOENT;
     }
     dest = _free(dest);
 
