@@ -107,7 +107,8 @@ static void bdb_swapmetapage(struct bdb_db *db, unsigned char *page)
 static void bdb_swappage(struct bdb_db *db, unsigned char *page)
 {
     unsigned int pagesize = db->pagesize;
-    int type, i, nent, off;
+    uint16_t i, nent, off;
+    unsigned char type;
     swap32(page + 8);		/* page number */
     swap32_2(page + 12);	/* prev/next page */
     swap16(page + 20);		/* nitems */
@@ -120,25 +121,25 @@ static void bdb_swappage(struct bdb_db *db, unsigned char *page)
     if (nent > (pagesize - 26) / 2)
 	nent = (pagesize - 26) / 2;
     for (i = 0; i < nent; i++) {
-	int minoff = 26 + nent * 2;
+	uint16_t minoff = 26 + nent * 2;
 	swap16(page + 26 + i * 2);		/* offset */
 	off = *(uint16_t *)(page + 26 + i * 2);
 	if (off < minoff || off >= pagesize)
 	    continue;
 	if (type == 2 || type == 13) {		/* hash */
-	    if (page[off] == 3 && off + 12 <= pagesize)
+	    if (page[off] == 3 && off + 12u <= pagesize)
 	        swap32_2(page + off + 4);	/* page no/length */
 	} else if (type == 3) {			/* btree internal */
-	    if (off + 12 > pagesize)
+	    if (off + 12u > pagesize)
 	        continue;
 	    swap16(page + off);			/* length */
 	    swap32_2(page + off + 4);		/* page no/num recs */
-	    if (page[off + 2] == 3 && off + 24 <= pagesize)
+	    if (page[off + 2] == 3 && off + 24u <= pagesize)
 		swap32_2(page + off + 16);	/* with overflow page/length */
 	} else if (type == 5) {			/* btree leaf */
-	    if (off + 3 <= pagesize && page[off + 2] == 1)
+	    if (off + 3u <= pagesize && page[off + 2] == 1)
 		swap16(page + off);		/* length */
-	    else if (off + 12 <= pagesize && page[off + 2] == 3)
+	    else if (off + 12u <= pagesize && page[off + 2] == 3)
 		swap32_2(page + off + 4);	/* overflow page/length */
 	}
     }
@@ -299,7 +300,7 @@ static int hash_lookup(struct bdb_cur *cur, const unsigned char *key, unsigned i
 
 static int hash_getkv(struct bdb_cur *cur, struct bdb_kv *kv, struct bdb_kv *ov, int off, int len)
 {
-    if (len <= 0 || off + len > cur->db->pagesize)
+    if (len <= 0 || ((unsigned int) off + len) > cur->db->pagesize)
 	return -1;
     if (cur->page[off] == 1) {
 	kv->kv = cur->page + off + 1;
@@ -373,7 +374,7 @@ static int hash_getval(struct bdb_cur *cur)
 
 static int btree_lookup(struct bdb_cur *cur, const unsigned char *key, unsigned int keylen)
 {
-    int pagesize = cur->db->pagesize;
+    unsigned int pagesize = cur->db->pagesize;
     int off, lastoff, idx, numidx;
     unsigned int pg;
     unsigned char *ekey;
@@ -394,7 +395,7 @@ static int btree_lookup(struct bdb_cur *cur, const unsigned char *key, unsigned 
 	    return -1;
 	for (lastoff = 0, idx = 0; idx < numidx; idx++, lastoff = off) {
 	    off = *(uint16_t *)(cur->page + 26 + 2 * idx);
-	    if ((off & 3) != 0 || off + 3 > pagesize)
+	    if ((off & 3) != 0 || off + 3u > pagesize)
 		return -1;
 	    ekeylen = *(uint16_t *)(cur->page + off);
 	    if (off + 12 + ekeylen > pagesize)
@@ -434,12 +435,12 @@ static int btree_getkv(struct bdb_cur *cur, struct bdb_kv *kv, struct bdb_kv *ov
 	return -1;
     if (cur->page[off + 2] == 1) {
 	int len = *(uint16_t *)(cur->page + off);
-	if (off + 3 + len > cur->db->pagesize)
+	if (off + 3u + len > cur->db->pagesize)
 	    return -1;
 	kv->kv = cur->page + off + 3;
 	kv->len = len;
     } else if (cur->page[off + 2] == 3) {
-	if (off + 12 > cur->db->pagesize)
+	if (((unsigned int) off + 12) > cur->db->pagesize)
 	    return -1;
 	if (ovfl_get(cur, kv, ov, (uint32_t *)(cur->page + off + 4)))
 	    return -1;
