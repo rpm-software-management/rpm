@@ -956,7 +956,7 @@ int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix)
 	goto exit; /* The file doesn't exist on the disk */
     }
 
-    if (rpmfilesFSize(nfi, nix) != sb.st_size) {
+    if (rpmfilesFSize(nfi, nix) != (rpm_loff_t) sb.st_size) {
 	goto exit;
     }
 
@@ -1193,7 +1193,7 @@ int rpmfilesConfigConflict(rpmfiles fi, int ix)
     }
 
     /* Files of different sizes obviously are not identical */
-    if (rpmfilesFSize(fi, ix) != sb.st_size) {
+    if (rpmfilesFSize(fi, ix) != (rpm_loff_t) sb.st_size) {
 	rc = 1;
 	goto exit;
     }
@@ -1382,7 +1382,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
     std::unordered_map<fileid_s,std::shared_ptr<hardlinks>,fidHash> files;
     rpm_dev_t * fdevs = NULL;
     struct rpmtd_s td;
-    int totalfc = rpmfilesFC(fi);
+    rpm_count_t totalfc = rpmfilesFC(fi);
     bool havelinks = false;
 
     if (!fi->finodes)
@@ -1516,7 +1516,8 @@ static uint8_t *base2bin(Header h, rpmTagVal tag, rpm_count_t num, int *len)
     struct rpmtd_s td;
     uint8_t *bin = NULL, *t = NULL;
     size_t maxlen = 0;
-    int status, i= 0;
+    int status;
+    rpm_count_t i = 0;
     uint8_t **arr = (uint8_t **)xmalloc(num * sizeof(void *));
     size_t *lengths = (size_t *)xcalloc(num, sizeof(size_t));
     const char *s;
@@ -1767,7 +1768,8 @@ rpmfi rpmfilesIter(rpmfiles files, int itype)
 
 rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx)
 {
-    int l, u, c, comparison;
+    rpm_count_t l, u, c;
+    int comparison;
     rpmfi iterator = NULL;
 
     if (!fi || !pfx)
@@ -2143,7 +2145,7 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
 {
     rpm_loff_t left;
     int rc = 0;
-    size_t len;
+    ssize_t len;
     char buf[BUFSIZ*4];
 
     if (fi == NULL || fi->archive == NULL || fd == NULL)
@@ -2225,7 +2227,7 @@ static int iterReadArchiveNext(rpmfi fi)
 		fsize = rpmfilesFSize(fi->files, fx);
 	} else if (S_ISLNK(mode)) {
 	    /* Skip over symlink target data in payload */
-	    rpm_loff_t lsize = rpmfilesFSize(fi->files, fx);
+	    ssize_t lsize = rpmfilesFSize(fi->files, fx);
 	    char *buf = (char *)xmalloc(lsize + 1);
 	    if (rpmcpioRead(fi->archive, buf, lsize) != lsize)
 		rc = RPMERR_READ_FAILED;
@@ -2343,7 +2345,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
     }
 
     while (left) {
-	size_t len;
+	ssize_t len;
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
 	if (rpmcpioRead(fi->archive, buf, len) != len) {
 	    rc = RPMERR_READ_FAILED;
