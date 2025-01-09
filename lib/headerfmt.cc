@@ -21,6 +21,8 @@ using std::string;
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
 
+#define RPMTAG_GLOB (UINT32_MAX-2)
+
 /** \ingroup header
  */
 typedef struct sprintfTag_s * sprintfTag;
@@ -160,7 +162,7 @@ static void hsaInit(headerSprintfArgs hsa)
 	NULL));
 
     hsa->i = 0;
-    if (tag != NULL && tag->tag == -2)
+    if (tag != NULL && tag->tag == RPMTAG_GLOB)
 	hsa->hi = headerInitIterator(hsa->h);
     /* Normally with bells and whistles enabled, but raw dump on iteration. */
     hsa->hgflags = (hsa->hi == NULL) ? HEADERGET_EXT : HEADERGET_RAW;
@@ -353,7 +355,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 	stag->tag = rpmTagGetValue(tagname);
 	if (stag->tag == RPMTAG_NOT_FOUND) return 1;
 
-    } else stag->tag = -2;
+    } else stag->tag = RPMTAG_GLOB;
 
     /* Search extensions for specific format. */
     if (stag->type != NULL)
@@ -892,7 +894,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 	(hsa.format->type == PTOK_ARRAY
 	    ? &hsa.format->u.array.format->u.tag :
 	NULL));
-    if (tag != NULL && tag->tag == -2 && tag->type != NULL) {
+    if (tag != NULL && tag->tag == RPMTAG_GLOB && tag->type != NULL) {
 	if (rstreq(tag->type, "xml"))
 	    hsa.xfmt = xformat_xml; /* struct assignment */
 	else if (rstreq(tag->type, "json"))
