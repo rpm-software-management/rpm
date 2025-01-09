@@ -77,7 +77,7 @@ static rpmRC write_key_to_disk(rpmPubkey key, string & dir, string & filename, i
 
     if (FD_t fd = Fopen(replace ? tmppath.c_str() : path.c_str(), "wx")) {
 	size_t keylen = strlen(keyval);
-	if (Fwrite(keyval, 1, keylen, fd) == keylen)
+	if (Fwrite(keyval, 1, keylen, fd) == (ssize_t) keylen)
 	    rc = RPMRC_OK;
 	Fclose(fd);
     }

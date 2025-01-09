@@ -305,7 +305,7 @@ static char * writeScript(const char *cmd, const char *script)
 	Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
     }
 
-    ok = (Fwrite(script, sizeof(script[0]), slen, fd) == slen);
+    ok = (Fwrite(script, sizeof(script[0]), slen, fd) == (ssize_t) slen);
 
 exit:
     if (!ok) fn = _free(fn);

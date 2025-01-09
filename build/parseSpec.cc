@@ -1007,7 +1007,7 @@ static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,
 				       args ? args : "",
 				       "\n", NULL);
 	    size_t blen = strlen(buf);
-	    if (Fwrite(buf, blen, 1, fd) < blen) {
+	    if (Fwrite(buf, blen, 1, fd) < (ssize_t) blen) {
 		rc = RPMRC_FAIL;
 		rpmlog(RPMLOG_ERR,
 			    _("failed to write buildsystem %s %%%s: %s\n"),
