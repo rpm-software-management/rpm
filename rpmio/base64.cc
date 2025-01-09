@@ -58,18 +58,21 @@ static char *base64_encode_block(const char *plaintext_in, int length_in, char *
 
 #define BASE64_DEFAULT_LINE_LENGTH 64
 
-char *rpmBase64Encode(const void *data, size_t len, int linelen)
+char *rpmBase64Encode(const void *data, size_t len, int linelen_)
 {
 	size_t encodedlen;
 	const char *dataptr = (const char *)data;
 	char *output;
 	char *outptr;
+	size_t linelen;
 	
 	if (data == NULL)
 		return NULL;
 
-	if (linelen < 0)
+	if (linelen_ < 0)
 		linelen = BASE64_DEFAULT_LINE_LENGTH;
+	else
+		linelen = linelen_;
 
 	linelen /= 4;
 	encodedlen = ((len + 2) / 3) * 4;
