@@ -155,7 +155,7 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 		unsigned int npkg = rpmdbIndexIteratorNumPkgs(ii);
 		const unsigned int *offs = rpmdbIndexIteratorPkgOffsets(ii);
 		/* Save any postun triggers matching this prefix */
-		for (int i = 0; i < npkg; i++) {
+		for (unsigned int i = 0; i < npkg; i++) {
 		    Header h = rpmdbGetHeaderAt(rpmtsGetRdb(ts), offs[i]);
 		    addTriggers(ts, h, RPMSENSE_TRIGGERPOSTUN, pfx);
 		    headerFree(h);
@@ -519,7 +519,7 @@ static bool packageHashHasEntry(packageHash & pkghash, unsigned int entry)
 rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 			rpmscriptTriggerModes tm, int priorityClass)
 {
-    int nerrors = 0, i;
+    int nerrors = 0;
     rpmdbIndexIterator ii;
     const void *key;
     char *pfx;
@@ -550,7 +550,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 
 	/* Check if file trigger is fired by any file in ts/te */
 	if (matchFunc(ts, te, pfx, sense)) {
-	    for (i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
+	    for (unsigned int i = 0; i < rpmdbIndexIteratorNumPkgs(ii); i++) {
 		unsigned int priority = 0;
 		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
 		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
@@ -582,7 +582,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
     rpmtriggersSortAndUniq(triggers);
 
     /* Handle stored triggers */
-    for (i = 0; i < triggers->count; i++) {
+    for (int i = 0; i < triggers->count; i++) {
 	if (priorityClass == 1) {
 	    if (triggers->triggerInfo[i].priority < TRIGGER_PRIORITY_BOUND)
 		continue;

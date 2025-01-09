@@ -199,7 +199,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
     if (shdr->sh_entsize == 0)
 	return;
     while ((data = elf_getdata(scn, data)) != NULL) {
-	for (int i = 0; i < (shdr->sh_size / shdr->sh_entsize); i++) {
+	for (unsigned int i = 0; i < (shdr->sh_size / shdr->sh_entsize); i++) {
 	    const char *s = NULL;
 	    GElf_Dyn dyn_mem, *dyn;
 

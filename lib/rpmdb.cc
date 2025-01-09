@@ -1871,7 +1871,7 @@ const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii)
 
     unsigned int count = dbiIndexSetCount(ii->ii_set);
     ii->ii_hdrNums.resize(count);
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
 	ii->ii_hdrNums[i] = dbiIndexRecordOffset(ii->ii_set, i);
     }
 

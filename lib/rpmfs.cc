@@ -99,7 +99,7 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action)
 void rpmfsResetActions(rpmfs fs)
 {
     if (fs) {
-	for (int i = 0; i < fs->fc; i++) {
+	for (unsigned int i = 0; i < fs->fc; i++) {
 	    /* --excludepaths is processed early, avoid undoing that */
 	    if (fs->actions[i] != FA_SKIPNSTATE)
 		fs->actions[i] = FA_UNKNOWN;

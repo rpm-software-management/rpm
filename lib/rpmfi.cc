@@ -1393,7 +1393,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	return;
 
     /* Collect file indexes sharing the same dev:ino pair (if any) */
-    for (int i=0; i < totalfc; i++) {
+    for (rpm_count_t i=0; i < totalfc; i++) {
 	if (!S_ISREG(rpmfilesFMode(fi, i)) ||
 		(rpmfilesFFlags(fi, i) & RPMFILE_GHOST) ||
 		fi->finodes[i] <= 0) {
@@ -1411,7 +1411,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
     /* Collect the hardlink sets to into a hash keyed by file index */
     if (havelinks) {
 	fi->nlinks = new nlinkHash {};
-	for (int i=0; i < totalfc; i++) {
+	for (rpm_count_t i=0; i < totalfc; i++) {
 	    if (!S_ISREG(rpmfilesFMode(fi, i)) ||
 		    (rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
 		continue;
@@ -1463,7 +1463,7 @@ static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
 		goto exit;
 	    }
 	    offs[i] = t - bin;
-	    for (int j = 0; j < len; j++, t++, s += 2)
+	    for (uint32_t j = 0; j < len; j++, t++, s += 2)
 		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	    i++;
 	}
@@ -1496,7 +1496,7 @@ static uint8_t *hex2bin(Header h, rpmTagVal tag, rpm_count_t num, size_t len)
 		bin = _free(bin);
 		break;
 	    }
-	    for (int j = 0; j < len; j++, t++, s += 2)
+	    for (uint32_t j = 0; j < len; j++, t++, s += 2)
 		*t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	}
     }

@@ -37,7 +37,7 @@ void rpmtdFreeData(rpmtd td)
     if (td && td->data && td->flags & RPMTD_ALLOCED) {
 	if (td->flags & RPMTD_PTR_ALLOCED) {
 	    char **data = (char **)td->data;
-	    for (int i = 0; i < td->count; i++) {
+	    for (rpm_count_t i = 0; i < td->count; i++) {
 		free(data[i]);
 	    }
 	}

@@ -144,7 +144,7 @@ int tagTable::getNames(rpmtd tagnames, int fullname)
     tagnames->type = RPM_STRING_ARRAY_TYPE;
     tagnames->flags = RPMTD_ALLOCED | RPMTD_IMMUTABLE;
 
-    for (int i = 0; i < tagnames->count; i++) {
+    for (rpm_count_t i = 0; i < tagnames->count; i++) {
 	name = fullname ? byName[i]->name :
 			  byName[i]->shortname;
 	names[i] = name;

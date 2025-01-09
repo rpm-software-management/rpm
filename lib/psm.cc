@@ -331,7 +331,7 @@ static char *findProviderFile(rpmfiles files, int px)
     for (int i = 0; i < fc; i++) {
 	const uint32_t *ddict = NULL;
 	uint32_t ndict = rpmfilesFDepends(files, i, &ddict);
-	for (int j = 0; j < ndict; j++) {
+	for (uint32_t j = 0; j < ndict; j++) {
 	    unsigned int dict = ddict[j];
 	    unsigned int dt = (dict >> 24) & 0xff;
 	    unsigned int dx = dict & 0x00ffffff;

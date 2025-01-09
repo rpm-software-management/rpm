@@ -976,12 +976,12 @@ static int isHardLink(FileListRec flp, FileListRec tlp)
  */
 static int checkHardLinks(FileRecords & files)
 {
-    for (int i = 0;  i < files.size(); i++) {
+    for (rpm_count_t i = 0;  i < files.size(); i++) {
 	FileListRec ilp = &files[i];
 	if (!(isLinkable(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
-	for (int j = i + 1; j < files.size(); j++) {
+	for (rpm_count_t j = i + 1; j < files.size(); j++) {
 	    FileListRec jlp = &files[j];
 	    if (isHardLink(ilp, jlp)) {
 		return 1;
