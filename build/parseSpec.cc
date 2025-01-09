@@ -118,7 +118,7 @@ static const struct PartRec * getPart(int part)
 static int matchTok(const char *token, const char *line)
 {
     const char *b, *be = line;
-    size_t toklen = strlen(token);
+    ssize_t toklen = strlen(token);
     int rc = 0;
 
     while ( *(b = be) != '\0' ) {

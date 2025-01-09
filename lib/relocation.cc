@@ -276,7 +276,7 @@ assert(fn != NULL);		/* XXX can't happen */
 
 	/* Does this directory already exist in the directory list? */
 	for (j = 0; j < dirCount; j++) {
-	    if (fnlen != strlen(dirNames[j]))
+	    if (fnlen != (ssize_t) strlen(dirNames[j]))
 		continue;
 	    if (!rstreqn(fn, dirNames[j], fnlen))
 		continue;

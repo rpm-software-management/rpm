@@ -1280,7 +1280,7 @@ static rpmRC parseRichDepOp(const char **dstrp, rpmrichOp *opp, char **emsg)
     while (*pe && !risspace(*pe) && *pe != ')')
 	pe++;
     for (ro = RichOps; ro->token != NULL; ro++)
-	if (pe - p == strlen(ro->token) && rstreqn(p, ro->token, pe - p)) {
+	if (pe - p == ((ssize_t) strlen(ro->token)) && rstreqn(p, ro->token, pe - p)) {
 	    *opp = ro->op;
 	    *dstrp = pe; 
 	    return RPMRC_OK;

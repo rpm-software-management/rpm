@@ -1275,7 +1275,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     const char *fe;
 
     /* First try a complete match. */
-    if (strlen(td) == (le-l) && rstreqn(td, l, (le - l)))
+    if (((ssize_t) strlen(td)) == (le-l) && rstreqn(td, l, (le - l)))
 	return 1;
 
     /* Next, try stripping optional dialect and matching.  */
