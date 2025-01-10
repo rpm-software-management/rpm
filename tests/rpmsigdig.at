@@ -1271,6 +1271,36 @@ hello-1.0.tar.gz:(none)
 [])
 RPMTEST_CLEANUP
 
+# Test that installing an ima signed package works.
+# The installation should succeed in all cases, but whether setting the
+# IMA signature succeeds depends on container privileges - in rootless
+# we can't do this.
+AT_SETUP([install ima file signatures])
+AT_KEYWORDS([install ima signature])
+AT_SKIP_IF([$IMA_DISABLED])
+
+RPMTEST_SETUP
+
+cat << EOF > expout
+# file: /usr/share/example1
+security.ima=0sAwIEpZglVABIMEYCIQDlEXva+nO6rrHx3EbsqkaYGmLUF3RaM1MlcrY9xtldFgIhAMeJEHrFuR4tkV4d88e3hBT2s/UImdRMHeOB0Ok438gr
+
+EOF
+
+touch canary
+# different expectations in a rootless container
+if ! setfattr -n security.ima -v 0sAwIEpZglVABIMEYCIQDlEXva+nO6rrHx3EbsqkaYGmLUF3RaM1MlcrY9xtldFgIhAMeJEHrFuR4tkV4d88e3hBT2s/UImdRMHeOB0Ok438gr canary 2> /dev/null; then
+    echo -n "" > expout
+fi
+
+RPMTEST_CHECK([
+runroot rpm -U /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
+runroot_other getfattr --absolute-names -d -m security.ima /usr/share/example1
+],
+[0],
+[expout],
+[])
+RPMTEST_CLEANUP
 
 AT_SETUP([--delsign with misplaced ima signature])
 AT_KEYWORDS([rpmsign ima signature])
