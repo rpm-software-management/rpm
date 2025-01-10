@@ -12,7 +12,7 @@ rpm-plugin-syslog - Syslog plugin for the RPM Package Manager
 Description
 ===========
 
-The plugin writes basic information about rpm transactions to the syslog
+The plugin writes basic information about **rpm**(8) transactions to the syslog
 - like transactions run and packages installed or removed.
 
 Configuration

@@ -17,7 +17,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The general forms of rpm digital signature commands are
+The general forms of **rpm**(8) digital signature commands are
 
 **rpmkeys** **\--list** \[*KEYHASH \...*\]
 

@@ -28,7 +28,7 @@ of the more customary index zero.
 
 **--opts=OPTSTRING**
 
-: Perform getopt(3) option processing on the passed arguments according
+: Perform **getopt**(3) option processing on the passed arguments according
   to OPTSTRING.
 
 **-e\|\--execute**

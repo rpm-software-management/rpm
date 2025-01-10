@@ -33,7 +33,7 @@ the database indices from the installed package headers.
 **\--verifydb** performs a low-level integrity check on the database.
 
 **\--exportdb** exports the database in header-list format, suitable
-for transfporting to another host or database type.
+for transporting to another host or database type.
 
 **\--importdb** imports a database from a header-list format as created
 by **\--exportdb**.

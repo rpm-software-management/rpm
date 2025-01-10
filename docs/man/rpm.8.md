@@ -12,8 +12,8 @@ rpm - RPM Package Manager
 SYNOPSIS
 ========
 
-QUERYING AND VERIFYING PACKAGES:
---------------------------------
+QUERYING AND VERIFYING PACKAGES
+-------------------------------
 
 **rpm** {**-q\|\--query**} \[**select-options**\] \[**query-options**\]
 
@@ -22,8 +22,8 @@ QUERYING AND VERIFYING PACKAGES:
 **rpm** {**-V\|\--verify**} \[**select-options**\]
 \[**verify-options**\]
 
-INSTALLING, UPGRADING, AND REMOVING PACKAGES:
----------------------------------------------
+INSTALLING, UPGRADING, AND REMOVING PACKAGES
+--------------------------------------------
 
 **rpm** {**-i\|\--install**} \[**install-options**\] *PACKAGE\_FILE
 \...*
@@ -40,8 +40,8 @@ INSTALLING, UPGRADING, AND REMOVING PACKAGES:
 \[**\--nodb**\] \[**\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
 \[**\--test**\] *PACKAGE\_NAME \...*
 
-MISCELLANEOUS:
---------------
+MISCELLANEOUS
+-------------
 
 **rpm** **\--showrc**
 
@@ -169,7 +169,7 @@ These options can be used in all the different modes.
 **\--dbpath** *DIRECTORY*
 
 :   Use the database in *DIRECTORY* rather than the default path
-    */var/lib/rpm*
+    */var/lib/rpm*.
 
 **\--root** *DIRECTORY*
 
@@ -195,7 +195,7 @@ These options can be used in all the different modes.
 
 :   Prints macro expansion of *EXPR*.
 
-More - less often needed - options can be found on the **rpm-misc(8)**
+More - less often needed - options can be found on the **rpm-misc**(8)
 man page.
 
 INSTALL AND UPGRADE OPTIONS
@@ -207,14 +207,14 @@ specified as an **ftp** or **http** URL, in which case the package will
 be downloaded before being installed. See **FTP/HTTP OPTIONS** for
 information on **rpm**\'s **ftp** and **http** client support.
 
-The general form of an rpm install command is
+The general form of an **rpm** install command is
 
 **rpm** {**-i\|\--install**} \[**install-options**\] *PACKAGE\_FILE
 \...*
 
 This installs a new package.
 
-The general form of an rpm upgrade command is
+The general form of an **rpm** upgrade command is
 
 **rpm** {**-U\|\--upgrade**} \[**install-options**\] *PACKAGE\_FILE
 \...*
@@ -229,7 +229,7 @@ package are removed after the new package is installed.
 This will upgrade packages, but only ones for which an earlier version
 is installed.
 
-The general form of an rpm reinstall command is
+The general form of an **rpm** reinstall command is
 
 **rpm** {**\--reinstall**} \[**install-options**\] *PACKAGE\_FILE \...*
 
@@ -398,7 +398,7 @@ and turns off execution of the corresponding **%triggerprein**,
 ERASE OPTIONS
 -------------
 
-The general form of an rpm erase command is
+The general form of an **rpm** erase command is
 
 **rpm** {**-e\|\--erase**} \[**\--allmatches**\] \[**\--justdb\]
 \[\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
@@ -448,7 +448,7 @@ and turns off execution of the corresponding **%triggerun**, and
 QUERY OPTIONS
 -------------
 
-The general form of an rpm query command is
+The general form of an **rpm** query command is
 
 **rpm** {**-q\|\--query**} \[**select-options**\] \[**query-options**\]
 
@@ -458,10 +458,10 @@ in. To do this, you use the
 **\--qf\|\--queryformat** *QUERYFMT*
 
 option, followed by the *QUERYFMT* format string. Query formats are
-modified versions of the standard **printf(3)** formatting. The format
+modified versions of the standard **printf**(3) formatting. The format
 is made up of static strings (which may include standard C character
 escapes for newlines, tabs, and other special characters (not including \0))
-and **printf(3)** type formatters. As **rpm** already knows the type to
+and **printf**(3) type formatters. As **rpm** already knows the type to
 print, the type specifier must be omitted however, and replaced by the
 name of the header tag to be printed, enclosed by **{}** characters. Tag
 names are case insensitive, and the leading **RPMTAG\_** portion of the
@@ -484,11 +484,11 @@ Alternate output formats may be requested by following the tag with
 
 **:date**
 
-:   Use strftime(3) \"%c\" format.
+:   Use **strftime**(3) \"%c\" format.
 
 **:day**
 
-:   Use strftime(3) \"%a %b %d %Y\" format.
+:   Use **strftime**(3) \"%a %b %d %Y\" format.
 
 **:depflags**
 
@@ -582,8 +582,8 @@ argument.
 There are three subsets of options for querying: package selection, file
 selection and information selection.
 
-PACKAGE SELECTION OPTIONS:
---------------------------
+PACKAGE SELECTION OPTIONS
+-------------------------
 
 *PACKAGE\_NAME*
 
@@ -652,7 +652,7 @@ name starts with \"b\".
     support. The *PACKAGE\_FILE* argument(s), if not a binary package,
     will be interpreted as an ASCII package manifest unless
     **\--nomanifest** option is used. In manifests, comments are
-    permitted, starting with a \'\#\', and each line of a package
+    permitted, starting with a \'*\#*\', and each line of a package
     manifest file may include white space separated glob expressions,
     including URL\'s, that will be expanded to paths that are
     substituted in place of the package manifest as additional
@@ -678,13 +678,13 @@ name starts with \"b\".
 
 :   Parse and query *SPECFILE* as if it were a package. Although not all
     the information (e.g. file lists) is available, this type of query
-    permits rpm to be used to extract information from spec files
+    permits **rpm** to be used to extract information from spec files
     without having to write a specfile parser.
 
 **\--tid** *TID*
 
 :   Query package(s) that have a given *TID* transaction identifier. A
-    unix time stamp is currently used as a transaction identifier. All
+    UNIX time stamp is currently used as a transaction identifier. All
     package(s) installed or erased within a single transaction have a
     common identifier.
 
@@ -725,8 +725,8 @@ name starts with \"b\".
 
 :   Query all packages that enhance *CAPABILITY*.
 
-PACKAGE QUERY OPTIONS:
-----------------------
+PACKAGE QUERY OPTIONS
+---------------------
 
 **\--changelog**
 
@@ -749,7 +749,7 @@ PACKAGE QUERY OPTIONS:
 
 **\--enhances**
 
-:   List capabilities enhanced by package(s)
+:   List capabilities enhanced by package(s).
 
 **\--filesbypkg**
 
@@ -783,7 +783,7 @@ PACKAGE QUERY OPTIONS:
 
 **\--recommends**
 
-:   List capabilities recommended by package(s)
+:   List capabilities recommended by package(s).
 
 **-R, \--requires**
 
@@ -791,11 +791,11 @@ PACKAGE QUERY OPTIONS:
 
 **\--suggests**
 
-:   List capabilities suggested by package(s)
+:   List capabilities suggested by package(s).
 
 **\--supplements**
 
-:   List capabilities supplemented by package(s)
+:   List capabilities supplemented by package(s).
 
 **\--scripts**
 
@@ -811,10 +811,14 @@ PACKAGE QUERY OPTIONS:
 **\--triggers, \--triggerscripts**
 
 :   Display the trigger scripts, if any, which are contained in the
-    package. **\--xml** Format package headers as XML.
+    package.
 
-FILE SELECTION OPTIONS:
------------------------
+**\--xml**
+
+:   Format package headers as XML.
+
+FILE SELECTION OPTIONS
+----------------------
 
 **-A, \--artifactfiles**
 
@@ -847,7 +851,7 @@ FILE SELECTION OPTIONS:
 VERIFY OPTIONS
 --------------
 
-The general form of an rpm verify command is
+The general form of an **rpm** verify command is
 
 **rpm** {**-V\|\--verify**} \[**select-options**\]
 \[**verify-options**\]
@@ -916,7 +920,7 @@ unique to verify mode are:
 **\--nogroup**
 
 :  Don\'t verify file user/group ownership. Note that only local
-   passwd(5) and group(5) databases are consulted.
+   **passwd**(5) and **group**(5) databases are consulted.
 
 **\--nocaps**
 
@@ -925,15 +929,15 @@ unique to verify mode are:
 The format of the output is a string of 9 characters, a possible
 attribute marker:
 
-    a %artifact a build side-effect file (such as buildid links).
-    c %config configuration file.
-    d %doc documentation file.
-    g %ghost file (i.e. the file contents are not included in the package payload).
-    l %license license file.
-    m %missingok file missing is not a verify failure.
-    n %%config(noreplace) (do not replace file).
-    r %readme readme file.
-    s specfile in source package.
+    **a** %**a**rtifact a build side-effect file (such as buildid links).
+    **c** %**c**onfig configuration file.
+    **d** %**d**oc documentation file.
+    **g** %**g**host file (i.e. the file contents are not included in the package payload).
+    **l** %**l**icense license file.
+    **m** %**m**issingok file missing is not a verify failure.
+    **n** %%config(**n**oreplace) (do not replace file).
+    **r** %**r**eadme readme file.
+    **s** **s**pecfile in source package.
 
 from the package header, followed by the file name. Each of the 9
 characters denotes the result of a comparison of attribute(s) of the
@@ -944,22 +948,22 @@ single \"**.**\" (period) means the test passed, while a single
 em**B**oldened) character denotes failure of the corresponding
 **\--verify** test:
 
-    S file Size differs
-    M Mode differs (includes permissions and file type)
-    5 digest (formerly MD5 sum) differs
-    D Device major/minor number mismatch
-    L readLink(2) path mismatch
-    U User ownership differs
-    G Group ownership differs
-    T mTime differs
-    P caPabilities differ
+    **S** file **S**ize differs
+    **M** **M**ode differs (includes permissions and file type)
+    **5** digest (formerly MD**5** sum) differs
+    **D** **D**evice major/minor number mismatch
+    **L** read**L**ink(2) path mismatch
+    **U** **U**ser ownership differs
+    **G** **G**roup ownership differs
+    **T** m**T**ime differs
+    **P** ca**P**abilities differ
 
 MISCELLANEOUS COMMANDS
 ----------------------
 
 **rpm** **\--showrc**
 
-:   shows the values **rpm** will use for all of the options are
+:   shows the values **rpm** will use for all of the options which are
     currently set in *rpmrc* and *macros* configuration file(s).
 
 **rpm** **\--setperms** | **\--setugids** | **\--setcaps** *PACKAGE\_NAME*
@@ -987,9 +991,7 @@ If both the user and password are omitted, anonymous **ftp** is used.
 
 **rpm** allows the following options to be used with ftp URLs:
 
-**rpm** allows the following options to be used with
-
-:   **http** and **ftp** URLs:
+**rpm** allows the following options to be used with **http** and **ftp** URLs:
 
 **\--httpproxy** *HOST*
 
@@ -1040,7 +1042,7 @@ does not exist.
 Macro Configuration
 -------------------
 
-Each file or **glob(7)** pattern in the colon-separated macro path is
+Each file or **glob**(7) pattern in the colon-separated macro path is
 read sequentially by **rpm** for macro definitions. Tildes will be expanded
 to the value of the environment variable *HOME*. The default macro path
 is as follows:
@@ -1078,7 +1080,7 @@ SEE ALSO
 **rpm-misc**(8), **popt**(3), **rpm2cpio**(8), **rpmbuild**(8), **rpmdb**(8),
 **rpmkeys**(8), **rpmsign**(8), **rpmspec**(8)
 
-**rpm \--help** - as rpm supports customizing the options via popt
+**rpm \--help** - as **rpm** supports customizing the options via popt
 aliases it\'s impossible to guarantee that what\'s described in the
 manual matches what\'s available.
 

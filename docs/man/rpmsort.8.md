@@ -7,7 +7,7 @@ title: RPMSORT
 NAME
 ====
 
-rpmsort - Sort input by RPM Package Manager (RPM) versioning.
+rpmsort - Sort input by RPM Package Manager (RPM) versioning
 
 SYNOPSIS
 ========
@@ -17,11 +17,11 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-**rpmsort** sorts the input files, and writes a sorted list to standard out -
-like sort(1), but aware of RPM versioning.
+**rpmsort**(8) sorts the input files, and writes a sorted list to standard
+out - like **sort**(1), but aware of RPM versioning.
 
 If \'-\' is given as an argument, or no arguments are given, versions are read
-from stdandard in and writen to standard out.
+from standard in and written to standard out.
 
 EXAMPLES
 ========
