@@ -141,7 +141,7 @@
 # location of sysusers.d(5) directory
 %_sysusersdir		@sysusersdir@
 
-# sysusers helper binary (or a replacement script), uncomment to disable
+# sysusers helper binary (or a replacement script), comment out to disable
 #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 %__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
 
