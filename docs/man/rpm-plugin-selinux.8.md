@@ -20,7 +20,7 @@ Configuration
 =============
 
 The plugin can be disabled temporarily by passing **\--nocontexts** at
-the RPM command line or setting the transaction flag
+the **rpm**(8) command line or setting the transaction flag
 **RPMTRANS\_FLAG\_NOCONTEXTS** in the API.
 
 See **rpm-plugins**(8) on how to control plugins in general.

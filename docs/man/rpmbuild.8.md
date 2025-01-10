@@ -12,8 +12,8 @@ rpmbuild - Build RPM Package(s)
 SYNOPSIS
 ========
 
-BUILDING PACKAGES:
-------------------
+BUILDING PACKAGES
+-----------------
 
 **rpmbuild** {**-ba\|-bb\|-bp\|-bf|\-bc\|-bi\|-bl\|-bs\|-br\|-bd**}
 \[**rpmbuild-options**\] *SPECFILE \...*
@@ -26,8 +26,8 @@ BUILDING PACKAGES:
 
 **rpmbuild** {**\--rebuild\|\--recompile**} *SOURCEPKG \...*
 
-MISCELLANEOUS:
---------------
+MISCELLANEOUS
+-------------
 
 **rpmbuild** **\--showrc**
 
@@ -51,9 +51,9 @@ scripts, file attributes, and descriptive information about the package.
 software to be installed, and source packages, containing the source
 code and recipe necessary to produce binary packages.
 
-One of the following basic modes must be selected: **Build Package**,
-**Build Package from Tarball**, **Recompile Package**, **Show
-Configuration**.
+One of the following basic modes must be selected: *Build Package*,
+*Build Package from Tarball*, *Recompile Package*, *Show
+Configuration*.
 
 GENERAL OPTIONS
 ---------------
@@ -108,7 +108,7 @@ These options can be used in all the different modes.
 **\--dbpath** *DIRECTORY*
 
 :   Use the database in *DIRECTORY* rather than the default path
-    */var/lib/rpm*
+    */var/lib/rpm*.
 
 **\--root** *DIRECTORY*
 
@@ -124,7 +124,7 @@ These options can be used in all the different modes.
 
 **\--scm=***SCM*
 
-:   Select the *SCM* to use with %autosetup, if one is not set in the
+:   Select the *SCM* to use with **%autosetup**, if one is not set in the
     spec file. Note that not all values for *SCM*, e.g., **patch** (the
     default) and **gendiff**, **git**, or **quilt** work interchangeably
     with all other patches and options stated in the %autosetup line,
@@ -133,7 +133,7 @@ These options can be used in all the different modes.
 BUILD OPTIONS
 -------------
 
-The general form of an rpm build command is
+The general form of an **rpm**(8) build command is
 
 **rpmbuild** {**-b***STAGE***\|-r***STAGE***\|-t***STAGE*}
 \[**rpmbuild-options**\] *FILE \...*
@@ -165,28 +165,28 @@ all the stages preceding it), and is one of:
 
 **-bp**
 
-:   Unpack the sources and apply any patches - executes the %prep stage
+:   Unpack the sources and apply any patches - executes the **%prep** stage
     only.
 
 **-bf**
 
 :   Configure the sources - executes up to and including the %conf stage.
-    This generally involves the equivalent of a \"./configure\".
+    This generally involves the equivalent of a \"**./configure**\".
 
 **-bc**
 
-:   Compile the sources - executes up to and including the %build stage.
-    This generally involves the equivalent of a \"make\".
+:   Compile the sources - executes up to and including the **%build** stage.
+    This generally involves the equivalent of \"**make**\".
 
 **-bi**
 
 :   Install the binaries into the build root - executes up to and
-    including the %check stage. This generally involves the equivalent
-    of a \"make install\" and \"make check\".
+    including the **%check** stage. This generally involves the equivalent
+    of a \"**make install**\" and \"**make check**\".
 
 **-bl**
 
-:   Do a \"list check\" - the %files section from the spec file is macro
+:   Do a \"list check\" - the **%files** section from the spec file is macro
     expanded, and checks are made to verify that each file exists.
 
 **-bs**
@@ -199,10 +199,10 @@ all the stages preceding it), and is one of:
 
 :   Build just the source package, but also parse and include dynamic
     build dependencies - executes up to and including the
-    %generate\_buildrequires stage and then skips straight to the
+    **%generate\_buildrequires** stage and then skips straight to the
     assembly stage, without creating binary packages. This command can
-    be used to fully resolve dynamic build dependencies. See the DYNAMIC
-    BUILD DEPENDENCIES section for details.
+    be used to fully resolve dynamic build dependencies. See the
+    **DYNAMIC BUILD DEPENDENCIES** section for details.
 
 **-bd**
 
@@ -213,9 +213,9 @@ The following options may also be used:
 
 **\--buildroot** *DIRECTORY* (DEPRECATED)
 
-:   When building a package, override rpm's buildroot to *DIRECTORY*.
-    This option is deprecated and will be removed in the future, do
-    not introduce new usages.
+:   When building a package, override the buildroot of **rpmbuild**(8) to
+    *DIRECTORY*. This option is deprecated and will be removed in the
+    future, do not introduce new usages.
 
 **\--clean**
 
@@ -227,15 +227,15 @@ The following options may also be used:
 
 **\--noprep**
 
-:   Do not execute %prep build stage even if present in spec.
+:   Do not execute **%prep** build stage even if present in spec.
 
 **\--noclean**
 
-:   Do not execute %clean build stage even if present in spec.
+:   Do not execute **%clean** build stage even if present in spec.
 
 **\--nocheck**
 
-:   Do not execute %check build stage even if present in spec.
+:   Do not execute **%check** build stage even if present in spec.
 
 **\--nodebuginfo**
 
@@ -253,7 +253,7 @@ The following options may also be used:
 **\--rmspec**
 
 :   Remove the spec file after the build (may also be used standalone,
-    eg. \"**rpmbuild** **\--rmspec foo.spec**\").
+    e.g. \"**rpmbuild** **\--rmspec foo.spec**\").
 
 **\--short-circuit**
 
@@ -266,9 +266,9 @@ The following options may also be used:
 **\--build-in-place**
 
 :   Build from locally checked out sources in the current working
-    directory. The build tree is set up as if %setup was used,
-    but %builddir/%buildsubdir points back to the current working
-    directory. %prep is skipped entirely.
+    directory. The build tree is set up as if **%setup** was used,
+    but *%builddir*/*%buildsubdir* points back to the current working
+    directory. **%prep** is skipped entirely.
 
 **\--target** *PLATFORM*
 
@@ -287,7 +287,7 @@ The following options may also be used:
 REBUILD AND RECOMPILE OPTIONS
 -----------------------------
 
-There are two other ways to invoke building with rpm:
+There are two other ways to invoke building with **rpm**(8):
 
 **rpmbuild** **\--rebuild\|\--recompile** *SOURCEPKG \...*
 
@@ -303,19 +303,19 @@ much more fine control over what stages of the build to run.
 DYNAMIC BUILD DEPENDENCIES
 --------------------------
 
-When the %generate\_buildrequires stage runs and some of the newly
+When the **%generate\_buildrequires** stage runs and some of the newly
 generated BuildRequires are not satisfied, **rpmbuild** creates an
 intermediate source package ending in *buildreqs.nosrc.rpm*, which has
 the new BuildRequires, and exits with code 11. This package can then be
 used in place of the original source package to resolve and install the
 missing build dependencies in the usual way, such as with
-**dnf-builddep(8)**.
+**dnf-builddep**(8).
 
 Multiple layers of dynamic build dependencies may exist in a spec file;
 the presence of specific BuildRequires on the system may yield new
 BuildRequires next time a build is performed with the same source
 package. The easiest way to ensure that all dynamic build dependencies
-are satisfied is to run the **-br** command, install the new
+are satisfied is to run the **-br** option, install the new
 dependencies of the *buildreqs.nosrc.rpm* package and repeat the whole
 procedure until **rpmbuild** no longer exits with code 11.
 

@@ -11,7 +11,7 @@ OPTIONS
 
 **\--predefine=\'***MACRO EXPR***\'**
 
-:   Defines *MACRO* with value *EXPR*. before loading macro files.
+:   Defines *MACRO* with value *EXPR* before loading macro files.
 
 Switching off features
 ======================
@@ -72,7 +72,7 @@ Obsolete Options
 
 **-K, \--checksig**
 
-:   See and use rpmkeys(8).
+:   See and use **rpmkeys**(8).
 
 **\--nodocs**
 

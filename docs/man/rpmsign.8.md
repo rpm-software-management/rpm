@@ -91,18 +91,18 @@ SIGN OPTIONS
 
 **\--fskpath** *KEY*
 
-:   Used with **\--signfiles**, use file signing key *Key*.
+:   Used with **\--signfiles**, use file signing key *KEY*.
 
 **\--certpath** *CERT*
 
-:   Used with **\--signverity**, use file signing certificate *Cert*.
+:   Used with **\--signverity**, use file signing certificate *CERT*.
 
 **\--verityalgo** *ALG*
 
 :   Used with **\--signverity**, to specify the signing algorithm.
     sha256 and sha512 are supported, with sha256 being the default if
     this argument is not specified. This can also be specified with the
-    macro %\_verity\_algorithm
+    macro *%\_verity\_algorithm*.
 
 **\--signfiles**
 
@@ -128,7 +128,7 @@ CONFIGURING SIGNING KEYS
 ------------------------
 
 In order to sign packages, you need to create your own OpenPGP key pair
-(aka certificate) and configure **rpm** to use it. The following macros are
+(aka certificate) and configure **rpm**(8) to use it. The following macros are
 available:
 
 **%\_openpgp_sign_id**
