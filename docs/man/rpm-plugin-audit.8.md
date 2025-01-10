@@ -48,7 +48,7 @@ The entries in the audit log have the following fields:
 
 **gpg\_res**
 
-:   0/1 result of signature check (0 == fail / 1 ==success)
+:   0/1 result of signature check (0 == fail / 1 == success)
 
 **root\_dir**
 

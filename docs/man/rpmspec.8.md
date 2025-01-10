@@ -12,19 +12,19 @@ rpmspec - RPM Spec Tool
 SYNOPSIS
 ========
 
-QUERYING SPEC FILES:
---------------------
+QUERYING SPEC FILES
+-------------------
 
 **rpmspec** {**-q\|\--query**} \[**select-options**\]
 \[**query-options**\] *SPEC\_FILE \...*
 
-PARSING SPEC FILES TO STDOUT:
------------------------------
+PARSING SPEC FILES TO STDOUT
+----------------------------
 
 **rpmspec** {**-P\|\--parse**} *SPEC\_FILE \...*
 
-INVOKING MACRO SHELL:
----------------------
+INVOKING MACRO SHELL
+--------------------
 
 **rpmspec** {**--shell**} \[*SPEC_FILE \...*\]
 
@@ -63,18 +63,26 @@ do this, you use the
 
 **\--qf\|\--queryformat** *QUERYFMT*
 
-option, followed by the *QUERYFMT* format string. See **rpm(8)** for
+option, followed by the *QUERYFMT* format string. See **rpm**(8) for
 details.
 
 SELECT OPTIONS
 --------------
 
-**\--rpms** Operate on the all binary package headers generated from
-spec. **\--builtrpms** Operate only on the binary package headers of
-packages which would be built from spec. That means ignoring package
-headers of packages that won\'t be built from spec i. e. ignoring
-package headers of packages without file section. **\--srpm** Operate on
-the source package header(s) generated from spec.
+**\--rpms**
+
+:   Operate on the all binary package headers generated from spec.
+
+**\--builtrpms**
+
+:   Operate only on the binary package headers of packages which would be
+    built from spec. That means ignoring package headers of packages that
+    won\'t be built from spec i. e. ignoring package headers of packages
+    without file section.
+
+**\--srpm**
+
+:   Operate on the source package header(s) generated from spec.
 
 EXAMPLES
 ========
