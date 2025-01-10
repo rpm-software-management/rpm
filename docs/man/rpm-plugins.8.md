@@ -44,7 +44,7 @@ Another option is to remove the plugin from the system if it is packaged
 in its own sub package.
 
 For some operations it may be desirable to disable all plugins at once.
-This can be done by passing **\--noplugins** to **rpm** at the command
+This can be done by passing **\--noplugins** to **rpm**(8) at the command
 line.
 
 SEE ALSO

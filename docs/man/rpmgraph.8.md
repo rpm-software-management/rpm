@@ -19,7 +19,7 @@ DESCRIPTION
 
 **rpmgraph** uses *PACKAGE\_FILE* arguments to generate a package
 dependency graph. Each *PACKAGE\_FILE* argument is read and added to an
-rpm transaction set. The elements of the transaction set are partially
+**rpm**(8) transaction set. The elements of the transaction set are partially
 ordered using a topological sort. The partially ordered elements are
 then printed to standard output.
 

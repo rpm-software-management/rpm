@@ -23,10 +23,10 @@ on standard out.
 If a \'-\' argument is given, an rpm stream is read from standard in.
 
 If standard out is connected to a terminal, the output is written to tar files
-with a \".tgz\" suffix, gzip compressed by default.
+with a \".tgz\" suffix, **gzip**(1) compressed by default.
 
 In opposite to **rpm2cpio** **rpm2archive** also works with RPM packages
-containing files greater than 4GB which are not supported by cpio.
+containing files greater than 4GB which are not supported by **cpio**.
 
 OPTIONS
 =======
