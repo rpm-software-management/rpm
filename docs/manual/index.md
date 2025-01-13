@@ -21,22 +21,6 @@ title: rpm.org - RPM Reference Manual
 ## Package Building
 * [Build Process](buildprocess.md)
 * [Spec Syntax](spec.md)
-  * [Autosetup](autosetup.md)
-  * [Declarative builds](buildsystem.md)
-  * Dependencies
-    * [Dependencies Basics](dependencies.md)
-    * [More on Dependencies](more_dependencies.md)
-    * [Boolean Dependencies](boolean_dependencies.md)
-    * [Architecture Dependencies](arch_dependencies.md)
-    * [Installation Order](tsort.md)
-    * [Automatic Dependency Generation](dependency_generators.md)
-  * Install scriptlets
-    * [Triggers](triggers.md)
-    * [File Triggers](file_triggers.md)
-    * [Scriptlet Expansion](scriptlet_expansion.md)
-  * [Users and Groups](users_and_groups.md)
-  * [Conditional Builds](conditionalbuilds.md)
-  * [Relocatable Packages](relocatable.md)
 * [Dynamic Spec Generation](dynamic_specs.md)
 
 ## Developer Information
