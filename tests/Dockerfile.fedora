@@ -55,8 +55,10 @@ RUN dnf -y install \
   sequoia-sq \
   libasan \
   libubsan
+# Incapacitate IMA, needed until #3234 lands in fedora
+RUN rm -f /usr/lib/rpm/macros.d/macros.transaction_ima
 # If updates to specific packages are needed, do it here
-# RUN dnf --enablerepo=updates update ...
+RUN dnf -y --enablerepo=updates install "sequoia-sq >= 1.0"
 RUN dnf clean all
 
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
