@@ -292,7 +292,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([[
-runroot_other sq --cert-store=/usr/lib/sysimage/rpm/pubkeys pki list --gossip 2>&1 | grep -e "^[[:xdigit:]]\{40\}"
+runroot_other sq --cert-store=/usr/lib/sysimage/rpm/pubkeys cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
 ]],
 [0],
 [771B18D3D7BAA28734333C424344591E1964C5FC
