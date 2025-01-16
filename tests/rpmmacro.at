@@ -8,7 +8,7 @@ RPMDB_INIT
 
 # .rpmmacros exists, new directory not
 RPMTEST_CHECK([[
-rm -f ~/.config/rpm
+rm -rf ~/.config/rpm ~/.rpmmacros
 touch ~/.rpmmacros
 rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
 ]],
@@ -19,6 +19,7 @@ rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
 
 # prefer new style if it exists
 RPMTEST_CHECK([[
+rm -rf ~/.config/rpm ~/.rpmmacros
 mkdir -p ~/.config/rpm
 rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
 ]],
