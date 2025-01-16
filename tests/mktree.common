@@ -24,8 +24,8 @@ make_install()
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
 
-    # append in case Dockerfile put something in there already
-    cat @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv >> $DESTDIR/root/.rpmmacros
+    # system-wide config to match our test environment
+    cp @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/
     # gpg-connect-agent is very, very unhappy if this doesn't exist
     mkdir -p $DESTDIR/root/.gnupg
     chmod 700 $DESTDIR/root/.gnupg
