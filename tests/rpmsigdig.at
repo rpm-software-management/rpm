@@ -1406,7 +1406,7 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.rpmmacros
+cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
@@ -1466,7 +1466,7 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.rpmmacros
+cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
@@ -1576,7 +1576,7 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.rpmmacros
+cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF

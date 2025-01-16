@@ -29,4 +29,7 @@ make_install()
     # gpg-connect-agent is very, very unhappy if this doesn't exist
     mkdir -p $DESTDIR/root/.gnupg
     chmod 700 $DESTDIR/root/.gnupg
+
+    # set up new-style XDG config directory
+    mkdir -p $DESTDIR/root/.config/rpm
 }
