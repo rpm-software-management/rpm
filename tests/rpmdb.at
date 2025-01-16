@@ -128,8 +128,7 @@ AT_KEYWORDS([rpmdb query])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
-# root's .rpmmacros used to keep this build prefix independent
-echo "%_keyring rpmdb" >> "${RPMTEST}"/root/.rpmmacros
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
