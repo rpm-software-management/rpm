@@ -166,11 +166,12 @@ AT_KEYWORDS([rpmkeys rpmdb])
 RPMDB_INIT
 # root's .rpmmacros used to keep this build prefix independent
 echo "%_keyring fs" >> "${RPMTEST}"/root/.rpmmacros
+krpath="$(rpm --eval %{_keyringpath})"
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other mv /var/lib/rpm/pubkeys/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key /var/lib/rpm/pubkeys/gpg-pubkey-1964c5fc-58e63918.key
-runroot_other ls /var/lib/rpm/pubkeys/
+runroot_other mv ${krpath}/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key ${krpath}/gpg-pubkey-1964c5fc-58e63918.key
+runroot_other ls ${krpath}
 runroot rpmkeys --list
 ],
 [0],
@@ -187,7 +188,7 @@ runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
 [])
 
 RPMTEST_CHECK([
-runroot_other ls /var/lib/rpm/pubkeys/
+runroot_other ls ${krpath}
 ],
 [0],
 [gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key
@@ -216,7 +217,7 @@ RPMTEST_CHECK([
 runroot rpmkeys --list | wc -l
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
 runroot rpmkeys --list | wc -l
-runroot_other find /usr/lib/sysimage/rpm/pubkeys -name "*.key" | wc -l
+runroot_other find $(rpm --eval "%{_keyringpath}") -name "*.key" | wc -l
 ],
 [0],
 [1
@@ -279,6 +280,8 @@ AT_KEYWORDS([rpmkeys signature])
 RPMDB_INIT
 # root's .rpmmacros used to keep this build prefix independent
 echo "%_keyring openpgp" >> "${RPMTEST}"/root/.rpmmacros
+krpath=$(rpm --eval "%{_keyringpath}")
+
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
@@ -292,7 +295,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([[
-runroot_other sq --cert-store=/usr/lib/sysimage/rpm/pubkeys cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
+runroot_other sq --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
 ]],
 [0],
 [771B18D3D7BAA28734333C424344591E1964C5FC
@@ -300,16 +303,22 @@ runroot_other sq --cert-store=/usr/lib/sysimage/rpm/pubkeys cert list --gossip 2
 [])
 
 RPMTEST_CHECK([
-runroot_other touch /usr/lib/sysimage/rpm/pubkeys/writelock
-runroot_other flock -x /usr/lib/sysimage/rpm/pubkeys/writelock -c "rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc"
-runroot_other rm /usr/lib/sysimage/rpm/pubkeys/writelock
+runroot_other touch ${krpath}/writelock
+runroot_other flock -x ${krpath}/writelock -c "rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc"
+],
+[1],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+runroot_other rm ${krpath}/writelock
+sed -e "s:at .*$:at <keyringpath>:" < stderr
 ],
 [0],
-[],
-[error: Can't acquire writelock for keyring at /usr/lib/sysimage/rpm/pubkeys
+[error: Can't acquire writelock for keyring at <keyringpath>
 error: /data/keys/rpm.org-rsa-2048-add-subkey.asc: key 1 import failed.
-])
-
+],
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys --list | wc -l
