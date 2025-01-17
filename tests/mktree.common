@@ -24,6 +24,12 @@ make_install()
     mkdir -p $DESTDIR/build
     ln -sf ../data/SOURCES $DESTDIR/build/
 
+    # setup an empty db that all tests are pointed to by default
+    dbpath="/var/lib/rpm-testsuite"
+    mkdir -p $DESTDIR/$dbpath
+    echo "%_dbpath $dbpath" > $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/macros.db
+    rpmdb --dbpath $DESTDIR/$dbpath --initdb
+
     # append in case Dockerfile put something in there already
     cat @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv >> $DESTDIR/root/.rpmmacros
     # gpg-connect-agent is very, very unhappy if this doesn't exist
