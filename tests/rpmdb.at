@@ -58,16 +58,17 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpm -qa 3])
 AT_KEYWORDS([rpmdb query])
-RPMTEST_SETUP
+RPMDB_INIT
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
+	/data/RPMS/capstest-1.0-1.noarch.rpm \
 	/data/RPMS/foo-1.0-1.noarch.rpm \
-	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm \
+	/data/RPMS/hlinktest-1.0-1.noarch.rpm
 
-# Assert that there are at least 3 packages in the rpmdb (we are using that of
-# the test image here so that is pretty much guaranteed).
-runroot rpm -qa | wc -l | xargs test 2 -lt || exit 1
+# Assert that there's an expected number of packages in the db
+runroot rpm -qa | wc -l | xargs test 4 -eq || exit 1
 
 runroot rpm -qa foo hello | sort
 ],
@@ -83,7 +84,10 @@ AT_KEYWORDS([rpmdb])
 
 # This needs to run *without* RPMDB_INIT to test behavior on read-only mount
 RPMTEST_CHECK([
-rpmdb --exportdb > rdonly.list
+# XXX FIXME: should not use system rpmdb for anything, but there's a
+# mystery failure here if pointed to /data/misc which should be equally
+# read-only at this point.
+rpmdb --exportdb --dbpath /usr/lib/sysimage/rpm > rdonly.list
 test -s rdonly.list
 ],
 [0],
@@ -100,7 +104,8 @@ runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
 
 RPMTEST_CHECK([
 # Need to pass the dbpath explicitly since we're not going through run/runroot
-runroot_other /sbin/runuser -u nobody -- rpmdb --dbpath /var/lib/rpm --exportdb > hdr.list
+dbpath=$(rpm --eval "%_dbpath")
+runroot_other /sbin/runuser -u nobody -- rpmdb --dbpath ${dbpath} --exportdb > hdr.list
 ],
 [0],
 [],
