@@ -61,8 +61,6 @@ RUN rm -f /usr/lib/rpm/macros.d/macros.transaction_ima
 RUN dnf -y --enablerepo=updates install "sequoia-sq >= 1.0"
 RUN dnf clean all
 
-RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
-
 # Workaround for pkgconf(1)'s unlisted dependency on rpm.
 # This is needed for cmake to work without an rpm installation.
 RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
