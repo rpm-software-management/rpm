@@ -84,10 +84,11 @@ To only build the OCI image, use:
 
     make tree
 
-You can also just use Podman or Docker directly to manage containers (the image
-is named `rpm` when built).  For example, to run a shell:
+You can now also tag the image and then use it with Podman or Docker as normal:
 
-    podman run -it rpm
+    cd tests/
+    ./mktree tag <image-name>
+    podman run -it <image-name> ...
 
 ## Understanding the tests
 
