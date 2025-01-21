@@ -64,6 +64,7 @@ clean()
 {
     rm -f "$IID_FILE"
     [ -z "$IMAGE_ID" ] || [ -z "$($PODMAN images -q $IMAGE_ID)" ] && return
+    [ "$($PODMAN inspect -f "{{ .RepoTags }}" $IMAGE_ID)" != "[]" ] && return
     $PODMAN rmi $IMAGE_ID >/dev/null
 }
 
@@ -103,6 +104,9 @@ case $CMD in
     ;;
     reset)
         rpmtests --reset
+    ;;
+    tag)
+        $PODMAN tag $IMAGE_ID $1
     ;;
     clean)
         clean
