@@ -638,7 +638,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %__sq @__SQ@
 %__sq_sign_cmd()	%{shescape:%{__sq}} \
 	sign \
-	%{?_sq_path:--homedir %{shescape:%{_sq_path}}} \
+	%{?_sq_path:--home %{shescape:%{_sq_path}}} \
         %{?_openpgp_sign_id:--signer %{_openpgp_sign_id}} \
 	%{?_sq_sign_cmd_extra_args} \
         --binary --signature-file %{shescape:%{2}} -- %{shescape:%{1}}
