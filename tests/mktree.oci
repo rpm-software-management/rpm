@@ -28,7 +28,7 @@ fi
 CACHE_DIR="mktree.cache"
 IID_FILE="$CACHE_DIR/image-id"
 IMAGE_ID=$(cat $IID_FILE 2>/dev/null || echo "")
-BASE_TAG="rpm/base"
+BASE_TAG="rpm/base:$(sha256sum Dockerfile | head -c8)"
 ARGS="-f Dockerfile $FROM $CONTEXT"
 ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
 CMD=$1; shift
