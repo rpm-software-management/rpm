@@ -25,13 +25,18 @@ else
     FROM=
 fi
 
-IMAGE=rpm
+CACHE_DIR="mktree.cache"
+IID_FILE="$CACHE_DIR/image-id"
+IMAGE_ID=$(cat $IID_FILE 2>/dev/null || echo "")
+BASE_TAG="rpm/base"
 ARGS="-f Dockerfile $FROM $CONTEXT"
 ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
 CMD=$1; shift
 
 export ROOTLESS
 source mktree.common
+
+mkdir -p $CACHE_DIR
 
 rpmtests()
 {
@@ -51,7 +56,15 @@ rpmtests()
     fi
 
     $PODMAN run --privileged -it --rm --read-only --tmpfs /tmp -v $vol \
-                --workdir /srv -e ROOTLESS=$ROOTLESS $opts $IMAGE rpmtests "$@"
+                --workdir /srv -e ROOTLESS=$ROOTLESS $opts $IMAGE_ID \
+                rpmtests "$@"
+}
+
+clean()
+{
+    rm -f "$IID_FILE"
+    [ -z "$IMAGE_ID" ] || [ -z "$($PODMAN images -q $IMAGE_ID)" ] && return
+    $PODMAN rmi $IMAGE_ID >/dev/null
 }
 
 unshared()
@@ -64,19 +77,19 @@ unshared()
 case $CMD in
     build) unshared
         # Build base image
-        $PODMAN build --target base -t $IMAGE/base $ARGS
+        $PODMAN build --target base -t $BASE_TAG $ARGS
 
         # Add RPM install on top
-        [ -n "$($PODMAN images -q $IMAGE)" ] && $PODMAN rmi $IMAGE
+        clean
         if [ $NATIVE == yes ]; then
             # Native build
-            id=$($PODMAN create $IMAGE/base)
+            id=$($PODMAN create $BASE_TAG)
             trap "$PODMAN rm $id >/dev/null" EXIT
             make_install $($PODMAN mount $id)
-            $PODMAN commit -q $id $IMAGE
+            $PODMAN commit -q $id --iidfile=$IID_FILE
         else
             # Standalone build
-            $PODMAN build --target full -t $IMAGE $ARGS
+            $PODMAN build --target full --iidfile=$IID_FILE $ARGS
         fi
     ;;
     check)
@@ -90,5 +103,8 @@ case $CMD in
     ;;
     reset)
         rpmtests --reset
+    ;;
+    clean)
+        clean
     ;;
 esac
