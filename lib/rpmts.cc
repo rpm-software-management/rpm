@@ -9,6 +9,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <filesystem>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
 #include <rpm/rpmmacro.h>
@@ -31,6 +33,7 @@
 #include "rpmts_internal.hh"
 #include "rpmte_internal.hh"
 #include "rpmlog_internal.hh"
+#include "rpmmacro_internal.hh"
 #include "misc.hh"
 #include "rpmtriggers.hh"
 
@@ -38,6 +41,7 @@
 
 using std::string;
 using namespace rpm;
+namespace fs = std::filesystem;
 
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
@@ -299,6 +303,7 @@ static void loadKeyring(rpmts ts)
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
 	if (txn) {
 	    ts->keystore->load_keys(txn, ts->keyring);
+	    check_backends(txn, ts);
 	    rpmtxnEnd(txn);
 	}
     }
@@ -321,7 +326,6 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
-    rpmPubkey oldkey = NULL;
     rpmKeyring keyring = NULL;
     int krc;
 
@@ -353,26 +357,13 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
 
-    oldkey = rpmKeyringLookupKey(keyring, pubkey);
-    if (oldkey) {
-	rpmPubkey mergedkey = NULL;
-	if (rpmPubkeyMerge(oldkey, pubkey, &mergedkey) != RPMRC_OK)
-	    goto exit;
-	if (!mergedkey) {
-	    rc = RPMRC_OK;		/* already have key */
-	    goto exit;
-	}
-	rpmPubkeyFree(pubkey);
-	pubkey = mergedkey;
-    }
-
-    krc = rpmKeyringModify(keyring, pubkey, oldkey ? RPMKEYRING_REPLACE : RPMKEYRING_ADD);
+    krc = rpmKeyringModify(keyring, pubkey, RPMKEYRING_MERGE);
     if (krc < 0)
 	goto exit;
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	rc = ts->keystore->import_key(txn, pubkey, oldkey ? 1 : 0);
+	rc = ts->keystore->import_key(txn, pubkey, 1);
     } else {
 	rc = RPMRC_OK;		/* already have key */
     }
@@ -380,7 +371,6 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 exit:
     /* Clean up. */
     rpmPubkeyFree(pubkey);
-    rpmPubkeyFree(oldkey);
 
     rpmKeyringFree(keyring);
     return rc;
@@ -407,6 +397,95 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	rc = RPMRC_OK;
 	rpmKeyringFree(keyring);
     }
+    return rc;
+}
+
+rpmRC rpmtsRebuildKeystore(rpmts ts,  char ** loadBackends, int flags)
+{
+    rpmRC rc = RPMRC_OK;
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    rpmVSFlags oflags = rpmtsVSFlags(ts);
+
+    rpmtsOpenDB(ts, O_RDWR);
+
+    /* XXX keyring wont load if sigcheck disabled, force it temporarily */
+    rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
+
+    keystore * ts_keystore = getKeystore(ts);
+    rpmKeyring keyring = rpmKeyringNew();
+
+    keystore_fs ks_fs = {};
+    keystore_rpmdb ks_rpmdb = {};
+    keystore_openpgp_cert_d ks_opengpg = {};
+
+    for (keystore * ks: std::vector<keystore *>{&ks_fs, &ks_rpmdb, &ks_opengpg}) {
+	rpmKeyring kr = rpmKeyringNew();
+	ks->load_keys(txn, kr);
+
+	char ** name = loadBackends;
+	if (name) {
+	    for (;*name; name++) {
+		if (!strcmp(*name, ks->get_name().c_str()))
+		    break;
+
+	    }
+	}
+
+	/* backend not to be included */
+	if (ks->get_name() != ts->keystore->get_name() && (!name || !*name)) {
+	    if (!rpmKeyringIsEmpty(kr) && !flags) {
+		rpmlog(RPMLOG_ERR, _("public key backend %s is not empty\n"),
+		       ks->get_name().c_str());
+		rpmKeyringFree(kr);
+		rc = RPMRC_FAIL;
+		goto exit;
+	    }
+	    rpmKeyringFree(kr);
+	    continue;
+	}
+
+	rpmKeyringIterator iter = rpmKeyringInitIterator(kr, 0);
+	rpmPubkey key = NULL;
+	while ((key = rpmKeyringIteratorNext(iter)) != NULL) {
+	    const unsigned char * pkt = NULL;
+	    size_t pktlen = 0;
+	    char *lints = NULL;
+
+	    rpmPubkeyRawData(key, &pkt, &pktlen);
+	    int lrc = pgpPubKeyLint(pkt, pktlen, &lints) ;
+	    if (lints) {
+		if (lrc != RPMRC_OK)
+		    rpmlog(RPMLOG_WARNING, "dropping public key %s:\n", rpmPubkeyFingerprintAsHex(key));
+		rpmlog(RPMLOG_WARNING, "%s\n", lints);
+		free(lints);
+		if (lrc != RPMRC_OK)
+		    continue;
+	    }
+	    rpmKeyringModify(keyring, key, RPMKEYRING_MERGE);
+	}
+	rpmKeyringIteratorFree(iter);
+	rpmKeyringFree(kr);
+    }
+
+    rc = ts_keystore->rebuild(txn, keyring);
+
+    if (dynamic_cast<keystore_rpmdb*>(ts_keystore)) {
+	fs::remove_all(rpm::expand_path({rpmtxnRootDir(txn),
+		    "%{_keyringpath}"}));
+    } else {
+	/* remove all gpg-pubkey packages */
+	rpmKeyring kr = rpmKeyringNew();
+	ks_rpmdb.rebuild(txn, kr);
+	rpmKeyringFree(kr);
+    }
+
+ exit:
+
+    ts->keyring = rpmKeyringFree(ts->keyring);
+    rpmKeyringFree(keyring);
+    rpmtxnEnd(txn);
+    rpmtsSetVSFlags(ts, oflags);
+
     return rc;
 }
 

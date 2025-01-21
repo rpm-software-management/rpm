@@ -754,6 +754,8 @@ rpmtsi rpmtsiInit(rpmts ts);
  */
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
 
+rpmRC rpmtsRebuildKeystore(rpmts ts, char ** loadBackends, int flags);
+
 #ifdef __cplusplus
 }
 #endif

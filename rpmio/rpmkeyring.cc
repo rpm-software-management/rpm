@@ -71,6 +71,14 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
+int rpmKeyringIsEmpty(rpmKeyring keyring)
+{
+    if (!keyring) return 1;
+    rdlock lock(keyring->mutex);
+    return keyring->keys.empty();
+}
+
+
 rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused)
 {
     if (!keyring || unused != 0)
@@ -120,10 +128,30 @@ rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator)
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode)
 {
     int rc = 1; /* assume already seen key */
+    rpmPubkey mergedkey = NULL;
     if (keyring == NULL || key == NULL)
 	return -1;
-    if (mode != RPMKEYRING_ADD && mode != RPMKEYRING_DELETE && mode != RPMKEYRING_REPLACE)
+    if (mode < RPMKEYRING_ADD || mode > RPMKEYRING_MERGE)
 	return -1;
+
+    if (mode == RPMKEYRING_MERGE) {
+	rpmPubkey oldkey = rpmKeyringLookupKey(keyring, key);
+	if (oldkey) {
+	    if (rpmPubkeyMerge(oldkey, key, &mergedkey) != RPMRC_OK) {
+		rpmPubkeyFree(oldkey);
+		return -1;
+	    }
+	    if (!mergedkey) {
+		mode = RPMKEYRING_ADD;
+	    } else {
+		key = mergedkey;
+		mode = RPMKEYRING_REPLACE;
+	    }
+	    rpmPubkeyFree(oldkey);
+	} else {
+	    mode = RPMKEYRING_ADD;
+	}
+    }
 
     /* check if we already have this key, but always wrlock for simplicity */
     wrlock lock(keyring->mutex);
@@ -147,7 +175,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	rpmPubkeyFree(item->second);
 	keyring->keys.erase(item);
 	rc = 0;
-    } else if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
+    }
+    if ((item == range.second && mode == RPMKEYRING_ADD) || mode == RPMKEYRING_REPLACE) {
 	int subkeysCount = 0;
 	rpmPubkey *subkeys = rpmGetSubkeys(key, &subkeysCount);
 	keyring->keys.insert({key->keyid, rpmPubkeyLink(key)});
@@ -162,6 +191,8 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
 	free(subkeys);
 	rc = 0;
     }
+    /* strip initial nref */
+    rpmPubkeyFree(mergedkey);
 
     return rc;
 }
@@ -341,6 +372,17 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key)
 	key->nrefs++;
     }
     return key;
+}
+
+void rpmPubkeyRawData(rpmPubkey key, unsigned const char ** pkt, size_t * pktlen)
+{
+    if (key) {
+	*pkt = key->pkt.data();
+	*pktlen = key->pkt.size();
+    } else {
+	*pkt = NULL;
+	*pktlen = 0;
+    }
 }
 
 char * rpmPubkeyBase64(rpmPubkey key)
