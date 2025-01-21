@@ -1410,9 +1410,10 @@ RPMTEST_CHECK([
 cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
+%_sq_path ${HOME}/.config/rpm/sq
 EOF
 
-runroot_other sq key import /data/keys/*.secret
+runroot_other sq --home ${HOME}/.config/rpm/sq key import /data/keys/*.secret
 ],
 [0],
 [ignore],
