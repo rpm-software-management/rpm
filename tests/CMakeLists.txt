@@ -79,6 +79,7 @@ if (MKTREE_BACKEND STREQUAL oci)
 		add_custom_target(ci
 			COMMAND ./mktree.oci build
 			COMMAND ./mktree.oci check ${JOBS} $(TESTOPTS)
+			COMMAND ./mktree.oci clean
 			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		)
 	else()
@@ -123,16 +124,19 @@ endif()
 
 add_custom_target(atshell
 	COMMAND ./mktree atshell ||:
+	COMMAND ./mktree clean
 	DEPENDS tree
 )
 
 add_custom_target(shell
 	COMMAND ./mktree shell ||:
+	COMMAND ./mktree clean
 	DEPENDS tree
 )
 
 add_custom_target(check
 	COMMAND ./mktree check ${JOBS} $(TESTOPTS)
+	COMMAND ./mktree clean
 	DEPENDS tree
 )
 
