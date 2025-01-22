@@ -38,6 +38,14 @@ rpmKeyring rpmKeyringNew(void);
 rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
+ * Get number of primary keys
+ * @param keyring	keyring handle
+ * @param count_subkeys	0 for primary keys only, 1 for all
+ * @return		Number of primary keys in the keyring
+ */
+size_t rpmKeyringSize(rpmKeyring keyring, int count_subkeys);
+
+/** \ingroup rpmkeyring
  * Add a public key to keyring.
  * @param keyring	keyring handle
  * @param key		pubkey handle
