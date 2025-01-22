@@ -18,25 +18,6 @@ make_install()
     ln -s $script_dir/rpmtests.sh $DESTDIR/usr/bin/rpmtests
 
     mkdir -p $DESTDIR/$script_dir
-    cp rpmtests atlocal mktree.common $DESTDIR/$script_dir/
+    cp rpmtests atlocal mktree.common setup.sh $DESTDIR/$script_dir/
     cp @CMAKE_CURRENT_SOURCE_DIR@/rpmtests.sh $DESTDIR/$script_dir/
-
-    mkdir -p $DESTDIR/build
-    ln -sf ../data/SOURCES $DESTDIR/build/
-
-    # setup an empty db that all tests are pointed to by default
-    dbpath="/var/lib/rpm-testsuite"
-    mkdir -p $DESTDIR/$dbpath
-    echo "%_dbpath $dbpath" > $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/macros.db
-    rpmdb --dbpath $DESTDIR/$dbpath --initdb
-
-    # system-wide config to match our test environment
-    cp @CMAKE_CURRENT_SOURCE_DIR@/data/macros.testenv $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/
-
-    # gpg-connect-agent is very, very unhappy if this doesn't exist
-    mkdir -p $DESTDIR/root/.gnupg
-    chmod 700 $DESTDIR/root/.gnupg
-
-    # set up new-style XDG config directory
-    mkdir -p $DESTDIR/root/.config/rpm
 }
