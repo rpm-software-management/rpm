@@ -70,9 +70,11 @@ case $CMD in
         [ -n "$($PODMAN images -q $IMAGE)" ] && $PODMAN rmi $IMAGE
         if [ $NATIVE == yes ]; then
             # Native build
-            id=$($PODMAN create $IMAGE/base)
-            trap "$PODMAN rm $id >/dev/null" EXIT
+            id=$($PODMAN create -t $IMAGE/base)
+            trap "$PODMAN kill $id >/dev/null; $PODMAN rm $id > /dev/null" EXIT
+            $PODMAN start $id
             make_install $($PODMAN mount $id)
+            $PODMAN exec $id /usr/share/mktree/setup.sh
             $PODMAN commit -q $id $IMAGE
         else
             # Standalone build
