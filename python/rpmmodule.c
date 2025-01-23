@@ -238,18 +238,27 @@ static int rpmModuleClear(PyObject *m) {
     return 0;
 }
 
+static PyModuleDef_Slot module_slots[] = {
+    {Py_mod_exec, initModule},
+    {0}
+};
+
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     "_rpm",            /* m_name */
     rpm__doc__,        /* m_doc */
     0,                 /* m_size */
     rpmModuleMethods,
-    NULL,              /* m_reload */
+    module_slots,      /* m_slots */
     rpmModuleTraverse,
     rpmModuleClear,
     NULL               /* m_free */
 };
 
+/* The init function must be exported as it's called by Python, but it doesn't
+ * need a declaration in a header file.
+ * Provide a declaration to avoid -Wmissing-prototypes warnings.
+ */
 PyObject *
 PyInit__rpm(void);
 
@@ -258,29 +267,7 @@ static int moduleInitialized = 0;
 PyObject *
 PyInit__rpm(void)
 {
-    /* We store pointers to our Python type objects in global variables,
-     * which would get clobbered if the initialization code could run
-     * several times. Explicitly disallow that.
-     *
-     * This means the extension cannot be unloaded and reloaded, nor used
-     * in multiple Python interpreters. The limitation could be lifted
-     * in the future by:
-     * - storing *_Type in module state rather than C static variables.
-     * - implementing traverse, clear & dealloc slots for proper reference
-     *   counting (right now the types are treated as immortal).
-     */
-
-    if (moduleInitialized) {
-        PyErr_SetString(PyExc_ImportError,
-                        "cannot load rpm module more than once per process");
-        return NULL;
-    }
-    moduleInitialized = 1;
-
-    PyObject * m;
-    m = PyModule_Create(&moduledef);
-    initModule(m);
-    return m;
+    return PyModuleDef_Init(&moduledef);
 }
 
 /* Create a type object based on a Spec, and add it to the module. */
@@ -310,11 +297,30 @@ static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
+    /* We store pointers to our Python type objects in global variables,
+     * which would get clobbered if the initialization code could run
+     * several times. Explicitly disallow that.
+     *
+     * This means the extension cannot be unloaded and reloaded, nor used
+     * in multiple Python interpreters. The limitation could be lifted
+     * in the future by:
+     * - storing *_Type in module state rather than C static variables.
+     * - implementing traverse, clear & dealloc slots for proper reference
+     *   counting (right now the types are treated as immortal).
+     */
+
+    if (moduleInitialized) {
+        PyErr_SetString(PyExc_ImportError,
+                        "cannot load rpm module more than once per process");
+        return -1;
+    }
+    moduleInitialized = 1;
+
     PyObject * d;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
     if (rpmReadConfigFiles(NULL, NULL) == -1)
-	return 0;
+	return -1;
 
     d = PyModule_GetDict(m);
 
@@ -323,70 +329,70 @@ static int initModule(PyObject *m)
 	PyDict_SetItemString(d, "error", pyrpmError);
 
     if (!initAndAddType(m, &hdr_Type, &hdr_Type_Spec, "hdr")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmds_Type, &rpmds_Type_Spec, "ds")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmfile_Type, &rpmfile_Type_Spec, "file")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmii_Type, &rpmii_Type_Spec, "ii")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmte_Type, &rpmte_Type_Spec, "te")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmts_Type, &rpmts_Type_Spec, "ts")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &rpmver_Type, &rpmver_Type_Spec, "ver")) {
-	return 0;
+	return -1;
     }
 
     if (!initAndAddType(m, &spec_Type, &spec_Type_Spec, "spec")) {
-	return 0;
+	return -1;
     }
     if (!initAndAddType(m, &specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
-	return 0;
+	return -1;
     }
 
     addRpmTags(m);
@@ -650,6 +656,6 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(RPMSPEC_FORCE);
     REGISTER_ENUM(RPMSPEC_NOLANG);
 
-    return 1;
+    return 0;
 }
 
