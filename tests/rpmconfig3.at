@@ -4,7 +4,7 @@ AT_BANNER([RPM config filetype changes])
 
 RPMTEST_SETUP([upgrade config to/from non-config])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -21,7 +21,7 @@ runroot rpmbuild --quiet -bb \
 
 # non-modified config changes to non-config and back, no backups
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
 
@@ -41,7 +41,7 @@ foo
 
 # modified config changes to non-config and back, back up on first upgrade
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -67,7 +67,7 @@ foo
 
 # modified config changes to identical non-config and back, no backups
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -91,7 +91,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([upgrade config to/from config link])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -107,7 +107,7 @@ runroot rpmbuild --quiet -bb \
 
 # non-modified config file changes to config symlink and back, no backups
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
 
@@ -127,7 +127,7 @@ foo
 
 # Modified config changes to config symlink
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
 
@@ -153,7 +153,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([upgrade modified config link to config])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
 
@@ -189,7 +189,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -204,7 +204,7 @@ runroot rpmbuild --quiet -bb \
 
 # Non-modified config file changes to directory.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -220,7 +220,7 @@ test -d "${cf}"
 
 # Modified config changes to directory
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 

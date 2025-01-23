@@ -4,7 +4,7 @@ AT_BANNER([RPM scriptlets])
 
 RPMTEST_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 for v in 1.0 2.0; do
@@ -231,7 +231,7 @@ RPMTEST_CLEANUP
 # 
 RPMTEST_SETUP([basic scripts and arguments])
 AT_KEYWORDS([verify script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
@@ -295,7 +295,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([basic trigger scripts: package args])
 AT_KEYWORDS([trigger script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -366,7 +366,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([basic trigger scripts: runtime args])
 AT_KEYWORDS([trigger script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
@@ -441,7 +441,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([basic file trigger scripts])
 AT_KEYWORDS([filetrigger script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -548,7 +548,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([basic file triggers: prefix args])
 AT_KEYWORDS([filetrigger script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -682,7 +682,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([basic file triggers: runtime args])
 AT_KEYWORDS([filetrigger script])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 for v in 1.0 2.0 3.0; do
@@ -775,13 +775,13 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([script running environment])
 AT_KEYWORDS([script])
 AT_SKIP_IF([test ${HAVE_UNSHARE} = 0])
-RPMDB_INIT
+RPMTEST_INIT
 runroot rpmbuild -bb --quiet \
 	/data/SPECS/fakeshell.spec \
 	/data/SPECS/scriptwrite.spec
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot_other rm -f /tmp/scriptwrite.log
 runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
 runroot_other test -f /tmp/scriptwrite.log
@@ -791,7 +791,7 @@ runroot_other test -f /tmp/scriptwrite.log
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot_other rm -f /tmp/scriptwrite.log
 runroot rpm -U --noplugins /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
 runroot_other test -f /tmp/scriptwrite.log
@@ -803,10 +803,11 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([deprecated Lua functions])
 AT_KEYWORDS([script lua])
+RPMTEST_INIT
 
 # binary pre-built on rpm 4.18 should emit no warnings
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot rpm -U /data/RPMS/luafork-1.0-1.noarch.rpm
 ],
 [0],
@@ -815,7 +816,7 @@ runroot rpm -U /data/RPMS/luafork-1.0-1.noarch.rpm
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 
 runroot rpmbuild -bb --quiet /data/SPECS/luafork.spec
 runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm

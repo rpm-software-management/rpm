@@ -3,7 +3,7 @@ AT_BANNER([RPM signature/digest verifylevel])
 RPMTEST_SETUP([rpmkeys -K <unsigned 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 for lvl in none digest signature all; do
     echo "LEVEL ${lvl}"
@@ -75,7 +75,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmkeys -K <unsigned 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 nomd5="0x20000"
 nopld="0x10000"
@@ -147,7 +147,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmkeys -K <signed 1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 for lvl in none digest signature all; do
     echo "LEVEL ${lvl}"
@@ -220,7 +220,7 @@ RPMTEST_SETUP([rpmkeys -K <signed 2> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 for lvl in none digest signature all; do
@@ -294,7 +294,7 @@ RPMTEST_SETUP([rpmkeys -K <signed 3> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 nomd5="0x20000"
 nopld="0x10000"

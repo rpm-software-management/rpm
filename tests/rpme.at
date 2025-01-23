@@ -1,7 +1,7 @@
 
 RPMTEST_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -27,7 +27,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -e suid hardlink])
 AT_KEYWORDS([install erase])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild -bb --quiet \
 		/data/SPECS/attrtest.spec
@@ -49,7 +49,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm reinstall with shared files])
 AT_KEYWORDS([install erase update rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
@@ -92,7 +92,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -e and shared files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
@@ -137,7 +137,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -e and shared files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
@@ -183,7 +183,7 @@ RPMTEST_CLEANUP
 # Test that removing shared or wrong colored files has no effect
 RPMTEST_SETUP([rpm -e and verify colored files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
@@ -209,9 +209,9 @@ RPMTEST_CLEANUP
 # in verify failure.
 RPMTEST_SETUP([rpm -e and verify colored files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 3" \
@@ -234,9 +234,9 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -e and verify colored files removed 2.1])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 2" \
@@ -259,9 +259,9 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -e and verify colored files removed 2.2])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	--define "_transaction_color 2" \
@@ -282,7 +282,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -e and verify conflicting files removed 1])
 AT_KEYWORDS([install erase rpmdb])
-RPMDB_INIT
+RPMTEST_INIT
 for p in a b; do
     runroot rpmbuild -bb --quiet \
 		--define "pkg ${p}" \
@@ -362,7 +362,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -e and verify netshared files not removed])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
 	/data/RPMS/hello-2.0-1.x86_64.rpm

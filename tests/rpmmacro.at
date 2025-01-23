@@ -4,7 +4,7 @@ AT_BANNER([RPM macros])
 
 RPMTEST_SETUP([macro path])
 AT_KEYWORDS([macros])
-RPMDB_INIT
+RPMTEST_INIT
 
 # .rpmmacros exists, new directory not
 RPMTEST_CHECK([[
@@ -176,7 +176,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([parametrized macro 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 cat << EOF > mtest
 %bar() bar
 %foo()\\
@@ -355,7 +355,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([uncompress 2])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 echo xxxxxxxxxxxxxxxxxxxxxxxxx > "some%%ath"
 ${RPM_CONFIGDIR_PATH}/rpmuncompress "some%%ath"
 ],
@@ -404,7 +404,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([uncompress 4])
 AT_KEYWORDS([macros rpmuncompress])
-RPMDB_INIT
+RPMTEST_INIT
 
 RPMTEST_CHECK([
 runroot_other mkdir -p /tmp/1
@@ -1115,7 +1115,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([lua library path])
 AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
 echo "bar = 'graak'" > ${RPMTEST}/${f}
 runroot rpm \
@@ -1129,7 +1129,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua auto-print])
 AT_KEYWORDS([macros lua])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([[
 rpm \
     --define 'foo() %{lua:return string.reverse(arg[1])}' \
@@ -1162,7 +1162,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([lua rpm io stream])
 AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 rpm \
   --eval '%{lua: local f = rpm.open("zzz", "w+"); f:write("gggg"); print(f:seek("cur")); f:close()}' \
   --eval '%{lua: local f = rpm.open("zzz"); print(f:read()); f:close()}' \

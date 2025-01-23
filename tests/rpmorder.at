@@ -2,7 +2,7 @@ AT_BANNER([RPM install/erase ordering])
 
 RPMTEST_SETUP([basic install/erase order 1])
 AT_KEYWORDS([install erase order])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -49,7 +49,7 @@ RPMTEST_CLEANUP
 # same as above but with mixed weak dependencies
 RPMTEST_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -98,7 +98,7 @@ RPMTEST_CLEANUP
 # of the cli
 RPMTEST_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \

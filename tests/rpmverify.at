@@ -7,7 +7,7 @@ AT_BANNER([RPM verification])
 RPMTEST_SETUP([dependency problems])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -30,7 +30,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([files with no problems])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -45,7 +45,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([files with no problems in verbose mode])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -65,7 +65,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([directory replaced with a directory symlink])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -95,7 +95,7 @@ RPMTEST_SETUP([directory replaced with an invalid directory symlink])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([test `id -u` != 0 ])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -124,7 +124,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([verify from db, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -145,7 +145,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([verify from package, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -165,7 +165,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([verify file attribute filtering])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild -bb --quiet \
   /data/SPECS/vattrtest.spec
@@ -223,7 +223,7 @@ RPMTEST_CLEANUP
 # Test verify script success & failure behavior
 RPMTEST_SETUP([verifyscript])
 AT_KEYWORDS([verify])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps /build/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
@@ -251,7 +251,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([shared file timestamp behavior])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 # create packages sharing a file but with different timestamp
 for p in "one" "two"; do
@@ -276,7 +276,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([minimize writes (files)])
 AT_KEYWORDS([upgrade verify min_writes])
-RPMDB_INIT
+RPMTEST_INIT
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -295,7 +295,7 @@ for v in "3.0" "4.0"; do
 done
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}"*
 
@@ -343,7 +343,7 @@ fox
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}"*
 
@@ -401,12 +401,12 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([minimize writes (hardlinks)])
 AT_KEYWORDS([upgrade verify min_writes])
-RPMDB_INIT
+RPMTEST_INIT
 for v in "0" "1"; do
     runroot rpmbuild --quiet -bb --define "ver ${v}" /data/SPECS/hlbreak.spec
 done
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 runroot rpm -U --define "_minimize_writes 1" /build/RPMS/noarch/hlbreak-0-0.noarch.rpm
 runroot rpm -Vav ${VERIFYOPTS}
 runroot rpm -U --define "_minimize_writes 1" /build/RPMS/noarch/hlbreak-1-0.noarch.rpm
@@ -423,7 +423,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([minimize writes (symlinks)])
 AT_KEYWORDS([upgrade verify min_writes])
-RPMDB_INIT
+RPMTEST_INIT
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -441,7 +441,7 @@ for v in "3.0" "4.0"; do
 done
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}"*
 
@@ -486,7 +486,7 @@ fox
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
 
@@ -542,7 +542,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([minimize writes (SUID files)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
 
@@ -577,7 +577,7 @@ RPMTEST_SETUP([verify empty/no capabilities 1])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nocaps --ignoreos \
 	/data/RPMS/capstest-1.0-1.noarch.rpm
@@ -596,7 +596,7 @@ RPMTEST_SETUP([verify empty/no capabilities 2])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -611,7 +611,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm --restore])
 AT_KEYWORDS([verify restore])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -631,7 +631,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([test for %verify in %files])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/verifyfiles.spec
 runroot rpm -i /build/RPMS/noarch/verifyfiles-1.0-1.noarch.rpm

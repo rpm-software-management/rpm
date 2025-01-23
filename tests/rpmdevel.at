@@ -37,7 +37,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm plugin development])
 AT_KEYWORDS([devel])
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	/data/SPECS/simple.spec \

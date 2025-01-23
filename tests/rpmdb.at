@@ -23,7 +23,7 @@ AT_BANNER([RPM database access])
 RPMTEST_SETUP([rpm --initdb])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 ],
 [0],
 [ignore],
@@ -35,7 +35,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -qa 1])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 runroot rpm \
   -qa
 ],
@@ -58,7 +58,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -qa 3])
 AT_KEYWORDS([rpmdb query])
-RPMDB_INIT
+RPMTEST_INIT
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
@@ -82,7 +82,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmdb --export and --import])
 AT_KEYWORDS([rpmdb])
 
-# This needs to run *without* RPMDB_INIT to test behavior on read-only mount
+# This needs to run *without* RPMTEST_INIT to test behavior on read-only mount
 RPMTEST_CHECK([
 # XXX FIXME: should not use system rpmdb for anything, but there's a
 # mystery failure here if pointed to /data/misc which should be equally
@@ -95,7 +95,7 @@ test -s rdonly.list
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
 ],
 [0],
@@ -131,7 +131,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 AT_SKIP_IF([test x$PGP = xdummy])
-RPMDB_INIT
+RPMTEST_INIT
 
 echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 
@@ -360,7 +360,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -q foo])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -i \
   /data/RPMS/foo-1.0-1.noarch.rpm
@@ -379,7 +379,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -q foo-])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -i \
   /data/RPMS/foo-1.0-1.noarch.rpm
@@ -396,7 +396,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmdb header numbering])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 for i in 1 2 3; do
     runroot rpm -i /data/RPMS/foo-1.0-1.noarch.rpm
@@ -416,7 +416,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -q --querybynumber])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -i \
   /data/RPMS/foo-1.0-1.noarch.rpm
@@ -450,7 +450,7 @@ RPMTEST_SETUP([rpm -i *.noarch.rpm])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -i \
   /data/RPMS/foo-1.0-1.noarch.rpm
@@ -465,7 +465,7 @@ RPMTEST_SETUP([rpm -U --replacepkgs 1])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
 
@@ -486,7 +486,7 @@ RPMTEST_SETUP([rpm -U --replacepkgs 2])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
 
@@ -506,7 +506,7 @@ RPMTEST_SETUP([rpm --reinstall 1])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
 
@@ -526,7 +526,7 @@ RPMTEST_CLEANUP
 # * Use --ignorearch because we don't know the arch
 RPMTEST_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_KEYWORDS([rpmdb install])
-RPMDB_INIT
+RPMTEST_INIT
 
 RPMTEST_CHECK([
 runroot rpm -i \
@@ -568,7 +568,8 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmdb --rebuilddb])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
+RPMDB_RESET
 
 runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
   /data/RPMS/hello-1.0-1.i386.rpm
@@ -592,7 +593,8 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmdb --rebuilddb and verify empty database])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
+RPMDB_RESET
 runroot rpmdb --rebuilddb
 runroot rpmdb --verifydb
 ],
@@ -606,7 +608,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -U and verify status])
 AT_KEYWORDS([install rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "pkg status" \
@@ -627,7 +629,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm -U with _install_lang and verify status])
 AT_KEYWORDS([install rpmdb query])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
           /data/SPECS/flangtest.spec
@@ -649,7 +651,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([rpmdb query special chars])
 AT_KEYWORDS([install rpmdb query])
-RPMDB_INIT
+RPMTEST_INIT
 for v in "1.0+2" "1.0^2" "1.0~2"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -657,7 +659,7 @@ for v in "1.0+2" "1.0^2" "1.0~2"; do
 done
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0+2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0+2-1'
 ],
@@ -667,7 +669,7 @@ runroot rpm -q 'versiontest-1.0+2-1'
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0^2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0^2-1'
 ],
@@ -677,7 +679,7 @@ runroot rpm -q 'versiontest-1.0^2-1'
 [])
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 runroot rpm -U '/build/RPMS/noarch/versiontest-1.0~2-1.noarch.rpm'
 runroot rpm -q 'versiontest-1.0~2-1'
 ],
@@ -691,7 +693,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([rpmdb vacuum])
 AT_KEYWORDS([install rpmdb sqlite])
-RPMDB_INIT
+RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
   /data/RPMS/hello-1.0-1.i386.rpm

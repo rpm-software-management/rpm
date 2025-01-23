@@ -7,7 +7,7 @@ AT_BANNER([I/O])
 #AT_KEYWORDS([signals])
 #RPMTEST_CHECK([
 #RPMDB_CLEAR
-#RPMDB_INIT
+#RPMTEST_INIT
 #
 #runroot rpmbuild --quiet --with manyfiles -bb /data/SPECS/sigpipe.spec
 #runroot rpm -qpl /build/RPMS/noarch/sigpipe-1.0-1.noarch.rpm --pipe "cat" | head -1
@@ -21,7 +21,7 @@ AT_BANNER([I/O])
 RPMTEST_SETUP([SIGPIPE from install scriptlet])
 AT_KEYWORDS([signals])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/sigpipe.spec
 runroot rpm -U --nodeps /build/RPMS/noarch/sigpipe-1.0-1.noarch.rpm
@@ -38,7 +38,7 @@ RPMTEST_CLEANUP
 #AT_KEYWORDS([signals])
 #RPMTEST_CHECK([
 #RPMDB_CLEAR
-#RPMDB_INIT
+#RPMTEST_INIT
 #
 #run rpmbuild --quiet --with buildpipe -bb "${RPMDATA}/SPECS/sigpipe.spec"
 #],
@@ -50,7 +50,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmlog error handling])
 AT_KEYWORDS([log])
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMTEST_INIT
 
 runroot rpm -qpl /data/RPMS/hello-2.0-1.x86_64.rpm > /dev/full
 ],
