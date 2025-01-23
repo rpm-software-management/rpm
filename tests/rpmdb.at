@@ -46,7 +46,7 @@ RPMTEST_CLEANUP
 AT_SETUP([rpm -qa 2])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-RPMTEST_SETUP
+RPMTEST_INIT
 rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
 runroot rpm \
   -qa

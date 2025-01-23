@@ -1839,7 +1839,7 @@ AT_SETUP([ima file signatures])
 AT_KEYWORDS([rpmsign ima signature])
 AT_SKIP_IF([$IMA_DISABLED])
 
-RPMTEST_SETUP
+RPMTEST_INIT
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
 gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
@@ -1905,7 +1905,7 @@ AT_SETUP([install ima file signatures])
 AT_KEYWORDS([install ima signature])
 AT_SKIP_IF([$IMA_DISABLED])
 
-RPMTEST_SETUP
+RPMTEST_INIT
 
 cat << EOF > expout
 # file: /usr/share/example1

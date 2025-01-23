@@ -42,7 +42,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 AT_SETUP([macro path: skip editor backups])
 AT_KEYWORDS([macros])
-RPMTEST_SETUP
+RPMTEST_INIT
 RPMTEST_CHECK([
 echo '%this that' > $RPMTEST/$RPM_CONFIGDIR_PATH/macros.d/macros.this
 runroot rpm --eval '%{this}'
@@ -1521,7 +1521,7 @@ RPMTEST_CLEANUP
 
 AT_SETUP([rpmlua])
 AT_KEYWORDS([lua])
-RPMTEST_SETUP
+RPMTEST_INIT
 RPMTEST_CHECK([
 rpmlua /data/t1.lua a b
 ],
