@@ -2,7 +2,7 @@
 
 AT_BANNER([RPM config symlink behavior])
 
-AT_SETUP([config symlinks])
+RPMTEST_SETUP([config symlinks])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -142,7 +142,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([changing config symlinks])
+RPMTEST_SETUP([changing config symlinks])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
@@ -217,7 +217,7 @@ RPMTEST_CLEANUP
 # config(noreplace) variants of the same cases.
 #
 # ------------------------------
-AT_SETUP([upgrade unchanged config(noreplace) links])
+RPMTEST_SETUP([upgrade unchanged config(noreplace) links])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
@@ -268,7 +268,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([upgrade changing config(noreplace) links])
+RPMTEST_SETUP([upgrade changing config(noreplace) links])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -345,7 +345,7 @@ RPMTEST_CLEANUP
 
 # Shared config link variants of the same cases
 # ------------------------------
-AT_SETUP([upgrade unchanged shared config links])
+RPMTEST_SETUP([upgrade unchanged shared config links])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -407,7 +407,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([upgrade changing shared config links])
+RPMTEST_SETUP([upgrade changing shared config links])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -497,7 +497,7 @@ RPMTEST_CLEANUP
 
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
-AT_SETUP([upgrade changing shared config(noreplace) links])
+RPMTEST_SETUP([upgrade changing shared config(noreplace) links])
 AT_KEYWORDS([install])
 RPMDB_INIT
 

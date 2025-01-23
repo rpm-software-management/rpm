@@ -2,7 +2,7 @@
 
 AT_BANNER([RPM config file behavior])
 
-AT_SETUP([config file install/upgrade/erase])
+RPMTEST_SETUP([config file install/upgrade/erase])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
@@ -138,7 +138,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([config(noreplace) file install/upgrade/erase])
+RPMTEST_SETUP([config(noreplace) file install/upgrade/erase])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -193,7 +193,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([upgrade changing config])
+RPMTEST_SETUP([upgrade changing config])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -270,7 +270,7 @@ RPMTEST_CLEANUP
 
 # config(noreplace) variants of the same cases.
 # ------------------------------
-AT_SETUP([upgrade changing config(noreplace)])
+RPMTEST_SETUP([upgrade changing config(noreplace)])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -322,7 +322,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # noreplace variants of the same
-AT_SETUP([upgrade changing config(noreplace)])
+RPMTEST_SETUP([upgrade changing config(noreplace)])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
@@ -396,7 +396,7 @@ RPMTEST_CLEANUP
 
 # Shared config file variants of the same cases
 # ------------------------------
-AT_SETUP([upgrade shared config])
+RPMTEST_SETUP([upgrade shared config])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for s in "A" "B"; do
@@ -456,7 +456,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([upgrade changing shared config])
+RPMTEST_SETUP([upgrade changing shared config])
 AT_KEYWORDS([install])
 RPMDB_INIT
 for s in "A" "B"; do
@@ -545,7 +545,7 @@ RPMTEST_CLEANUP
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg.
-AT_SETUP([upgrade shared config(noreplace)])
+RPMTEST_SETUP([upgrade shared config(noreplace)])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -614,7 +614,7 @@ RPMTEST_CLEANUP
 
 ---------
 # Test pre-existing and post-install config ghost survival and erasure
-AT_SETUP([ghost config])
+RPMTEST_SETUP([ghost config])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT

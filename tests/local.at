@@ -1,5 +1,9 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
+m4_define([RPMTEST_SETUP],[
+AT_SETUP($1)
+])
+
 m4_define([RPMTEST_INIT],[[
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}/root"
@@ -61,7 +65,7 @@ RPMTEST_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 ])
 
 m4_define([RPMPY_TEST],[
-AT_SETUP([$1])
+RPMTEST_SETUP([$1])
 AT_KEYWORDS([python])
 setup_env
 RPMDB_INIT

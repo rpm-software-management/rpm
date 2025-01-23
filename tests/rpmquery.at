@@ -19,7 +19,7 @@
 AT_BANNER([RPM queries])
 
 # ------------------------------
-AT_SETUP([rpm --qf -p *.i386.rpm])
+RPMTEST_SETUP([rpm --qf -p *.i386.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -34,7 +34,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm --qf -p *.src.rpm])
+RPMTEST_SETUP([rpm --qf -p *.src.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -49,7 +49,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm -qp <glob>])
+RPMTEST_SETUP([rpm -qp <glob>])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -63,7 +63,7 @@ hello-2.0-1.x86_64
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qp <glob fallback>])
+RPMTEST_SETUP([rpm -qp <glob fallback>])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -80,7 +80,7 @@ rpm \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qp <notfound>])
+RPMTEST_SETUP([rpm -qp <notfound>])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -97,7 +97,7 @@ error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file 
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qp <glob notfound>])
+RPMTEST_SETUP([rpm -qp <glob notfound>])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -115,7 +115,7 @@ error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file 
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm -ql -p *.src.rpm])
+RPMTEST_SETUP([rpm -ql -p *.src.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -131,7 +131,7 @@ hello.spec
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm -ql multiple *.rpm])
+RPMTEST_SETUP([rpm -ql multiple *.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -149,7 +149,7 @@ hello.spec
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qp --dump])
+RPMTEST_SETUP([rpm -qp --dump])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -168,7 +168,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmspec -q])
+RPMTEST_SETUP([rpmspec -q])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -181,7 +181,7 @@ rpmspec \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm -ql -p *.i386.rpm])
+RPMTEST_SETUP([rpm -ql -p *.i386.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -199,7 +199,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test query on manifest
-AT_SETUP([rpm -qp <manifest>])
+RPMTEST_SETUP([rpm -qp <manifest>])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -221,7 +221,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Try to check "scripts"
 # * Gets rpmpopt-$(VERSION) involved
-AT_SETUP([rpm -q --scripts -p *.i386.rpm])
+RPMTEST_SETUP([rpm -q --scripts -p *.i386.rpm])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -242,7 +242,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # install a package into a local rpmdb
 # * Use --ignorearch because we don't know the arch
-AT_SETUP([rpm -q on installed package])
+RPMTEST_SETUP([rpm -q on installed package])
 AT_KEYWORDS([rpmdb install query])
 
 RPMTEST_CHECK([
@@ -288,7 +288,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # query a package by a file
-AT_SETUP([rpm -qf])
+RPMTEST_SETUP([rpm -qf])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -305,7 +305,7 @@ runroot rpm \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qf on non-installed file])
+RPMTEST_SETUP([rpm -qf on non-installed file])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -323,7 +323,7 @@ runroot rpm \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -q --path on non-installed file])
+RPMTEST_SETUP([rpm -q --path on non-installed file])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -342,7 +342,7 @@ runroot rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([integer array query])
+RPMTEST_SETUP([integer array query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -359,7 +359,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([formatted filesbypkg query])
+RPMTEST_SETUP([formatted filesbypkg query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -376,7 +376,7 @@ hello      /usr/share/doc/hello-1.0/FAQ
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([hex formatted integer array extension query])
+RPMTEST_SETUP([hex formatted integer array extension query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -393,7 +393,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([base64 extension query])
+RPMTEST_SETUP([base64 extension query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -407,7 +407,7 @@ runroot rpm \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([pgpsig extension query])
+RPMTEST_SETUP([pgpsig extension query])
 AT_KEYWORDS([query signature])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -435,7 +435,7 @@ RSA/SHA256, Thu Apr  6 13:02:32 2017, Key ID 4344591e1964c5fc
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([integer array perms format query])
+RPMTEST_SETUP([integer array perms format query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -452,7 +452,7 @@ drwxr-xr-x
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([string array query])
+RPMTEST_SETUP([string array query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -466,7 +466,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([empty string array query])
+RPMTEST_SETUP([empty string array query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -480,7 +480,7 @@ runroot rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([empty string array extension array format])
+RPMTEST_SETUP([empty string array extension array format])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -494,7 +494,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([empty string array extension query])
+RPMTEST_SETUP([empty string array extension query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -508,7 +508,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([different sizes arrays query 1])
+RPMTEST_SETUP([different sizes arrays query 1])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -525,7 +525,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # This is succeeds because there happens to be exactly one changelog entry
 # so the size matches with name.
-AT_SETUP([different sizes arrays query 2])
+RPMTEST_SETUP([different sizes arrays query 2])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -540,7 +540,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([different sizes arrays query 3])
+RPMTEST_SETUP([different sizes arrays query 3])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -555,7 +555,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([different sizes arrays query 4])
+RPMTEST_SETUP([different sizes arrays query 4])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -572,7 +572,7 @@ hello FAQ
 
 RPMTEST_CLEANUP
 # ------------------------------
-AT_SETUP([non-existent string tag])
+RPMTEST_SETUP([non-existent string tag])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -586,7 +586,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([non-existent integer tag query])
+RPMTEST_SETUP([non-existent integer tag query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -600,7 +600,7 @@ runroot rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([conditional queryformat])
+RPMTEST_SETUP([conditional queryformat])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -614,7 +614,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([invalid tag query])
+RPMTEST_SETUP([invalid tag query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -629,7 +629,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([invalid data for format query])
+RPMTEST_SETUP([invalid data for format query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -643,7 +643,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([invalid format width query])
+RPMTEST_SETUP([invalid format width query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -657,7 +657,7 @@ rpm \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([xml format])
+RPMTEST_SETUP([xml format])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -957,7 +957,7 @@ rpm -qp --xml  /data/RPMS/hello-2.0-1.x86_64.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([json format 1])
+RPMTEST_SETUP([json format 1])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1196,7 +1196,7 @@ rpm -qp --json  /data/RPMS/hello-2.0-1.x86_64.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([json format 2])
+RPMTEST_SETUP([json format 2])
 AT_KEYWORDS([query])
 RPMDB_INIT
 runroot rpmbuild --quiet -bb /data/SPECS/weirdnames.spec
@@ -1219,7 +1219,7 @@ print(len(json.loads(s)))
 RPMTEST_CLEANUP
 
 
-AT_SETUP([query file attribute filtering])
+RPMTEST_SETUP([query file attribute filtering])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1274,7 +1274,7 @@ done
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([formatting name humansi, humaniec])
+RPMTEST_SETUP([formatting name humansi, humaniec])
 AT_KEYWORDS([query, humansi, humaniec])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1297,7 +1297,7 @@ rpm \
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([incomplete escape sequence for format query])
+RPMTEST_SETUP([incomplete escape sequence for format query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1312,7 +1312,7 @@ rpm \
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([query format iteration])
+RPMTEST_SETUP([query format iteration])
 AT_KEYWORDS([query])
 RPMDB_INIT
 
@@ -1354,7 +1354,7 @@ Sourcepackage
 RPMTEST_CLEANUP
 
 # my autotest fu fails to deal with trailing whitespace except by trimming it
-AT_SETUP([file classes query])
+RPMTEST_SETUP([file classes query])
 AT_KEYWORDS([query])
 RPMDB_INIT
 RPMTEST_CHECK([[
@@ -1431,7 +1431,7 @@ rpmlib(PayloadIsZstd) <= 5.4.18-1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([info query output])
+RPMTEST_SETUP([info query output])
 AT_KEYWORDS([query signature])
 RPMTEST_CHECK([
 runroot rpm -qi --nosignature /data/RPMS/hello-2.0-1.x86_64-signed.rpm

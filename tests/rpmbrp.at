@@ -4,7 +4,7 @@ AT_BANNER([RPM build root policy scripts])
 
 # ------------------------------
 # Check brp-remove-la-files
-AT_SETUP([brp-remove-la-files])
+RPMTEST_SETUP([brp-remove-la-files])
 AT_KEYWORDS([build brp])
 RPMTEST_CHECK([
 TD=/tmp/brp-remove-la-files

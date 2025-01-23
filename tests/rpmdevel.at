@@ -1,6 +1,6 @@
 AT_BANNER([Rpm development])
 
-AT_SETUP([rpm API user])
+RPMTEST_SETUP([rpm API user])
 AT_KEYWORDS([devel])
 
 cat << EOF > CMakeLists.txt
@@ -35,7 +35,7 @@ LD_PRELOAD=${ASANLIB} ./trpm
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm plugin development])
+RPMTEST_SETUP([rpm plugin development])
 AT_KEYWORDS([devel])
 RPMDB_INIT
 

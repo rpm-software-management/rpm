@@ -6,7 +6,7 @@ rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
 ], [])
 ])
 
-AT_SETUP([rpm version comparison])
+RPMTEST_SETUP([rpm version comparison])
 AT_KEYWORDS([vercmp])
 
 RPMVERCMP(1.0, 1.0, 0)

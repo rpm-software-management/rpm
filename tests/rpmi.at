@@ -18,7 +18,7 @@
 
 AT_BANNER([RPM install tests])
 
-AT_SETUP([rpm -U <manifest>])
+RPMTEST_SETUP([rpm -U <manifest>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -32,7 +32,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest glob>])
+RPMTEST_SETUP([rpm -U <manifest glob>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -46,7 +46,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest glob fallback>])
+RPMTEST_SETUP([rpm -U <manifest glob fallback>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -64,7 +64,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest notfound 1>])
+RPMTEST_SETUP([rpm -U <manifest notfound 1>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -79,7 +79,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest notfound 2>])
+RPMTEST_SETUP([rpm -U <manifest notfound 2>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -94,7 +94,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest notfound 3>])
+RPMTEST_SETUP([rpm -U <manifest notfound 3>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -113,7 +113,7 @@ error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file 
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <manifest notfound 4>])
+RPMTEST_SETUP([rpm -U <manifest notfound 4>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -132,7 +132,7 @@ error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file 
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <notfound>])
+RPMTEST_SETUP([rpm -U <notfound>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -146,7 +146,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <notfound 2>])
+RPMTEST_SETUP([rpm -U <notfound 2>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -164,7 +164,7 @@ error: open of /data/RPMS/hello-not-there-3.0-1.x86_64.rpm failed: No such file 
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <unsigned 1>])
+RPMTEST_SETUP([rpm -U <unsigned 1>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -177,7 +177,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <unsigned 2>])
+RPMTEST_SETUP([rpm -U <unsigned 2>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -192,7 +192,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <corrupted unsigned 1>])
+RPMTEST_SETUP([rpm -U <corrupted unsigned 1>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -238,7 +238,7 @@ error: hello-2.0-1.x86_64: install failed
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <corrupted unsigned 2>])
+RPMTEST_SETUP([rpm -U <corrupted unsigned 2>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -281,7 +281,7 @@ error: hello-2.0-1.x86_64: install failed
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <signed nokey 1>])
+RPMTEST_SETUP([rpm -U <signed nokey 1>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -296,7 +296,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <signed nokey 2>])
+RPMTEST_SETUP([rpm -U <signed nokey 2>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -313,7 +313,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <signed 1>])
+RPMTEST_SETUP([rpm -U <signed 1>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -328,7 +328,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <signed 2>])
+RPMTEST_SETUP([rpm -U <signed 2>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -344,7 +344,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <corrupted signed 1>])
+RPMTEST_SETUP([rpm -U <corrupted signed 1>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK_UNQUOTED([
@@ -371,7 +371,7 @@ error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <corrupted signed 2>])
+RPMTEST_SETUP([rpm -U <corrupted signed 2>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -394,7 +394,7 @@ error: /tmp/hello-2.0-1.x86_64-signed.rpm cannot be installed
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <corrupted signed 3>])
+RPMTEST_SETUP([rpm -U <corrupted signed 3>])
 AT_KEYWORDS([install])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -453,7 +453,7 @@ error: hello-2.0-1.x86_64: install failed
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <glob>])
+RPMTEST_SETUP([rpm -U <glob>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -466,7 +466,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <glob notfound>])
+RPMTEST_SETUP([rpm -U <glob notfound>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -484,7 +484,7 @@ error: open of /data/RPMS/hello-not-there-2.0-1.x86_64.rpm failed: No such file 
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <glob fallback>])
+RPMTEST_SETUP([rpm -U <glob fallback>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -502,7 +502,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test tid/time overrides using SOURCE_DATE_EPOCH
-AT_SETUP([rpm -i <overridden time>])
+RPMTEST_SETUP([rpm -i <overridden time>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -531,7 +531,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test multiple installs using SOURCE_DATE_EPOCH
-AT_SETUP([rpm -i <overridden time keeps ticking>])
+RPMTEST_SETUP([rpm -i <overridden time keeps ticking>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -555,7 +555,7 @@ Install Date: Wed Oct 21 07:28:56 2015
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i --nodb])
+RPMTEST_SETUP([rpm -i --nodb])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -579,7 +579,7 @@ runroot_other find /foo|sort
 
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i --justdb])
+RPMTEST_SETUP([rpm -i --justdb])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -600,7 +600,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpm -U *.src.rpm works
-AT_SETUP([rpm -U *.src.rpm])
+RPMTEST_SETUP([rpm -U *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 rpm \
@@ -620,7 +620,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpm -i *.src.rpm works
-AT_SETUP([rpm -i *.src.rpm])
+RPMTEST_SETUP([rpm -i *.src.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 rpm \
@@ -640,7 +640,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpm -i *.src.rpm *.rpm works
-AT_SETUP([rpm -i *.src.rpm *.rpm])
+RPMTEST_SETUP([rpm -i *.src.rpm *.rpm])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -668,7 +668,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Various error behavior tests
 #
-AT_SETUP([rpm -i <nonexistent file>])
+RPMTEST_SETUP([rpm -i <nonexistent file>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -681,7 +681,7 @@ runroot rpm \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i --nomanifest <garbage text file>])
+RPMTEST_SETUP([rpm -i --nomanifest <garbage text file>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -700,7 +700,7 @@ runroot rpm \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i <garbage text file])
+RPMTEST_SETUP([rpm -i <garbage text file])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -721,7 +721,7 @@ error: open of not_pkg.rpm failed: No such file or directory
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpm upgrade/downgrade])
+RPMTEST_SETUP([rpm upgrade/downgrade])
 RPMDB_INIT
 
 for v in "1.0" "2.0"; do
@@ -894,7 +894,7 @@ runroot rpm -q versiontest
 
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm upgrade/downgrade epoch])
+RPMTEST_SETUP([rpm upgrade/downgrade epoch])
 RPMDB_INIT
 
 runroot rpmbuild --quiet -bb --define "ver 1.0" /data/SPECS/versiontest.spec
@@ -1031,7 +1031,7 @@ runroot rpm -U --replacepkgs /tmp/epoch1.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U obsoleted packages])
+RPMTEST_SETUP([rpm -U obsoleted packages])
 AT_KEYWORDS([install obsolete])
 RPMDB_INIT
 runroot rpmbuild --quiet -bb \
@@ -1096,7 +1096,7 @@ deptest-one-1.0-1.noarch
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U with invalid --relocate])
+RPMTEST_SETUP([rpm -U with invalid --relocate])
 AT_KEYWORDS([install relocate])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1112,7 +1112,7 @@ runroot rpm -U --test --ignoreos --relocate /usr=/opt \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U --badreloc with invalid --relocate])
+RPMTEST_SETUP([rpm -U --badreloc with invalid --relocate])
 AT_KEYWORDS([install relocate])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1127,7 +1127,7 @@ runroot rpm -U --test --ignoreos --badreloc --relocate /usr=/opt \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i relocatable package])
+RPMTEST_SETUP([rpm -i relocatable package])
 AT_KEYWORDS([install relocate])
 RPMDB_INIT
 
@@ -1172,7 +1172,7 @@ runroot rpm -U --relocate /opt/bin=/bin \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i relocatable package 2])
+RPMTEST_SETUP([rpm -i relocatable package 2])
 AT_KEYWORDS([install relocate])
 RPMDB_INIT
 
@@ -1207,7 +1207,7 @@ runroot rpm -ql reloc
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i relocatable package 3])
+RPMTEST_SETUP([rpm -i relocatable package 3])
 AT_KEYWORDS([install relocate])
 RPMTEST_USER
 RPMDB_INIT
@@ -1232,7 +1232,7 @@ runroot_user test ! -d \$PWD/root
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i with/without --excludedocs])
+RPMTEST_SETUP([rpm -i with/without --excludedocs])
 AT_KEYWORDS([install excludedocs])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1265,7 +1265,7 @@ runroot rpm -e testdoc
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i --excludeartifacts])
+RPMTEST_SETUP([rpm -i --excludeartifacts])
 AT_KEYWORDS([install])
 RPMDB_INIT
 runroot rpmbuild --quiet -bb /data/SPECS/vattrtest.spec
@@ -1283,7 +1283,7 @@ test -e ${RPMTEST}/opt/vattrtest/a || exit 1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U <suicidal>])
+RPMTEST_SETUP([rpm -U <suicidal>])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -1324,7 +1324,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # hardlink tests
-AT_SETUP([rpm -i hardlinks])
+RPMTEST_SETUP([rpm -i hardlinks])
 AT_KEYWORDS([build install])
 RPMDB_INIT
 
@@ -1493,7 +1493,7 @@ runroot rpm -Vav --nouser --nogroup
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U filesystem])
+RPMTEST_SETUP([rpm -U filesystem])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1509,7 +1509,7 @@ runroot rpm -q --whatprovides /
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U fifo])
+RPMTEST_SETUP([rpm -U fifo])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1524,7 +1524,7 @@ runroot rpm -Vv --nouser --nogroup fifo
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U dev])
+RPMTEST_SETUP([rpm -U dev])
 AT_KEYWORDS([install])
 AT_SKIP_IF([$MKNOD_DISABLED])
 RPMTEST_CHECK([
@@ -1541,7 +1541,7 @@ runroot rpm -Vv --nouser --nogroup dev
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U with Obsoletes])
+RPMTEST_SETUP([rpm -U with Obsoletes])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1561,7 +1561,7 @@ deptest-test-obsoletes-1.0-1.noarch
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i create user])
+RPMTEST_SETUP([rpm -i create user])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1578,7 +1578,7 @@ runroot rpm -V --root /alt ${VERIFYOPTS} deptest-user
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i create group])
+RPMTEST_SETUP([rpm -i create group])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1595,7 +1595,7 @@ runroot rpm -V ${VERIFYOPTS} deptest-user
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -i sysusers])
+RPMTEST_SETUP([rpm -i sysusers])
 AT_KEYWORDS([install build sysusers])
 RPMDB_INIT
 
@@ -1716,7 +1716,7 @@ klangd
 
 RPMTEST_CLEANUP
 
-AT_SETUP([install on invalid symlinked directory])
+RPMTEST_SETUP([install on invalid symlinked directory])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -1737,7 +1737,7 @@ error: replacetest-1.0-1.noarch: install failed
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([update on invalid symlinked directory])
+RPMTEST_SETUP([update on invalid symlinked directory])
 AT_KEYWORDS([install update symlink])
 RPMDB_INIT
 
@@ -1777,7 +1777,7 @@ runroot rpm -V --nomtime pamupdate
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -U diskspace])
+RPMTEST_SETUP([rpm -U diskspace])
 AT_KEYWORDS([install diskspace])
 RPMTEST_CHECK([
 
