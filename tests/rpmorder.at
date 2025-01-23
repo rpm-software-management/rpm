@@ -1,6 +1,6 @@
 AT_BANNER([RPM install/erase ordering])
 
-AT_SETUP([basic install/erase order 1])
+RPMTEST_SETUP([basic install/erase order 1])
 AT_KEYWORDS([install erase order])
 RPMDB_INIT
 
@@ -47,7 +47,7 @@ deptest-three-1.0-1.noarch
 RPMTEST_CLEANUP
 
 # same as above but with mixed weak dependencies
-AT_SETUP([basic install/erase order 2])
+RPMTEST_SETUP([basic install/erase order 2])
 AT_KEYWORDS([install erase order])
 RPMDB_INIT
 
@@ -96,7 +96,7 @@ RPMTEST_CLEANUP
 # same as above but with all weak reverse dependencies
 # these are all considered meta by ordering, so order is simply reverse
 # of the cli
-AT_SETUP([basic install/erase order 3])
+RPMTEST_SETUP([basic install/erase order 3])
 AT_KEYWORDS([install erase order])
 RPMDB_INIT
 

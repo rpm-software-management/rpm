@@ -2,7 +2,7 @@
 
 AT_BANNER([RPM scriptlets])
 
-AT_SETUP([basic script failures 1])
+RPMTEST_SETUP([basic script failures 1])
 AT_KEYWORDS([script])
 RPMDB_INIT
 
@@ -229,7 +229,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-AT_SETUP([basic scripts and arguments])
+RPMTEST_SETUP([basic scripts and arguments])
 AT_KEYWORDS([verify script])
 RPMDB_INIT
 
@@ -293,7 +293,7 @@ scripts-1.0-2 POSTUNTRANS 0
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic trigger scripts: package args])
+RPMTEST_SETUP([basic trigger scripts: package args])
 AT_KEYWORDS([trigger script])
 RPMDB_INIT
 
@@ -364,7 +364,7 @@ triggers-1.0-1 TRIGGERUN 0 1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic trigger scripts: runtime args])
+RPMTEST_SETUP([basic trigger scripts: runtime args])
 AT_KEYWORDS([trigger script])
 RPMDB_INIT
 
@@ -439,7 +439,7 @@ scripts-1.0-2 POSTUNTRANS 0
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic file trigger scripts])
+RPMTEST_SETUP([basic file trigger scripts])
 AT_KEYWORDS([filetrigger script])
 RPMDB_INIT
 
@@ -546,7 +546,7 @@ transfiletriggerpostun(/foo*):
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([basic file triggers: prefix args])
+RPMTEST_SETUP([basic file triggers: prefix args])
 AT_KEYWORDS([filetrigger script])
 RPMDB_INIT
 
@@ -680,7 +680,7 @@ filetriggerun:
 
 RPMTEST_CLEANUP
 
-AT_SETUP([basic file triggers: runtime args])
+RPMTEST_SETUP([basic file triggers: runtime args])
 AT_KEYWORDS([filetrigger script])
 RPMDB_INIT
 
@@ -772,7 +772,7 @@ runroot rpm -e parallel-trigger
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([script running environment])
+RPMTEST_SETUP([script running environment])
 AT_KEYWORDS([script])
 AT_SKIP_IF([test ${HAVE_UNSHARE} = 0])
 RPMDB_INIT
@@ -801,7 +801,7 @@ runroot_other test -f /tmp/scriptwrite.log
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([deprecated Lua functions])
+RPMTEST_SETUP([deprecated Lua functions])
 AT_KEYWORDS([script lua])
 
 # binary pre-built on rpm 4.18 should emit no warnings

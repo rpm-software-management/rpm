@@ -3,7 +3,7 @@
 AT_BANNER([RPM dependencies])
 
 # ------------------------------
-AT_SETUP([unversioned requires])
+RPMTEST_SETUP([unversioned requires])
 AT_KEYWORDS([install depends])
 RPMDB_INIT
 
@@ -42,7 +42,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-AT_SETUP([unsatisfied versioned require])
+RPMTEST_SETUP([unsatisfied versioned require])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -76,7 +76,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-AT_SETUP([satisfied versioned require])
+RPMTEST_SETUP([satisfied versioned require])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -100,7 +100,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-AT_SETUP([versioned conflicts])
+RPMTEST_SETUP([versioned conflicts])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -139,7 +139,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([install and verify self-conflicting package])
+RPMTEST_SETUP([install and verify self-conflicting package])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -159,7 +159,7 @@ runroot rpm -V --nofiles deptest-one
 RPMTEST_CLEANUP
 
 # explicit file conflicts
-AT_SETUP([explicit file conflicts])
+RPMTEST_SETUP([explicit file conflicts])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -196,7 +196,7 @@ error: Failed dependencies:
 RPMTEST_CLEANUP
 # ------------------------------
 # 
-AT_SETUP([erase to break dependencies])
+RPMTEST_SETUP([erase to break dependencies])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -222,7 +222,7 @@ runroot rpm -e deptest-two
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([erase to break colored file dependency])
+RPMTEST_SETUP([erase to break colored file dependency])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -249,7 +249,7 @@ runroot rpm -e hello.x86_64
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([erase on wrong-colored file dependency])
+RPMTEST_SETUP([erase on wrong-colored file dependency])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -275,7 +275,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([unsatisfied WITH requires])
+RPMTEST_SETUP([unsatisfied WITH requires])
 AT_KEYWORDS([install, boolean])
 
 RPMDB_INIT
@@ -321,7 +321,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([satisfied WITH requires])
+RPMTEST_SETUP([satisfied WITH requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -369,7 +369,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([unsatisfied WITHOUT requires])
+RPMTEST_SETUP([unsatisfied WITHOUT requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -410,7 +410,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([satisfied WITHOUT requires])
+RPMTEST_SETUP([satisfied WITHOUT requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -448,7 +448,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([AND requires])
+RPMTEST_SETUP([AND requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -511,7 +511,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([OR requires])
+RPMTEST_SETUP([OR requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -570,7 +570,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([IF requires])
+RPMTEST_SETUP([IF requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -608,7 +608,7 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([IF-ELSE requires])
+RPMTEST_SETUP([IF-ELSE requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -658,7 +658,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([nested AND-OR requires])
+RPMTEST_SETUP([nested AND-OR requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -697,7 +697,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([nested AND-IF requires])
+RPMTEST_SETUP([nested AND-IF requires])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -735,7 +735,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([install to break installed rich dependency])
+RPMTEST_SETUP([install to break installed rich dependency])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 
@@ -783,7 +783,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-AT_SETUP([erase to break installed rich dependency])
+RPMTEST_SETUP([erase to break installed rich dependency])
 AT_KEYWORDS([install, boolean])
 RPMDB_INIT
 

@@ -135,6 +135,7 @@ For the typical structure of a single test, consult GNU Autotest's
 [documentation](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.71/autoconf.html#Writing-Testsuites)
 as well as the existing tests.  Below are the specifics of RPM's test-suite:
 
+* Use `RPMTEST_SETUP` instead of `AT_SETUP`
 * Use `RPMTEST_CHECK` instead of `AT_CHECK`
 * Use `RPMTEST_CLEANUP` instead of `AT_CLEANUP`
 * Use `RPMTEST_INIT` or `RPMDB_INIT` to create a mutable snapshot (optional)

@@ -20,7 +20,7 @@ AT_BANNER([RPM build])
 
 # ------------------------------
 # Check if rpmbuild -ba *.spec works
-AT_SETUP([rpmbuild -ba *.spec])
+RPMTEST_SETUP([rpmbuild -ba *.spec])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -63,7 +63,7 @@ Iam
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -bs spec])
+RPMTEST_SETUP([rpmbuild -bs spec])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -94,7 +94,7 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
 
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -b buildsystem])
+RPMTEST_SETUP([rpmbuild -b buildsystem])
 AT_KEYWORDS([build buildsystem])
 RPMDB_INIT
 
@@ -211,7 +211,7 @@ runroot rpmspec -q --qf "%{nvr}\n" /data/SPECS/amhello.spec
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -b steps])
+RPMTEST_SETUP([rpmbuild -b steps])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -325,7 +325,7 @@ runroot rpmbuild -bs /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild script prepend/append])
+RPMTEST_SETUP([rpmbuild script prepend/append])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -343,7 +343,7 @@ DDD
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild dir layout])
+RPMTEST_SETUP([rpmbuild dir layout])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -389,7 +389,7 @@ runroot_other find /build/BUILD|sort
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -ba autosetup])
+RPMTEST_SETUP([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -402,7 +402,7 @@ rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -bp autosetup without patches])
+RPMTEST_SETUP([rpmbuild -bp autosetup without patches])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -422,7 +422,7 @@ grep warning: stderr
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild --build-in-place 1])
+RPMTEST_SETUP([rpmbuild --build-in-place 1])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -485,7 +485,7 @@ hello-2.0/hello.c
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild --build-in-place --noprep])
+RPMTEST_SETUP([rpmbuild --build-in-place --noprep])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -506,7 +506,7 @@ runroot --chdir hello-2.0 rpmbuild -bb --quiet \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild --build-in-place --short-circuit])
+RPMTEST_SETUP([rpmbuild --build-in-place --short-circuit])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -529,7 +529,7 @@ hello-debuginfo-2.0-1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild with %autosetup -C])
+RPMTEST_SETUP([rpmbuild with %autosetup -C])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -567,7 +567,7 @@ rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -ba autopatch])
+RPMTEST_SETUP([rpmbuild -ba autopatch])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -588,7 +588,7 @@ grep warning: stderr
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -ba find-lang])
+RPMTEST_SETUP([rpmbuild -ba find-lang])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -612,7 +612,7 @@ pl /usr/share/man/pl/man1/find-lang-test.1.gz
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -ba find-lang --generate-subpackages])
+RPMTEST_SETUP([rpmbuild -ba find-lang --generate-subpackages])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -642,7 +642,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
-AT_SETUP([rpmbuild --rebuild])
+RPMTEST_SETUP([rpmbuild --rebuild])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -664,7 +664,7 @@ runroot rpm -qp --qf "%{packager}\n" /build/RPMS/*/hello-1.0-1.*.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild --short-circuit -bl])
+RPMTEST_SETUP([rpmbuild --short-circuit -bl])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -679,7 +679,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if tar unpacking works
-AT_SETUP([rpmbuild -tb <tar with bad spec>])
+RPMTEST_SETUP([rpmbuild -tb <tar with bad spec>])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -693,7 +693,7 @@ runroot rpmbuild \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -ts <spec>])
+RPMTEST_SETUP([rpmbuild -ts <spec>])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -719,7 +719,7 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-2.0-1.src.rpm
 RPMTEST_CLEANUP
 
 # weird filename survival test
-AT_SETUP([rpmbuild package with weird filenames])
+RPMTEST_SETUP([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -751,7 +751,7 @@ runroot rpm -qpl /build/RPMS/noarch/weirdnames-1.0-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild package with illegal filenames])
+RPMTEST_SETUP([rpmbuild package with illegal filenames])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -766,7 +766,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if tar build works
 # TODO: test that the rpms are actually created...
-AT_SETUP([rpmbuild -tb])
+RPMTEST_SETUP([rpmbuild -tb])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -779,7 +779,7 @@ rpmbuild \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild with deprecated patch])
+RPMTEST_SETUP([rpmbuild with deprecated patch])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -792,7 +792,7 @@ runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild scriptlet -f])
+RPMTEST_SETUP([rpmbuild scriptlet -f])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -860,7 +860,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # %attr/%defattr tests
-AT_SETUP([rpmbuild %attr and %defattr])
+RPMTEST_SETUP([rpmbuild %attr and %defattr])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -930,7 +930,7 @@ drwxrwxrwx   1 root     root            0 Feb 20  2020 ./j/dir
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild SOURCE_DATE_EPOCH])
+RPMTEST_SETUP([rpmbuild SOURCE_DATE_EPOCH])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -951,7 +951,7 @@ runroot rpm -q --dump /build/RPMS/noarch/test-1-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild SOURCE_DATE_EPOCH=0])
+RPMTEST_SETUP([rpmbuild SOURCE_DATE_EPOCH=0])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -972,7 +972,7 @@ runroot rpm -q --dump /build/RPMS/noarch/test-1-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild _buildtime macro])
+RPMTEST_SETUP([rpmbuild _buildtime macro])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -994,7 +994,7 @@ runroot rpm -q --qf '%{BUILDTIME}\n' /build/RPMS/noarch/test-1-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild unpackaged files])
+RPMTEST_SETUP([rpmbuild unpackaged files])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -1011,7 +1011,7 @@ runroot rpmbuild \
 RPMTEST_CLEANUP
 
 # rpm doesn't detect unpackaged directories but should, really
-AT_SETUP([rpmbuild unpackaged directories])
+RPMTEST_SETUP([rpmbuild unpackaged directories])
 AT_KEYWORDS([build])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_INIT
@@ -1030,7 +1030,7 @@ runroot rpmbuild \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild glob])
+RPMTEST_SETUP([rpmbuild glob])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -1066,7 +1066,7 @@ warning: absolute symlink: /opt/globtest/linkgood -> /opt/globtest/zab
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild glob escape])
+RPMTEST_SETUP([rpmbuild glob escape])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1132,7 +1132,7 @@ runroot rpm -qpl /build/RPMS/noarch/globesctest-1.0-1.noarch.rpm
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild bad escape])
+RPMTEST_SETUP([rpmbuild bad escape])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1147,7 +1147,7 @@ runroot rpmbuild -bb --quiet /data/SPECS/badescape.spec
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild bad quote])
+RPMTEST_SETUP([rpmbuild bad quote])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1162,7 +1162,7 @@ runroot rpmbuild -bb --quiet /data/SPECS/badquote.spec
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild prefixpostfix])
+RPMTEST_SETUP([rpmbuild prefixpostfix])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1197,7 +1197,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if weak and reverse requires can be built
-AT_SETUP([Weak and reverse requires])
+RPMTEST_SETUP([Weak and reverse requires])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1228,7 +1228,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test BuildRequire functionality
-AT_SETUP([Build requires])
+RPMTEST_SETUP([Build requires])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1245,7 +1245,7 @@ runroot rpmbuild -bb --quiet \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([Dependency generation 1])
+RPMTEST_SETUP([Dependency generation 1])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -1298,7 +1298,7 @@ runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEPROVIDE}"\n]]' /build/RPMS/noarch/f
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([Dependency generation 2])
+RPMTEST_SETUP([Dependency generation 2])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1313,7 +1313,7 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([Dependency generation 3])
+RPMTEST_SETUP([Dependency generation 3])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1334,7 +1334,7 @@ runroot rpmbuild -bb --quiet \
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([Dependency generation 4])
+RPMTEST_SETUP([Dependency generation 4])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1363,7 +1363,7 @@ one(shebang) = 77
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([Dependency generation 5])
+RPMTEST_SETUP([Dependency generation 5])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1381,7 +1381,7 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([Local dependency generator])
+RPMTEST_SETUP([Local dependency generator])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1433,7 +1433,7 @@ shebang = 0.1-1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([elf dependencies])
+RPMTEST_SETUP([elf dependencies])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -1496,7 +1496,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test spec query functionality
-AT_SETUP([rpmspec query 1])
+RPMTEST_SETUP([rpmspec query 1])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 
@@ -1516,7 +1516,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # archive sanity check
-AT_SETUP([rpmbuild archive sanity])
+RPMTEST_SETUP([rpmbuild archive sanity])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -1534,7 +1534,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild creates the minisymtab section in the main hello binary
-AT_SETUP([rpmbuild debuginfo minisymtab])
+RPMTEST_SETUP([rpmbuild debuginfo minisymtab])
 AT_KEYWORDS([build] [debuginfo])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1572,7 +1572,7 @@ RPMTEST_CLEANUP
 # Check if rpmbuild doesn't create the minisymtab section if we keep symtab
 # Some package might want to use strip -g to keep the symbol table and only
 # but the debug symbols/info in the debuginfo package.
-AT_SETUP([rpmbuild debuginfo minisymtab strip -g])
+RPMTEST_SETUP([rpmbuild debuginfo minisymtab strip -g])
 AT_KEYWORDS([build] [debuginfo])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1612,7 +1612,7 @@ RPMTEST_CLEANUP
 # debuginfo. This is simply the hello example with one binary build twice
 # so dwz has enough slightly similar debug data.
 # Test the case without unique debug file names.
-AT_SETUP([rpmbuild debuginfo dwz])
+RPMTEST_SETUP([rpmbuild debuginfo dwz])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1699,7 +1699,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that rpmbuild creates no debuginfo when --nodebuginfo is passed
-AT_SETUP([rpmbuild no debuginfo])
+RPMTEST_SETUP([rpmbuild no debuginfo])
 AT_KEYWORDS([build] [debuginfo])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1733,7 +1733,7 @@ RPMTEST_CLEANUP
 # debuginfo. This is simply the hello example with one binary build twice
 # so dwz has enough slightly similar debug data.
 # Test with unique debug file names.
-AT_SETUP([rpmbuild debuginfo dwz unique debug names])
+RPMTEST_SETUP([rpmbuild debuginfo dwz unique debug names])
 AT_KEYWORDS([build] [debuginfo] [dwz])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1820,7 +1820,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that an implicit suid binary get included with the suid bit set.
 # We explicitly build with all debug.macros to test those helpers.
-AT_SETUP([rpmbuild implicit suid binary])
+RPMTEST_SETUP([rpmbuild implicit suid binary])
 AT_KEYWORDS([build] [debuginfo] [dwz] [suid])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1852,7 +1852,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that a GDB index is included when requested.
-AT_SETUP([rpmbuild debuginfo gdb index included])
+RPMTEST_SETUP([rpmbuild debuginfo gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1879,7 +1879,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that a GDB index is NOT included when not requested.
-AT_SETUP([rpmbuild debuginfo no gdb index included])
+RPMTEST_SETUP([rpmbuild debuginfo no gdb index included])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1905,7 +1905,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that a -g3 (macros) build creates a valid .debug file.
-AT_SETUP([rpmbuild debuginfo -g3 .debug_macro])
+RPMTEST_SETUP([rpmbuild debuginfo -g3 .debug_macro])
 AT_KEYWORDS([build] [debuginfo] [gdb])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1937,7 +1937,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # ------------------------------
 # Check that a debug source is in a "unique" directory when requested.
-AT_SETUP([rpmbuild debuginfo unique debug src dir])
+RPMTEST_SETUP([rpmbuild debuginfo unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -1974,7 +1974,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that a debug source is NOT in a "unique" directory when not requested.
 # It will be in the "build directory" name under /usr/src/debug.
-AT_SETUP([rpmbuild debuginfo no unique debug src dir])
+RPMTEST_SETUP([rpmbuild debuginfo no unique debug src dir])
 AT_KEYWORDS([build] [debuginfo])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2008,7 +2008,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that defining _debugsource_packages creates -debugsource package
-AT_SETUP([rpmbuild debugsource])
+RPMTEST_SETUP([rpmbuild debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2040,7 +2040,7 @@ RPMTEST_CLEANUP
 # Check that defining _debugsource_packages creates -debugsource package
 # even if %install changes the working directory (debugsourcefiles.list
 # should be in expected build dir).
-AT_SETUP([rpmbuild debugsource debugsourcefiles.list path])
+RPMTEST_SETUP([rpmbuild debugsource debugsourcefiles.list path])
 AT_KEYWORDS([build] [debuginfo] [debugsource])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2065,7 +2065,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that undefining _debuginfo_subpackages creates one single -debuginfo.
-AT_SETUP([rpmbuild debuginfo subpackages single])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages single])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2104,7 +2104,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that defining _debuginfo_subpackages creates multiple -debuginfos.
-AT_SETUP([rpmbuild debuginfo subpackages multiple])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages multiple])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2185,7 +2185,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that defining _debuginfo_subpackages creates multiple -debuginfos.
 # With unique debug and source names
-AT_SETUP([rpmbuild debuginfo subpackages multiple unique])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages multiple unique])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2266,7 +2266,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that defining _debuginfo_subpackages creates multiple -debuginfos.
 # Unique with debugsources.
-AT_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages multiple unique debugsource])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2350,7 +2350,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that defining _debuginfo_subpackages works with excluded files.
-AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2411,7 +2411,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that defining _debuginfo_subpackages works with RemovePathPostfixes.
-AT_SETUP([rpmbuild debuginfo subpackages multiple excluded])
+RPMTEST_SETUP([rpmbuild debuginfo subpackages multiple excluded])
 AT_KEYWORDS([build] [debuginfo] [debugsubpackage] [debugsource])
 AT_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
@@ -2475,7 +2475,7 @@ No hello.debug
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([manual debuginfo package])
+RPMTEST_SETUP([manual debuginfo package])
 AT_KEYWORDS([build debuginfo])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2523,7 +2523,7 @@ runroot rpmbuild --quiet -bb \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([manual %debug_package use])
+RPMTEST_SETUP([manual %debug_package use])
 AT_KEYWORDS([build debuginfo])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -2535,7 +2535,7 @@ runroot rpmbuild -bb \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([explicit %_enable_debug_package on noarch])
+RPMTEST_SETUP([explicit %_enable_debug_package on noarch])
 AT_KEYWORDS([build debuginfo])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2563,7 +2563,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
-AT_SETUP([dynamic build requires rpmbuild -bs])
+RPMTEST_SETUP([dynamic build requires rpmbuild -bs])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2584,7 +2584,7 @@ RPMTEST_CLEANUP
 # Check dynamic build requires
 # Mimick what mock does: repeat build with --noprep --noclean
 # until -br succeeds, and finally build the package.
-AT_SETUP([rpmbuild -br])
+RPMTEST_SETUP([rpmbuild -br])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2619,7 +2619,7 @@ runroot rpmbuild \
 RPMTEST_CLEANUP
 
 # Test that -br creates an src.rpm on success
-AT_SETUP([rpmbuild -br success])
+RPMTEST_SETUP([rpmbuild -br success])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2636,7 +2636,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
-AT_SETUP([rpmbuild -bd with errors])
+RPMTEST_SETUP([rpmbuild -bd with errors])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2656,7 +2656,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild -bd *.spec doesn't build anything
-AT_SETUP([rpmbuild -bd *.spec])
+RPMTEST_SETUP([rpmbuild -bd *.spec])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -2673,7 +2673,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
-AT_SETUP([rpmbuild -ba])
+RPMTEST_SETUP([rpmbuild -ba])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2694,7 +2694,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check dynamic build requires
-AT_SETUP([rpmbuild -br --nodeps])
+RPMTEST_SETUP([rpmbuild -br --nodeps])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2717,7 +2717,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check that rpmbuild aborts with missing Source
-AT_SETUP([rpmbuild -ba missing source])
+RPMTEST_SETUP([rpmbuild -ba missing source])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -2746,7 +2746,7 @@ error: Bad file: /notthere/hello-1.0.tar.gz: No such file or directory
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild minimal spec])
+RPMTEST_SETUP([rpmbuild minimal spec])
 AT_KEYWORDS([build])
 RPMTEST_CHECK_UNQUOTED([
 RPMDB_INIT
@@ -2759,7 +2759,7 @@ runroot rpmbuild \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild missing files])
+RPMTEST_SETUP([rpmbuild missing files])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -2783,7 +2783,7 @@ error: File not found: /build/BUILD/filemisstest-1.0-build/BUILDROOT/opt/share/l
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild missing doc])
+RPMTEST_SETUP([rpmbuild missing doc])
 AT_KEYWORDS([build])
 RPMTEST_CHECK_UNQUOTED([
 RPMDB_INIT
@@ -2803,7 +2803,7 @@ done
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([spec conditionals])
+RPMTEST_SETUP([spec conditionals])
 AT_KEYWORDS([if else elif build])
 RPMDB_INIT
 
@@ -2902,7 +2902,7 @@ runroot rpmbuild -ba --quiet      \
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([bcond macro])
+RPMTEST_SETUP([bcond macro])
 AT_KEYWORDS([bcond build])
 RPMDB_INIT
 
@@ -2975,7 +2975,7 @@ has_bcond(normally_on)
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([bcond_override_default macros])
+RPMTEST_SETUP([bcond_override_default macros])
 AT_KEYWORDS([bcond build])
 RPMDB_INIT
 
@@ -3070,7 +3070,7 @@ has_bcond(normally_off)
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild spec tag])
+RPMTEST_SETUP([rpmbuild spec tag])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -3118,7 +3118,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check %sources and %patches with weird file names
-AT_SETUP([%sources and %patches])
+RPMTEST_SETUP([%sources and %patches])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3137,7 +3137,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check if dynamic spec generation works
-AT_SETUP([rpmbuild with dynamic spec generation])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3164,7 +3164,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if dynamic spec generation works for main package, too
 # Fails now as feature is disbled
-AT_SETUP([rpmbuild with dynamic spec generation for main package])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation for main package])
 AT_KEYWORDS([build])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMDB_INIT
@@ -3193,7 +3193,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if dynamic spec generation works for main package, too
 # Check for failure as feature is disabled. Remove tests when enabled
-AT_SETUP([rpmbuild with dynamic spec generation for main package])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation for main package])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3207,7 +3207,7 @@ error: License field must be present in package: dynamic
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild with dynamic spec generation for main package])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation for main package])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3223,7 +3223,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check failing dynamic spec generation
-AT_SETUP([rpmbuild with dynamic spec generation fail])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3240,7 +3240,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check failing dynamic spec generation
-AT_SETUP([rpmbuild with dynamic spec generation fail])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3256,7 +3256,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check failing dynamic spec generation
-AT_SETUP([rpmbuild with dynamic spec generation fail])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3273,7 +3273,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check failing dynamic spec generation
-AT_SETUP([rpmbuild with dynamic spec generation fail])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3290,7 +3290,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check failing dynamic spec generation
-AT_SETUP([rpmbuild with dynamic spec generation fail])
+RPMTEST_SETUP([rpmbuild with dynamic spec generation fail])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3308,7 +3308,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Check source name with space
-AT_SETUP([rpmbuild source name with space])
+RPMTEST_SETUP([rpmbuild source name with space])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3320,7 +3320,7 @@ runroot rpmbuild -bp --quiet /data/SPECS/source_space.spec
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild bad filetrigger condition])
+RPMTEST_SETUP([rpmbuild bad filetrigger condition])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3348,7 +3348,7 @@ rpmspec --define "nosuchmacro /bbb" --parse /data/SPECS/badftrigger.spec
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild interactive])
+RPMTEST_SETUP([rpmbuild interactive])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3367,7 +3367,7 @@ runroot rpmbuild --quiet -bp /data/SPECS/stdin.spec
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild bpf file])
+RPMTEST_SETUP([rpmbuild bpf file])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3381,7 +3381,7 @@ RPMTEST_CLEANUP
 
 # XXX this always succeeds when rpmbuild is run as root so the test is
 # kinda meaningless until #3005 is done, but works as a manual reproducer.
-AT_SETUP([rpmbuild non-removable file in builddir])
+RPMTEST_SETUP([rpmbuild non-removable file in builddir])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3395,7 +3395,7 @@ runroot rpmbuild --quiet -bb /data/SPECS/noperms.spec
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild %caps])
+RPMTEST_SETUP([rpmbuild %caps])
 AT_KEYWORDS([build])
 AT_SKIP_IF([$CAP_DISABLED])
 RPMDB_INIT
@@ -3448,7 +3448,7 @@ runroot_other /usr/sbin/getcap /usr/bin/test
 
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild -bs with source macro])
+RPMTEST_SETUP([rpmbuild -bs with source macro])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3479,7 +3479,7 @@ hello-1.0-install.patch
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild target macro sanity])
+RPMTEST_SETUP([rpmbuild target macro sanity])
 AT_KEYWORDS([build])
 RPMDB_INIT
 
@@ -3531,7 +3531,7 @@ BUILD_POST noarch noarch noarch
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmbuild install_pre override])
+RPMTEST_SETUP([rpmbuild install_pre override])
 AT_KEYWORDS([build])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -3544,7 +3544,7 @@ RPMTEST_CLEANUP
 
 # Mimick what cpack does. It's not how rpmbuild wants to be used, so
 # please don't copy this to any new usages.
-AT_SETUP([rpmbuild --buildroot])
+RPMTEST_SETUP([rpmbuild --buildroot])
 AT_KEYWORDS([build])
 
 RPMDB_INIT
@@ -3568,7 +3568,7 @@ runroot rpm -qpl /build/RPMS/noarch/brtest-1.0-1.noarch.rpm
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([builddir])
+RPMTEST_SETUP([builddir])
 AT_KEYWORDS([build builddir])
 
 RPMDB_INIT
@@ -3594,7 +3594,7 @@ mydir2=/build/BUILD/mydir-1.0-build/mydir-1.0
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([file digests])
+RPMTEST_SETUP([file digests])
 AT_KEYWORDS([build digest])
 RPMDB_INIT
 RPMTEST_CHECK([[
@@ -3650,7 +3650,7 @@ b718a835936fd2f6c8855f210c4789a1 hello-1.0.tar.gz
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([file digests sha3])
+RPMTEST_SETUP([file digests sha3])
 AT_KEYWORDS([build digest])
 AT_SKIP_IF([test x$PGP = xsequoia])
 RPMDB_INIT

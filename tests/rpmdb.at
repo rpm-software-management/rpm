@@ -20,7 +20,7 @@ AT_BANNER([RPM database access])
 
 # ------------------------------
 # Attempt to initialize a rpmdb
-AT_SETUP([rpm --initdb])
+RPMTEST_SETUP([rpm --initdb])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -32,7 +32,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -qa on an empty rpmdb
-AT_SETUP([rpm -qa 1])
+RPMTEST_SETUP([rpm -qa 1])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -43,7 +43,7 @@ runroot rpm \
 RPMTEST_CLEANUP
 
 # Run rpm -qa on a non-existent rpmdb
-AT_SETUP([rpm -qa 2])
+RPMTEST_SETUP([rpm -qa 2])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 RPMTEST_INIT
@@ -56,7 +56,7 @@ runroot rpm \
 [ignore])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qa 3])
+RPMTEST_SETUP([rpm -qa 3])
 AT_KEYWORDS([rpmdb query])
 RPMDB_INIT
 
@@ -79,7 +79,7 @@ hello-2.0-1.x86_64
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmdb --export and --import])
+RPMTEST_SETUP([rpmdb --export and --import])
 AT_KEYWORDS([rpmdb])
 
 # This needs to run *without* RPMDB_INIT to test behavior on read-only mount
@@ -128,7 +128,7 @@ runroot rpm -qa --dbpath ${PWD}
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -qa and rpmkeys])
+RPMTEST_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
@@ -357,7 +357,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -q <package> where <package> exists in the db.
-AT_SETUP([rpm -q foo])
+RPMTEST_SETUP([rpm -q foo])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -376,7 +376,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Run rpm -q <package>- where <package> exists in the db.
-AT_SETUP([rpm -q foo-])
+RPMTEST_SETUP([rpm -q foo-])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -393,7 +393,7 @@ runroot rpm -q foo-
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmdb header numbering])
+RPMTEST_SETUP([rpmdb header numbering])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -413,7 +413,7 @@ done
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -q --querybynumber])
+RPMTEST_SETUP([rpm -q --querybynumber])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -446,7 +446,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 # install a noarch package into a local rpmdb without --relocate and --nodeps
 # * Should always succeed
-AT_SETUP([rpm -i *.noarch.rpm])
+RPMTEST_SETUP([rpm -i *.noarch.rpm])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
@@ -461,7 +461,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a noarch package (with no files)
-AT_SETUP([rpm -U --replacepkgs 1])
+RPMTEST_SETUP([rpm -U --replacepkgs 1])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
@@ -482,7 +482,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a package with different file policies
-AT_SETUP([rpm -U --replacepkgs 2])
+RPMTEST_SETUP([rpm -U --replacepkgs 2])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
@@ -502,7 +502,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # reinstall a package with different file policies
-AT_SETUP([rpm --reinstall 1])
+RPMTEST_SETUP([rpm --reinstall 1])
 AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
@@ -524,7 +524,7 @@ RPMTEST_CLEANUP
 # install a package into a local rpmdb
 # * Shall only work with if one is relocated
 # * Use --ignorearch because we don't know the arch
-AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
+RPMTEST_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_KEYWORDS([rpmdb install])
 RPMDB_INIT
 
@@ -565,7 +565,7 @@ runroot rpm -ql hello.i386 hello.ppc64
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmdb --rebuilddb])
+RPMTEST_SETUP([rpmdb --rebuilddb])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -589,7 +589,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Attempt to initialize, rebuild and verify a db
-AT_SETUP([rpmdb --rebuilddb and verify empty database])
+RPMTEST_SETUP([rpmdb --rebuilddb and verify empty database])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -603,7 +603,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Install and verify status
-AT_SETUP([rpm -U and verify status])
+RPMTEST_SETUP([rpm -U and verify status])
 AT_KEYWORDS([install rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -624,7 +624,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Install and verify status
-AT_SETUP([rpm -U with _install_lang and verify status])
+RPMTEST_SETUP([rpm -U with _install_lang and verify status])
 AT_KEYWORDS([install rpmdb query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -647,7 +647,7 @@ not installed /usr/share/flangtest/pl.txt
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmdb query special chars])
+RPMTEST_SETUP([rpmdb query special chars])
 AT_KEYWORDS([install rpmdb query])
 RPMDB_INIT
 for v in "1.0+2" "1.0^2" "1.0~2"; do
@@ -689,7 +689,7 @@ runroot rpm -q 'versiontest-1.0~2-1'
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmdb vacuum])
+RPMTEST_SETUP([rpmdb vacuum])
 AT_KEYWORDS([install rpmdb sqlite])
 RPMDB_INIT
 RPMTEST_CHECK([

@@ -9,7 +9,7 @@
 
 AT_BANNER([RPM Spec Tool])
 
-AT_SETUP([rpmspec --query Requires])
+RPMTEST_SETUP([rpmspec --query Requires])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -34,7 +34,7 @@ good.9.1 22
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(,)])
+RPMTEST_SETUP([rpmspec --query Requires(,)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -49,7 +49,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(;)])
+RPMTEST_SETUP([rpmspec --query Requires(;)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -64,7 +64,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(junk)])
+RPMTEST_SETUP([rpmspec --query Requires(junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -79,7 +79,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre,junk)])
+RPMTEST_SETUP([rpmspec --query Requires(pre,junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -94,7 +94,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(junk,pre)])
+RPMTEST_SETUP([rpmspec --query Requires(junk,pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -109,7 +109,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(,pre)])
+RPMTEST_SETUP([rpmspec --query Requires(,pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -124,7 +124,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre,)])
+RPMTEST_SETUP([rpmspec --query Requires(pre,)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -139,7 +139,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre,,postun)])
+RPMTEST_SETUP([rpmspec --query Requires(pre,,postun)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -154,7 +154,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre,,junk)])
+RPMTEST_SETUP([rpmspec --query Requires(pre,,junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -169,7 +169,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(;pre)])
+RPMTEST_SETUP([rpmspec --query Requires(;pre)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -184,7 +184,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre;)])
+RPMTEST_SETUP([rpmspec --query Requires(pre;)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -199,7 +199,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre;postun)])
+RPMTEST_SETUP([rpmspec --query Requires(pre;postun)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -214,7 +214,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --query Requires(pre;junk)])
+RPMTEST_SETUP([rpmspec --query Requires(pre;junk)])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([[
 rpmspec --query \
@@ -229,7 +229,7 @@ error: query of specfile /data/SPECS/test-parsebits.spec failed, can't parse
 ])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --parse])
+RPMTEST_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([rpmspec --parse /data/SPECS/foo.spec],
 [0],
@@ -270,7 +270,7 @@ foo
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --srpm provides])
+RPMTEST_SETUP([rpmspec --srpm provides])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([
 rpmspec -q --srpm --provides /data/SPECS/foo.spec
@@ -286,7 +286,7 @@ foo-bus = 1.0-1
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec --parse])
+RPMTEST_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([
 RPMTEST_INIT
@@ -360,7 +360,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpmspec -q --rpms and --srpm])
+RPMTEST_SETUP([rpmspec -q --rpms and --srpm])
 AT_KEYWORDS([rpmspec query])
 RPMTEST_CHECK([
 rpmspec -q --rpms --target s390x \

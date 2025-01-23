@@ -1,5 +1,5 @@
 
-AT_SETUP([rpm -e and verify files removed])
+RPMTEST_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 
@@ -25,7 +25,7 @@ missing   d /usr/share/doc/hello-2.0/README
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -e suid hardlink])
+RPMTEST_SETUP([rpm -e suid hardlink])
 AT_KEYWORDS([install erase])
 RPMDB_INIT
 
@@ -47,7 +47,7 @@ exists
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm reinstall with shared files])
+RPMTEST_SETUP([rpm reinstall with shared files])
 AT_KEYWORDS([install erase update rpmdb])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -90,7 +90,7 @@ runroot rpm -Vv --nodeps --nogroup --nouser hello.i686 hello.x86_64
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -e and shared files removed 1.1])
+RPMTEST_SETUP([rpm -e and shared files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -135,7 +135,7 @@ missing     /usr/bin/hello
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -e and shared files removed 1.2])
+RPMTEST_SETUP([rpm -e and shared files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -181,7 +181,7 @@ missing   d /usr/share/doc/hello-2.0/README
 
 RPMTEST_CLEANUP
 # Test that removing shared or wrong colored files has no effect
-AT_SETUP([rpm -e and verify colored files removed 1.1])
+RPMTEST_SETUP([rpm -e and verify colored files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -207,7 +207,7 @@ RPMTEST_CLEANUP
 # XXX This is wrong really, rpm shouldn't let the real provider of
 # a shared file get removed - and unforced action shouldn't result
 # in verify failure.
-AT_SETUP([rpm -e and verify colored files removed 1.2])
+RPMTEST_SETUP([rpm -e and verify colored files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 RPMTEST_CHECK([
@@ -231,7 +231,7 @@ runroot rpm -Vv --nodeps --nogroup --nouser hello
 RPMTEST_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 1
-AT_SETUP([rpm -e and verify colored files removed 2.1])
+RPMTEST_SETUP([rpm -e and verify colored files removed 2.1])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
@@ -256,7 +256,7 @@ missing   d /usr/share/doc/hello-2.0/README
 RPMTEST_CLEANUP
 
 # Test that shared colored files actually get removed regardless of order 2
-AT_SETUP([rpm -e and verify colored files removed 2.2])
+RPMTEST_SETUP([rpm -e and verify colored files removed 2.2])
 AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
@@ -280,7 +280,7 @@ missing   d /usr/share/doc/hello-2.0/README
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm -e and verify conflicting files removed 1])
+RPMTEST_SETUP([rpm -e and verify conflicting files removed 1])
 AT_KEYWORDS([install erase rpmdb])
 RPMDB_INIT
 for p in a b; do
@@ -359,7 +359,7 @@ RPMTEST_CLEANUP
 
 # Test %_netsharedpath erasure. It's a bit weird as we're abusing verify
 # on non-installed package to see if files are there.
-AT_SETUP([rpm -e and verify netshared files not removed])
+RPMTEST_SETUP([rpm -e and verify netshared files not removed])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 RPMDB_INIT

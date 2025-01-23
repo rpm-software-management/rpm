@@ -2,7 +2,7 @@
 
 AT_BANNER([RPM config filetype changes])
 
-AT_SETUP([upgrade config to/from non-config])
+RPMTEST_SETUP([upgrade config to/from non-config])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -89,7 +89,7 @@ foo
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([upgrade config to/from config link])
+RPMTEST_SETUP([upgrade config to/from config link])
 AT_KEYWORDS([install])
 RPMDB_INIT
 
@@ -150,7 +150,7 @@ otherstuff
 RPMTEST_CLEANUP
 
 # Modified config link changes to config file
-AT_SETUP([upgrade modified config link to config])
+RPMTEST_SETUP([upgrade modified config link to config])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -187,7 +187,7 @@ otherstuff
 )
 RPMTEST_CLEANUP
 
-AT_SETUP([upgrade config to directory])
+RPMTEST_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
 RPMDB_INIT
 

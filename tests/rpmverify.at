@@ -4,7 +4,7 @@ AT_BANNER([RPM verification])
 
 # ------------------------------
 # 
-AT_SETUP([dependency problems])
+RPMTEST_SETUP([dependency problems])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -27,7 +27,7 @@ RPMTEST_CLEANUP
 # Test file verify when no errors expected.
 # Ignore dependencies here as we're not testing for them, and
 # --nogroup --nouser is required when running tests as non-root.
-AT_SETUP([files with no problems])
+RPMTEST_SETUP([files with no problems])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -42,7 +42,7 @@ runroot rpm -Va --nodeps ${VERIFYOPTS}
 RPMTEST_CLEANUP
 
 # Test file verify when no errors expected in verbose mode.
-AT_SETUP([files with no problems in verbose mode])
+RPMTEST_SETUP([files with no problems in verbose mode])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -62,7 +62,7 @@ runroot rpm -Vva --nodeps ${VERIFYOPTS}
 RPMTEST_CLEANUP
 
 # Test file verify when no errors expected in verbose mode.
-AT_SETUP([directory replaced with a directory symlink])
+RPMTEST_SETUP([directory replaced with a directory symlink])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -91,7 +91,7 @@ runroot rpm -Vv replacetest
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([directory replaced with an invalid directory symlink])
+RPMTEST_SETUP([directory replaced with an invalid directory symlink])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([test `id -u` != 0 ])
 RPMTEST_CHECK([
@@ -121,7 +121,7 @@ runroot rpm -Vv replacetest
 RPMTEST_CLEANUP
 
 # Test file verify after mutilating the files a bit.
-AT_SETUP([verify from db, with problems present])
+RPMTEST_SETUP([verify from db, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -142,7 +142,7 @@ missing   d /usr/share/doc/hello-2.0/FAQ
 RPMTEST_CLEANUP
 
 # Test file verify from original package after mutilating the files a bit.
-AT_SETUP([verify from package, with problems present])
+RPMTEST_SETUP([verify from package, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -162,7 +162,7 @@ missing   d /usr/share/doc/hello-2.0/FAQ
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([verify file attribute filtering])
+RPMTEST_SETUP([verify file attribute filtering])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -221,7 +221,7 @@ done
 RPMTEST_CLEANUP
 
 # Test verify script success & failure behavior
-AT_SETUP([verifyscript])
+RPMTEST_SETUP([verifyscript])
 AT_KEYWORDS([verify])
 RPMDB_INIT
 
@@ -248,7 +248,7 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # shared file timestamp behavior
-AT_SETUP([shared file timestamp behavior])
+RPMTEST_SETUP([shared file timestamp behavior])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -274,7 +274,7 @@ runroot rpm -Va ${VERIFYOPTS}
 RPMTEST_CLEANUP
 
 # ------------------------------
-AT_SETUP([minimize writes (files)])
+RPMTEST_SETUP([minimize writes (files)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMDB_INIT
 
@@ -399,7 +399,7 @@ fox
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([minimize writes (hardlinks)])
+RPMTEST_SETUP([minimize writes (hardlinks)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMDB_INIT
 for v in "0" "1"; do
@@ -421,7 +421,7 @@ runroot rpm -Vav ${VERIFYOPTS}
 RPMTEST_CLEANUP
 
 
-AT_SETUP([minimize writes (symlinks)])
+RPMTEST_SETUP([minimize writes (symlinks)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMDB_INIT
 for v in "1.0" "2.0"; do
@@ -539,7 +539,7 @@ fox
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([minimize writes (SUID files)])
+RPMTEST_SETUP([minimize writes (SUID files)])
 AT_KEYWORDS([upgrade verify min_writes])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -573,7 +573,7 @@ runroot rpm -V ${VERIFYOPTS} replacetest
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([verify empty/no capabilities 1])
+RPMTEST_SETUP([verify empty/no capabilities 1])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
@@ -592,7 +592,7 @@ runroot rpm -Va ${VERIFYOPTS}
 RPMTEST_CLEANUP
 
 
-AT_SETUP([verify empty/no capabilities 2])
+RPMTEST_SETUP([verify empty/no capabilities 2])
 AT_KEYWORDS([verify])
 AT_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
@@ -608,7 +608,7 @@ runroot rpm -Va ${VERIFYOPTS} --nodeps | grep "/bin/hello"
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([rpm --restore])
+RPMTEST_SETUP([rpm --restore])
 AT_KEYWORDS([verify restore])
 RPMTEST_CHECK([
 RPMDB_INIT
@@ -628,7 +628,7 @@ runroot rpm -Va --nodeps ${VERIFYOPTS}
 [])
 RPMTEST_CLEANUP
 
-AT_SETUP([test for %verify in %files])
+RPMTEST_SETUP([test for %verify in %files])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 RPMDB_INIT
