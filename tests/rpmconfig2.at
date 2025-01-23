@@ -4,7 +4,7 @@ AT_BANNER([RPM config symlink behavior])
 
 RPMTEST_SETUP([config symlinks])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -16,7 +16,7 @@ done
 
 # Install over existing config file
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -35,7 +35,7 @@ otherstuff
 
 # Install over existing identical config link, no backup needed
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -54,7 +54,7 @@ foo
 
 # Erase unmodified config link, no backup here
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -70,7 +70,7 @@ test ! -L "${cf}"
 
 # Erase modified config link
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -89,7 +89,7 @@ otherstuff
 
 # Upgrade package with config link, no backup here
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -107,7 +107,7 @@ foo
 #
 # Upgrade package with config link, no backup here
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -122,7 +122,7 @@ grep -c  "touch" output.txt
 
 # Upgrade package with modified config link, unchanged in pkg. No backup.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -144,7 +144,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([changing config symlinks])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -155,7 +155,7 @@ done
 
 # Upgrade package with unmodified config link, changed in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -172,7 +172,7 @@ foo-2.0
 
 # Upgrade package with locally modified config link, changed in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -195,7 +195,7 @@ otherstuff
 
 # Modified config link matches the content from new package.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -219,7 +219,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([upgrade unchanged config(noreplace) links])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -231,7 +231,7 @@ done
 
 # Upgrade package with config file, no backup here
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -248,7 +248,7 @@ foo
 
 # Upgrade package with locally modified config file, unchanged in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -270,7 +270,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([upgrade changing config(noreplace) links])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -282,7 +282,7 @@ for v in "1.0" "2.0"; do
 done
 
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -300,7 +300,7 @@ foo-2.0
 
 # Upgrade package with locally modified config file, changed in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -323,7 +323,7 @@ foo-2.0
 
 # Modified config link matches the content from new package.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -347,7 +347,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([upgrade unchanged shared config links])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -362,7 +362,7 @@ done
 
 # Upgrade package with config file, no backup here
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -383,7 +383,7 @@ foo
 
 # Upgrade package with locally modified config file, unchanged in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -409,7 +409,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([upgrade changing shared config links])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -424,7 +424,7 @@ done
 
 # Upgrade package with unmodified config file, changed in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -445,7 +445,7 @@ foo-2.0
 
 # Upgrade package with locally modified config file, changed in pkg
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -472,7 +472,7 @@ otherstuff
 
 # Modified config link matches the content from new package.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -499,7 +499,7 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP([upgrade changing shared config(noreplace) links])
 AT_KEYWORDS([install])
-RPMDB_INIT
+RPMTEST_INIT
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -515,7 +515,7 @@ done
 
 # Upgrade package with locally modified config file, changed in pkg.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
@@ -542,7 +542,7 @@ foo-2.0
 
 # Modified config link matches the content from new package.
 RPMTEST_CHECK([
-RPMDB_INIT
+RPMDB_RESET
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 

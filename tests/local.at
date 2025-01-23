@@ -15,11 +15,6 @@ rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
 runroot rpm --initdb
 ])
 
-m4_define([RPMDB_INIT],[
-RPMTEST_INIT
-RPMDB_RESET
-])
-
 m4_define([RPMPY_RUN],[[
 cat << EOF > test.py
 # coding=utf-8
@@ -72,7 +67,6 @@ m4_define([RPMPY_TEST],[
 RPMTEST_SETUP([$1])
 AT_KEYWORDS([python])
 setup_env
-RPMDB_INIT
 RPMPY_CHECK([$2], [$3], [$4])
 RPMTEST_CLEANUP
 ])
