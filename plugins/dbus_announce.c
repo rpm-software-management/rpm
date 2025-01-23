@@ -146,6 +146,87 @@ static rpmRC send_ts_message_simple(rpmPlugin plugin,
     return rc;
 }
 
+static rpmRC send_ts_message_details(rpmPlugin plugin,
+				     const char * name,
+				     rpmts ts,
+				     int res)
+{
+    DBusMessage* msg = NULL;
+    char * dbcookie = NULL;
+    rpmRC rc = RPMRC_OK;
+
+    msg = dbus_message_new_signal("/org/rpm/Transaction", /* object name */
+				  "org.rpm.Transaction",  /* interface name */
+				  name);                  /* signal name */
+    if (msg != NULL) {
+	ARGV_t array;
+	array = argvNew();
+	if (array != NULL) {
+	    int nElems, i;
+	    nElems = rpmtsNElements(ts);
+	    for (i = 0; i < nElems; i++) {
+		rpmte te = rpmtsElement(ts, i);
+		char *item = NULL;
+		const char *op = "??";
+		const char *nevra = rpmteNEVRA(te);
+		if (nevra == NULL)
+		    nevra = "";
+		switch (rpmteType (te)) {
+		case TR_ADDED:
+		    op = "added";
+		    break;
+		case TR_REMOVED:
+		    op = "removed";
+		    break;
+		case TR_RPMDB:
+		    op = "rpmdb";
+		    break;
+		case TR_RESTORED:
+		    op = "restored";
+		    break;
+		}
+		/* encode as "operation SPACE nevra" */
+		rasprintf(&item, "%s %s", op, nevra);
+		argvAdd(&array, item);
+		free(item);
+	    }
+
+            dbcookie = rpmdbCookie(rpmtsGetRdb(ts));
+            rpm_tid_t tid = rpmtsGetTid(ts);
+
+	    if (dbus_message_append_args(msg,
+					 DBUS_TYPE_STRING, &dbcookie,
+					 DBUS_TYPE_UINT32, &tid,
+					 DBUS_TYPE_ARRAY, DBUS_TYPE_STRING, &array, argvCount(array),
+					 DBUS_TYPE_INT32, &res,
+					 DBUS_TYPE_INVALID)) {
+		rc = send_ts_message(plugin, name, msg);
+	    } else {
+		rpmlog(RPMLOG_WARNING,
+		       "dbus_announce plugin: Error setting message args (%s)\n",
+		       name);
+	    }
+
+	    argvFree(array);
+	} else {
+	    rpmlog(RPMLOG_WARNING,
+		   "dbus_announce plugin: Out of memory creating args array for message (%s)\n",
+		   name);
+        }
+
+	dbus_message_unref(msg);
+    } else {
+	rpmlog(RPMLOG_WARNING,
+	       "dbus_announce plugin: Error creating signal message (%s)\n",
+	       name);
+    }
+
+    if (dbcookie != NULL)
+	dbcookie = _free(dbcookie);
+
+    return rc;
+}
+
 static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     rpmRC rc;
@@ -153,12 +234,20 @@ static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
     rc = open_dbus(plugin, ts);
     if (rc != RPMRC_OK)
 	return rc;
-    return send_ts_message_simple(plugin, "StartTransaction", ts, RPMRC_OK);
+    rc = send_ts_message_simple(plugin, "StartTransaction", ts, RPMRC_OK);
+    if (rc == RPMRC_OK)
+        rc = send_ts_message_details(plugin, "StartTransactionDetails", ts, RPMRC_OK);
+    return rc;
 }
 
 static rpmRC dbus_announce_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
-    return send_ts_message_simple(plugin, "EndTransaction", ts, res);
+    rpmRC rc;
+
+    rc = send_ts_message_simple(plugin, "EndTransaction", ts, res);
+    if (rc == RPMRC_OK)
+        rc = send_ts_message_details(plugin, "EndTransactionDetails", ts, res);
+    return rc;
 }
 
 struct rpmPluginHooks_s dbus_announce_hooks = {

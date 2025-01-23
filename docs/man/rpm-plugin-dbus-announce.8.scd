@@ -12,12 +12,21 @@ to the signals to be notified of the packages on the system change.
 
 # DBUS SIGNALS
 
-Sends *StartTransaction* and *EndTransaction* messages from the
-*/org/rpm/Transaction* object with the *org.rpm.Transaction*
-interface.
+Sends *StartTransaction*, *EndTransaction*, *StartTransactionDetails*
+and *EndTransactionDetails* messages from the */org/rpm/Transaction*
+object with the *org.rpm.Transaction* interface.
 
-The signal passes the DB cookie as a string and the transaction id as an
-unsigned 32 bit integer.
+The first two signals pass the DB cookie as a string and the transaction id
+as an unsigned 32 bit integer.
+
+The second two signals, those "details", also pass the DB cookie as a string
+and the transaction id as an unsigned 32 bit integer and then in addition
+an array of strings containing space-separated string of values describing
+the operation and the package NEVRA which are part of the transaction.
+The last argument is a signed integer with the transaction result.
+
+The package operation can be one of "added", "removed", "rpmdb" or "restored"
+(quotes for clarity only).
 
 # CONFIGURATION
 
