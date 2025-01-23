@@ -1,13 +1,13 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
-m4_define([RPMTEST_SETUP],[[
+m4_define([RPMTEST_INIT],[[
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}/root"
 [ -d "$RPMTEST" ] || snapshot mount "${PWD}"
 ]])
 
 m4_define([RPMDB_INIT],[
-RPMTEST_SETUP
+RPMTEST_INIT
 rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
 runroot rpm --initdb
 ])
@@ -70,7 +70,7 @@ RPMTEST_CLEANUP
 ])
 
 m4_define([RPMTEST_USER],[
-RPMTEST_SETUP
+RPMTEST_INIT
 [[ $# != 0 ]] && export RPMUSER=$1
 useradd -m -R $RPMTEST $RPMUSER
 ])
