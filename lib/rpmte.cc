@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <vector>
+#include <unordered_map>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
@@ -49,16 +50,7 @@ struct rpmte_s {
     unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
-    rpmds thisds;		/*!< This package's provided NEVR. */
-    rpmds provides;		/*!< Provides: dependencies. */
-    rpmds requires_;		/*!< Requires: dependencies. */
-    rpmds conflicts;		/*!< Conflicts: dependencies. */
-    rpmds obsoletes;		/*!< Obsoletes: dependencies. */
-    rpmds order;		/*!< Order: dependencies. */
-    rpmds recommends;		/*!< Recommends: dependencies. */
-    rpmds suggests;		/*!< Suggests: dependencies. */
-    rpmds supplements;		/*!< Supplements: dependencies. */
-    rpmds enhances;		/*!< Enhances: dependencies. */
+    std::unordered_map<rpmTagVal, rpmds> dependencies;
     rpmfiles files;		/*!< File information. */
     rpmps probs;		/*!< Problems (relocations) */
     rpmts ts;			/*!< Parent transaction */
@@ -85,22 +77,22 @@ struct rpmte_s {
     rpmfs fs;
 };
 
+auto dependency_tags = {
+    RPMTAG_PROVIDENAME, RPMTAG_SUPPLEMENTNAME, RPMTAG_ENHANCENAME,
+    RPMTAG_REQUIRENAME, RPMTAG_RECOMMENDNAME, RPMTAG_SUGGESTNAME,
+    RPMTAG_CONFLICTNAME, RPMTAG_OBSOLETENAME, RPMTAG_ORDERNAME,
+    RPMTAG_NAME};
+
 /* forward declarations */
 static void rpmteColorDS(rpmte te, rpmTag tag);
 static int rpmteClose(rpmte te, int reset_fi);
 
 void rpmteCleanDS(rpmte te)
 {
-    te->thisds = rpmdsFree(te->thisds);
-    te->provides = rpmdsFree(te->provides);
-    te->requires_ = rpmdsFree(te->requires_);
-    te->conflicts = rpmdsFree(te->conflicts);
-    te->obsoletes = rpmdsFree(te->obsoletes);
-    te->recommends = rpmdsFree(te->recommends);
-    te->suggests = rpmdsFree(te->suggests);
-    te->supplements = rpmdsFree(te->supplements);
-    te->enhances = rpmdsFree(te->enhances);
-    te->order = rpmdsFree(te->order);
+    for (auto &pair : te->dependencies) {
+	rpmdsFree(pair.second);
+    }
+    te->dependencies.clear();
 }
 
 static rpmfiles getFiles(rpmte p, Header h)
@@ -190,16 +182,14 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->pkgFileSize = 0;
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
 
-    p->thisds = rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNewPool(tspool, h, RPMTAG_PROVIDENAME, 0);
-    p->requires_ = rpmdsNewPool(tspool, h, RPMTAG_REQUIRENAME, 0);
-    p->conflicts = rpmdsNewPool(tspool, h, RPMTAG_CONFLICTNAME, 0);
-    p->obsoletes = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
-    p->order = rpmdsNewPool(tspool, h, RPMTAG_ORDERNAME, 0);
-    p->recommends = rpmdsNewPool(tspool, h, RPMTAG_RECOMMENDNAME, 0);
-    p->suggests = rpmdsNewPool(tspool, h, RPMTAG_SUGGESTNAME, 0);
-    p->supplements = rpmdsNewPool(tspool, h, RPMTAG_SUPPLEMENTNAME, 0);
-    p->enhances = rpmdsNewPool(tspool, h, RPMTAG_ENHANCENAME, 0);
+    for (rpmTagVal tag : dependency_tags) {
+	if (tag == RPMTAG_NAME) {
+	    p->dependencies[tag] = \
+		rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	} else {
+	    p->dependencies[tag] = rpmdsNewPool(tspool, h, tag, 0);
+	}
+    }
 
     /* Relocation needs to know file count before rpmfiNew() */
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
@@ -466,21 +456,10 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
 {
     if (te == NULL)
 	return NULL;
+    if (!te->dependencies.contains(tag))
+	return NULL;
 
-    switch (tag) {
-    case RPMTAG_NAME:		return te->thisds;
-    case RPMTAG_PROVIDENAME:	return te->provides;
-    case RPMTAG_REQUIRENAME:	return te->requires_;
-    case RPMTAG_CONFLICTNAME:	return te->conflicts;
-    case RPMTAG_OBSOLETENAME:	return te->obsoletes;
-    case RPMTAG_ORDERNAME:	return te->order;
-    case RPMTAG_RECOMMENDNAME:	return te->recommends;
-    case RPMTAG_SUGGESTNAME:	return te->suggests;
-    case RPMTAG_SUPPLEMENTNAME:	return te->supplements;
-    case RPMTAG_ENHANCENAME:	return te->enhances;
-    default:			break;
-    }
-    return NULL;
+    return te->dependencies[tag];
 }
 
 void rpmteCleanFiles(rpmte te)
