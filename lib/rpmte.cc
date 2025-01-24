@@ -77,12 +77,6 @@ struct rpmte_s {
     rpmfs fs;
 };
 
-auto dependency_tags = {
-    RPMTAG_PROVIDENAME, RPMTAG_SUPPLEMENTNAME, RPMTAG_ENHANCENAME,
-    RPMTAG_REQUIRENAME, RPMTAG_RECOMMENDNAME, RPMTAG_SUGGESTNAME,
-    RPMTAG_CONFLICTNAME, RPMTAG_OBSOLETENAME, RPMTAG_ORDERNAME,
-    RPMTAG_NAME};
-
 /* forward declarations */
 static void rpmteColorDS(rpmte te, rpmTag tag);
 static int rpmteClose(rpmte te, int reset_fi);
@@ -182,13 +176,14 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->pkgFileSize = 0;
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
 
-    for (rpmTagVal tag : dependency_tags) {
-	if (tag == RPMTAG_NAME) {
-	    p->dependencies[tag] = \
-		rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-	} else {
-	    p->dependencies[tag] = rpmdsNewPool(tspool, h, tag, 0);
-	}
+    p->dependencies[RPMTAG_NAME] = \
+	rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    for (rpmTagVal tag : {
+	    RPMTAG_PROVIDENAME, RPMTAG_SUPPLEMENTNAME, RPMTAG_ENHANCENAME,
+	    RPMTAG_REQUIRENAME, RPMTAG_RECOMMENDNAME, RPMTAG_SUGGESTNAME,
+	    RPMTAG_CONFLICTNAME, RPMTAG_OBSOLETENAME, RPMTAG_ORDERNAME
+	}) {
+	p->dependencies[tag] = rpmdsNewPool(tspool, h, tag, 0);
     }
 
     /* Relocation needs to know file count before rpmfiNew() */
