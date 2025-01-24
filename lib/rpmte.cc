@@ -51,7 +51,7 @@ struct rpmte_s {
 
     rpmds thisds;		/*!< This package's provided NEVR. */
     rpmds provides;		/*!< Provides: dependencies. */
-    rpmds requires;		/*!< Requires: dependencies. */
+    rpmds requires_;		/*!< Requires: dependencies. */
     rpmds conflicts;		/*!< Conflicts: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmds order;		/*!< Order: dependencies. */
@@ -93,7 +93,7 @@ void rpmteCleanDS(rpmte te)
 {
     te->thisds = rpmdsFree(te->thisds);
     te->provides = rpmdsFree(te->provides);
-    te->requires = rpmdsFree(te->requires);
+    te->requires_ = rpmdsFree(te->requires_);
     te->conflicts = rpmdsFree(te->conflicts);
     te->obsoletes = rpmdsFree(te->obsoletes);
     te->recommends = rpmdsFree(te->recommends);
@@ -192,7 +192,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     p->thisds = rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNewPool(tspool, h, RPMTAG_PROVIDENAME, 0);
-    p->requires = rpmdsNewPool(tspool, h, RPMTAG_REQUIRENAME, 0);
+    p->requires_ = rpmdsNewPool(tspool, h, RPMTAG_REQUIRENAME, 0);
     p->conflicts = rpmdsNewPool(tspool, h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
     p->order = rpmdsNewPool(tspool, h, RPMTAG_ORDERNAME, 0);
@@ -470,7 +470,7 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
     switch (tag) {
     case RPMTAG_NAME:		return te->thisds;
     case RPMTAG_PROVIDENAME:	return te->provides;
-    case RPMTAG_REQUIRENAME:	return te->requires;
+    case RPMTAG_REQUIRENAME:	return te->requires_;
     case RPMTAG_CONFLICTNAME:	return te->conflicts;
     case RPMTAG_OBSOLETENAME:	return te->obsoletes;
     case RPMTAG_ORDERNAME:	return te->order;
