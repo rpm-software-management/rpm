@@ -161,6 +161,15 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
 
 ### Tips & Tricks
 
+* If you've configured your CMake build with the `ENABLE_ASAN` and/or
+  `ENABLE_UBSAN` options enabled (OFF by default), the test-suite will run
+  significantly slower, increasing the total execution time by as much as 2
+  minutes on modern hardware.  If this is an issue, consider setting up a
+  separate CMake build on the side without these options enabled and use that
+  for running the test-suite iteratively.  Before submitting a PR, though,
+  please verify that the test-suite still passes with those options enabled
+  (the easiest way is to run `make ci`).
+
 * Sometimes, you may need to specify a literal square bracket, such as in RPM
   commands using `--qf` format strings.  Do that by wrapping the whole script
   (or expected output) in double square brackets, for example:
