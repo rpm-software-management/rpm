@@ -14,7 +14,9 @@ m4_define([RPMTEST_SNAPSHOT_UMOUNT],[[
 # Make sure we unmount RPMTEST even if it was mounted (and thus the variable
 # exported) in an RPMTEST_CHECK subshell, by setting RPMTEST explicitly here.
 export RPMTEST="${PWD}/tree"
-snapshot umount
+if [ -d "$RPMTEST" ]; then
+    snapshot umount
+fi
 ]])
 
 m4_define([RPMTEST_INIT],[
