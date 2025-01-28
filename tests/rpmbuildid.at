@@ -22,7 +22,7 @@ AT_BANNER([RPM buildid tests])
 # Check if rpmbuild "none" doesn't generates buildid symlinks for hello program
 RPMTEST_SETUP([rpmbuild buildid none])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -53,7 +53,7 @@ RPMTEST_CLEANUP
 # Without unique debug file names.
 RPMTEST_SETUP([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -142,7 +142,7 @@ RPMTEST_CLEANUP
 # With unique debug file names.
 RPMTEST_SETUP([rpmbuild buildid alldebug unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -230,7 +230,7 @@ RPMTEST_CLEANUP
 # Without unique debug file names
 RPMTEST_SETUP([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -318,7 +318,7 @@ RPMTEST_CLEANUP
 # With unique debug file names
 RPMTEST_SETUP([rpmbuild buildid separate unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -405,7 +405,7 @@ RPMTEST_CLEANUP
 # Without unique debug file names
 RPMTEST_SETUP([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -506,7 +506,7 @@ RPMTEST_CLEANUP
 # With unique debug file names
 RPMTEST_SETUP([rpmbuild buildid compat unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -607,7 +607,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary copied.
 RPMTEST_SETUP([rpmbuild buildid duplicate alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # Should create two warnings
@@ -672,7 +672,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary hard linked.
 RPMTEST_SETUP([rpmbuild buildid hardlink alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # No warnings for hard links
@@ -734,7 +734,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary copied.
 RPMTEST_SETUP([rpmbuild buildid duplicate separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # Should create two warnings
@@ -796,7 +796,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary hard linked.
 RPMTEST_SETUP([rpmbuild buildid hardlink separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # No warnings for hard links
@@ -855,7 +855,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary copied.
 RPMTEST_SETUP([rpmbuild buildid duplicate compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # Should create two warnings
@@ -929,7 +929,7 @@ RPMTEST_CLEANUP
 # This is simply the hello example with one binary hard linked.
 RPMTEST_SETUP([rpmbuild buildid hardlink compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # No warnings for hard links
@@ -999,7 +999,7 @@ RPMTEST_CLEANUP
 # but not with _no_recompute_build_ids
 RPMTEST_SETUP([rpmbuild buildid recompute])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # Make sure we get debuginfo
@@ -1110,7 +1110,7 @@ RPMTEST_CLEANUP
 # with _unique_build_ids defined.
 RPMTEST_SETUP([rpmbuild buildid unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # No warnings for hard links
@@ -1155,7 +1155,7 @@ RPMTEST_CLEANUP
 # with _unique_build_ids undefined (and exact same sources).
 RPMTEST_SETUP([rpmbuild buildid non-unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 # No warnings for hard links
@@ -1204,7 +1204,7 @@ RPMTEST_CLEANUP
 # even if the spec file sets attrs explicitly.
 RPMTEST_SETUP([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1235,7 +1235,7 @@ RPMTEST_CLEANUP
 # even if the spec file sets config explicitly.
 RPMTEST_SETUP([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
-AT_SKIP_IF([$DEBUGINFO_DISABLED])
+RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
 RPMTEST_INIT
 

@@ -454,7 +454,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
-AT_SKIP_IF([test -z "$(nproc 2>/dev/null)"])
+RPMTEST_SKIP_IF([test -z "$(nproc 2>/dev/null)"])
 RPMTEST_CHECK([
 mem=$(expr $(getconf PAGESIZE) \* $(getconf _PHYS_PAGES) / 1024 / 1024)
 expr $(rpm --eval "%{getncpus}") = $(nproc)

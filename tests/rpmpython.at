@@ -219,7 +219,7 @@ myprint(h['arch'])
 
 RPMTEST_SETUP([reading a signed package file])
 AT_KEYWORDS([python])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMPY_CHECK([
 # avoid rpmlog spew with absolute path to package
 sink = open('/dev/null', 'w')

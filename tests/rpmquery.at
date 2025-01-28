@@ -409,7 +409,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([pgpsig extension query])
 AT_KEYWORDS([query signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 rpm \
