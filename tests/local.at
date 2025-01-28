@@ -4,11 +4,22 @@ m4_define([RPMTEST_SETUP],[
 AT_SETUP($1)
 ])
 
-m4_define([RPMTEST_INIT],[[
+m4_define([RPMTEST_SNAPSHOT_MOUNT],[[
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}/root"
 [ -d "$RPMTEST" ] || snapshot mount "${PWD}"
 ]])
+
+m4_define([RPMTEST_SNAPSHOT_UMOUNT],[[
+# Make sure we unmount RPMTEST even if it was mounted (and thus the variable
+# exported) in an RPMTEST_CHECK subshell, by setting RPMTEST explicitly here.
+export RPMTEST="${PWD}/tree"
+snapshot umount
+]])
+
+m4_define([RPMTEST_INIT],[
+RPMTEST_SNAPSHOT_MOUNT
+])
 
 m4_define([RPMDB_RESET],[
 rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
@@ -47,10 +58,7 @@ AT_CHECK_UNQUOTED($@)
 ])
 
 m4_define([RPMTEST_CLEANUP],[
-# Make sure we unmount RPMTEST even if it was mounted (and thus the variable
-# exported) in an RPMTEST_CHECK subshell, by setting RPMTEST explicitly here.
-export RPMTEST="${PWD}/tree"
-snapshot umount
+RPMTEST_SNAPSHOT_UMOUNT
 AT_CLEANUP
 ])
 
