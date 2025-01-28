@@ -525,7 +525,7 @@ RPMTEST_CLEANUP
 # imported.
 RPMTEST_SETUP([rpmkeys --import rsa (rpmdb)])
 AT_KEYWORDS([rpmkeys import])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -587,7 +587,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmkeys --import rsa (fs)])
 AT_KEYWORDS([rpmkeys import])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -635,7 +635,7 @@ RPMTEST_CLEANUP
 # Check a package signed with a subkey
 RPMTEST_SETUP([rpmkeys --import, signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -694,7 +694,7 @@ RPMTEST_CLEANUP
 # Check a package signed with an expired subkey
 RPMTEST_SETUP([rpmkeys --import, signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -767,7 +767,7 @@ RPMTEST_CLEANUP
 # Check a package signed with a revoked subkey
 RPMTEST_SETUP([rpmkeys --import, signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -834,7 +834,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmkeys --import invalid keys])
 AT_KEYWORDS([rpmkeys import])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 
 # The following certificates include subkeys with errors.  The internal
@@ -889,7 +889,7 @@ RPMTEST_CLEANUP
 # instead of the key's creation time.
 RPMTEST_SETUP([rpmkeys --import different-creation-times])
 AT_KEYWORDS([rpmkeys import])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpmkeys \
@@ -947,7 +947,7 @@ RPMTEST_CLEANUP
 # just ignores the invalid components and imports the rest.  This test
 # checks the behavior of the internal parser.
 RPMTEST_SETUP([rpmkeys type confusion])
-AT_SKIP_IF([test x$PGP != xlegacy])
+RPMTEST_SKIP_IF([test x$PGP != xlegacy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -964,7 +964,7 @@ RPMTEST_CLEANUP
 # Test pre-built package verification
 RPMTEST_SETUP([rpmkeys -K <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -983,7 +983,7 @@ RPMTEST_CLEANUP
 # Test pre-built package verification
 RPMTEST_SETUP([rpmkeys -Kv <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1047,7 +1047,7 @@ RPMTEST_CLEANUP
 # Test pre-built corrupted package verification (corrupted signature)
 RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1087,7 +1087,7 @@ RPMTEST_CLEANUP
 # Test pre-built corrupted package verification (corrupted header)
 RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 2.1])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1122,7 +1122,7 @@ RPMTEST_CLEANUP
 # Test pre-built corrupted package verification (corrupted header)
 RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 2.2])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1158,7 +1158,7 @@ RPMTEST_CLEANUP
 # Test pre-built corrupted package verification (corrupted payload)
 RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 3])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1195,7 +1195,7 @@ RPMTEST_CLEANUP
 # Test pre-built corrupted package verification (corrupted payload)
 RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 4])
 AT_KEYWORDS([rpmkeys digest signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT[(
 
@@ -1235,7 +1235,7 @@ RPMTEST_CLEANUP
 # Test --addsign
 RPMTEST_SETUP([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/rpm.org-rsa-2048-test.secret
 
@@ -1403,7 +1403,7 @@ RPMTEST_CLEANUP
 # Signing test(s) using Sequoia
 RPMTEST_SETUP([rpmsign --addsign sequoia])
 AT_KEYWORDS([rpmsign sequoia signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 
 RPMTEST_CHECK([
@@ -1464,7 +1464,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmsign --addsign multisig v4])
 AT_KEYWORDS([rpmsign signature multisig v4])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 
 RPMTEST_CHECK([
@@ -1574,7 +1574,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmsign --addsign multisig v6])
 AT_KEYWORDS([rpmsign signature multisig v6])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 
 RPMTEST_CHECK([
@@ -1655,7 +1655,7 @@ RPMTEST_CLEANUP
 # Test --delsign
 RPMTEST_SETUP([rpmsign --delsign])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 RPMTEST_INIT
 
@@ -1679,7 +1679,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([without openpgp])
 AT_KEYWORDS([dummy])
-AT_SKIP_IF([test x$PGP != xdummy])
+RPMTEST_SKIP_IF([test x$PGP != xdummy])
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 ],
@@ -1703,7 +1703,7 @@ RPMTEST_CLEANUP
 # Test ed25519 signature creation and verification
 RPMTEST_SETUP([Ed25519 signatures])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
@@ -1734,7 +1734,7 @@ RPMTEST_CLEANUP
 # Test NIST p-256 signature creation and verification
 RPMTEST_SETUP([NIST P-256 signatures])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
@@ -1765,7 +1765,7 @@ RPMTEST_CLEANUP
 # Test key id collision
 RPMTEST_SETUP([key id collision])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision1.asc
 RPMTEST_CHECK([
@@ -1802,7 +1802,7 @@ RPMTEST_CLEANUP
 # Test key id collision
 RPMTEST_SETUP([key id collision])
 AT_KEYWORDS([rpmsign signature])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision2.asc
 RPMTEST_CHECK([
@@ -1837,7 +1837,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([ima file signatures])
 AT_KEYWORDS([rpmsign ima signature])
-AT_SKIP_IF([$IMA_DISABLED])
+RPMTEST_SKIP_IF([$IMA_DISABLED])
 
 RPMTEST_INIT
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
@@ -1903,7 +1903,7 @@ RPMTEST_CLEANUP
 # we can't do this.
 RPMTEST_SETUP([install ima file signatures])
 AT_KEYWORDS([install ima signature])
-AT_SKIP_IF([$IMA_DISABLED])
+RPMTEST_SKIP_IF([$IMA_DISABLED])
 
 RPMTEST_INIT
 

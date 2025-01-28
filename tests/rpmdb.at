@@ -130,7 +130,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
-AT_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_INIT
 
 echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring

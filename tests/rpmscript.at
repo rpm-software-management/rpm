@@ -774,7 +774,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([script running environment])
 AT_KEYWORDS([script])
-AT_SKIP_IF([test ${HAVE_UNSHARE} = 0])
+RPMTEST_SKIP_IF([test ${HAVE_UNSHARE} = 0])
 RPMTEST_INIT
 runroot rpmbuild -bb --quiet \
 	/data/SPECS/fakeshell.spec \

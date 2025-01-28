@@ -138,6 +138,7 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
 * Use `RPMTEST_SETUP` instead of `AT_SETUP`
 * Use `RPMTEST_CHECK` instead of `AT_CHECK`
 * Use `RPMTEST_CLEANUP` instead of `AT_CLEANUP`
+* Use `RPMTEST_SKIP_IF` instead of `AT_SKIP_IF`
 * Use `RPMTEST_INIT` to create a mutable snapshot (optional)
     * The absolute path to the snapshot's root is stored in the `$RPMTEST`
       environment variable, modify the directory tree as you wish
