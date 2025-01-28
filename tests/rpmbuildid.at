@@ -20,11 +20,10 @@ AT_BANNER([RPM buildid tests])
 
 # ------------------------------
 # Check if rpmbuild "none" doesn't generates buildid symlinks for hello program
-RPMTEST_SETUP([rpmbuild buildid none])
+RPMTEST_SETUP_RW([rpmbuild buildid none])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -51,11 +50,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
 # Without unique debug file names.
-RPMTEST_SETUP([rpmbuild buildid alldebug])
+RPMTEST_SETUP_RW([rpmbuild buildid alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -140,11 +138,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "alldebug" generates debuginfo buildid symlinks.
 # With unique debug file names.
-RPMTEST_SETUP([rpmbuild buildid alldebug unique debug names])
+RPMTEST_SETUP_RW([rpmbuild buildid alldebug unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -228,11 +225,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
 # Without unique debug file names
-RPMTEST_SETUP([rpmbuild buildid separate])
+RPMTEST_SETUP_RW([rpmbuild buildid separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -316,11 +312,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "separate" generates main and debuginfo buildid symlinks
 # With unique debug file names
-RPMTEST_SETUP([rpmbuild buildid separate unique debug names])
+RPMTEST_SETUP_RW([rpmbuild buildid separate unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -403,11 +398,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
 # Without unique debug file names
-RPMTEST_SETUP([rpmbuild buildid compat])
+RPMTEST_SETUP_RW([rpmbuild buildid compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -504,11 +498,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check if rpmbuild "compat" generates main and debuginfo buildid symlinks
 # With unique debug file names
-RPMTEST_SETUP([rpmbuild buildid compat unique debug names])
+RPMTEST_SETUP_RW([rpmbuild buildid compat unique debug names])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -605,11 +598,10 @@ RPMTEST_CLEANUP
 # Check that (copied) files with duplicate build-ids are handled correctly.
 # This should create "numbered" build-id files.
 # This is simply the hello example with one binary copied.
-RPMTEST_SETUP([rpmbuild buildid duplicate alldebug])
+RPMTEST_SETUP_RW([rpmbuild buildid duplicate alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
@@ -670,11 +662,10 @@ RPMTEST_CLEANUP
 # Since the hard linked files have duplicate build-ids,
 # it should create "numbered" build-id files.
 # This is simply the hello example with one binary hard linked.
-RPMTEST_SETUP([rpmbuild buildid hardlink alldebug])
+RPMTEST_SETUP_RW([rpmbuild buildid hardlink alldebug])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links alldebug" \
@@ -732,11 +723,10 @@ RPMTEST_CLEANUP
 # Check that (copied) files with duplicate build-ids are handled correctly.
 # This should create "numbered" build-id files.
 # This is simply the hello example with one binary copied.
-RPMTEST_SETUP([rpmbuild buildid duplicate separate])
+RPMTEST_SETUP_RW([rpmbuild buildid duplicate separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
@@ -794,11 +784,10 @@ RPMTEST_CLEANUP
 # Since the hard linked files have duplicate build-ids,
 # it should create "numbered" build-id files.
 # This is simply the hello example with one binary hard linked.
-RPMTEST_SETUP([rpmbuild buildid hardlink separate])
+RPMTEST_SETUP_RW([rpmbuild buildid hardlink separate])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links separate" \
@@ -853,11 +842,10 @@ RPMTEST_CLEANUP
 # Check that (copied) files with duplicate build-ids are handled correctly.
 # This should create "numbered" build-id files.
 # This is simply the hello example with one binary copied.
-RPMTEST_SETUP([rpmbuild buildid duplicate compat])
+RPMTEST_SETUP_RW([rpmbuild buildid duplicate compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # Should create two warnings
 rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
@@ -927,11 +915,10 @@ RPMTEST_CLEANUP
 # Since the hard linked files have duplicate build-ids,
 # it should create "numbered" build-id files.
 # This is simply the hello example with one binary hard linked.
-RPMTEST_SETUP([rpmbuild buildid hardlink compat])
+RPMTEST_SETUP_RW([rpmbuild buildid hardlink compat])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_build_id_links compat" \
@@ -997,11 +984,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check build-ids are recomputed with unique_build_ids,
 # but not with _no_recompute_build_ids
-RPMTEST_SETUP([rpmbuild buildid recompute])
+RPMTEST_SETUP_RW([rpmbuild buildid recompute])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # Make sure we get debuginfo
 export CFLAGS="-g"
 
@@ -1108,11 +1094,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check build-ids are unique between versions/releases
 # with _unique_build_ids defined.
-RPMTEST_SETUP([rpmbuild buildid unique r1 r2])
+RPMTEST_SETUP_RW([rpmbuild buildid unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --define="_unique_build_ids 1" \
@@ -1153,11 +1138,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check build-ids are non-unique between versions/releases
 # with _unique_build_ids undefined (and exact same sources).
-RPMTEST_SETUP([rpmbuild buildid non-unique r1 r2])
+RPMTEST_SETUP_RW([rpmbuild buildid non-unique r1 r2])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 # No warnings for hard links
 rundebug rpmbuild --quiet \
   --undefine="_unique_build_ids" \
@@ -1202,11 +1186,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that build-id directories are created with the right permissions
 # even if the spec file sets attrs explicitly.
-RPMTEST_SETUP([rpmbuild buildid attrs])
+RPMTEST_SETUP_RW([rpmbuild buildid attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \
@@ -1233,11 +1216,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Check that build-id directories are created with the right attributes
 # even if the spec file sets config explicitly.
-RPMTEST_SETUP([rpmbuild buildid config attrs])
+RPMTEST_SETUP_RW([rpmbuild buildid config attrs])
 AT_KEYWORDS([build] [debuginfo] [buildid])
 RPMTEST_SKIP_IF([$DEBUGINFO_DISABLED])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # Build, contains one ELF which should have a buildid.
 rundebug rpmbuild \

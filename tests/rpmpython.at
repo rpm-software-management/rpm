@@ -444,9 +444,8 @@ ts.run(callback=ncb, data=cbd)
 <class 'NoneType'> 64 6 1 mine]
 )
 
-RPMTEST_SETUP([database iterators])
+RPMTEST_SETUP_RW([database iterators])
 AT_KEYWORDS([python rpmdb])
-RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -i \
   --justdb --nodeps --ignorearch --ignoreos \
@@ -534,9 +533,8 @@ hi
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([database cookies])
+RPMTEST_SETUP_RW([database cookies])
 AT_KEYWORDS([python rpmdb])
-RPMTEST_INIT
 RPMTEST_CHECK([
 ],
 [0],

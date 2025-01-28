@@ -135,11 +135,11 @@ For the typical structure of a single test, consult GNU Autotest's
 [documentation](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.71/autoconf.html#Writing-Testsuites)
 as well as the existing tests.  Below are the specifics of RPM's test-suite:
 
-* Use `RPMTEST_SETUP` instead of `AT_SETUP`
-* Use `RPMTEST_CHECK` instead of `AT_CHECK`
-* Use `RPMTEST_CLEANUP` instead of `AT_CLEANUP`
-* Use `RPMTEST_SKIP_IF` instead of `AT_SKIP_IF`
-* Use `RPMTEST_INIT` to create a mutable snapshot (optional)
+* Use `RPMTEST_SETUP` instead of `AT_SETUP` to setup a test in an immutable
+  system image with writable `.` and `/tmp`.
+* Use `RPMTEST_SETUP_RW` instead of `AT_SETUP` to prepare the use of a mutable
+  snapshot of the system image. To be used when the test needs to modify
+  the system image itself - to install a package, import keys and so on.
     * The absolute path to the snapshot's root is stored in the `$RPMTEST`
       environment variable, modify the directory tree as you wish
     * To run RPM inside the snapshot, use the `runroot` prefix, e.g. `runroot
@@ -149,6 +149,11 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
       environment with only a handful of variables preset.  To pass your own
       variable(s), use `--setenv` (once for each variable), e.g. `runroot
       --setenv FOO "foo" rpm ...`
+    * Due to historical reasons, a mutable snapshot is currently needed for
+      merely building packages as well.
+* Use `RPMTEST_CHECK` instead of `AT_CHECK`
+* Use `RPMTEST_CLEANUP` instead of `AT_CLEANUP`
+* Use `RPMTEST_SKIP_IF` instead of `AT_SKIP_IF`
 * Use `RPMTEST_USER` to create a regular UNIX user in a mutable snapshot
     * The username is stored in the `$RPMUSER` environment variable
     * To run a binary as `$RPMUSER` inside the snapshot, use `runroot_user`
@@ -157,6 +162,8 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
       to the macro, e.g. `RPMTEST_USER([user1, user2])`.  Then, use
       `runroot_user -n <name>` to run a binary as a specific user
 * Use `RPMDB_RESET` to reinitialize a snapshot to an empty rpmdb (avoid this)
+* Use `RPMTEST_SNAPSHOT_MOUNT` create a mutable snapshot inside an immutable
+  test (not normally needed, use RPMTEST_SETUP_RW instead)
 * If no snapshot was used, just call the RPM binaries normally
 * Store any working files in the current directory (it's always writable)
 

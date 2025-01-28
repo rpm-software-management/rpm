@@ -1,10 +1,9 @@
 
 AT_BANNER([RPM file replacement])
 
-RPMTEST_SETUP([upgrade to/from regular file])
+RPMTEST_SETUP_RW([upgrade to/from regular file])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${tf}" "${tf}".rpm*
 
@@ -35,9 +34,8 @@ foo
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade regular file to/from link])
+RPMTEST_SETUP_RW([upgrade regular file to/from link])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -92,10 +90,9 @@ foo
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade broken link to broken link])
+RPMTEST_SETUP_RW([upgrade broken link to broken link])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -123,10 +120,9 @@ stuff
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade file link to file link])
+RPMTEST_SETUP_RW([upgrade file link to file link])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -154,10 +150,9 @@ goo
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade directory link to directory link])
+RPMTEST_SETUP_RW([upgrade directory link to directory link])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -185,10 +180,9 @@ zoo
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade regular file to directory])
+RPMTEST_SETUP_RW([upgrade regular file to directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -214,10 +208,9 @@ test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade broken link to directory])
+RPMTEST_SETUP_RW([upgrade broken link to directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -243,10 +236,9 @@ test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade file link to directory])
+RPMTEST_SETUP_RW([upgrade file link to directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -272,10 +264,9 @@ test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade directory link to directory])
+RPMTEST_SETUP_RW([upgrade directory link to directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -301,10 +292,9 @@ runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade empty directory to empty directory])
+RPMTEST_SETUP_RW([upgrade empty directory to empty directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -327,10 +317,9 @@ test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade empty directory to regular file])
+RPMTEST_SETUP_RW([upgrade empty directory to regular file])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -354,10 +343,9 @@ test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rp
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade locally symlinked directory])
+RPMTEST_SETUP_RW([upgrade locally symlinked directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -388,10 +376,9 @@ test -L "${tf}" && test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade invalid locally symlinked directory])
+RPMTEST_SETUP_RW([upgrade invalid locally symlinked directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 
@@ -418,9 +405,8 @@ test -d "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade empty directory to broken link])
+RPMTEST_SETUP_RW([upgrade empty directory to broken link])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -462,9 +448,8 @@ test -d "${tf}" && runroot rpm -U /build/RPMS/noarch/replacetest-2.0-1.noarch.rp
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade empty directory to file link])
+RPMTEST_SETUP_RW([upgrade empty directory to file link])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -508,10 +493,9 @@ readlink "${tf}"
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade empty directory to file link with pretrans])
+RPMTEST_SETUP_RW([upgrade empty directory to file link with pretrans])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 tf="${RPMTEST}"/opt/foo
 rm -rf "${RPMTEST}"/opt/*
 

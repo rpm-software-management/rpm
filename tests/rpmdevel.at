@@ -35,9 +35,8 @@ LD_PRELOAD=${ASANLIB} ./trpm
 )
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpm plugin development])
+RPMTEST_SETUP_RW([rpm plugin development])
 AT_KEYWORDS([devel])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	/data/SPECS/simple.spec \

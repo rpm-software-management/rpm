@@ -2,9 +2,8 @@
 
 AT_BANNER([RPM scriptlets])
 
-RPMTEST_SETUP([basic script failures 1])
+RPMTEST_SETUP_RW([basic script failures 1])
 AT_KEYWORDS([script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 for v in 1.0 2.0; do
@@ -229,9 +228,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-RPMTEST_SETUP([basic scripts and arguments])
+RPMTEST_SETUP_RW([basic scripts and arguments])
 AT_KEYWORDS([verify script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
@@ -293,9 +291,8 @@ scripts-1.0-2 POSTUNTRANS 0
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([basic trigger scripts: package args])
+RPMTEST_SETUP_RW([basic trigger scripts: package args])
 AT_KEYWORDS([trigger script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -364,9 +361,8 @@ triggers-1.0-1 TRIGGERUN 0 1
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([basic trigger scripts: runtime args])
+RPMTEST_SETUP_RW([basic trigger scripts: runtime args])
 AT_KEYWORDS([trigger script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
@@ -439,9 +435,8 @@ scripts-1.0-2 POSTUNTRANS 0
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([basic file trigger scripts])
+RPMTEST_SETUP_RW([basic file trigger scripts])
 AT_KEYWORDS([filetrigger script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -546,9 +541,8 @@ transfiletriggerpostun(/foo*):
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([basic file triggers: prefix args])
+RPMTEST_SETUP_RW([basic file triggers: prefix args])
 AT_KEYWORDS([filetrigger script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
@@ -680,9 +674,8 @@ filetriggerun:
 
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([basic file triggers: runtime args])
+RPMTEST_SETUP_RW([basic file triggers: runtime args])
 AT_KEYWORDS([filetrigger script])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
 for v in 1.0 2.0 3.0; do
@@ -772,10 +765,9 @@ runroot rpm -e parallel-trigger
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([script running environment])
+RPMTEST_SETUP_RW([script running environment])
 AT_KEYWORDS([script])
 RPMTEST_SKIP_IF([test ${HAVE_UNSHARE} = 0])
-RPMTEST_INIT
 runroot rpmbuild -bb --quiet \
 	/data/SPECS/fakeshell.spec \
 	/data/SPECS/scriptwrite.spec
@@ -801,9 +793,8 @@ runroot_other test -f /tmp/scriptwrite.log
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([deprecated Lua functions])
+RPMTEST_SETUP_RW([deprecated Lua functions])
 AT_KEYWORDS([script lua])
-RPMTEST_INIT
 
 # binary pre-built on rpm 4.18 should emit no warnings
 RPMTEST_CHECK([

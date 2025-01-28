@@ -2,9 +2,8 @@
 #
 AT_BANNER([RPM macros])
 
-RPMTEST_SETUP([macro path])
+RPMTEST_SETUP_RW([macro path])
 AT_KEYWORDS([macros])
-RPMTEST_INIT
 
 # .rpmmacros exists, new directory not
 RPMTEST_CHECK([[
@@ -40,9 +39,8 @@ runroot --setenv  XDG_CONFIG_HOME "~/.zzz" rpm --showrc | awk '/^Macro path/{pri
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([macro path: skip editor backups])
+RPMTEST_SETUP_RW([macro path: skip editor backups])
 AT_KEYWORDS([macros])
-RPMTEST_INIT
 RPMTEST_CHECK([
 echo '%this that' > $RPMTEST/$RPM_CONFIGDIR_PATH/macros.d/macros.this
 runroot rpm --eval '%{this}'
@@ -173,10 +171,9 @@ rpm --define 'aaa %\\[%aaa\\]' --eval '%aaa'
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([parametrized macro 1])
+RPMTEST_SETUP_RW([parametrized macro 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-RPMTEST_INIT
 cat << EOF > mtest
 %bar() bar
 %foo()\\
@@ -355,7 +352,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([uncompress 2])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-RPMTEST_INIT
 echo xxxxxxxxxxxxxxxxxxxxxxxxx > "some%%ath"
 ${RPM_CONFIGDIR_PATH}/rpmuncompress "some%%ath"
 ],
@@ -404,7 +400,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([uncompress 4])
 AT_KEYWORDS([macros rpmuncompress])
-RPMTEST_INIT
 
 RPMTEST_CHECK([
 runroot_other mkdir -p /tmp/1
@@ -451,7 +446,7 @@ runroot_other --chdir /tmp/2 find . | sort
 [ignore])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([getncpus macro])
+RPMTEST_SETUP_RW([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
 RPMTEST_SKIP_IF([test -z "$(nproc 2>/dev/null)"])
@@ -1112,10 +1107,9 @@ error: lua script failed: [[string "<lua>"]]:1: redirect2null not permitted in t
 )
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([lua library path])
+RPMTEST_SETUP_RW([lua library path])
 AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
-RPMTEST_INIT
 f=$(rpm --eval "%{_rpmconfigdir}/lua/foo.lua")
 echo "bar = 'graak'" > ${RPMTEST}/${f}
 runroot rpm \
@@ -1129,7 +1123,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua auto-print])
 AT_KEYWORDS([macros lua])
-RPMTEST_INIT
 RPMTEST_CHECK([[
 rpm \
     --define 'foo() %{lua:return string.reverse(arg[1])}' \
@@ -1162,7 +1155,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([lua rpm io stream])
 AT_KEYWORDS([macros lua])
 RPMTEST_CHECK([
-RPMTEST_INIT
 rpm \
   --eval '%{lua: local f = rpm.open("zzz", "w+"); f:write("gggg"); print(f:seek("cur")); f:close()}' \
   --eval '%{lua: local f = rpm.open("zzz"); print(f:read()); f:close()}' \
@@ -1521,7 +1513,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmlua])
 AT_KEYWORDS([lua])
-RPMTEST_INIT
 RPMTEST_CHECK([
 rpmlua /data/t1.lua a b
 ],

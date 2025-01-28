@@ -59,9 +59,8 @@ runroot rpmkeys -Kv /data/RPMS/hello-1.0-1.i386.rpm
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys key update and delete (rpmdb)])
+RPMTEST_SETUP_RW([rpmkeys key update and delete (rpmdb)])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 # currently the default but make it explicit
 echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 RPMTEST_CHECK([
@@ -133,9 +132,8 @@ runroot rpm -qa gpg-pubkey
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys migrate from keyid to fingerprint (rpmdb)])
+RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (rpmdb)])
 AT_KEYWORDS([rpmkeys rpmdb])
-RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpm -q --dbpath /data/misc/ gpg-pubkey
 ],
@@ -160,9 +158,8 @@ runroot rpm -q --dbpath /data/misc/ gpg-pubkey
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys migrate from keyid to fingerprint (fs)])
+RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (fs)])
 AT_KEYWORDS([rpmkeys rpmdb])
-RPMTEST_INIT
 echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 krpath="$(rpm --eval %{_keyringpath})"
 
@@ -194,9 +191,8 @@ runroot_other ls ${krpath}
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys key update (fs)])
+RPMTEST_SETUP_RW([rpmkeys key update (fs)])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -274,9 +270,8 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64.rpm /data/RPMS/hello-1.0-1.i38
 RPMTEST_CLEANUP
 
 
-RPMTEST_SETUP([rpmkeys key update (openpgp)])
+RPMTEST_SETUP_RW([rpmkeys key update (openpgp)])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 echo "%_keyring openpgp" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
 krpath=$(rpm --eval "%{_keyringpath}")
 
@@ -368,7 +363,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpmkeys -Kv <reconstructed> 1])
 AT_KEYWORDS([rpmkeys digest])
-RPMTEST_INIT
 
 cp "${RPMTEST}"/data/misc/hello.intro "${RPMTEST}"/data/misc/hello.payload .
 gzip -cd < hello.payload > hello.uc-payload
@@ -410,9 +404,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test corrupted package verification (corrupted md5 hash in signature)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted unsigned> 1])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted unsigned> 1])
 AT_KEYWORDS([rpmkeys digest])
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -444,10 +437,9 @@ runroot rpmkeys -Kv --define "_pkgverify_flags 0" /tmp/${pkg}
 RPMTEST_CLEANUP
 # ------------------------------
 # Test corrupted package verification (corrupted header)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted unsigned> 2])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted unsigned> 2])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -467,10 +459,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test corrupted package verification (corrupted payload)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted unsigned> 3])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted unsigned> 3])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -493,7 +484,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmkeys -Kv <corrupted unsigned> 4])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -509,9 +499,8 @@ runroot rpmkeys -Kv /tmp/${pkg}
 RPMTEST_CLEANUP
 # ------------------------------
 # Reproducably build and verify a package
-RPMTEST_SETUP([rpmkeys -Kv <unsigned> 2])
+RPMTEST_SETUP_RW([rpmkeys -Kv <unsigned> 2])
 AT_KEYWORDS([rpmkeys digest v4 v6])
-RPMTEST_INIT
 RPMTEST_CHECK_PINNED([rpmsigdig])
 RPMTEST_CHECK_PINNED([rpmsigdig6])
 RPMTEST_CLEANUP
@@ -525,11 +514,10 @@ RPMTEST_CLEANUP
 # is because a key's validity depends on the current time.  Thus, the
 # time to check for validity is when the key is used, not when it is
 # imported.
-RPMTEST_SETUP([rpmkeys --import rsa (rpmdb)])
+RPMTEST_SETUP_RW([rpmkeys --import rsa (rpmdb)])
 AT_KEYWORDS([rpmkeys import])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmkeys \
 	--define "_keyring rpmdb" \
@@ -587,11 +575,10 @@ gpg(4344591e1964c5fc) = 4:771b18d3d7baa28734333c424344591e1964c5fc-58e63918
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys --import rsa (fs)])
+RPMTEST_SETUP_RW([rpmkeys --import rsa (fs)])
 AT_KEYWORDS([rpmkeys import])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
@@ -635,11 +622,10 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a subkey
-RPMTEST_SETUP([rpmkeys --import, signed with a good subkey])
+RPMTEST_SETUP_RW([rpmkeys --import, signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
@@ -694,11 +680,10 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with an expired subkey
-RPMTEST_SETUP([rpmkeys --import, signed with an expired subkey])
+RPMTEST_SETUP_RW([rpmkeys --import, signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm 2>&1; echo $?
@@ -767,11 +752,10 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a revoked subkey
-RPMTEST_SETUP([rpmkeys --import, signed with a revoked subkey])
+RPMTEST_SETUP_RW([rpmkeys --import, signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 echo Checking package before importing key:
 runroot rpmkeys --define '_pkgverify_level all' -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-subkey.rpm; echo $?
@@ -834,10 +818,9 @@ Checking package after importing key, no signature:
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys --import invalid keys])
+RPMTEST_SETUP_RW([rpmkeys --import invalid keys])
 AT_KEYWORDS([rpmkeys import])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 
 # The following certificates include subkeys with errors.  The internal
 # OpenPGP implementation rejects those keys at import time whereas
@@ -889,10 +872,9 @@ RPMTEST_CLEANUP
 # If the key is identified as gpg-pubkey-62837bea-62553ec1, then the
 # implementation is using the binding signature's creation time
 # instead of the key's creation time.
-RPMTEST_SETUP([rpmkeys --import different-creation-times])
+RPMTEST_SETUP_RW([rpmkeys --import different-creation-times])
 AT_KEYWORDS([rpmkeys import])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 RPMTEST_CHECK([
 runroot rpmkeys \
 	--define "_keyring rpmdb" \
@@ -951,7 +933,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmkeys type confusion])
 RPMTEST_SKIP_IF([test x$PGP != xlegacy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmkeys --import /data/keys/type-confusion.asc
 ],
@@ -964,11 +945,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built package verification
-RPMTEST_SETUP([rpmkeys -K <signed> 1])
+RPMTEST_SETUP_RW([rpmkeys -K <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
@@ -983,11 +963,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built package verification
-RPMTEST_SETUP([rpmkeys -Kv <signed> 1])
+RPMTEST_SETUP_RW([rpmkeys -Kv <signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-v3-signed.rpm; echo $?
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed.rpm; echo $?
@@ -1047,11 +1026,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted signature)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 1])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted signed> 1])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1087,11 +1065,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted header)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 2.1])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted signed> 2.1])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64-v3-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1122,11 +1099,10 @@ runroot rpmkeys -Kv /tmp/${pkg}
 RPMTEST_CLEANUP
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted header)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 2.2])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted signed> 2.2])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1158,11 +1134,10 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted payload)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 3])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted signed> 3])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
@@ -1195,10 +1170,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test pre-built corrupted package verification (corrupted payload)
-RPMTEST_SETUP([rpmkeys -Kv <corrupted signed> 4])
+RPMTEST_SETUP_RW([rpmkeys -Kv <corrupted signed> 4])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 RPMTEST_CHECK([[
 
 dorpm () {
@@ -1235,10 +1209,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test --addsign
-RPMTEST_SETUP([rpmsign --addsign])
+RPMTEST_SETUP_RW([rpmsign --addsign])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/rpm.org-rsa-2048-test.secret
 
 # rpmsign --addsign --rpmv3 <unsigned>
@@ -1403,10 +1376,9 @@ gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
 
 # Signing test(s) using Sequoia
-RPMTEST_SETUP([rpmsign --addsign sequoia])
+RPMTEST_SETUP_RW([rpmsign --addsign sequoia])
 AT_KEYWORDS([rpmsign sequoia signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 
 RPMTEST_CHECK([
 cat << EOF >> ${HOME}/.config/rpm/macros
@@ -1464,10 +1436,9 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmsign --addsign multisig v4])
+RPMTEST_SETUP_RW([rpmsign --addsign multisig v4])
 AT_KEYWORDS([rpmsign signature multisig v4])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 
 RPMTEST_CHECK([
 cat << EOF >> ${HOME}/.config/rpm/macros
@@ -1574,10 +1545,9 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmsign --addsign multisig v6])
+RPMTEST_SETUP_RW([rpmsign --addsign multisig v6])
 AT_KEYWORDS([rpmsign signature multisig v6])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 
 RPMTEST_CHECK([
 cat << EOF >> ${HOME}/.config/rpm/macros
@@ -1659,7 +1629,6 @@ RPMTEST_SETUP([rpmsign --delsign])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 echo PRE-DELSIGN
@@ -1703,13 +1672,11 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test ed25519 signature creation and verification
-RPMTEST_SETUP([Ed25519 signatures])
+RPMTEST_SETUP_RW([Ed25519 signatures])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id B0645AEC757BF69E --digest-algo sha512 --addsign /tmp/hello-2.0-1.x86_64.rpm
@@ -1734,14 +1701,11 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test NIST p-256 signature creation and verification
-RPMTEST_SETUP([NIST P-256 signatures])
+RPMTEST_SETUP_RW([NIST P-256 signatures])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/*.secret
 RPMTEST_CHECK([
-RPMTEST_INIT
-
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 7f1c21f95f65bbe8 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
@@ -1765,13 +1729,11 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test key id collision
-RPMTEST_SETUP([key id collision])
+RPMTEST_SETUP_RW([key id collision])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision1.asc
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 79cc07f167fee8841829acaa42655a75156b3de0 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
@@ -1802,13 +1764,11 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Test key id collision
-RPMTEST_SETUP([key id collision])
+RPMTEST_SETUP_RW([key id collision])
 AT_KEYWORDS([rpmsign signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_INIT
 gpg2 --import ${RPMTEST}/data/keys/keyidcollision2.asc
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 94706f8da571389e8642bdfd42655a75156b3de0 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
@@ -1837,11 +1797,10 @@ POST-IMPORT
 gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([ima file signatures])
+RPMTEST_SETUP_RW([ima file signatures])
 AT_KEYWORDS([rpmsign ima signature])
 RPMTEST_SKIP_IF([$IMA_DISABLED])
 
-RPMTEST_INIT
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
 gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
@@ -1903,11 +1862,9 @@ RPMTEST_CLEANUP
 # The installation should succeed in all cases, but whether setting the
 # IMA signature succeeds depends on container privileges - in rootless
 # we can't do this.
-RPMTEST_SETUP([install ima file signatures])
+RPMTEST_SETUP_RW([install ima file signatures])
 AT_KEYWORDS([install ima signature])
 RPMTEST_SKIP_IF([$IMA_DISABLED])
-
-RPMTEST_INIT
 
 cat << EOF > expout
 # file: /usr/share/example1

@@ -2,9 +2,8 @@
 
 AT_BANNER([RPM config filetype changes])
 
-RPMTEST_SETUP([upgrade config to/from non-config])
+RPMTEST_SETUP_RW([upgrade config to/from non-config])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -89,9 +88,8 @@ foo
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade config to/from config link])
+RPMTEST_SETUP_RW([upgrade config to/from config link])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -150,10 +148,9 @@ otherstuff
 RPMTEST_CLEANUP
 
 # Modified config link changes to config file
-RPMTEST_SETUP([upgrade modified config link to config])
+RPMTEST_SETUP_RW([upgrade modified config link to config])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}" "${cf}".rpm*
 
@@ -187,9 +184,8 @@ otherstuff
 )
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([upgrade config to directory])
+RPMTEST_SETUP_RW([upgrade config to directory])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \

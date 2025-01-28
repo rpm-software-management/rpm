@@ -289,7 +289,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 # ensure the macros expand to expected values
 # debug packages disabled for simplicity, we're not testing for that here

@@ -3,9 +3,8 @@
 AT_BANNER([RPM dependencies])
 
 # ------------------------------
-RPMTEST_SETUP([unversioned requires])
+RPMTEST_SETUP_RW([unversioned requires])
 AT_KEYWORDS([install depends])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -19,7 +18,6 @@ runroot rpmbuild --quiet -bb \
 
 # missing dependency
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ],
@@ -31,7 +29,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 
 # cross-depending packages
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -42,10 +39,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-RPMTEST_SETUP([unsatisfied versioned require])
+RPMTEST_SETUP_RW([unsatisfied versioned require])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -76,10 +72,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-RPMTEST_SETUP([satisfied versioned require])
+RPMTEST_SETUP_RW([satisfied versioned require])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -100,9 +95,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # 
-RPMTEST_SETUP([versioned conflicts])
+RPMTEST_SETUP_RW([versioned conflicts])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -115,7 +109,6 @@ runroot rpmbuild --quiet -bb \
 
 # versioned conflict in transaction
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -127,7 +120,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # versioned conflict in database
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
@@ -139,10 +131,9 @@ runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([install and verify self-conflicting package])
+RPMTEST_SETUP_RW([install and verify self-conflicting package])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -159,10 +150,9 @@ runroot rpm -V --nofiles deptest-one
 RPMTEST_CLEANUP
 
 # explicit file conflicts
-RPMTEST_SETUP([explicit file conflicts])
+RPMTEST_SETUP_RW([explicit file conflicts])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -196,10 +186,9 @@ error: Failed dependencies:
 RPMTEST_CLEANUP
 # ------------------------------
 # 
-RPMTEST_SETUP([erase to break dependencies])
+RPMTEST_SETUP_RW([erase to break dependencies])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -222,10 +211,9 @@ runroot rpm -e deptest-two
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([erase to break colored file dependency])
+RPMTEST_SETUP_RW([erase to break colored file dependency])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg hello" \
@@ -249,10 +237,9 @@ runroot rpm -e hello.x86_64
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([erase on wrong-colored file dependency])
+RPMTEST_SETUP_RW([erase on wrong-colored file dependency])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg hello" \
@@ -275,10 +262,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([unsatisfied WITH requires])
+RPMTEST_SETUP_RW([unsatisfied WITH requires])
 AT_KEYWORDS([install, boolean])
 
-RPMTEST_INIT
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
 	--define "reqs (deptest-two with flavor = dekstop)" \
@@ -321,9 +307,8 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([satisfied WITH requires])
+RPMTEST_SETUP_RW([satisfied WITH requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -369,9 +354,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([unsatisfied WITHOUT requires])
+RPMTEST_SETUP_RW([unsatisfied WITHOUT requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -385,7 +369,6 @@ runroot rpmbuild --quiet -bb \
 
 # unsatisfied WITHOUT require in transaction
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -397,7 +380,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # unsatisfied WITHOUT require in rpmdb
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 
@@ -410,9 +392,8 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([satisfied WITHOUT requires])
+RPMTEST_SETUP_RW([satisfied WITHOUT requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -448,9 +429,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([AND requires])
+RPMTEST_SETUP_RW([AND requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -464,7 +444,6 @@ for pkg in two three; do
 done
 
 RPMTEST_CHECK([
-RPMTEST_INIT
 # unsatisfied AND require - all missing
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ],
@@ -476,7 +455,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 
 # unsatisfied AND require - first is missing
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 ],
@@ -488,7 +466,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # unsatisfied AND require - second is missing
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -500,7 +477,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # satisfied AND require
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 ],
@@ -511,9 +487,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([OR requires])
+RPMTEST_SETUP_RW([OR requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -570,9 +545,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([IF requires])
+RPMTEST_SETUP_RW([IF requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -587,7 +561,6 @@ done
 
 # unsatisfied IF require
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 ],
@@ -599,7 +572,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # satisfied IF require
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -608,9 +580,8 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([IF-ELSE requires])
+RPMTEST_SETUP_RW([IF-ELSE requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -658,9 +629,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([nested AND-OR requires])
+RPMTEST_SETUP_RW([nested AND-OR requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -674,7 +644,6 @@ for pkg in two three; do
 done
 
 RPMTEST_CHECK([
-RPMTEST_INIT
 # unsatisfied nested AND-OR require
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ],
@@ -686,7 +655,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarc
 
 # satisfied nested AND-OR require
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 ],
@@ -697,9 +665,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([nested AND-IF requires])
+RPMTEST_SETUP_RW([nested AND-IF requires])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -735,9 +702,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([install to break installed rich dependency])
+RPMTEST_SETUP_RW([install to break installed rich dependency])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -756,7 +722,6 @@ runroot rpmbuild --quiet -bb \
 
 # installed conflict with "or" clause
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
@@ -769,7 +734,6 @@ runroot rpm -U /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 
 # installed requires with "if" clause
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 runroot rpm -U /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm
@@ -783,9 +747,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 #
-RPMTEST_SETUP([erase to break installed rich dependency])
+RPMTEST_SETUP_RW([erase to break installed rich dependency])
 AT_KEYWORDS([install, boolean])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
@@ -807,7 +770,6 @@ runroot rpmbuild --quiet -bb \
 
 # installed requires with "or" clause
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm
 runroot rpm -e deptest-three
@@ -820,7 +782,6 @@ runroot rpm -e deptest-three
 
 # installed conflicts with "unless" clause
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-four-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-five-1.0-1.noarch.rpm
 runroot rpm -e deptest-four
