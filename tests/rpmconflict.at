@@ -3,9 +3,8 @@
 AT_BANNER([RPM implicit file conflicts])
 
 # ------------------------------
-RPMTEST_SETUP([packages with file conflicts])
+RPMTEST_SETUP_RW([packages with file conflicts])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 for p in "one" "two"; do
     runroot rpmbuild --quiet -bb \
@@ -38,9 +37,8 @@ runroot rpm -U \
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([shareable files])
+RPMTEST_SETUP_RW([shareable files])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 for p in "one" "two"; do
     runroot rpmbuild --quiet -bb \
@@ -74,10 +72,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # (Build and) install package with identical basename in different directories
-RPMTEST_SETUP([non-conflicting identical basenames])
+RPMTEST_SETUP_RW([non-conflicting identical basenames])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
 rm -rf "${RPMTEST}"/opt/mydir
@@ -90,10 +87,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # (Build and) install package with a self-conflict due to directory symlinks
-RPMTEST_SETUP([conflicting identical basenames])
+RPMTEST_SETUP_RW([conflicting identical basenames])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
 rm -rf "${RPMTEST}"/opt/mydir
@@ -108,10 +104,9 @@ runroot rpm -U /build/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
 RPMTEST_CLEANUP
 # ------------------------------
 # File conflict between colored files, prefer 64bit
-RPMTEST_SETUP([multilib elf conflict, prefer 64bit 1])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 64bit 1])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -129,10 +124,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 64bit
-RPMTEST_SETUP([multilib elf conflict, prefer 64bit 2])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 64bit 2])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -155,10 +149,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 64bit
-RPMTEST_SETUP([multilib elf conflict, prefer 64bit 3])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 64bit 3])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -181,10 +174,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 32bit
-RPMTEST_SETUP([multilib elf conflict, prefer 32bit 1])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 32bit 1])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -202,10 +194,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 32bit
-RPMTEST_SETUP([multilib elf conflict, prefer 32bit 2])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 32bit 2])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -228,10 +219,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 32bit
-RPMTEST_SETUP([multilib elf conflict, prefer 32bit 3])
+RPMTEST_SETUP_RW([multilib elf conflict, prefer 32bit 3])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_transaction_color 3" \
@@ -254,10 +244,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # File conflict between colored and non-colored file 1
-RPMTEST_SETUP([multilib elf vs non-elf file conflict 1])
+RPMTEST_SETUP_RW([multilib elf vs non-elf file conflict 1])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 
@@ -274,10 +263,9 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 RPMTEST_CLEANUP
 
 # File conflict between colored and non-colored file 2
-RPMTEST_SETUP([multilib elf vs non-elf file conflict 2])
+RPMTEST_SETUP_RW([multilib elf vs non-elf file conflict 2])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 
@@ -298,10 +286,9 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 RPMTEST_CLEANUP
 
 # File conflict between colored and non-colored file 3
-RPMTEST_SETUP([multilib elf vs non-elf file conflict 3])
+RPMTEST_SETUP_RW([multilib elf vs non-elf file conflict 3])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
 
@@ -323,10 +310,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Removal conflict on directory -> symlink change
-RPMTEST_SETUP([replacing directory with symlink])
+RPMTEST_SETUP_RW([replacing directory with symlink])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 
 runroot rpmbuild --quiet -bb \
@@ -345,10 +331,9 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # Replace symlink with a directory
-RPMTEST_SETUP([replacing symlink with directory])
+RPMTEST_SETUP_RW([replacing symlink with directory])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 
 runroot rpmbuild --quiet -bb \
@@ -368,10 +353,9 @@ RPMTEST_CLEANUP
 # ------------------------------
 # Regular file shared with a ghost, does not conflict
 # Regular file should be created and not removed when the ghost is removed
-RPMTEST_SETUP([real file with shared ghost])
+RPMTEST_SETUP_RW([real file with shared ghost])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 fn="${RPMTEST}"/usr/share/my.version
 
 runroot rpmbuild --quiet -bb \

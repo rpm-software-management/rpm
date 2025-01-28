@@ -4,6 +4,11 @@ m4_define([RPMTEST_SETUP],[
 AT_SETUP($1)
 ])
 
+m4_define([RPMTEST_SETUP_RW],[
+RPMTEST_SETUP($1)
+RPMTEST_SNAPSHOT_MOUNT
+])
+
 m4_define([RPMTEST_SNAPSHOT_MOUNT],[[
 export RPMTEST="${PWD}/tree"
 export HOME="${RPMTEST}/root"
@@ -18,10 +23,6 @@ if [ -d "$RPMTEST" ]; then
     snapshot umount
 fi
 ]])
-
-m4_define([RPMTEST_INIT],[
-RPMTEST_SNAPSHOT_MOUNT
-])
 
 m4_define([RPMDB_RESET],[
 rm -rf "${RPMTEST}"`rpm --eval '%_dbpath'`
@@ -46,7 +47,13 @@ LD_PRELOAD=${ASANLIB} ASAN_OPTIONS=detect_leaks=0 ${PYTHON} test.py
 ]])
 
 m4_define([RPMTEST_SKIP_IF],[
-AT_SKIP_IF($1)
+AT_CHECK([
+if $1; then
+    RPMTEST_SNAPSHOT_UMOUNT
+    # autotest's documented "skip this" code
+    exit 77
+fi
+])
 ])
 
 m4_define([RPMTEST_CHECK],[
@@ -73,7 +80,7 @@ RPMTEST_CHECK_UNQUOTED(
 ])
 
 m4_define([RPMPY_CHECK],[
-RPMTEST_SKIP_IF([$PYTHON_DISABLED])
+AT_SKIP_IF([$PYTHON_DISABLED])
 RPMTEST_CHECK([RPMPY_RUN([$1])], [], [$2], [$3])
 ])
 
@@ -86,7 +93,6 @@ RPMTEST_CLEANUP
 ])
 
 m4_define([RPMTEST_USER],[
-RPMTEST_INIT
 [[ $# != 0 ]] && export RPMUSER=$1
 useradd -m -R $RPMTEST $RPMUSER
 ])

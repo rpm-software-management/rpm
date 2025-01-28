@@ -2,9 +2,8 @@
 
 AT_BANNER([RPM config file behavior])
 
-RPMTEST_SETUP([config file install/upgrade/erase])
+RPMTEST_SETUP_RW([config file install/upgrade/erase])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -138,9 +137,8 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([config(noreplace) file install/upgrade/erase])
+RPMTEST_SETUP_RW([config(noreplace) file install/upgrade/erase])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 runroot rpmbuild --quiet -bb \
         --define "ver 1.0" \
@@ -193,9 +191,8 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([upgrade changing config])
+RPMTEST_SETUP_RW([upgrade changing config])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -269,9 +266,8 @@ RPMTEST_CLEANUP
 
 # config(noreplace) variants of the same cases.
 # ------------------------------
-RPMTEST_SETUP([upgrade changing config(noreplace)])
+RPMTEST_SETUP_RW([upgrade changing config(noreplace)])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -321,9 +317,8 @@ RPMTEST_CLEANUP
 
 # ------------------------------
 # noreplace variants of the same
-RPMTEST_SETUP([upgrade changing config(noreplace)])
+RPMTEST_SETUP_RW([upgrade changing config(noreplace)])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
         --define "ver $v" \
@@ -395,9 +390,8 @@ RPMTEST_CLEANUP
 
 # Shared config file variants of the same cases
 # ------------------------------
-RPMTEST_SETUP([upgrade shared config])
+RPMTEST_SETUP_RW([upgrade shared config])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
         runroot rpmbuild --quiet -bb \
@@ -455,9 +449,8 @@ otherstuff
 RPMTEST_CLEANUP
 
 # ------------------------------
-RPMTEST_SETUP([upgrade changing shared config])
+RPMTEST_SETUP_RW([upgrade changing shared config])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
         runroot rpmbuild --quiet -bb \
@@ -544,9 +537,8 @@ RPMTEST_CLEANUP
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg.
-RPMTEST_SETUP([upgrade shared config(noreplace)])
+RPMTEST_SETUP_RW([upgrade shared config(noreplace)])
 AT_KEYWORDS([install])
-RPMTEST_INIT
 
 for s in "A" "B"; do
     for v in "1.0" "2.0"; do
@@ -613,10 +605,9 @@ RPMTEST_CLEANUP
 
 ---------
 # Test pre-existing and post-install config ghost survival and erasure
-RPMTEST_SETUP([ghost config])
+RPMTEST_SETUP_RW([ghost config])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
-RPMTEST_INIT
 cf="${RPMTEST}"/etc/my.conf
 rm -rf "${cf}"*
 
