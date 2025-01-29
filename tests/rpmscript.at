@@ -774,9 +774,9 @@ runroot rpmbuild -bb --quiet \
 
 RPMTEST_CHECK([
 RPMDB_RESET
-runroot_other rm -f /tmp/scriptwrite.log
+runroot rm -f /tmp/scriptwrite.log
 runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
-runroot_other test -f /tmp/scriptwrite.log
+runroot test -f /tmp/scriptwrite.log
 ],
 [1],
 [],
@@ -784,9 +784,9 @@ runroot_other test -f /tmp/scriptwrite.log
 
 RPMTEST_CHECK([
 RPMDB_RESET
-runroot_other rm -f /tmp/scriptwrite.log
+runroot rm -f /tmp/scriptwrite.log
 runroot rpm -U --noplugins /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm /build/RPMS/noarch/scriptwrite-1.0-1.noarch.rpm
-runroot_other test -f /tmp/scriptwrite.log
+runroot test -f /tmp/scriptwrite.log
 ],
 [0],
 [],

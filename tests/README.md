@@ -74,7 +74,7 @@ You can also drop straight into the `$RPMTEST` container like so:
 
     make shell
 
-This is just a shorthand for `make atshell` followed by `runroot_other bash`.
+This is just a shorthand for `make atshell` followed by `runroot bash`.
 
 To factory-reset the `$RPMTEST` tree, run:
 
@@ -142,10 +142,9 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
   the system image itself - to install a package, import keys and so on.
     * The absolute path to the snapshot's root is stored in the `$RPMTEST`
       environment variable, modify the directory tree as you wish
-    * To run RPM inside the snapshot, use the `runroot` prefix, e.g. `runroot
-      rpm ...`
-    * To run any other binary inside the snapshot, use `runroot_other` instead
-    * By default, `runroot` and `runroot_other` will operate in a clean
+    * To run a binary inside the snapshot, use the `runroot` prefix,
+      e.g. `runroot rpm ...`
+    * By default, `runroot` will operate in a clean
       environment with only a handful of variables preset.  To pass your own
       variable(s), use `--setenv` (once for each variable), e.g. `runroot
       --setenv FOO "foo" rpm ...`

@@ -325,7 +325,7 @@ RPMTEST_SETUP_RW([rpmbuild script prepend/append])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet ${RPMDATA}/SPECS/append.spec
-runroot_other rpm2cpio /build/RPMS/noarch/append-1.0-1.noarch.rpm | cpio -id 2> /dev/null
+runroot rpm2cpio /build/RPMS/noarch/append-1.0-1.noarch.rpm | cpio -id 2> /dev/null
 cat opt/out
 ],
 [0],
@@ -344,7 +344,7 @@ RPMTEST_CHECK([
 rpmbuild \
 	-bi --target noarch --quiet \
 	${RPMDATA}/SPECS/simple.spec
-runroot_other find /build/BUILD|sort
+runroot find /build/BUILD|sort
 ],
 [0],
 [/build/BUILD
@@ -363,7 +363,7 @@ rpmbuild \
 	-bi --target noarch --quiet \
 	--with setup \
 	${RPMDATA}/SPECS/simple.spec
-runroot_other find /build/BUILD|sort
+runroot find /build/BUILD|sort
 ],
 [0],
 [/build/BUILD
@@ -418,9 +418,9 @@ RPMTEST_SETUP_RW([rpmbuild --build-in-place 1])
 AT_KEYWORDS([build])
 
 RPMTEST_CHECK([
-runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
-runroot_other mv hello-2.0/hello.spec .
-runroot_other find hello-2.0 | sort
+runroot tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot mv hello-2.0/hello.spec .
+runroot find hello-2.0 | sort
 ],
 [0],
 [hello-2.0
@@ -440,7 +440,7 @@ runroot --chdir hello-2.0 rpmbuild -bb --build-in-place ../hello.spec
 [ignore])
 
 RPMTEST_CHECK([
-runroot_other sed -i -e "/%setup.*/d" hello.spec
+runroot sed -i -e "/%setup.*/d" hello.spec
 runroot --chdir hello-2.0 rpmbuild -bb --build-in-place ../hello.spec
 ],
 [0],
@@ -458,7 +458,7 @@ hello-debuginfo-2.0-1
 
 # finally, see that we left the tree intact 
 RPMTEST_CHECK([
-runroot_other find hello-2.0 | sort
+runroot find hello-2.0 | sort
 ],
 [0],
 [hello-2.0
@@ -480,8 +480,8 @@ RPMTEST_SETUP_RW([rpmbuild --build-in-place --noprep])
 AT_KEYWORDS([build])
 
 RPMTEST_CHECK([
-runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
-runroot_other mv hello-2.0/hello.spec .
+runroot tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot mv hello-2.0/hello.spec .
 ],
 [0],
 [],
@@ -500,7 +500,7 @@ RPMTEST_SETUP_RW([rpmbuild --build-in-place --short-circuit])
 AT_KEYWORDS([build])
 
 RPMTEST_CHECK([
-runroot_other tar xf /data/SOURCES/hello-2.0.tar.gz
+runroot tar xf /data/SOURCES/hello-2.0.tar.gz
 runroot --chdir hello-2.0 rpmbuild -bi --build-in-place hello.spec
 runroot --chdir hello-2.0 rpmbuild -bb --build-in-place --short-circuit hello.spec
 ],
@@ -878,7 +878,7 @@ drwxrwxrwx zoot     zoot     /j/dir
 [])
 
 RPMTEST_CHECK([[
-runroot_other rpm2cpio /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | cpio -tv --quiet
+runroot rpm2cpio /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | cpio -tv --quiet
 ]],
 [0],
 [drwx------   1 root     root            0 Feb 20  2020 ./a/dir
@@ -1389,10 +1389,10 @@ RPMTEST_SETUP_RW([elf dependencies])
 AT_KEYWORDS([build])
 
 RPMTEST_CHECK([
-runroot_other chmod a-x /data/misc/libhello.so
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/libhello.so
-runroot_other chmod a+x /data/misc/libhello.so
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/libhello.so
+runroot chmod a-x /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/libhello.so
+runroot chmod a+x /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/libhello.so
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1405,10 +1405,10 @@ rtld(GNU_HASH)
 [])
 
 RPMTEST_CHECK([
-runroot_other chmod a-x /data/misc/libhello.so
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -P /data/misc/libhello.so
-runroot_other chmod a+x /data/misc/libhello.so
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -P /data/misc/libhello.so
+runroot chmod a-x /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P /data/misc/libhello.so
+runroot chmod a+x /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P /data/misc/libhello.so
 ],
 [0],
 [libhello.so()(64bit)
@@ -1417,10 +1417,10 @@ libhello.so()(64bit)
 [])
 
 RPMTEST_CHECK([
-runroot_other chmod a-x /data/misc/helloexe
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/helloexe
-runroot_other chmod a+x /data/misc/helloexe
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/helloexe
+runroot chmod a-x /data/misc/helloexe
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/helloexe
+runroot chmod a+x /data/misc/helloexe
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/helloexe
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1431,10 +1431,10 @@ rtld(GNU_HASH)
 [])
 
 RPMTEST_CHECK([
-runroot_other chmod a-x /data/misc/hellopie
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/hellopie
-runroot_other chmod a+x /data/misc/hellopie
-runroot_other ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/hellopie
+runroot chmod a-x /data/misc/hellopie
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/hellopie
+runroot chmod a+x /data/misc/hellopie
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R /data/misc/hellopie
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1474,7 +1474,7 @@ RPMTEST_CHECK([
 runroot rpmbuild \
   -bb --quiet /data/SPECS/attrtest.spec
 
-runroot_other rpm2cpio \
+runroot rpm2cpio \
   /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > "${RPMTEST}"/tmp/attrtest.cpio
 ],
 [0],
@@ -3336,7 +3336,7 @@ runroot rpm -q --filecaps /build/RPMS/*/caps-1.0-1.*.rpm | grep -v build-id
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps /build/RPMS/*/caps-1.0-1.*.rpm
-runroot_other /usr/sbin/getcap /usr/bin/test
+runroot /usr/sbin/getcap /usr/bin/test
 ],
 [0],
 [/usr/bin/test cap_net_raw=p]
@@ -3398,10 +3398,10 @@ echo BUILD_POST \${RPM_ARCH} %{_arch} %{_target_cpu} >> /tmp/build.out\\
 EOF
 
 RPMTEST_CHECK([
-runroot_other rm -f /tmp/build.out
+runroot rm -f /tmp/build.out
 runroot rpmbuild --quiet \
 	-bc /data/SPECS/templ.spec
-runroot_other cat /tmp/build.out
+runroot cat /tmp/build.out
 ],
 [0],
 [BUILD_PRE noarch noarch noarch
@@ -3411,11 +3411,11 @@ BUILD_POST noarch noarch noarch
 [])
 
 RPMTEST_CHECK([
-runroot_other rm -f /tmp/build.out
+runroot rm -f /tmp/build.out
 runroot rpmbuild --quiet \
 	--target noarch \
 	-bc /data/SPECS/templ.spec
-runroot_other cat /tmp/build.out
+runroot cat /tmp/build.out
 ],
 [0],
 [BUILD_PRE noarch noarch noarch
@@ -3441,8 +3441,8 @@ RPMTEST_SETUP_RW([rpmbuild --buildroot])
 AT_KEYWORDS([build])
 
 RPMTEST_CHECK([
-runroot_other mkdir -p /tmp/buildroot/out
-runroot_other touch /tmp/buildroot/out/sider
+runroot mkdir -p /tmp/buildroot/out
+runroot touch /tmp/buildroot/out/sider
 runroot rpmbuild -bb --quiet \
 	--buildroot /tmp/buildroot \
 	/data/SPECS/brtest.spec

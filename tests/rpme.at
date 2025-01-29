@@ -32,11 +32,11 @@ runroot rpmbuild -bb --quiet \
 RPMTEST_CHECK([
 # silence "user/group does not exist" messages
 runroot rpm -U --nodeps /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm 2> /dev/null
-runroot_other ln /i/file /if
-runroot_other test -u /if && echo suid
+runroot ln /i/file /if
+runroot test -u /if && echo suid
 runroot rpm -e attrtest
-runroot_other test -f /if && echo exists
-runroot_other test -u /if && echo suid
+runroot test -f /if && echo exists
+runroot test -u /if && echo suid
 ],
 [1],
 [suid

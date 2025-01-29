@@ -165,8 +165,8 @@ krpath="$(rpm --eval %{_keyringpath})"
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other mv ${krpath}/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key ${krpath}/gpg-pubkey-1964c5fc-58e63918.key
-runroot_other ls ${krpath}
+runroot mv ${krpath}/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key ${krpath}/gpg-pubkey-1964c5fc-58e63918.key
+runroot ls ${krpath}
 runroot rpmkeys --list
 ],
 [0],
@@ -183,7 +183,7 @@ runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
 [])
 
 RPMTEST_CHECK([
-runroot_other ls ${krpath}
+runroot ls ${krpath}
 ],
 [0],
 [gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key
@@ -210,7 +210,7 @@ RPMTEST_CHECK([
 runroot rpmkeys --list | wc -l
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc
 runroot rpmkeys --list | wc -l
-runroot_other find $(rpm --eval "%{_keyringpath}") -name "*.key" | wc -l
+runroot find $(rpm --eval "%{_keyringpath}") -name "*.key" | wc -l
 ],
 [0],
 [1
@@ -288,7 +288,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([[
-runroot_other sq --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
+runroot sq --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
 ]],
 [0],
 [771B18D3D7BAA28734333C424344591E1964C5FC
@@ -296,15 +296,15 @@ runroot_other sq --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [
 [])
 
 RPMTEST_CHECK([
-runroot_other touch ${krpath}/writelock
-runroot_other flock -x ${krpath}/writelock -c "rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc"
+runroot touch ${krpath}/writelock
+runroot flock -x ${krpath}/writelock -c "rpmkeys --import /data/keys/rpm.org-rsa-2048-add-subkey.asc"
 ],
 [1],
 [],
 [stderr])
 
 RPMTEST_CHECK([
-runroot_other rm ${krpath}/writelock
+runroot rm ${krpath}/writelock
 sed -e "s:at .*$:at <keyringpath>:" < stderr
 ],
 [0],
@@ -584,7 +584,7 @@ runroot rpmkeys \
 	--define "_keyringpath /tmp/kr" \
 	--define "_keyring fs" \
 	--import /data/keys/rpm.org-rsa-2048-test.pub
-runroot_other cat /tmp/kr/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key | grep -v 'Version: '
+runroot cat /tmp/kr/gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc.key | grep -v 'Version: '
 ],
 [0],
 [-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -1277,11 +1277,11 @@ RPMDB_RESET
 ORIG="/data/RPMS/hello-2.0-1.x86_64.rpm"
 NEW="/tmp/hello-2.0-1.x86_64.rpm"
 
-runroot_other cp ${ORIG} /tmp/
+runroot cp ${ORIG} /tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --addsign ${NEW}
-runroot_other cmp -s ${ORIG} ${NEW}; echo $?
+runroot cmp -s ${ORIG} ${NEW}; echo $?
 runroot rpmsign --delsign ${NEW}
-runroot_other cmp -s ${ORIG} ${NEW}; echo $?
+runroot cmp -s ${ORIG} ${NEW}; echo $?
 ],
 [ignore],
 [1
@@ -1387,7 +1387,7 @@ cat << EOF >> ${HOME}/.config/rpm/macros
 %_sq_path ${HOME}/.config/rpm/sq
 EOF
 
-runroot_other sq --home ${HOME}/.config/rpm/sq key import /data/keys/*.secret
+runroot sq --home ${HOME}/.config/rpm/sq key import /data/keys/*.secret
 ],
 [0],
 [ignore],
@@ -1446,7 +1446,7 @@ cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
 
-runroot_other sq key import /data/keys/*.secret
+runroot sq key import /data/keys/*.secret
 runroot rpmkeys --import /data/keys/*.pub
 ],
 [0],
@@ -1555,7 +1555,7 @@ cat << EOF >> ${HOME}/.config/rpm/macros
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
 
-runroot_other sq key import /data/keys/*.secret
+runroot sq key import /data/keys/*.secret
 runroot rpmkeys --import /data/keys/*.pub
 ],
 [0],
@@ -1880,7 +1880,7 @@ fi
 
 RPMTEST_CHECK([
 runroot rpm -U /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
-runroot_other getfattr --absolute-names -d -m security.ima /usr/share/example1
+runroot getfattr --absolute-names -d -m security.ima /usr/share/example1
 ],
 [0],
 [expout],

@@ -131,11 +131,6 @@ runroot()
     snapshot exec "$@"
 }
 
-runroot_other()
-{
-    snapshot exec "$@"
-}
-
 runroot_user()
 {
     case $1 in
@@ -144,7 +139,7 @@ runroot_user()
             shift 2
         ;;
     esac
-    runroot_other --new-session sudo -iu $RPMUSER "$@"
+    runroot --new-session sudo -iu $RPMUSER "$@"
 }
 
 snapshot prune rpmtests.dir/*/tree

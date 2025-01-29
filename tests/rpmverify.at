@@ -163,8 +163,8 @@ runroot rpmbuild -bb --quiet \
   /data/SPECS/vattrtest.spec
 
 runroot rpm -U /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
-runroot_other touch /opt/vattrtest/g
-runroot_other chmod 644 /opt/vattrtest/g
+runroot touch /opt/vattrtest/g
+runroot chmod 644 /opt/vattrtest/g
 
 cmd="rpm -Vv ${VERIFYOPTS}"
 for filter in --noconfig --noghost --noartifact -A -c -d -L; do
@@ -597,8 +597,8 @@ RPMTEST_CHECK([
 
 runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
 	/data/RPMS/hello-2.0-1.i686.rpm
-runroot_other touch /usr/share/doc/hello-2.0/FAQ
-runroot_other chmod a-x /usr/bin/hello
+runroot touch /usr/share/doc/hello-2.0/FAQ
+runroot chmod a-x /usr/bin/hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 runroot rpm --restore hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
