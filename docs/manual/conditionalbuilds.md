@@ -84,6 +84,12 @@ Alternatively, you can test the presence (or lack thereof) of `%with_foo`
 macros which is nicer in other situations, e.g.:
 
 ```
+%{!?with_bootstrap:BuildRequires: ...}
+```
+
+or
+
+```
 %configure \
    %{?with_static:--enable-static} \
    %{!?with_static:--disable-static}
