@@ -1,4 +1,4 @@
 # common macro config in the test-environment
 %_buildhost testhost
 %_topdir %{getenv:RPMTEST}/build
-%_tmppath %{getenv:RPMTEST}/tmp
+%_tmppath %{getenv:RPMTEST}/var/tmp
