@@ -537,7 +537,7 @@ RPMTEST_CHECK([
 runroot rpm \
   -U --nodb /data/RPMS/hlinktest-1.0-1.noarch.rpm
 runroot rpm -qa
-runroot_other find /foo|sort
+runroot find /foo|sort
 ],
 [0],
 [/foo
@@ -558,11 +558,11 @@ AT_KEYWORDS([install])
 RPMTEST_CHECK([
 
 # avoid having to deal with non-existent /foo in the find below
-runroot_other mkdir /foo
+runroot mkdir /foo
 runroot rpm \
   -U --justdb /data/RPMS/hlinktest-1.0-1.noarch.rpm
 runroot rpm -qa
-runroot_other find /foo|sort
+runroot find /foo|sort
 ],
 [0],
 [hlinktest-1.0-1.noarch
@@ -623,7 +623,7 @@ runroot rpm \
   -i /data/SRPMS/hello-1.0-1.src.rpm \
      /data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -q hello; echo
-runroot_other sh -c 'ls /tmp/build/*'
+runroot sh -c 'ls /tmp/build/*'
 ],
 [0],
 [hello-2.0-1.x86_64
@@ -865,10 +865,10 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm upgrade/downgrade epoch])
 
 runroot rpmbuild --quiet -bb --define "ver 1.0" /data/SPECS/versiontest.spec
-runroot_other cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/noepoch.rpm
+runroot cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/noepoch.rpm
 for e in 1 2; do
     runroot rpmbuild --quiet -bb --define "ver 1.0" --define "epoch ${e}" /data/SPECS/versiontest.spec
-    runroot_other cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/epoch${e}.rpm
+    runroot cp /build/RPMS/noarch/versiontest-1.0-1.noarch.rpm /tmp/epoch${e}.rpm
 done
 # for testing sanity
 echo '%_query_all_fmt %%{nevra}' >> ${HOME}/.config/rpm/macros
@@ -1511,7 +1511,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser u myuser 876 - /home/myuser /bin/sh}"\
   /data/SPECS/deptest.spec
 runroot rpm -U --root /alt /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
-runroot_other tail -1 /alt/etc/passwd
+runroot tail -1 /alt/etc/passwd
 runroot rpm -V --root /alt ${VERIFYOPTS} deptest-user
 ],
 [0],
@@ -1527,7 +1527,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser g mygroup 678}"\
   /data/SPECS/deptest.spec
 runroot rpm -i /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
-runroot_other tail -1 /etc/group
+runroot tail -1 /etc/group
 runroot rpm -V ${VERIFYOPTS} deptest-user
 ],
 [0],
@@ -1610,13 +1610,13 @@ runroot rpm -U /build/RPMS/noarch/klang-client-1.0-1.noarch.rpm
 ])
 
 RPMTEST_CHECK([
-runroot_other mkdir -p /etc/sysusers.d/
-runroot_other touch /etc/sysusers.d/klang.conf
+runroot mkdir -p /etc/sysusers.d/
+runroot touch /etc/sysusers.d/klang.conf
 runroot rpm -U \
 	/build/RPMS/noarch/klang-common-1.0-1.noarch.rpm
-runroot_other grep ^klang /etc/group | cut -f1 -d:
+runroot grep ^klang /etc/group | cut -f1 -d:
 runroot rpm -e klang-common
-runroot_other rm /etc/sysusers.d/klang.conf
+runroot rm /etc/sysusers.d/klang.conf
 ],
 [0],
 [],
@@ -1626,7 +1626,7 @@ RPMTEST_CHECK([
 runroot rpm -U \
 	/build/RPMS/noarch/klang-client-1.0-1.noarch.rpm \
 	/build/RPMS/noarch/klang-common-1.0-1.noarch.rpm
-runroot_other grep ^klang /etc/group | cut -f1 -d:
+runroot grep ^klang /etc/group | cut -f1 -d:
 runroot rpm -V ${VERIFYOPTS} klang-client klang-common
 ],
 [0],
@@ -1636,12 +1636,12 @@ runroot rpm -V ${VERIFYOPTS} klang-client klang-common
 
 RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/klang-server-1.0-1.noarch.rpm
-runroot_other grep ^klangd /etc/passwd | cut -f1 -d:
-runroot_other chage -l klangd | grep "Account expires" | cut -f2 -d:
-runroot_other grep ^klangd /etc/group | cut -f1 -d:
-runroot_other grep ^plong /etc/passwd | cut -f1 -d:
-runroot_other chage -l plong | grep "Account expires" | cut -f2 -d:
-runroot_other grep ^klong /etc/group | cut -f4 -d:
+runroot grep ^klangd /etc/passwd | cut -f1 -d:
+runroot chage -l klangd | grep "Account expires" | cut -f2 -d:
+runroot grep ^klangd /etc/group | cut -f1 -d:
+runroot grep ^plong /etc/passwd | cut -f1 -d:
+runroot chage -l plong | grep "Account expires" | cut -f2 -d:
+runroot grep ^klong /etc/group | cut -f4 -d:
 runroot rpm -V ${VERIFYOPTS} klang-server
 ],
 [0],
@@ -1663,9 +1663,9 @@ runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
 
 RPMTEST_CHECK([
-runroot_other mv /opt /opt.was
-runroot_other ln -s /opt.was /opt
-runroot_other chown -h nobody:nobody /opt
+runroot mv /opt /opt.was
+runroot ln -s /opt.was /opt
+runroot chown -h nobody:nobody /opt
 runroot --setenv SOURCE_DATE_EPOCH 1699955855 rpm -U /build/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 ],
 [1],
@@ -1699,7 +1699,7 @@ runroot rpm -V pamupdate
 [])
 
 RPMTEST_CHECK([
-runroot_other chown -h nobody:nobody /var/run
+runroot chown -h nobody:nobody /var/run
 runroot rpm -U /build/RPMS/noarch/pamupdate-1.0-2.noarch.rpm
 ],
 [1],

@@ -375,7 +375,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm2cpio])
 AT_KEYWORDS([basic])
 RPMTEST_CHECK([
-runroot_other rpm2cpio /data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
+runroot rpm2cpio /data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
 ],
 [0],
 [./usr/bin/hello
@@ -386,7 +386,7 @@ runroot_other rpm2cpio /data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
 ])
 
 RPMTEST_CHECK([
-runroot_other rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
+runroot rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 ],
 [0],
 [./hello-1.0.tar.gz
@@ -398,7 +398,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpm2archive])
 AT_KEYWORDS([basic])
 RPMTEST_CHECK([
-runroot_other rpm2archive "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tzf -
+runroot rpm2archive "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tzf -
 ],
 [0],
 [./usr/bin/hello
@@ -410,7 +410,7 @@ runroot_other rpm2archive "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | tar tz
 [])
 
 RPMTEST_CHECK([
-runroot_other rpm2archive -n --format=cpio "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
+runroot rpm2archive -n --format=cpio "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm | cpio -t --quiet
 ],
 [0],
 [./usr/bin/hello
@@ -421,7 +421,7 @@ runroot_other rpm2archive -n --format=cpio "${RPMTEST}"/data/RPMS/hello-2.0-1.x8
 ],
 [])
 RPMTEST_CHECK([
-runroot_other rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf -
+runroot rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf -
 ],
 [0],
 [./hello-1.0.tar.gz
