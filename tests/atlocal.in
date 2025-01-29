@@ -128,8 +128,7 @@ rundebug()
 
 runroot()
 {
-    snapshot exec "$@" \
-             --define "_tmppath /var/tmp"
+    snapshot exec "$@"
 }
 
 runroot_other()
