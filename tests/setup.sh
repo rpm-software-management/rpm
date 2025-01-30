@@ -7,14 +7,11 @@ export DESTDIR=${1:-/}
 mkdir -p $DESTDIR/build
 ln -sf ../data/SOURCES $DESTDIR/build/
 
-# setup an empty db that all tests are pointed to by default
-dbpath="/var/lib/rpm-testsuite"
-mkdir -p $DESTDIR/$dbpath
-echo "%_dbpath $dbpath" > $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/macros.db
-rpmdb --dbpath $DESTDIR/$dbpath --initdb
-
 # system-wide config to match our test environment
 cp /data/macros.testenv $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/
+
+# setup an empty db that all tests are pointed to by default
+rpmdb --dbpath $DESTDIR/$(rpm --eval "%{_dbpath}") --initdb
 
 # gpg-connect-agent is very, very unhappy if this doesn't exist
 mkdir -p $DESTDIR/root/.gnupg
