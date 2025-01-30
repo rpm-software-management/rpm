@@ -135,6 +135,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (rpmdb)])
 AT_KEYWORDS([rpmkeys rpmdb])
 RPMTEST_CHECK([
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 runroot rpm -q --dbpath /data/misc/ gpg-pubkey
 ],
 [0],
