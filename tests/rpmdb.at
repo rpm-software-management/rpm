@@ -126,7 +126,7 @@ RPMTEST_SETUP_RW([rpm -qa and rpmkeys])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 
-echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 
 RPMTEST_CHECK([
 runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \

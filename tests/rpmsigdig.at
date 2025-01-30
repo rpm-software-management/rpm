@@ -62,7 +62,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpmkeys key update and delete (rpmdb)])
 AT_KEYWORDS([rpmkeys signature])
 # currently the default but make it explicit
-echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
@@ -160,7 +160,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (fs)])
 AT_KEYWORDS([rpmkeys rpmdb])
-echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
+echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 krpath="$(rpm --eval %{_keyringpath})"
 
 RPMTEST_CHECK([
@@ -193,7 +193,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys key update (fs)])
 AT_KEYWORDS([rpmkeys signature])
-echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
+echo "%_keyring fs" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
@@ -272,7 +272,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys key update (openpgp)])
 AT_KEYWORDS([rpmkeys signature])
-echo "%_keyring openpgp" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.keyring
+echo "%_keyring openpgp" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
 krpath=$(rpm --eval "%{_keyringpath}")
 
 RPMTEST_CHECK([
