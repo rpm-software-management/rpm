@@ -2,3 +2,4 @@
 %_buildhost testhost
 %_topdir %{getenv:RPMTEST}/build
 %_tmppath %{getenv:RPMTEST}/var/tmp
+%_dbpath /var/lib/rpm-testsuite
