@@ -156,7 +156,7 @@ as well as the existing tests.  Below are the specifics of RPM's test-suite:
 * Use `RPMTEST_USER` to create a regular UNIX user in a mutable snapshot
     * The username is stored in the `$RPMUSER` environment variable
     * To run a binary as `$RPMUSER` inside the snapshot, use `runroot_user`
-      (this calls `sudo(8)` underneath)
+      (this calls `runuser(1)` underneath)
     * You can create a custom user (or users) by supplying a list of usernames
       to the macro, e.g. `RPMTEST_USER([user1, user2])`.  Then, use
       `runroot_user -n <name>` to run a binary as a specific user
