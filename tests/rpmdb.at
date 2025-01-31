@@ -99,9 +99,7 @@ runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
 [])
 
 RPMTEST_CHECK([
-# Need to pass the dbpath explicitly since we're not going through run/runroot
-dbpath=$(rpm --eval "%_dbpath")
-runroot /sbin/runuser -u nobody -- rpmdb --dbpath ${dbpath} --exportdb > hdr.list
+runroot_user -n nobody rpmdb --exportdb > hdr.list
 ],
 [0],
 [],

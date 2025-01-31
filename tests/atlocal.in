@@ -139,7 +139,7 @@ runroot_user()
             shift 2
         ;;
     esac
-    runroot --new-session sudo -iu $RPMUSER "$@"
+    runroot --new-session /sbin/runuser -u $RPMUSER -- "$@"
 }
 
 snapshot prune rpmtests.dir/*/tree
