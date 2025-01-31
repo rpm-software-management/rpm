@@ -1,22 +1,21 @@
 #!/bin/bash
 
-# Setup the environment inside the test-image
-# DESTDIR is only for testing purposes, inside the image it's always /
-export DESTDIR=${1:-/}
+# Setup the environment in the test-image.
+# Runs INSIDE the image, with our newly built rpm in the path.
 
-mkdir -p $DESTDIR/build
-ln -sf ../data/SOURCES $DESTDIR/build/
+mkdir -p /build
+ln -sf ../data/SOURCES /build/
 
 # system-wide config to match our test environment
-cp /data/macros.testenv $DESTDIR/@CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/
+cp /data/macros.testenv @CMAKE_INSTALL_FULL_SYSCONFDIR@/rpm/
 
 # setup an empty db that all tests are pointed to by default
-rpmdb --dbpath $DESTDIR/$(rpm --eval "%{_dbpath}") --initdb
+rpmdb --initdb
 
 # gpg-connect-agent is very, very unhappy if this doesn't exist
-mkdir -p $DESTDIR/root/.gnupg
-chmod 700 $DESTDIR/root/.gnupg
+mkdir -p /root/.gnupg
+chmod 700 /root/.gnupg
 
 # set up new-style XDG config directory
-mkdir -p $DESTDIR/root/.config/rpm
+mkdir -p /root/.config/rpm
 
