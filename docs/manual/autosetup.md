@@ -7,7 +7,7 @@ title: rpm.org - Automating patch application in specs
 ## %autosetup description
 
 Starting with version 4.11, RPM has a set of new macros to further
-automatesource unpacking and patch application. Previously one had to
+automate source unpacking and patch applications. Previously one had to
 manually specify each patch to be applied, eg
 
 ```
