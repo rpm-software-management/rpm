@@ -3,6 +3,12 @@
 # Setup the environment in the test-image.
 # Runs INSIDE the image, with our newly built rpm in the path.
 
+# Make sure nobody runs this accidentally outside the environment
+if [ ! -f /.rpmtestsuite ]; then
+    echo "Not inside rpm test-suite image"
+    exit 99
+fi
+
 mkdir -p /build
 ln -sf ../data/SOURCES /build/
 
