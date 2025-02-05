@@ -23,7 +23,6 @@ option(ENABLE_UBSAN "Enable undefined behavior-sanitizer" OFF)
 
 option(WITH_CAP "Build with capability support" ON)
 option(WITH_ACL "Build with ACL support" ON)
-option(WITH_ARCHIVE "Build with libarchive support" ON)
 option(WITH_SELINUX "Build with SELinux support" ON)
 option(WITH_DBUS "Build with DBUS support" ON)
 option(WITH_AUDIT "Build with audit support" ON)
