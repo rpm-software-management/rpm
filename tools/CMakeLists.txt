@@ -39,11 +39,9 @@ if (READLINE_FOUND)
 	target_link_libraries(rpmlua PRIVATE PkgConfig::READLINE)
 endif()
 
-if (WITH_ARCHIVE)
-	add_executable(rpm2archive rpm2archive.cc)
-	target_link_libraries(rpm2archive PRIVATE PkgConfig::LIBARCHIVE)
-	install(TARGETS rpm2archive)
-endif()
+add_executable(rpm2archive rpm2archive.cc)
+target_link_libraries(rpm2archive PRIVATE PkgConfig::LIBARCHIVE)
+install(TARGETS rpm2archive)
 
 # Everything links to these
 get_property(executables DIRECTORY PROPERTY BUILDSYSTEM_TARGETS)
@@ -59,12 +57,10 @@ foreach(cmd rpmverify rpmquery)
 			)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${cmd} TYPE BIN)
 endforeach()
-if (WITH_ARCHIVE)
-	add_custom_target(rpm2cpio ALL COMMAND
-			${CMAKE_COMMAND} -E create_symlink rpm2archive rpm2cpio
-			)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
-endif()
+add_custom_target(rpm2cpio ALL COMMAND
+		${CMAKE_COMMAND} -E create_symlink rpm2archive rpm2cpio
+		)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
