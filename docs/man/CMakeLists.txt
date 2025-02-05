@@ -1,10 +1,10 @@
 set(core
-	gendiff.1 rpm2cpio.8
+	gendiff.1 rpm2cpio.8 rpm2archive.8
 	rpm.8 rpmbuild.8 rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
 	rpmdeps.8 rpmgraph.8 rpmlua.8 rpm-misc.8 rpmsort.8
 )
 set(extra
-	rpm2archive.8 rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8
+	rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8
 	rpm-plugin-audit.8 rpm-plugin-dbus-announce.8
 	rpm-plugin-systemd-inhibit.8 rpm-plugin-fapolicyd.8 rpm-plugin-ima.8
 	rpm-plugin-selinux.8 rpm-plugin-unshare.8
@@ -23,9 +23,6 @@ endif()
 
 # Install manuals for the enabled features
 set(manuals ${core})
-if (WITH_ARCHIVE)
-	list(APPEND manuals rpm2archive.8)
-endif()
 if (ENABLE_PLUGINS)
 	list(APPEND manuals rpm-plugins.8
 		rpm-plugin-prioreset.8 rpm-plugin-syslog.8)
