@@ -370,8 +370,6 @@ static PyType_Slot rpmds_Type_Slots[] = {
     {Py_tp_new, rpmds_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmds_Type;
 PyType_Spec rpmds_Type_Spec = {
     .name = "rpm.ds",
     .basicsize = sizeof(rpmdsObject),

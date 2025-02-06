@@ -5,10 +5,7 @@
 
 typedef struct specPkgObject_s specPkgObject;
 typedef struct specObject_s specObject;
-
-extern PyTypeObject* spec_Type;
 extern PyType_Spec spec_Type_Spec;
-extern PyTypeObject* specPkg_Type;
 extern PyType_Spec specPkg_Type_Spec;
 
 #define specObject_Check(v)	((v)->ob_type == spec_Type)

@@ -106,8 +106,6 @@ static PyType_Slot specPkg_Type_Slots[] = {
     {Py_tp_getset, specpkg_getseters},
     {0, NULL},
 };
-
-PyTypeObject* specPkg_Type;
 PyType_Spec specPkg_Type_Spec = {
     .name = "rpm.specpkg",
     .basicsize = sizeof(specPkgObject),
@@ -282,8 +280,6 @@ static PyType_Slot spec_Type_Slots[] = {
     {Py_tp_new, spec_new},
     {0, NULL},
 };
-
-PyTypeObject* spec_Type;
 PyType_Spec spec_Type_Spec = {
     .name = "rpm.spec",
     .basicsize = sizeof(specObject),

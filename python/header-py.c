@@ -646,8 +646,6 @@ static PyType_Slot hdr_Type_Slots[] = {
     {Py_tp_new, hdr_new},
     {0, NULL},
 };
-
-PyTypeObject* hdr_Type;
 PyType_Spec hdr_Type_Spec = {
     .name = "rpm.hdr",
     .basicsize = sizeof(hdrObject),

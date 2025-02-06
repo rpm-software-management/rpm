@@ -89,8 +89,6 @@ static PyType_Slot rpmProblem_Type_Slots[] = {
     {Py_tp_getset, rpmprob_getseters},
     {0, NULL},
 };
-
-PyTypeObject* rpmProblem_Type;
 PyType_Spec rpmProblem_Type_Spec = {
     .name = "rpm.prob",
     .basicsize = sizeof(rpmProblemObject),

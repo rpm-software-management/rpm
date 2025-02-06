@@ -2,8 +2,6 @@
 #define H_RPMII_PY
 
 typedef struct rpmiiObject_s rpmiiObject;
-
-extern PyTypeObject* rpmii_Type;
 extern PyType_Spec rpmii_Type_Spec;
 
 #define rpmiiObject_Check(v)	((v)->ob_type == rpmii_Type)

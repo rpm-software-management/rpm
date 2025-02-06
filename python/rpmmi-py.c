@@ -202,8 +202,6 @@ static PyType_Slot rpmmi_Type_Slots[] = {
     {Py_tp_methods, rpmmi_methods},
     {0, NULL},
 };
-
-PyTypeObject* rpmmi_Type;
 PyType_Spec rpmmi_Type_Spec = {
     .name = "rpm.mi",
     .basicsize = sizeof(rpmmiObject),

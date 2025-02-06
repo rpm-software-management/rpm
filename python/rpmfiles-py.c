@@ -340,8 +340,6 @@ static PyType_Slot rpmfile_Type_Slots[] = {
     {Py_tp_getset, rpmfile_getseters},
     {0, NULL},
 };
-
-PyTypeObject* rpmfile_Type;
 PyType_Spec rpmfile_Type_Spec = {
     .name = "rpm.file",
     .basicsize = sizeof(rpmfileObject),
@@ -561,8 +559,6 @@ static PyType_Slot rpmfiles_Type_Slots[] = {
     {Py_tp_new, rpmfiles_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmfiles_Type;
 PyType_Spec rpmfiles_Type_Spec = {
     .name = "rpm.files",
     .basicsize = sizeof(rpmfilesObject),
