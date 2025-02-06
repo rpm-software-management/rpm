@@ -419,7 +419,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     Py_XDECREF(fdo);
 
     if (rpmrc == RPMRC_OK) {
-	ho = hdr_Wrap(hdr_Type, h);
+	ho = hdr_Wrap(modstate->hdr_Type, h);
     } else {
 	Py_INCREF(Py_None);
 	ho = Py_None;
@@ -493,7 +493,7 @@ static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds
 
     keyring = rpmtsGetKeyring(s->ts, autoload);
     if (keyring) {
-	return rpmKeyring_Wrap(rpmKeyring_Type, keyring);
+	return rpmKeyring_Wrap(modstate->rpmKeyring_Type, keyring);
     } else {
 	Py_RETURN_NONE;
     }
@@ -533,7 +533,7 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
     } else {
 	PyObject *o;
 	if (arg) {
-	    o = rpmte_Wrap(rpmte_Type, (rpmte) arg);
+	    o = rpmte_Wrap(modstate->rpmte_Type, (rpmte) arg);
 	} else {
 	    o = Py_None;
 	    Py_INCREF(o);
@@ -631,7 +631,7 @@ rpmts_iternext(rpmtsObject * s)
 
     te = rpmtsiNext(s->tsi, 0);
     if (te != NULL) {
-	result = rpmte_Wrap(rpmte_Type, te);
+	result = rpmte_Wrap(modstate->rpmte_Type, te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
     }
@@ -677,12 +677,13 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
+	    PyErr_SetString(modstate->pyrpmError, "rpmdb open failed");
 	    goto exit;
 	}
     }
 
-    mio = rpmmi_Wrap(rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+    mio = rpmmi_Wrap(modstate->rpmmi_Type,
+                     rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
 
 exit:
     Py_XDECREF(str);
@@ -703,7 +704,7 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
+	    PyErr_SetString(modstate->pyrpmError, "rpmdb open failed");
 	    goto exit;
 	}
     }
@@ -713,7 +714,7 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
         PyErr_SetString(PyExc_KeyError, "No index for this tag");
         return NULL;
     }
-    mio = rpmii_Wrap(rpmii_Type, ii, (PyObject*)s);
+    mio = rpmii_Wrap(modstate->rpmii_Type, ii, (PyObject*)s);
 
 exit:
     return mio;
@@ -1059,8 +1060,6 @@ static PyType_Slot rpmts_Type_Slots[] = {
     {Py_tp_new, rpmts_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmts_Type;
 PyType_Spec rpmts_Type_Spec = {
     .name = "rpm.ts",
     .basicsize = sizeof(rpmtsObject),

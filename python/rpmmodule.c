@@ -29,7 +29,7 @@
  * \name Module: rpm
  */
 
-PyObject * pyrpmError;
+rpmmodule_state_t *modstate = NULL;
 
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
@@ -229,12 +229,12 @@ static void addRpmTags(PyObject *module)
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
-    Py_VISIT(pyrpmError);
+    Py_VISIT(modstate->pyrpmError);
     return 0;
 }
 
 static int rpmModuleClear(PyObject *m) {
-    Py_CLEAR(pyrpmError);
+    Py_CLEAR(modstate->pyrpmError);
     return 0;
 }
 
@@ -316,6 +316,13 @@ static int initModule(PyObject *m)
     }
     moduleInitialized = 1;
 
+    modstate = malloc(sizeof(rpmmodule_state_t));
+    if (!modstate) {
+        PyErr_NoMemory();
+        return -1;
+    }
+    memset(modstate, 0, sizeof(rpmmodule_state_t));
+
     PyObject * d;
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
@@ -324,74 +331,74 @@ static int initModule(PyObject *m)
 
     d = PyModule_GetDict(m);
 
-    pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
-    if (pyrpmError != NULL)
-	PyDict_SetItemString(d, "error", pyrpmError);
+    modstate->pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
+    if (modstate->pyrpmError != NULL)
+	PyDict_SetItemString(d, "error", modstate->pyrpmError);
 
-    if (!initAndAddType(m, &hdr_Type, &hdr_Type_Spec, "hdr")) {
+    if (!initAndAddType(m, &modstate->hdr_Type, &hdr_Type_Spec, "hdr")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
+    if (!initAndAddType(m, &modstate->rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmds_Type, &rpmds_Type_Spec, "ds")) {
+    if (!initAndAddType(m, &modstate->rpmds_Type, &rpmds_Type_Spec, "ds")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
+    if (!initAndAddType(m, &modstate->rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfile_Type, &rpmfile_Type_Spec, "file")) {
+    if (!initAndAddType(m, &modstate->rpmfile_Type, &rpmfile_Type_Spec, "file")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
+    if (!initAndAddType(m, &modstate->rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
+    if (!initAndAddType(m, &modstate->rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
+    if (!initAndAddType(m, &modstate->rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmii_Type, &rpmii_Type_Spec, "ii")) {
+    if (!initAndAddType(m, &modstate->rpmii_Type, &rpmii_Type_Spec, "ii")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
+    if (!initAndAddType(m, &modstate->rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
+    if (!initAndAddType(m, &modstate->rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
+    if (!initAndAddType(m, &modstate->rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmte_Type, &rpmte_Type_Spec, "te")) {
+    if (!initAndAddType(m, &modstate->rpmte_Type, &rpmte_Type_Spec, "te")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmts_Type, &rpmts_Type_Spec, "ts")) {
+    if (!initAndAddType(m, &modstate->rpmts_Type, &rpmts_Type_Spec, "ts")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &rpmver_Type, &rpmver_Type_Spec, "ver")) {
+    if (!initAndAddType(m, &modstate->rpmver_Type, &rpmver_Type_Spec, "ver")) {
 	return -1;
     }
 
-    if (!initAndAddType(m, &spec_Type, &spec_Type_Spec, "spec")) {
+    if (!initAndAddType(m, &modstate->spec_Type, &spec_Type_Spec, "spec")) {
 	return -1;
     }
-    if (!initAndAddType(m, &specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
+    if (!initAndAddType(m, &modstate->specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
 	return -1;
     }
 
