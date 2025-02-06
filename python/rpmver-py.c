@@ -136,8 +136,6 @@ static PyType_Slot rpmver_Type_Slots[] = {
     {Py_tp_new, ver_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmver_Type;
 PyType_Spec rpmver_Type_Spec = {
     .name = "rpm.ver",
     .basicsize = sizeof(rpmverObject),

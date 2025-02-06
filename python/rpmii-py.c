@@ -140,8 +140,6 @@ static PyType_Slot rpmii_Type_Slots[] = {
     {Py_tp_methods, rpmii_methods},
     {0, NULL},
 };
-
-PyTypeObject* rpmii_Type;
 PyType_Spec rpmii_Type_Spec = {
     .name = "rpm.ii",
     .basicsize = sizeof(rpmiiObject),

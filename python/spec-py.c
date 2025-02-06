@@ -31,7 +31,7 @@
 
 static PyObject *makeHeader(Header h)
 {
-    return hdr_Wrap(hdr_Type, headerLink(h));
+    return hdr_Wrap(modstate->hdr_Type, headerLink(h));
 }
 
 struct specPkgObject_s {
@@ -106,8 +106,6 @@ static PyType_Slot specPkg_Type_Slots[] = {
     {Py_tp_getset, specpkg_getseters},
     {0, NULL},
 };
-
-PyTypeObject* specPkg_Type;
 PyType_Spec specPkg_Type_Spec = {
     .name = "rpm.specpkg",
     .basicsize = sizeof(specPkgObject),
@@ -216,7 +214,7 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     iter = rpmSpecPkgIterInit(s->spec);
 
     while ((pkg = rpmSpecPkgIterNext(iter)) != NULL) {
-	PyObject *po = specPkg_Wrap(specPkg_Type, pkg, s);
+	PyObject *po = specPkg_Wrap(modstate->specPkg_Type, pkg, s);
         if (!po) {
             rpmSpecPkgIterFree(iter);
             Py_DECREF(pkgList);
@@ -282,8 +280,6 @@ static PyType_Slot spec_Type_Slots[] = {
     {Py_tp_new, spec_new},
     {0, NULL},
 };
-
-PyTypeObject* spec_Type;
 PyType_Spec spec_Type_Spec = {
     .name = "rpm.spec",
     .basicsize = sizeof(specObject),

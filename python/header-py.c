@@ -165,7 +165,7 @@ static PyObject * hdrAsBytes(hdrObject * s)
     char *buf = headerExport(s->h, &len);
 
     if (buf == NULL || len == 0) {
-	PyErr_SetString(pyrpmError, "can't unload bad header\n");
+	PyErr_SetString(modstate->pyrpmError, "can't unload bad header\n");
     } else {
 	res = PyBytes_FromStringAndSize(buf, len);
     }
@@ -191,7 +191,7 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 
     r = headerFormat(s->h, fmt, &err);
     if (!r) {
-	PyErr_SetString(pyrpmError, err);
+	PyErr_SetString(modstate->pyrpmError, err);
 	return NULL;
     }
 
@@ -317,7 +317,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     }
 
     if (h == NULL) {
-	PyErr_SetString(pyrpmError, "bad header");
+	PyErr_SetString(modstate->pyrpmError, "bad header");
 	return NULL;
     }
     
@@ -400,7 +400,7 @@ static PyObject * hdrGetTag(Header h, rpmTagVal tag)
 
     (void) headerGet(h, tag, &td, HEADERGET_EXT);
     if (rpmtdGetFlags(&td) & RPMTD_INVALID) {
-	PyErr_SetString(pyrpmError, "invalid header data");
+	PyErr_SetString(modstate->pyrpmError, "invalid header data");
     } else {
 	/* rpmtd_AsPyobj() knows how to handle empty containers and all */
 	res = rpmtd_AsPyobj(&td);
@@ -646,8 +646,6 @@ static PyType_Slot hdr_Type_Slots[] = {
     {Py_tp_new, hdr_new},
     {0, NULL},
 };
-
-PyTypeObject* hdr_Type;
 PyType_Spec hdr_Type_Spec = {
     .name = "rpm.hdr",
     .basicsize = sizeof(hdrObject),
@@ -680,8 +678,8 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     hdrObject * h1, * h2;
     char * kwlist[] = {"version0", "version1", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, hdr_Type,
-	    &h1, hdr_Type, &h2))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!", kwlist, modstate->hdr_Type,
+                                     &h1, modstate->hdr_Type, &h2))
 	return NULL;
 
     return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
