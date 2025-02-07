@@ -66,24 +66,24 @@ Tag #6 [region]
 
 Header:
 Header magic: 1e8ad8e (reserved: 0)
-Index entries: 53 (848 bytes)
-Data size: 2573 bytes
-Header size: 3421 bytes
+Index entries: 55 (880 bytes)
+Data size: 2609 bytes
+Header size: 3489 bytes
 
-Region entries 53
-Region size 864
+Region entries 55
+Region size 896
 Dribbles: 0
 
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2557
+	offset: 2593
 	count:    16
 
 	region trailer
 		tagno:    63 (Headerimmutable)
 		type:      7 (blob)
-		offset: -848
+		offset: -880
 		count:    16
 
 Tag #1 [region]
@@ -279,122 +279,134 @@ Tag #32 [region]
 	count:     1
 
 Tag #33 [region]
-	tagno:  1095 (Filedevices)
-	type:      4 (int32)
+	tagno:  1094 (Cookie)
+	type:      6 (string)
 	offset: 1800
-	count:    20
+	count:     1
 
 Tag #34 [region]
-	tagno:  1096 (Fileinodes)
+	tagno:  1095 (Filedevices)
 	type:      4 (int32)
-	offset: 1880
+	offset: 1820
 	count:    20
 
 Tag #35 [region]
-	tagno:  1097 (Filelangs)
-	type:      8 (argv)
-	offset: 1960
+	tagno:  1096 (Fileinodes)
+	type:      4 (int32)
+	offset: 1900
 	count:    20
 
 Tag #36 [region]
-	tagno:  1112 (Provideflags)
-	type:      4 (int32)
+	tagno:  1097 (Filelangs)
+	type:      8 (argv)
 	offset: 1980
-	count:     1
+	count:    20
 
 Tag #37 [region]
-	tagno:  1113 (Provideversion)
-	type:      8 (argv)
-	offset: 1984
+	tagno:  1112 (Provideflags)
+	type:      4 (int32)
+	offset: 2000
 	count:     1
 
 Tag #38 [region]
-	tagno:  1116 (Dirindexes)
-	type:      4 (int32)
-	offset: 1992
-	count:    20
+	tagno:  1113 (Provideversion)
+	type:      8 (argv)
+	offset: 2004
+	count:     1
 
 Tag #39 [region]
-	tagno:  1117 (Basenames)
-	type:      8 (argv)
-	offset: 2072
+	tagno:  1116 (Dirindexes)
+	type:      4 (int32)
+	offset: 2012
 	count:    20
 
 Tag #40 [region]
-	tagno:  1118 (Dirnames)
+	tagno:  1117 (Basenames)
 	type:      8 (argv)
-	offset: 2162
-	count:    10
+	offset: 2092
+	count:    20
 
 Tag #41 [region]
-	tagno:  1122 (Optflags)
-	type:      6 (string)
-	offset: 2202
-	count:     1
+	tagno:  1118 (Dirnames)
+	type:      8 (argv)
+	offset: 2182
+	count:    10
 
 Tag #42 [region]
-	tagno:  1124 (Payloadformat)
+	tagno:  1122 (Optflags)
 	type:      6 (string)
-	offset: 2209
+	offset: 2222
 	count:     1
 
 Tag #43 [region]
-	tagno:  1126 (Payloadflags)
+	tagno:  1124 (Payloadformat)
 	type:      6 (string)
-	offset: 2214
+	offset: 2229
 	count:     1
 
 Tag #44 [region]
-	tagno:  1132 (Platform)
+	tagno:  1126 (Payloadflags)
 	type:      6 (string)
-	offset: 2215
+	offset: 2234
 	count:     1
 
 Tag #45 [region]
-	tagno:  1140 (Filecolors)
-	type:      4 (int32)
-	offset: 2228
-	count:    20
+	tagno:  1132 (Platform)
+	type:      6 (string)
+	offset: 2235
+	count:     1
 
 Tag #46 [region]
-	tagno:  1141 (Fileclass)
+	tagno:  1140 (Filecolors)
 	type:      4 (int32)
-	offset: 2308
+	offset: 2248
 	count:    20
 
 Tag #47 [region]
-	tagno:  1142 (Classdict)
-	type:      8 (argv)
-	offset: 2388
-	count:     2
+	tagno:  1141 (Fileclass)
+	type:      4 (int32)
+	offset: 2328
+	count:    20
 
 Tag #48 [region]
-	tagno:  5011 (Filedigestalgo)
-	type:      4 (int32)
-	offset: 2412
-	count:     1
+	tagno:  1142 (Classdict)
+	type:      8 (argv)
+	offset: 2408
+	count:     2
 
 Tag #49 [region]
-	tagno:  5062 (Encoding)
-	type:      6 (string)
-	offset: 2416
-	count:     1
+	tagno:  1146 (Sourcepkgid)
+	type:      7 (blob)
+	offset: 2429
+	count:    16
 
 Tag #50 [region]
-	tagno:  5092 (Payloaddigest)
-	type:      8 (argv)
-	offset: 2422
+	tagno:  5011 (Filedigestalgo)
+	type:      4 (int32)
+	offset: 2448
 	count:     1
 
 Tag #51 [region]
-	tagno:  5093 (Payloaddigestalgo)
-	type:      4 (int32)
-	offset: 2488
+	tagno:  5062 (Encoding)
+	type:      6 (string)
+	offset: 2452
 	count:     1
 
 Tag #52 [region]
+	tagno:  5092 (Payloaddigest)
+	type:      8 (argv)
+	offset: 2458
+	count:     1
+
+Tag #53 [region]
+	tagno:  5093 (Payloaddigestalgo)
+	type:      4 (int32)
+	offset: 2524
+	count:     1
+
+Tag #54 [region]
 	tagno:  5097 (Payloaddigestalt)
 	type:      8 (argv)
-	offset: 2492
+	offset: 2528
 	count:     1
 

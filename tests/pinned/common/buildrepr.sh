@@ -1,4 +1,4 @@
-runroot rpmbuild -bb --quiet \
+runroot rpmbuild -ba --quiet \
 	--define "_rpmformat ${ver}" \
 	--define "_rpmdir %{_topdir}/RPMS/${ver}" \
 	--define "optflags -O2 -g" \
