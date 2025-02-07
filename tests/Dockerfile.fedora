@@ -89,7 +89,6 @@ FROM base AS full
 
 WORKDIR /srv/rpm
 COPY . .
-RUN chmod -R a-w .
 
 WORKDIR /srv/build
 ENV CFLAGS="-Og -g"
