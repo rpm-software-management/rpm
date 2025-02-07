@@ -21,6 +21,33 @@ rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noar
 ],
 [])
 
+RPMTEST_CHECK([[
+sid=$(rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
+pid=$(rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
+spid=$(rpm -qp --qf "%{sourcepkgid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.*.rpm)
+hid=$(rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
+shid=$(rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
+
+# only validate the general characteristics here to avoid pinning
+echo -n ${sid} | wc -c
+echo -n ${pid} | wc -c
+echo -n ${spid} | wc -c
+echo -n ${hid} | wc -c
+echo -n ${shid} | wc -c
+[ "${sid}" = "${spid}" ] || exit 1
+[ "${sid}" != "${pid}" ] || exit 1
+[ "${pid}" != "${spid}" ] || exit 1
+[ "${hid}" != "${shid}" ] || exit 1
+]],
+[0],
+[32
+32
+32
+40
+40
+],
+[])
+
 RPMTEST_CHECK([
 cp /data/misc/rpmdump4-srpm.txt expout
 ${RPM_CONFIGDIR_PATH}/rpmdump ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
@@ -50,6 +77,22 @@ rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noar
 ],
 [0],
 [6
+],
+[])
+
+RPMTEST_CHECK([
+rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
+rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{sourcepkgid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
+],
+[0],
+[(none)
+(none)
+(none)
+(none)
+(none)
 ],
 [])
 
