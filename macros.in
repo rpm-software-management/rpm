@@ -693,7 +693,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # signature	require valid signature(s)
 # digest	require valid digest(s)
 # none		traditional rpm behavior, nothing required
-%_pkgverify_level digest
+%_pkgverify_level all
 
 # Disabler flags for package verification (similar to vsflags)
 # Set to 0x0 for full compatibility with v4 packages.
