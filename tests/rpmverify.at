@@ -30,7 +30,7 @@ RPMTEST_SETUP_RW([files with no problems])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 ],
@@ -44,7 +44,7 @@ RPMTEST_SETUP_RW([files with no problems in verbose mode])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -Vva --nodeps ${VERIFYOPTS}
 ],
@@ -120,7 +120,7 @@ RPMTEST_SETUP_RW([verify from db, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 rm -f "${RPMTEST}"/usr/share/doc/hello-2.0/FAQ
 chmod u-x "${RPMTEST}"/usr/bin/hello
@@ -140,7 +140,7 @@ RPMTEST_SETUP_RW([verify from package, with problems present])
 AT_KEYWORDS([verify])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 rm -f "${RPMTEST}"/usr/share/doc/hello-2.0/FAQ
 chmod u-x "${RPMTEST}"/usr/bin/hello
@@ -563,7 +563,7 @@ AT_KEYWORDS([verify])
 RPMTEST_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
 
-runroot rpm -U --nocaps --ignoreos \
+runroot rpm -U --nocaps --ignoreos --nosignature \
 	/data/RPMS/capstest-1.0-1.noarch.rpm
 
 runroot rpm -Va ${VERIFYOPTS}
@@ -581,7 +581,7 @@ AT_KEYWORDS([verify])
 RPMTEST_SKIP_IF([$CAP_DISABLED])
 RPMTEST_CHECK([
 
-runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nocaps --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 
 runroot rpm -Va ${VERIFYOPTS} --nodeps | grep "/bin/hello"
@@ -595,7 +595,7 @@ RPMTEST_SETUP_RW([rpm --restore])
 AT_KEYWORDS([verify restore])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 runroot touch /usr/share/doc/hello-2.0/FAQ
 runroot chmod a-x /usr/bin/hello

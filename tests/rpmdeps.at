@@ -220,7 +220,7 @@ runroot rpmbuild --quiet -bb \
 	--define "reqs /usr/bin/hello" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm \
@@ -246,7 +246,7 @@ runroot rpmbuild --quiet -bb \
 	--define "reqs /usr/bin/hello" \
 	  /data/SPECS/deptest.spec
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm \

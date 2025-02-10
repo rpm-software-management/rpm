@@ -92,7 +92,7 @@ test -s rdonly.list
 
 RPMTEST_CHECK([
 RPMTEST_SNAPSHOT_MOUNT
-runroot rpm -U /data/RPMS/hlinktest-1.0-1.noarch.rpm
+runroot rpm -U --nosignature /data/RPMS/hlinktest-1.0-1.noarch.rpm
 ],
 [0],
 [],
@@ -355,6 +355,7 @@ AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 
 runroot rpm -i \
+  --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm
 
 runroot rpm -q foo
@@ -373,6 +374,7 @@ AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 
 runroot rpm -i \
+  --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm
 
 runroot rpm -q foo-
@@ -389,7 +391,7 @@ AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 
 for i in 1 2 3; do
-    runroot rpm -i /data/RPMS/foo-1.0-1.noarch.rpm
+    runroot rpm -i --nosignature /data/RPMS/foo-1.0-1.noarch.rpm
     runroot rpm -q --qf "%{dbinstance} %{name}\n" foo
     runroot rpm -e foo
 done
@@ -408,6 +410,7 @@ AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
 
 runroot rpm -i \
+  --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm
 
 ],
@@ -441,6 +444,7 @@ AT_KEYWORDS([rpmdb install])
 RPMTEST_CHECK([
 
 runroot rpm -i \
+  --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm
 ],
 [0])
@@ -456,8 +460,8 @@ RPMTEST_CHECK([
 
 tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
 
-runroot rpm -i "${tpkg}" && 
-  runroot rpm -U --replacepkgs "${tpkg}" &&
+runroot rpm -i --nosignature "${tpkg}" &&
+  runroot rpm -U --replacepkgs --nosignature "${tpkg}" &&
   runroot rpm -qa
 ],
 [0],
@@ -476,8 +480,9 @@ RPMTEST_CHECK([
 
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
 
-runroot rpm -U --nodeps --ignorearch "${tpkg}" && 
-  runroot rpm -U --nodeps --ignorearch --nodocs --replacepkgs "${tpkg}" &&
+runroot rpm -U --nodeps --ignorearch --nosignature "${tpkg}" &&
+  runroot rpm -U --nodeps --ignorearch --nodocs --nosignature \
+	--replacepkgs "${tpkg}" &&
   runroot rpm -e hello
 test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 ],
@@ -494,8 +499,8 @@ AT_KEYWORDS([rpmdb install])
 RPMTEST_CHECK([
 tpkg="/data/RPMS/hello-2.0-1.i686.rpm"
 
-runroot rpm -U --nodeps --ignorearch "${tpkg}" && 
-  runroot rpm --reinstall --nodeps --ignorearch --nodocs "${tpkg}" &&
+runroot rpm -U --nodeps --ignorearch --nosignature "${tpkg}" &&
+  runroot rpm --reinstall --nodeps --ignorearch --nodocs --nosignature "${tpkg}" &&
   runroot rpm -e hello
 test -d "${RPMTEST}"/usr/share/doc/hello-2.0
 ],
@@ -513,14 +518,14 @@ AT_KEYWORDS([rpmdb install])
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch --noverify \
+  --noscripts --nodeps --ignorearch --noverify --nosignature \
   /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0])
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch --noverify \
+  --noscripts --nodeps --ignorearch --noverify --nosignature \
   /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [1],
@@ -530,7 +535,8 @@ runroot rpm -i \
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --noscripts --nodeps --ignorearch --noverify --relocate=/usr=/check \
+  --noscripts --nodeps --ignorearch --noverify --nosignature \
+  --relocate=/usr=/check \
   /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0])
@@ -553,10 +559,10 @@ AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_RESET
 
-runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
+runroot rpm -U --noscripts --nodeps --ignorearch --noverify --nosignature \
   /data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
-runroot rpm -U --noscripts --nodeps --ignorearch \
+runroot rpm -U --noscripts --nodeps --ignorearch --nosignature \
   /data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
 runroot rpmdb --rebuilddb
@@ -672,9 +678,10 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpmdb vacuum])
 AT_KEYWORDS([install rpmdb sqlite])
 RPMTEST_CHECK([
-runroot rpm -U --noscripts --nodeps --ignorearch --noverify \
+runroot rpm -U --noscripts --nodeps --ignorearch --noverify --nosignature \
   /data/RPMS/hello-1.0-1.i386.rpm
-runroot rpm -D "_sqlite_vacuum_kb 1" -vv -U --noscripts --nodeps --ignorearch \
+runroot rpm -D "_sqlite_vacuum_kb 1" \
+  -vv -U --noscripts --nodeps --ignorearch --nosignature \
   /data/RPMS/hello-2.0-1.i686.rpm 2>&1 | grep VACUUM
 ],
 [0],

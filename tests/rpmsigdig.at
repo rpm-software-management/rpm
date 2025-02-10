@@ -375,7 +375,7 @@ cat hello.intro hello.payload > "${RPMTEST}"/tmp/hello-c.rpm
 cat hello.intro hello.uc-payload > "${RPMTEST}"/tmp/hello-uc.rpm
 
 RPMTEST_CHECK([
-runroot rpmkeys -Kv /tmp/hello-c.rpm
+runroot rpmkeys -Kv --nosignature /tmp/hello-c.rpm
 ],
 [0],
 [/tmp/hello-c.rpm:
@@ -385,7 +385,7 @@ runroot rpmkeys -Kv /tmp/hello-c.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys -Kv /tmp/hello-uc.rpm
+runroot rpmkeys -Kv --nosignature /tmp/hello-uc.rpm
 ],
 [0],
 [/tmp/hello-uc.rpm:
@@ -395,7 +395,7 @@ runroot rpmkeys -Kv /tmp/hello-uc.rpm
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys --define "_pkgverify_flags 0" -Kv /tmp/hello-uc.rpm
+runroot rpmkeys --define "_pkgverify_flags 0" -Kv --nosignature /tmp/hello-uc.rpm
 ],
 [1],
 [/tmp/hello-uc.rpm:
@@ -419,7 +419,7 @@ dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=333 count=4 2> /dev/null
 
 RPMTEST_CHECK([
-runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys -Kv --nosignature /tmp/${pkg}
 ],
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -429,7 +429,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
 [])
 
 RPMTEST_CHECK([
-runroot rpmkeys -Kv --define "_pkgverify_flags 0" /tmp/${pkg}
+runroot rpmkeys -Kv --nosignature --define "_pkgverify_flags 0" /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -450,7 +450,7 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
-runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys -Kv --nosignature /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -472,7 +472,7 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
-runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys -Kv --nosignature /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -494,7 +494,7 @@ pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=4750 count=4 2> /dev/null
-runroot rpmkeys -Kv /tmp/${pkg}
+runroot rpmkeys -Kv --nosignature /tmp/${pkg}
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
@@ -1891,7 +1891,7 @@ if ! setfattr -n security.ima -v 0sAwIEpZglVABIMEYCIQDlEXva+nO6rrHx3EbsqkaYGmLUF
 fi
 
 RPMTEST_CHECK([
-runroot rpm -U /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
+runroot rpm -U --nosignature /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
 runroot getfattr --absolute-names -d -m security.ima /usr/share/example1
 ],
 [0],
