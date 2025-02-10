@@ -201,6 +201,7 @@ myprint('%s %s %s' % (hex(dlv), hex(olv), hex(nlv)))
 )
 
 RPMPY_TEST([vfylevel API],[
+ts.setVfyLevel(rpm.RPMSIG_DIGEST_TYPE)
 dlv = ts.getVfyLevel()
 olv = ts.setVfyLevel(rpm.RPMSIG_SIGNATURE_TYPE|rpm.RPMSIG_DIGEST_TYPE)
 nlv = ts.getVfyLevel()
