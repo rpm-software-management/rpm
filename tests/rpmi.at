@@ -1513,6 +1513,7 @@ RPMTEST_CHECK([
 
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser u myuser 876 - /home/myuser /bin/sh}"\
   /data/SPECS/deptest.spec
+runroot rpmkeys --import --root /alt /root/rpm-key.asc
 runroot rpm -U --root /alt /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
 runroot tail -1 /alt/etc/passwd
 runroot rpm -V --root /alt ${VERIFYOPTS} deptest-user
