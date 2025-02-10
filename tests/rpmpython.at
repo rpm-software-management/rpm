@@ -449,7 +449,7 @@ RPMTEST_SETUP_RW([database iterators])
 AT_KEYWORDS([python rpmdb])
 RPMTEST_CHECK([
 runroot rpm -i \
-  --justdb --nodeps --ignorearch --ignoreos \
+  --justdb --nodeps --ignorearch --ignoreos --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm \
   /data/RPMS/hello-2.0-1.i686.rpm
 ],
@@ -558,7 +558,7 @@ with open("dbcookie", "w+") as dbcookie_file:
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --justdb --nodeps --ignorearch --ignoreos \
+  --justdb --nodeps --ignorearch --ignoreos --nosignature \
   /data/RPMS/foo-1.0-1.noarch.rpm \
   /data/RPMS/hello-2.0-1.i686.rpm \
 ],
@@ -581,7 +581,7 @@ with open("dbcookie", "w+") as dbcookie_file:
 
 RPMTEST_CHECK([
 runroot rpm -i \
-  --justdb --nodeps --ignorearch --ignoreos \
+  --justdb --nodeps --ignorearch --ignoreos --nosignature \
   --define "_transaction_color 3" \
   --define "_prefer_color 2" \
   /data/RPMS/hello-2.0-1.x86_64.rpm

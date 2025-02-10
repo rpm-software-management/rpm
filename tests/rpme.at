@@ -3,7 +3,7 @@ RPMTEST_SETUP_RW([rpm -e and verify files removed])
 AT_KEYWORDS([install erase rpmdb])
 
 RPMTEST_CHECK([
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -Vv --nodeps --nogroup --nouser hello
 runroot rpm -e hello
@@ -48,14 +48,14 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm reinstall with shared files])
 AT_KEYWORDS([install erase update rpmdb])
 RPMTEST_CHECK([
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.x86_64.rpm \
 	/data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -Vv --nodeps --nogroup --nouser hello.i686 hello.x86_64
 
-runroot rpm --reinstall --ignoreos --ignorearch --nodeps \
+runroot rpm --reinstall --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.x86_64.rpm \
@@ -90,14 +90,14 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm -e and shared files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	--nodocs \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -Vv --nodeps --nogroup --nouser hello
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -134,14 +134,14 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm -e and shared files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	--nodocs \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -Vv --nodeps --nogroup --nouser hello
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm
@@ -180,7 +180,7 @@ RPMTEST_SETUP_RW([rpm -e and verify colored files removed 1.1])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
@@ -205,7 +205,7 @@ RPMTEST_SETUP_RW([rpm -e and verify colored files removed 1.2])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 3" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
@@ -228,7 +228,7 @@ AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 2" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
@@ -251,7 +251,7 @@ AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	--define "_transaction_color 2" \
 	--define "_prefer_color 2" \
 	/data/RPMS/hello-2.0-1.i686.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
@@ -350,7 +350,7 @@ RPMTEST_SETUP_RW([rpm -e and verify netshared files not removed])
 AT_KEYWORDS([install erase rpmdb])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignoreos --ignorearch --nodeps \
+runroot rpm -U --ignoreos --ignorearch --nodeps --nosignature \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -e \
 	--define "_netsharedpath /usr/share" \

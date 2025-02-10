@@ -23,7 +23,7 @@ AT_KEYWORDS([install])
 RPMTEST_CHECK([
 
 echo /data/RPMS/hello-2.0-1.x86_64.rpm > ${RPMTEST}/tmp/test.mft
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	/tmp/test.mft
 ],
 [0],
@@ -36,7 +36,7 @@ AT_KEYWORDS([install])
 RPMTEST_CHECK([
 
 echo "/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm" > ${RPMTEST}/tmp/test.mft
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	/tmp/test.mft
 ],
 [0],
@@ -53,7 +53,7 @@ cp "${RPMTEST}/data/RPMS/hello-2.0-1.i686.rpm" \
 
 echo "/tmp/fallback-[[123]].0-1.i686.rpm" > ${RPMTEST}/tmp/test.mft
 
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	/tmp/test.mft
 ],
 [0],
@@ -157,9 +157,9 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <unsigned 1>])
 AT_KEYWORDS([install])
-RPMTEST_CHECK([
 
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
@@ -274,6 +274,7 @@ RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 
 runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_level digest" \
 	/data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
 [0],
@@ -437,7 +438,7 @@ RPMTEST_SETUP_RW([rpm -U <glob>])
 AT_KEYWORDS([install])
 RPMTEST_CHECK([
 
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	"/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm"
 ],
 [0],
@@ -469,7 +470,7 @@ RPMTEST_CHECK([
 cp "${RPMTEST}/data/RPMS/hello-2.0-1.i686.rpm" \
    "${RPMTEST}/tmp/fallback-[[123]].0-1.i686.rpm"
 
-runroot rpm -U --ignorearch --ignoreos --nodeps \
+runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	"/tmp/fallback-[[123]].0-1.i686.rpm"
 ],
 [0],
@@ -486,10 +487,10 @@ RPMTEST_CHECK([
 pkg="hello-2.0-1.x86_64"
 timestamp=97445
 
-runroot rpm -i --ignorearch --ignoreos --nodeps \
+runroot rpm -i --ignorearch --ignoreos --nodeps --nosignature \
 	/data/RPMS/foo-1.0-1.noarch.rpm
 runroot --setenv SOURCE_DATE_EPOCH $timestamp \
-	rpm -i --ignorearch --ignoreos --nodeps \
+	rpm -i --ignorearch --ignoreos --nodeps --nosignature \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -q --tid $timestamp
 runroot rpm -qi $pkg | grep "Install Date"
@@ -514,7 +515,7 @@ RPMTEST_CHECK([
 timestamp=1445412535
 
 runroot --setenv SOURCE_DATE_EPOCH $timestamp \
-	rpm -i --ignorearch --ignoreos --nodeps \
+	rpm -i --ignorearch --ignoreos --nodeps --nosignature \
 	/data/RPMS/foo-1.0-1.noarch.rpm /data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -q --tid $timestamp
 for pkg in `runroot rpm -q --tid $timestamp`; do
@@ -535,7 +536,7 @@ AT_KEYWORDS([install])
 RPMTEST_CHECK([
 
 runroot rpm \
-  -U --nodb /data/RPMS/hlinktest-1.0-1.noarch.rpm
+  -U --nodb --nosignature /data/RPMS/hlinktest-1.0-1.noarch.rpm
 runroot rpm -qa
 runroot find /foo|sort
 ],
@@ -560,7 +561,7 @@ RPMTEST_CHECK([
 # avoid having to deal with non-existent /foo in the find below
 runroot mkdir /foo
 runroot rpm \
-  -U --justdb /data/RPMS/hlinktest-1.0-1.noarch.rpm
+  -U --justdb --nosignature /data/RPMS/hlinktest-1.0-1.noarch.rpm
 runroot rpm -qa
 runroot find /foo|sort
 ],
@@ -619,7 +620,7 @@ RPMTEST_CHECK([
 
 runroot rpm \
   --define "_topdir /tmp/build" \
-  --ignorearch --ignoreos --nodeps \
+  --ignorearch --ignoreos --nodeps --nosignature \
   -i /data/SRPMS/hello-1.0-1.src.rpm \
      /data/RPMS/hello-2.0-1.x86_64.rpm
 runroot rpm -q hello; echo
@@ -1301,7 +1302,7 @@ dd if=/dev/zero of="${RPMTEST}/tmp/3.rpm" \
    conv=notrunc bs=1 seek=8050 count=6 2> /dev/null
 
 RPMTEST_CHECK([
-runroot rpm -i --noverify /tmp/1.rpm
+runroot rpm -i --noverify --nosignature /tmp/1.rpm
 # test that nothing of the contents remains after failure
 test -d "${RPMTEST}/foo"
 ],
@@ -1312,7 +1313,7 @@ error: hlinktest-1.0-1.noarch: install failed
 ])
 
 RPMTEST_CHECK([
-runroot rpm -i --noverify /tmp/2.rpm
+runroot rpm -i --noverify --nosignature /tmp/2.rpm
 # test that nothing of the contents remains after failure
 test -d "${RPMTEST}/foo"
 ],
@@ -1323,7 +1324,7 @@ error: hlinktest-1.0-1.noarch: install failed
 ])
 
 RPMTEST_CHECK([
-runroot rpm -i --noverify /tmp/3.rpm 2>&1| sed 's/;.*:/:/g'
+runroot rpm -i --noverify --nosignature /tmp/3.rpm 2>&1| sed 's/;.*:/:/g'
 # test that nothing of the contents remains after failure
 test -d "${RPMTEST}/foo"
 ],
@@ -1334,7 +1335,7 @@ error: hlinktest-1.0-1.noarch: install failed
 [])
 
 RPMTEST_CHECK([
-runroot rpm -i "${pkg}"
+runroot rpm -i --nosignature "${pkg}"
 runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
 ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 runroot rpm -e hlinktest
@@ -1355,7 +1356,7 @@ runroot rpm -e hlinktest
 [])
 
 RPMTEST_CHECK([
-runroot rpm -i --excludepath=/foo/zzzz "${pkg}"
+runroot rpm -i --excludepath=/foo/zzzz --nosignature "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -1372,7 +1373,7 @@ runroot rpm -e hlinktest
 [])
 
 RPMTEST_CHECK([
-runroot rpm -i --excludepath=/foo/aaaa "${pkg}"
+runroot rpm -i --excludepath=/foo/aaaa --nosignature "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -1389,7 +1390,7 @@ runroot rpm -e hlinktest
 [])
 
 RPMTEST_CHECK([
-runroot rpm -i --excludepath=/foo/aaaa --excludepath=/foo/zzzz "${pkg}"
+runroot rpm -i --excludepath=/foo/aaaa --excludepath=/foo/zzzz --nosignature "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -1406,7 +1407,7 @@ runroot rpm -e hlinktest
 [])
 
 RPMTEST_CHECK([
-runroot rpm -i --excludepath=/foo/hello-foo "${pkg}"
+runroot rpm -i --excludepath=/foo/hello-foo --nosignature "${pkg}"
 runroot rpm -Vv --nogroup --nouser hlinktest
 runroot rpm -e hlinktest
 ],
@@ -1722,7 +1723,7 @@ RPMTEST_SETUP([rpm -U diskspace])
 AT_KEYWORDS([install diskspace])
 RPMTEST_CHECK([
 
-runroot rpm -U --nodb --test --ignorearch --ignoreos --nodeps \
+runroot rpm -U --nodb --test --ignorearch --ignoreos --nodeps --nosignature \
 	/data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [1],

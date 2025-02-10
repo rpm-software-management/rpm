@@ -799,7 +799,7 @@ AT_KEYWORDS([script lua])
 # binary pre-built on rpm 4.18 should emit no warnings
 RPMTEST_CHECK([
 RPMDB_RESET
-runroot rpm -U /data/RPMS/luafork-1.0-1.noarch.rpm
+runroot rpm -U --nosignature /data/RPMS/luafork-1.0-1.noarch.rpm
 ],
 [0],
 [child

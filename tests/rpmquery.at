@@ -234,7 +234,7 @@ AT_KEYWORDS([rpmdb install query])
 
 RPMTEST_CHECK([
 runroot rpm \
-  --noscripts --nodeps --ignorearch \
+  --noscripts --nodeps --ignorearch --nosignature \
   -i /data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0])
@@ -279,6 +279,7 @@ RPMTEST_CHECK([
 runroot rpm \
   --nodeps \
   --ignorearch \
+  --nosignature \
   -i /data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm \
   -qf /usr/bin/hello
@@ -296,6 +297,7 @@ runroot rpm \
   --nodeps \
   --excludedocs \
   --ignorearch \
+  --nosignature \
   -i /data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm \
   -qf /usr/share/doc/hello-2.0/FAQ
@@ -313,6 +315,7 @@ runroot rpm \
   --nodeps \
   --excludedocs \
   --ignorearch \
+  --nosignature \
   -i /data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm \
   -q --path /usr/share/doc/hello-2.0/FAQ
