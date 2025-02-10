@@ -1,0 +1,90 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+Copyright (C) 2025 Red Hat <www.redhat.com>
+SPDX-License-Identifier: GPL-2.0+
+-->
+
+<node>
+
+<!-- org.rpm.Transaction:
+   @short_description: D-Bus Interface for rpm-plugin-dbus-announce
+-->
+<interface name="org.rpm.Transaction">
+    <!--
+        StartTransaction:
+        @dbcookie: a database cookie
+        @tid: a transaction ID
+
+        A signal emitted when a transaction starts.
+    -->
+    <signal name="StartTransaction">
+        <arg name="dbcookie" type="s"/>
+        <arg name="tid" type="u"/>
+    </signal>
+
+    <!--
+        EndTransaction:
+        @dbcookie: a database cookie
+        @tid: a transaction ID
+
+        A signal emitted when a transaction ends.
+    -->
+    <signal name="EndTransaction">
+        <arg name="dbcookie" type="s"/>
+        <arg name="tid" type="u"/>
+    </signal>
+
+    <!--
+        StartTransactionDetails:
+        @dbcookie: a database cookie
+        @tid: a transaction ID
+        @op_package: array of "<operation> <nevra>" strings
+        @result: result of the transaction
+
+        A signal emitted when a transaction starts, containing also
+        detailed information about the packages in the transaction.
+
+        The @op_package array of strings contains information about
+        the package, each argument separated by a space. It starts
+        with an <operation>, which can be one of "added", "removed",
+        "rpmdb" or "restored" (quotes for clarity only). The package
+        is identified by its NEVRA. Other values in the @op_package array,
+        separated by a space, can be added in the future.
+
+        The @result is always RPMRC_OK, aka 0.
+    -->
+    <signal name="StartTransactionDetails">
+        <arg name="dbcookie" type="s"/>
+        <arg name="tid" type="u"/>
+        <arg name="op_package" type="as"/>
+        <arg name="result" type="i"/>
+    </signal>
+
+    <!--
+        EndTransactionDetails:
+        @dbcookie: a database cookie
+        @tid: a transaction ID
+        @op_package: array of "<operation> <nevra>" strings
+        @result: result of the transaction
+
+        A signal emitted when a transaction ends, containing also
+        detailed information about the packages in the transaction.
+
+        The @op_package array of strings contains information about
+        the package. See StartTransactionDetails signal for more
+        information about the values encoded in this argument.
+
+        The @result is RPMRC_OK, aka 0, on success, or other rpmRC enum values
+        when the transaction failed.
+    -->
+    <signal name="EndTransactionDetails">
+        <arg name="dbcookie" type="s"/>
+        <arg name="tid" type="u"/>
+        <arg name="op_package" type="as"/>
+        <arg name="result" type="i"/>
+    </signal>
+</interface>
+
+</node>
