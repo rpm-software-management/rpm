@@ -1227,13 +1227,13 @@ RPMKEYRING_RESET
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --rpmv3 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 runroot rpmsign --delsign /tmp/hello-2.0-1.x86_64.rpm
 echo POST-DELSIGN
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
@@ -1256,13 +1256,13 @@ RPMKEYRING_RESET
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 runroot rpmsign --delsign /tmp/hello-2.0-1.x86_64.rpm
 echo POST-DELSIGN
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
@@ -1404,14 +1404,14 @@ cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 echo SIGN
 runroot rpmsign --addsign -v /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo DELSIGN
 runroot rpmsign --delsign -v /tmp/hello-2.0-1.x86_64.rpm
 echo POST-DELSIGN
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [SIGN
@@ -1638,10 +1638,10 @@ RPMTEST_CHECK([
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
 echo PRE-DELSIGN
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -vE '(digest|signature):'
 echo POST-DELSIGN
 runroot rpmsign --delsign /tmp/hello-2.0-1.x86_64-signed.rpm
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64-signed.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-DELSIGN
@@ -1688,10 +1688,10 @@ RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id B0645AEC757BF69E --digest-algo sha512 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/rpm.org-ed25519-test.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
@@ -1717,10 +1717,10 @@ RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 7f1c21f95f65bbe8 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/rpm.org-nistp256-test.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
@@ -1747,12 +1747,12 @@ RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 79cc07f167fee8841829acaa42655a75156b3de0 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/keyidcollision2.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 runroot rpmkeys --import /data/keys/keyidcollision1.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
@@ -1784,12 +1784,12 @@ RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --key-id 94706f8da571389e8642bdfd42655a75156b3de0 --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64.rpm
 echo PRE-IMPORT
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 echo POST-IMPORT
 runroot rpmkeys --import /data/keys/keyidcollision1.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 runroot rpmkeys --import /data/keys/keyidcollision2.pub
-runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -v digest
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm|grep -vE '(digest|signature):'
 ],
 [0],
 [PRE-IMPORT
