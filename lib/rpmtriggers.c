@@ -230,7 +230,8 @@ typedef struct matchFilesIter_s {
 static rpmfiles rpmtsNextFiles(matchFilesIter mfi)
 {
     Header h;
-    rpmte *te;
+    rpmte *tes;
+    rpmte te = NULL;
     rpmfiles files = NULL;
     rpmstrPool pool = mfi->ts->members->pool;
     int ix;
@@ -240,21 +241,23 @@ static rpmfiles rpmtsNextFiles(matchFilesIter mfi)
     if (ix < rpmdbGetIteratorCount(mfi->pi)) {
 	offset = rpmdbGetIteratorOffsetFor(mfi->pi, ix);
 	if (packageHashGetEntry(mfi->ts->members->removedPackages, offset,
-				&te, NULL, NULL)) {
+				&tes, NULL, NULL)) {
 	    /* Files are available in memory */
-	    files  = rpmteFiles(te[0]);
+	    te = tes[0];
+	    files  = rpmteFiles(te);
 	}
 
 	if (packageHashGetEntry(mfi->ts->members->installedPackages, offset,
-				&te, NULL, NULL)) {
+				&tes, NULL, NULL)) {
 	    /* Files are available in memory */
-	    files  = rpmteFiles(te[0]);
+	    te = tes[0];
+	    files  = rpmteFiles(te);
 	}
     }
 
     if (files) {
 	rpmdbSetIteratorIndex(mfi->pi, ix + 1);
-	mfi->pkgname = rpmteN(te[0]);
+	mfi->pkgname = rpmteN(te);
     } else {
 	/* Files are not available in memory. Read them from rpmdb */
 	h = rpmdbNextIterator(mfi->pi);
