@@ -864,9 +864,10 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args)
 	    free(algo);
 	}
 	if (args->keyid) {
-	    rpmPushMacro(NULL, "_opengpg_sign_id", NULL, args->keyid, RMIL_GLOBAL);
+	    rpmPushMacro(NULL, "_openpgp_sign_id", NULL, args->keyid, RMIL_GLOBAL);
 	}
     }
+
 
     rc = rpmSign(path, 0, args ? args->signflags : 0);
 
