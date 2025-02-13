@@ -5,6 +5,7 @@
 
 #include <popt.h>
 #include <rpm/rpmcli.h>
+#include <rpm/rpmlog.h>
 #include <rpm/rpmsign.h>
 #include "cliutils.hh"
 #include "debug.h"
@@ -182,6 +183,8 @@ static int doSign(poptContext optCon, struct rpmSignArgs *sargs)
     while ((arg = poptGetArg(optCon)) != NULL) {
 	if (rpmPkgSign(arg, sargs) < 0)
 	    rc++;
+	else
+	    rpmlog(RPMLOG_INFO, "%s\n", arg);
     }
 
 exit:
@@ -224,6 +227,8 @@ int main(int argc, char *argv[])
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    if (rpmPkgDelSign(arg, &sargs) < 0)
 		ec++;
+	    else
+		rpmlog(RPMLOG_INFO, "%s\n", arg);
 	}
 	break;
     case MODE_DELFILESIGN:
@@ -231,6 +236,8 @@ int main(int argc, char *argv[])
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    if (rpmPkgDelFileSign(arg, &sargs) < 0)
 		ec++;
+	    else
+		rpmlog(RPMLOG_INFO, "%s\n", arg);
 	}
 	break;
     case MODE_NONE:

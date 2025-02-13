@@ -835,9 +835,6 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	}
     }
 
-    if (res == 0)
-	rpmlog(RPMLOG_INFO, "%s\n", rpm);
-
 exit:
     if (fd)	(void) closeFile(&fd);
     if (ofd)	(void) closeFile(&ofd);
