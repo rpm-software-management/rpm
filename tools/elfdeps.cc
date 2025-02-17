@@ -96,7 +96,12 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
-static void addDep(ARGV_t *deps,
+static void addDep(ARGV_t *deps, const char *dep)
+{
+    argvAdd(deps, dep);
+}
+
+static void addSoDep(ARGV_t *deps,
 		   const char *soname, const char *ver, const char *marker)
 {
     char *dep = NULL;
@@ -108,7 +113,7 @@ static void addDep(ARGV_t *deps,
 	rasprintf(&dep,
 		  "%s(%s)%s", soname, ver ? ver : "", marker ? marker : "");
     }
-    argvAdd(deps, dep ? dep : soname);
+    addDep(deps, dep ? dep : soname);
     free(dep);
 }
 
@@ -144,7 +149,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only) {
-		    addDep(&ei->provides, soname, s, ei->marker);
+		    addSoDep(&ei->provides, soname, s, ei->marker);
 		}
 	    }
 		    
@@ -183,7 +188,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && soname && !soname_only) {
-		    addDep(&ei->requires_, soname, s, ei->marker);
+		    addSoDep(&ei->requires_, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -226,7 +231,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
-			addDep(&ei->requires_, s, NULL, ei->marker);
+			addSoDep(&ei->requires_, s, NULL, ei->marker);
 		}
 		break;
 	    }
@@ -313,7 +318,7 @@ static int processFile(const char *fn, int dtype)
      * section, we need to ensure that we have a new enough glibc.
      */
     if (genRequires(ei) && ei->gotGNUHASH && !ei->gotHASH && !soname_only) {
-	argvAdd(&ei->requires_, "rtld(GNU_HASH)");
+	addDep(&ei->requires_, "rtld(GNU_HASH)");
     }
 
     /*
@@ -327,12 +332,12 @@ static int processFile(const char *fn, int dtype)
 	    ei->soname = rstrdup(bn ? bn + 1 : fn);
 	}
 	if (ei->soname)
-	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
+	    addSoDep(&ei->provides, ei->soname, NULL, ei->marker);
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
     if (ei->interp && require_interp)
-	argvAdd(&ei->requires_, ei->interp);
+	addDep(&ei->requires_, ei->interp);
 
     rc = 0;
     /* dump the requested dependencies for this file */
