@@ -1,5 +1,8 @@
 #include "system.h"
 
+#include <string>
+#include <vector>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,7 +13,6 @@
 #include <gelf.h>
 
 #include <rpm/rpmstring.h>
-#include <rpm/argv.h>
 
 int soname_only = 0;
 int fake_soname = 1;
@@ -30,8 +32,8 @@ struct elfInfo {
     char *interp;
     const char *marker;		/* elf class marker or NULL */
 
-    ARGV_t requires_;
-    ARGV_t provides;
+    std::vector<std::string> requires_;
+    std::vector<std::string> provides;
 };
 
 /*
@@ -96,12 +98,12 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
-static void addDep(ARGV_t *deps, const char *dep)
+static void addDep(std::vector<std::string> & deps, const char *dep)
 {
-    argvAdd(deps, dep);
+    deps.push_back(dep);
 }
 
-static void addSoDep(ARGV_t *deps,
+static void addSoDep(std::vector<std::string> & deps,
 		   const char *soname, const char *ver, const char *marker)
 {
     char *dep = NULL;
@@ -149,7 +151,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only) {
-		    addSoDep(&ei->provides, soname, s, ei->marker);
+		    addSoDep(ei->provides, soname, s, ei->marker);
 		}
 	    }
 		    
@@ -188,7 +190,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && soname && !soname_only) {
-		    addSoDep(&ei->requires_, soname, s, ei->marker);
+		    addSoDep(ei->requires_, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -231,7 +233,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
-			addSoDep(&ei->requires_, s, NULL, ei->marker);
+			addSoDep(ei->requires_, s, NULL, ei->marker);
 		}
 		break;
 	    }
@@ -289,7 +291,7 @@ static int processFile(const char *fn, int dtype)
     struct stat st;
     GElf_Ehdr *ehdr, ehdr_mem;
     elfInfo *ei = new elfInfo {};
-    ARGV_t dep = NULL;
+    auto const & dep = dtype ? ei->requires_ : ei->provides;
 
     fdno = open(fn, O_RDONLY);
     if (fdno < 0 || fstat(fdno, &st) < 0)
@@ -318,7 +320,7 @@ static int processFile(const char *fn, int dtype)
      * section, we need to ensure that we have a new enough glibc.
      */
     if (genRequires(ei) && ei->gotGNUHASH && !ei->gotHASH && !soname_only) {
-	addDep(&ei->requires_, "rtld(GNU_HASH)");
+	addDep(ei->requires_, "rtld(GNU_HASH)");
     }
 
     /*
@@ -332,28 +334,25 @@ static int processFile(const char *fn, int dtype)
 	    ei->soname = rstrdup(bn ? bn + 1 : fn);
 	}
 	if (ei->soname)
-	    addSoDep(&ei->provides, ei->soname, NULL, ei->marker);
+	    addSoDep(ei->provides, ei->soname, NULL, ei->marker);
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
     if (ei->interp && require_interp)
-	addDep(&ei->requires_, ei->interp);
+	addDep(ei->requires_, ei->interp);
 
     rc = 0;
     /* dump the requested dependencies for this file */
-    dep = dtype ? ei->requires_ : ei->provides;
-    if (dep && *dep) {
+    if (dep.empty() == false) {
 	if (multifile)
 	    fprintf(stdout, ";%s\n", fn);
-	for (; dep && *dep; dep++)
-	    fprintf(stdout, "%s\n", *dep);
+	for (auto const & d : dep)
+	    fprintf(stdout, "%s\n", d.c_str());
     }
 
 exit:
     if (fdno >= 0) close(fdno);
     if (ei) {
-	argvFree(ei->provides);
-	argvFree(ei->requires_);
 	free(ei->soname);
 	free(ei->interp);
     	if (ei->elf) elf_end(ei->elf);
