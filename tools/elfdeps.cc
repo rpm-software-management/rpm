@@ -18,7 +18,7 @@ int filter_soname = 1;
 int require_interp = 0;
 int multifile = 0;
 
-typedef struct elfInfo_s {
+struct elfInfo {
     Elf *elf;
 
     int isDSO;
@@ -32,7 +32,7 @@ typedef struct elfInfo_s {
 
     ARGV_t requires_;
     ARGV_t provides;
-} elfInfo;
+};
 
 /*
  * Rough soname sanity filtering: all sane soname's dependencies need to
@@ -283,7 +283,7 @@ static int processFile(const char *fn, int dtype)
     int fdno;
     struct stat st;
     GElf_Ehdr *ehdr, ehdr_mem;
-    elfInfo *ei = (elfInfo *)rcalloc(1, sizeof(*ei));
+    elfInfo *ei = new elfInfo {};
     ARGV_t dep = NULL;
 
     fdno = open(fn, O_RDONLY);
@@ -352,7 +352,7 @@ exit:
 	free(ei->soname);
 	free(ei->interp);
     	if (ei->elf) elf_end(ei->elf);
-	rfree(ei);
+	delete ei;
     }
     return rc;
 }
