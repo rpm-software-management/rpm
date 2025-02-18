@@ -29,9 +29,9 @@ struct elfInfo {
     int gotDEBUG;
     int gotHASH;
     int gotGNUHASH;
-    char *soname;
-    char *interp;
-    const char *marker;		/* elf class marker or NULL */
+    std::string soname;
+    std::string interp;
+    std::string marker;		/* elf class marker */
 
     std::vector<std::string> requires_;
     std::vector<std::string> provides;
@@ -70,13 +70,12 @@ static bool skipSoname(const std::string & soname)
 
 static int genRequires(elfInfo *ei)
 {
-    return !(ei->interp && ei->isExec == 0);
+    return !(ei->interp.empty() == false && ei->isExec == 0);
 }
 
-static const char *mkmarker(GElf_Ehdr *ehdr)
+static std::string mkmarker(GElf_Ehdr *ehdr)
 {
-    const char *marker = NULL;
-
+    std::string marker;
     if (ehdr->e_ident[EI_CLASS] == ELFCLASS64) {
 	switch (ehdr->e_machine) {
 	case EM_ALPHA:
@@ -98,17 +97,16 @@ static void addDep(std::vector<std::string> & deps, const std::string & dep)
 
 static void addSoDep(std::vector<std::string> & deps,
 		     const std::string & soname,
-		     const char *ver, const char *marker)
+		     const std::string & ver, const std::string & marker)
 {
     if (skipSoname(soname))
 	return;
 
-    if (ver || marker) {
-	auto dep = std::format("{}({}){}", soname,
-				ver ? ver : "", marker ? marker : "");
-	addDep(deps, dep);
-    } else {
+    if (ver.empty() && marker.empty()) {
 	addDep(deps, soname);
+    } else {
+	auto dep = std::format("{}({}){}", soname, ver, marker);
+	addDep(deps, dep);
     }
 }
 
@@ -216,13 +214,13 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_SONAME:
 		s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		if (s)
-		    ei->soname = rstrdup(s);
+		    ei->soname = s;
 		break;
 	    case DT_NEEDED:
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
-			addSoDep(ei->requires_, s, NULL, ei->marker);
+			addSoDep(ei->requires_, s, "", ei->marker);
 		}
 		break;
 	    }
@@ -266,7 +264,7 @@ static void processProgHeaders(elfInfo *ei, GElf_Ehdr *ehdr)
 	    char * filedata = elf_rawfile(ei->elf, &maxsize);
 
 	    if (filedata && phdr->p_offset < maxsize) {
-		ei->interp = rstrdup(filedata + phdr->p_offset);
+		ei->interp = filedata + phdr->p_offset;
 		break;
 	    }
 	}
@@ -318,16 +316,16 @@ static int processFile(const char *fn, int dtype)
      * check is used to avoid adding basename provides for PIE executables.
      */
     if (ei->isDSO && !ei->gotDEBUG) {
-	if (!ei->soname && fake_soname) {
+	if (ei->soname.empty() && fake_soname) {
 	    const char *bn = strrchr(fn, '/');
-	    ei->soname = rstrdup(bn ? bn + 1 : fn);
+	    ei->soname = bn ? bn + 1 : fn;
 	}
-	if (ei->soname)
-	    addSoDep(ei->provides, ei->soname, NULL, ei->marker);
+	if (ei->soname.empty() == false)
+	    addSoDep(ei->provides, ei->soname, "", ei->marker);
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
-    if (ei->interp && require_interp)
+    if (ei->interp.empty() == false && require_interp)
 	addDep(ei->requires_, ei->interp);
 
     rc = 0;
@@ -342,8 +340,6 @@ static int processFile(const char *fn, int dtype)
 exit:
     if (fdno >= 0) close(fdno);
     if (ei) {
-	free(ei->soname);
-	free(ei->interp);
     	if (ei->elf) elf_end(ei->elf);
 	delete ei;
     }
