@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <format>
 #include <string>
 #include <vector>
 
@@ -90,25 +91,25 @@ static const char *mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
-static void addDep(std::vector<std::string> & deps, const char *dep)
+static void addDep(std::vector<std::string> & deps, const std::string & dep)
 {
     deps.push_back(dep);
 }
 
 static void addSoDep(std::vector<std::string> & deps,
-		   const char *soname, const char *ver, const char *marker)
+		     const std::string & soname,
+		     const char *ver, const char *marker)
 {
-    char *dep = NULL;
-
     if (skipSoname(soname))
 	return;
 
     if (ver || marker) {
-	rasprintf(&dep,
-		  "%s(%s)%s", soname, ver ? ver : "", marker ? marker : "");
+	auto dep = std::format("{}({}){}", soname,
+				ver ? ver : "", marker ? marker : "");
+	addDep(deps, dep);
+    } else {
+	addDep(deps, soname);
     }
-    addDep(deps, dep ? dep : soname);
-    free(dep);
 }
 
 static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
