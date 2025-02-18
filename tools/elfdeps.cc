@@ -116,7 +116,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 {
     Elf_Data *data = NULL;
     unsigned int offset, auxoffset;
-    char *soname = NULL;
+    std::string soname;
 
     while ((data = elf_getdata(scn, data)) != NULL) {
 	offset = 0;
@@ -139,24 +139,22 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (s == NULL)
 		    break;
 		if (def->vd_flags & VER_FLG_BASE) {
-		    rfree(soname);
-		    soname = rstrdup(s);
+		    soname = s;
 		    auxoffset += aux->vda_next;
 		    continue;
-		} else if (soname && !soname_only) {
+		} else if (!soname_only) {
 		    addSoDep(ei->provides, soname, s, ei->marker);
 		}
 	    }
 		    
 	}
     }
-    rfree(soname);
 }
 
 static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 {
     Elf_Data *data = NULL;
-    char *soname = NULL;
+    std::string soname;
     while ((data = elf_getdata(scn, data)) != NULL) {
 	unsigned int offset = 0, auxoffset;
 	for (int i = shdr->sh_info; --i >= 0; ) {
@@ -169,8 +167,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    s = elf_strptr(ei->elf, shdr->sh_link, need->vn_file);
 	    if (s == NULL)
 		break;
-	    rfree(soname);
-	    soname = rstrdup(s);
+	    soname = s;
 	    auxoffset = offset + need->vn_aux;
 
 	    for (int j = need->vn_cnt; --j >= 0; ) {
@@ -182,7 +179,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (s == NULL)
 		    break;
 
-		if (genRequires(ei) && soname && !soname_only) {
+		if (genRequires(ei) && !soname_only) {
 		    addSoDep(ei->requires_, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
@@ -190,7 +187,6 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    offset += need->vn_next;
 	}
     }
-    rfree(soname);
 }
 
 static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
