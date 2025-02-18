@@ -31,7 +31,7 @@ struct elfInfo {
     int gotGNUHASH;
     std::string soname;
     std::string interp;
-    std::string marker;		/* elf class marker */
+    std::string biarch;		/* legacy elf class biarch marker */
 
     std::vector<std::string> requires_;
     std::vector<std::string> provides;
@@ -73,7 +73,7 @@ static int genRequires(elfInfo *ei)
     return !(ei->interp.empty() == false && ei->isExec == 0);
 }
 
-static std::string mkmarker(GElf_Ehdr *ehdr)
+static std::string mkbiarch(GElf_Ehdr *ehdr)
 {
     std::string marker;
     if (ehdr->e_ident[EI_CLASS] == ELFCLASS64) {
@@ -141,7 +141,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (!soname_only) {
-		    addSoDep(ei->provides, soname, s, ei->marker);
+		    addSoDep(ei->provides, soname, s, ei->biarch);
 		}
 	    }
 		    
@@ -178,7 +178,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && !soname_only) {
-		    addSoDep(ei->requires_, soname, s, ei->marker);
+		    addSoDep(ei->requires_, soname, s, ei->biarch);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -220,7 +220,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
-			addSoDep(ei->requires_, s, "", ei->marker);
+			addSoDep(ei->requires_, s, "", ei->biarch);
 		}
 		break;
 	    }
@@ -294,7 +294,7 @@ static int processFile(const char *fn, int dtype)
 	goto exit;
 
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
-	ei->marker = mkmarker(ehdr);
+	ei->biarch = mkbiarch(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -321,7 +321,7 @@ static int processFile(const char *fn, int dtype)
 	    ei->soname = bn ? bn + 1 : fn;
 	}
 	if (ei->soname.empty() == false)
-	    addSoDep(ei->provides, ei->soname, "", ei->marker);
+	    addSoDep(ei->provides, ei->soname, "", ei->biarch);
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
