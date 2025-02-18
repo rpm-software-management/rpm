@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <format>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,8 @@ int fake_soname = 1;
 int filter_soname = 1;
 int require_interp = 0;
 int multifile = 0;
+int biarch_deps = 0;
+int multiarch_deps = 0;
 
 struct elfInfo {
     Elf *elf;
@@ -32,6 +35,7 @@ struct elfInfo {
     std::string soname;
     std::string interp;
     std::string biarch;		/* legacy elf class biarch marker */
+    std::string multiarch;	/* multiarch elf class marker */
 
     std::vector<std::string> requires_;
     std::vector<std::string> provides;
@@ -90,6 +94,76 @@ static std::string mkbiarch(GElf_Ehdr *ehdr)
     return marker;
 }
 
+using elfmap = std::unordered_map<uint32_t, std::string>;
+
+static const elfmap archmap = {
+    { EM_NONE,		"none" },
+    { EM_386,		"x86" },
+    { EM_AARCH64,	"aarch" },
+    { EM_ALPHA,		"alpha" },
+    { EM_ARM,		"arm" },
+    { EM_BPF,		"bpf" },
+    { EM_FAKE_ALPHA,	"alpha" },
+    { EM_MIPS,		"mips" },
+    { EM_PPC,		"ppc" },
+    { EM_PPC64,		"ppc" },
+    { EM_RISCV,		"riscv" },
+    { EM_S390,		"s390" },
+    { EM_SPARC,		"sparc" },
+    { EM_SPARCV9,	"sparcv9" },
+    { EM_X86_64,	"x86" },
+};
+
+static const elfmap bitsmap = {
+    { ELFCLASSNONE,	"invalid" },
+    { ELFCLASS32,	"32" },
+    { ELFCLASS64,	"64" },
+};
+
+static const elfmap endianmap = {
+    { ELFDATANONE,	"invalid" },
+    { ELFDATA2LSB,	"l" },
+    { ELFDATA2MSB,	"b" },
+};
+
+static std::string elfname(const elfmap & emap, uint32_t val)
+{
+    auto res = emap.find(val);
+    return res != emap.end() ? res->second : "unknown";
+}
+
+static void armflags(GElf_Ehdr *ehdr, std::string & flags)
+{
+    if ((ehdr->e_flags & EF_ARM_ABI_FLOAT_HARD) == EF_ARM_ABI_FLOAT_HARD)
+	flags += "h";
+    if ((ehdr->e_flags & EF_ARM_ABI_FLOAT_SOFT) == EF_ARM_ABI_FLOAT_SOFT)
+	flags += "s";
+}
+
+static void x86flags(GElf_Ehdr *ehdr, std::string & flags)
+{
+    if (ehdr->e_machine == EM_X86_64 && ehdr->e_ident[EI_CLASS] == ELFCLASS32)
+	flags += "x";
+}
+
+static std::string mkelfclass(GElf_Ehdr *ehdr)
+{
+    const std::string arch = elfname(archmap, ehdr->e_machine);
+    const std::string bits = elfname(bitsmap, ehdr->e_ident[EI_CLASS]);
+    const std::string endian = elfname(endianmap, ehdr->e_ident[EI_DATA]);
+    std::string flags = "";
+
+    if (arch == "arm")
+	armflags(ehdr, flags);
+    if (arch == "x86")
+	x86flags(ehdr, flags);
+
+    if (flags.empty() == false)
+	flags.insert(0, "-");
+
+    return std::format("({}-{}{}{})", arch, bits, endian, flags);
+}
+
 static void addDep(std::vector<std::string> & deps, const std::string & dep)
 {
     deps.push_back(dep);
@@ -108,6 +182,16 @@ static void addSoDep(std::vector<std::string> & deps,
 	auto dep = std::format("{}({}){}", soname, ver, marker);
 	addDep(deps, dep);
     }
+}
+
+static void addSoDep(std::vector<std::string> & deps,
+		     const std::string & soname,
+		     const std::string & ver, elfInfo *ei)
+{
+    if (multiarch_deps)
+	addSoDep(deps, soname, ver, ei->multiarch);
+    if (biarch_deps)
+	addSoDep(deps, soname, ver, ei->biarch);
 }
 
 static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
@@ -141,7 +225,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (!soname_only) {
-		    addSoDep(ei->provides, soname, s, ei->biarch);
+		    addSoDep(ei->provides, soname, s, ei);
 		}
 	    }
 		    
@@ -178,7 +262,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && !soname_only) {
-		    addSoDep(ei->requires_, soname, s, ei->biarch);
+		    addSoDep(ei->requires_, soname, s, ei);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -220,7 +304,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s)
-			addSoDep(ei->requires_, s, "", ei->biarch);
+			addSoDep(ei->requires_, s, "", ei);
 		}
 		break;
 	    }
@@ -295,6 +379,7 @@ static int processFile(const char *fn, int dtype)
 
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
 	ei->biarch = mkbiarch(ehdr);
+	ei->multiarch = mkelfclass(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -321,7 +406,7 @@ static int processFile(const char *fn, int dtype)
 	    ei->soname = bn ? bn + 1 : fn;
 	}
 	if (ei->soname.empty() == false)
-	    addSoDep(ei->provides, ei->soname, "", ei->biarch);
+	    addSoDep(ei->provides, ei->soname, "", ei);
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -361,6 +446,8 @@ int main(int argc, char *argv[])
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	{ "multifile", 'm', POPT_ARG_VAL, &multifile, -1, NULL, NULL },
+	{ "biarch", 0, POPT_ARG_VAL, &biarch_deps, -1, NULL, NULL },
+	{ "multiarch", 0, POPT_ARG_VAL, &multiarch_deps, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
@@ -370,6 +457,11 @@ int main(int argc, char *argv[])
     optCon = poptGetContext(argv[0], argc, (const char **) argv, opts, 0);
     if (argc < 2 || poptGetNextOpt(optCon) == 0) {
 	poptPrintUsage(optCon, stderr, 0);
+	exit(EXIT_FAILURE);
+    }
+
+    if (multiarch_deps == 0 && biarch_deps == 0) {
+	fprintf(stderr, "error: --biarch or --multiarch required\n");
 	exit(EXIT_FAILURE);
     }
 
