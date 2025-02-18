@@ -43,36 +43,28 @@ struct elfInfo {
  * and common exception is the dynamic linker itself, which we allow
  * here, the rest can use --no-filter-soname.
  */
-static int skipSoname(const char *soname)
+static bool skipSoname(const std::string & soname)
 {
-    int sane = 0;
-
     /* Filter out empty and all-whitespace sonames */
-    for (const char *s = soname; *s != '\0'; s++) {
-	if (!risspace(*s)) {
-	    sane = 1;
-	    break;
-	}
-    }
+    if (soname.empty())
+	return true;
 
-    if (!sane)
-	return 1;
+    if (soname.find_first_not_of(" \t\n\r\f\v") == std::string::npos)
+	return true;
 
     if (filter_soname) {
-	if (!strstr(soname, ".so"))
-	    return 1;
+	if (soname.find(".so") == std::string::npos)
+	    return true;
 
-	if (rstreqn(soname, "ld.", 3) || rstreqn(soname, "ld-", 3) ||
-	    rstreqn(soname, "ld64.", 3) || rstreqn(soname, "ld64-", 3))
-	    return 0;
-
-	if (rstreqn(soname, "lib", 3))
-	    return 0;
-	else
-	    return 1;
+	const auto keep = { "ld.", "ld-", "ld64.", "ld64-", "lib" };
+	for (auto & prefix : keep) {
+	    if (soname.starts_with(prefix))
+		return false;
+	}
+	return true;
     }
 
-    return 0;
+    return false;
 }
 
 static int genRequires(elfInfo *ei)
