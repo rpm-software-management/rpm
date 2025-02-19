@@ -229,13 +229,13 @@ tests = [
 
 ms = ['no match', 'match']
 
-myprint() # dumb kludge to fixup expected output
+print() # dumb kludge to fixup expected output
 for p, r, res in tests:
     d1 = rpm.ds(p, 'provides')
     d2 = rpm.ds(r, 'requires')
     match = d1.Compare(d2)
     if match != res:
-        myprint('FAILED: %s with %s: %s' % (d1.DNEVR(), d2.DNEVR(),ms[res]))
+        print('FAILED: %s with %s: %s' % (d1.DNEVR(), d2.DNEVR(),ms[res]))
 ],
 []
 )
