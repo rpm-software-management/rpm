@@ -332,7 +332,7 @@ static rpmRC addDefault(defaultsTable & table, char * line,
 	return RPMRC_FAIL;
     }
 
-    table.insert({name, defName});
+    table[name] = defName;
 
     return RPMRC_OK;
 }

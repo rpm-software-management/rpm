@@ -77,6 +77,19 @@ optflags              : -O2 -g -march=x86-64-v3
 ])
 
 RPMTEST_CHECK([
+cat << EOF > ${RPMTEST}/root/.config/rpm/rpmrc
+buildarchtranslate: x86_64_v3: noarch
+EOF
+
+runroot rpm --showrc | head -2
+],
+[0],
+[ARCHITECTURE AND OS:
+build arch            : noarch
+],
+[])
+
+RPMTEST_CHECK([
 echo ppc64le-Linux > ${RPMTEST}/${RPMSYSCONFDIR}/platform
 runroot rpm --showrc | head -17 | sed '/backend/d'
 ],
