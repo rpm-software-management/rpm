@@ -66,8 +66,3 @@ SEE ALSO
 ========
 
 **rpm**(8), **rpmbuild**(8)
-
-AUTHORS
-=======
-
-Jeff Johnson \<jbj\@redhat.com\>

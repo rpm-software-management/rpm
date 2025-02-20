@@ -41,8 +41,3 @@ SEE ALSO
 **dot**(1), **dotty**(1)
 
 **http://www.graphviz.org/ \<URL:http://www.graphviz.org/\>**
-
-AUTHORS
-=======
-
-Jeff Johnson \<jbj\@redhat.com\>

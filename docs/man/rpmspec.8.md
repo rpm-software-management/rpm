@@ -152,11 +152,3 @@ aliases it\'s impossible to guarantee that what\'s described in the
 manual matches what\'s available.
 
 **http://www.rpm.org/ \<URL:http://www.rpm.org/\>**
-
-AUTHORS
-=======
-
-    Marc Ewing <marc@redhat.com>
-    Jeff Johnson <jbj@redhat.com>
-    Erik Troan <ewt@redhat.com>
-    Panu Matilainen <pmatilai@redhat.com>
