@@ -97,7 +97,7 @@ static PyObject *rpmKeyring_addKey(rpmKeyringObject *s, PyObject *arg)
 {
     rpmPubkeyObject *pubkey = NULL;
 
-    if (!PyArg_Parse(arg, "O!", rpmPubkey_Type, &pubkey))
+    if (!PyArg_Parse(arg, "O!", modstate->rpmPubkey_Type, &pubkey))
 	return NULL;
 
     return Py_BuildValue("i", rpmKeyringAddKey(s->keyring, pubkey->pubkey));
@@ -151,7 +151,7 @@ PyObject * rpmKeyring_Wrap(PyTypeObject *subtype, rpmKeyring keyring)
 int rpmKeyringFromPyObject(PyObject *item, rpmKeyring *keyring)
 {
     rpmKeyringObject *kro;
-    if (!PyArg_Parse(item, "O!", rpmKeyring_Type, &kro))
+    if (!PyArg_Parse(item, "O!", modstate->rpmKeyring_Type, &kro))
 	return 0;
     *keyring = kro->keyring;
     return 1;

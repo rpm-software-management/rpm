@@ -120,7 +120,7 @@ PyObject *rpmps_AsList(rpmps ps)
     psi = rpmpsInitIterator(ps);
 
     while ((prob = rpmpsiNext(psi))) {
-        PyObject *pyprob = rpmprob_Wrap(rpmProblem_Type, prob);
+        PyObject *pyprob = rpmprob_Wrap(modstate->rpmProblem_Type, prob);
         if (!pyprob) {
             Py_DECREF(problems);
             rpmpsFreeIterator(psi);

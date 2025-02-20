@@ -122,7 +122,7 @@ PyObject * rpmstrPool_Wrap(PyTypeObject *subtype, rpmstrPool pool)
 int poolFromPyObject(PyObject *item, rpmstrPool *pool)
 {
     rpmstrPoolObject *p = NULL;
-    if (PyArg_Parse(item, "O!", rpmstrPool_Type, &p))
+    if (PyArg_Parse(item, "O!", modstate->rpmstrPool_Type, &p))
 	*pool = p->pool;
     return (p != NULL);
 }

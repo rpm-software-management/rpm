@@ -31,7 +31,7 @@
 
 static PyObject *makeHeader(Header h)
 {
-    return hdr_Wrap(hdr_Type, headerLink(h));
+    return hdr_Wrap(modstate->hdr_Type, headerLink(h));
 }
 
 struct specPkgObject_s {
@@ -214,7 +214,7 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     iter = rpmSpecPkgIterInit(s->spec);
 
     while ((pkg = rpmSpecPkgIterNext(iter)) != NULL) {
-	PyObject *po = specPkg_Wrap(specPkg_Type, pkg, s);
+	PyObject *po = specPkg_Wrap(modstate->specPkg_Type, pkg, s);
         if (!po) {
             rpmSpecPkgIterFree(iter);
             Py_DECREF(pkgList);

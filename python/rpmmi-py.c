@@ -76,7 +76,7 @@ rpmmi_iternext(rpmmiObject * s)
 	return NULL;
     }
     headerLink(h);
-    return hdr_Wrap(hdr_Type, h);
+    return hdr_Wrap(modstate->hdr_Type, h);
 }
 
 static PyObject *
