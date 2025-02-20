@@ -38,6 +38,18 @@ runroot --setenv  XDG_CONFIG_HOME "~/.zzz" rpm --showrc | awk '/^Macro path/{pri
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([macros in macro path])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+echo "%somewhere /some/where" > /tmp/somewhere
+SOMENV=/tmp/somewhere rpm --macros "%{getenv:SOMENV}" --eval "%somewhere"
+],
+[0],
+[/some/where
+],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 RPMTEST_SETUP_RW([macro path: skip editor backups])
 AT_KEYWORDS([macros])
