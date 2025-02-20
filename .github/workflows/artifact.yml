@@ -5,6 +5,10 @@ on:
   release:
     types: [published]
 
+permissions:
+  # Permit the modification of releases
+  contents: write
+
 jobs:
   # Generates dist tarball(s) and a checksum file to go with.
   #
