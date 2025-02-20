@@ -54,8 +54,3 @@ SEE ALSO
 ========
 
 **rpm2cpio**(8), **rpm**(8)
-
-AUTHOR
-======
-
-    Florian Festi <ffesti@redhat.com>

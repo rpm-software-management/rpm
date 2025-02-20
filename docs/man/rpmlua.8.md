@@ -60,8 +60,3 @@ SEE ALSO
 **lua**(1), **popt**(3), **getopt**(3), **rpm**(8)
 
 **http://www.rpm.org/ \<URL:http://www.rpm.org/\>**
-
-AUTHORS
-=======
-
-    Panu Matilainen <pmatilai@redhat.com>

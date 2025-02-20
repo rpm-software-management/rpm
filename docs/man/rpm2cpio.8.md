@@ -32,8 +32,3 @@ SEE ALSO
 ========
 
 **rpm**(8) **rpm2archive**(8)
-
-AUTHOR
-======
-
-    Erik Troan <ewt@redhat.com>

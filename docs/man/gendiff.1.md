@@ -48,8 +48,3 @@ SEE ALSO
 ========
 
 **diff**(1), **patch**(1)
-
-AUTHOR
-======
-
-    Marc Ewing <marc@redhat.com>
