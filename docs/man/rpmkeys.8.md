@@ -1,77 +1,69 @@
----
-date: 29 October 2010
-section: 8
-title: RPMKEYS
----
+RPMKEYS(8)
 
-NAME
-====
+# NAME
 
 rpmkeys - RPM Keyring
 
-SYNOPSIS
-========
+# SYNOPSIS
 
-**rpmkeys** {**\--list\|\--import\|\--erase\|\--delete\|\--checksig**}
+*rpmkeys* {*--list|--import|--erase|--delete|--checksig*}
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-The general forms of **rpm**(8) digital signature commands are
+The general forms of *rpm*(8) digital signature commands are
 
-**rpmkeys** {**-l\|\--list**} \[*FINGERPRINT \...*\]
+*rpmkeys* {*-l|--list*} [*FINGERPRINT ...*]
 
-**rpmkeys** {**-x\|\--export**} \[*FINGERPRINT \...*\]
+*rpmkeys* {*-x|--export*} [*FINGERPRINT ...*]
 
-**rpmkeys** {**-i\|\--import**} *PUBKEY \...*
+*rpmkeys* {*-i|--import*} *PUBKEY ...*
 
-**rpmkeys** {**-e\|\--erase\|-d\|\--delete**} *FINGERPRINT \...*
+*rpmkeys* {*-e|--erase|-d|--delete*} *FINGERPRINT ...*
 
-**rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
+*rpmkeys* {*-K|--checksig*} *PACKAGE_FILE ...*
 
-The **\--checksig** option checks all the digests and signatures
-contained in *PACKAGE\_FILE* to ensure the integrity and origin of the
+The *--checksig* option checks all the digests and signatures
+contained in *PACKAGE_FILE* to ensure the integrity and origin of the
 package. Note that signatures are now verified whenever a package is
-read, and **\--checksig** is useful to verify all of the digests and
+read, and *--checksig* is useful to verify all of the digests and
 signatures associated with a package.
 
 Digital signatures cannot be verified without a public key. An ASCII
-armored public key can be added to the **rpm** persistent keyring using
-**\--import**.
+armored public key can be added to the *rpm* persistent keyring using
+*--import*.
 
 The following commands are available for manipulating the persistent
 rpm keyring:
 
-**rpmkeys** {**-l\|\--list**} \[*FINGERPRINT \...*\]
+*rpmkeys* {*-l|--list*} [*FINGERPRINT ...*]
 
 List currently imported public key(s) (aka certificates) by their
 fingerprint and user ID. If no fingerprints are specified, list all keys.
 
 The fingerprint is the handle used for all operations on the keys.
 
-**rpmkeys** {**-x\|\--export**} \[*FINGERPRINT \...*\]
+*rpmkeys* {*-x|--export*} [*FINGERPRINT ...*]
 
 Output the key(s) using an ASCII-armor encoding.
 
 Exporting allows for inspecting the data with specialized tools, such
 as Sequoia or GnuPG. For example:
 
-**rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect **
+*rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect *
 
-**rpmkeys** {**-e\|\--erase\|-d\|\--delete**} *FINGERPRINT \...*
+*rpmkeys* {*-e|--erase|-d|--delete*} *FINGERPRINT ...*
 
 Erase the key(s) designated by *FINGERPRINT*. For example:
 
-**rpmkeys** **\--erase 771b18d3d7baa28734333c424344591e1964c5fc**
+*rpmkeys* *--erase 771b18d3d7baa28734333c424344591e1964c5fc*
 
-SEE ALSO
-========
+# SEE ALSO
 
-**popt**(3), **rpm**(8), **rpmdb**(8), **rpmsign**(8), **rpm2cpio**(8),
-**rpmbuild**(8), **rpmspec**(8)
+*popt*(3), *rpm*(8), *rpmdb*(8), *rpmsign*(8), *rpm2cpio*(8),
+*rpmbuild*(8), *rpmspec*(8)
 
-**rpmkeys \--help** - as rpm supports customizing the options via popt
-aliases it\'s impossible to guarantee that what\'s described in the
-manual matches what\'s available.
+*rpmkeys --help* - as rpm supports customizing the options via popt
+aliases it's impossible to guarantee that what's described in the
+manual matches what's available.
 
-**http://www.rpm.org/ \<URL:http://www.rpm.org/\>**
+*http://www.rpm.org/*

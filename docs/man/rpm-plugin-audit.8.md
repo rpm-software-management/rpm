@@ -1,70 +1,47 @@
----
-date: 28 Jan 2020
-section: 8
-title: 'RPM-AUDIT'
----
+RPM-PLUGIN-AUDIT(8)
 
-NAME
-====
+# NAME
 
 rpm-plugin-audit - Audit plugin for the RPM Package Manager
 
-Description
-===========
+# DESCRIPTION
 
 The plugin writes basic information about rpm transactions to the audit
 log - like packages installed or removed. The entries can be viewed with
 
-**ausearch -m SOFTWARE\_UPDATE**
+*ausearch -m SOFTWARE_UPDATE*
 
-Data fields
------------
+## Data fields
 
 The entries in the audit log have the following fields:
 
-**Field**
+[[ *Field*
+:< *Description*
+:- *Possible values*
+|  *op*
+:  Package operation
+:  install/update/remove
+|  *sw*
+:  Package identifier
+:  name-version-release.arch
+|  *key_enforce*
+:  Are signatures being enforced (no/yes)
+:  0/1
+|  *gpg_res*
+:  Signature check result (fail/success)
+:  0/1
+|  *root_dir*
+:  Root directory of the operation (normally "/")
+:  <path>
+|  *sw_type*
+:  Package format
+:  rpm
 
-:   **Possible values Description**
-
-```{=html}
-<!-- -->
-```
-
-**op**
-
-:   install/update/remove package operation
-
-```{=html}
-<!-- -->
-```
-
-**sw**
-
-:   name-version-release.arch of the package
-
-**key\_enforce**
-
-:   0/1 are signatures being enforced
-
-**gpg\_res**
-
-:   0/1 result of signature check (0 == fail / 1 == success)
-
-**root\_dir**
-
-:   Root directory of the operation, normally \"/\"
-
-**sw\_type**
-
-:   \"rpm\" package format
-
-Configuration
-=============
+# CONFIGURATION
 
 There are currently no options for this plugin in particular. See
-**rpm-plugins**(8) on how to control plugins in general.
+*rpm-plugins*(8) on how to control plugins in general.
 
-SEE ALSO
-========
+# SEE ALSO
 
-**ausearch**(8), **rpm-plugins**(8)
+*ausearch*(8), *rpm-plugins*(8)

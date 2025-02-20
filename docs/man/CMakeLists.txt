@@ -12,14 +12,12 @@ set(extra
 
 # Build all manuals
 set(manuals ${core} ${extra})
-if (PANDOC)
-	foreach(man ${manuals})
-		add_custom_command(OUTPUT ${man} COMMAND ${PANDOC}
-				${CMAKE_CURRENT_SOURCE_DIR}/${man}.md
-				-s -t man -o ${man} DEPENDS ${man}.md)
-	endforeach()
-	add_custom_target(man ALL DEPENDS ${manuals})
-endif()
+foreach(man ${manuals})
+	add_custom_command(OUTPUT ${man} COMMAND ${SCDOC}
+			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.md
+			> ${man} DEPENDS ${man}.md)
+endforeach()
+add_custom_target(man ALL DEPENDS ${manuals})
 
 # Install manuals for the enabled features
 set(manuals ${core})
@@ -47,20 +45,9 @@ if (ENABLE_PLUGINS)
 	endif()
 endif()
 foreach(man ${manuals})
-	unset(fn)
-	if (PANDOC)
-		set(fn ${CMAKE_CURRENT_BINARY_DIR}/${man})
-	elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${man})
-		# dist tarballs have pre-built manuals in the source dir
-		set(fn ${CMAKE_CURRENT_SOURCE_DIR}/${man})
-	endif()
-	if (fn)
-		get_filename_component(ext ${fn} EXT)
-		string(REPLACE "." "man" section ${ext})
-		install(FILES ${fn}
-			DESTINATION ${CMAKE_INSTALL_MANDIR}/${section})
-	endif()
+	set(fn ${CMAKE_CURRENT_BINARY_DIR}/${man})
+	get_filename_component(ext ${fn} EXT)
+	string(REPLACE "." "man" section ${ext})
+	install(FILES ${fn}
+		DESTINATION ${CMAKE_INSTALL_MANDIR}/${section})
 endforeach()
-if (NOT fn)
-	message(WARNING "pandoc not available and not a dist tarball, man pages not available")
-endif()

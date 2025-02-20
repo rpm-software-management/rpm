@@ -11,7 +11,8 @@ The [rpm.org web page](https://rpm.org/) is created from its own [GitHub reposit
 Man Pages
 ---------
 
-The man pages in *man/* are Markdown documents. They are rendered to the man page format during build. These pre-rendered pages are also shipped with the (release) tarball. That way building rpm from the tarball does not require the *pandoc* as long as the man pages are unchanged.
+The man pages in *man/* are scdoc sources. 
+They are rendered to the man page format during build.
 
 The man pages are also rendered to HTML together with the Reference Manual (see below).
 

@@ -1,68 +1,50 @@
----
-date: 24 October 2002
-section: 8
-title: RPMDEPS
----
+RPMDEPS(8)
 
-NAME
-====
+# NAME
 
 rpmdeps - Generate RPM Package Dependencies
 
-SYNOPSIS
-========
+# SYNOPSIS
 
-**rpmdeps** **{-P\|\--provides}** **{-R\|\--requires}**
-**{\--rpmfcdebug}** *FILE \...*
+*rpmdeps* *{-P|--provides}* *{-R|--requires}*
+*{--rpmfcdebug}* *FILE ...*
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpmdeps** generates package dependencies for the set of *FILE*
+*rpmdeps* generates package dependencies for the set of *FILE*
 arguments. Each *FILE* argument is searched for Elf32/Elf64, script
 interpreter, or per-script dependencies, and the dependencies are
 printed to stdout.
 
-OPTIONS
-=======
+# OPTIONS
 
-**-P, \--provides**
+*-P, --provides*
+	Print the provides
 
-:   Print the provides
+*-R, --requires*
+	Print the requires
 
-**-R, \--requires**
+*--recommends*
+	Print the recommends
 
-:   Print the requires
+*--suggests*
+	Print the suggests
 
-**\--recommends**
+*--supplements*
+	Print the supplements
 
-:   Print the recommends
+*--enhances*
+	Print the enhances
 
-**\--suggests**
+*--conflicts*
+	Print the conflicts
 
-:   Print the suggests
+*--obsoletes*
+	Print the obsoletes
 
-**\--supplements**
+*--alldeps*
+	Print all the dependencies
 
-:   Print the supplements
+# SEE ALSO
 
-**\--enhances**
-
-:   Print the enhances
-
-**\--conflicts**
-
-:   Print the conflicts
-
-**\--obsoletes**
-
-:   Print the obsoletes
-
-**\--alldeps**
-
-:   Print all the dependencies
-
-SEE ALSO
-========
-
-**rpm**(8), **rpmbuild**(8)
+*rpm*(8), *rpmbuild*(8)
