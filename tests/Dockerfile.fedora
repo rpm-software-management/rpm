@@ -51,7 +51,7 @@ RUN dnf -y install \
   gdb-headless \
   dwz \
   fsverity-utils fsverity-utils-devel \
-  pandoc \
+  scdoc \
   sequoia-sq \
   libasan \
   libubsan

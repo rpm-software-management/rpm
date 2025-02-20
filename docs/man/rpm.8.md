@@ -1,850 +1,621 @@
----
-date: 09 June 2002
-section: 8
-title: RPM
----
+RPM(8)
 
-NAME
-====
+# NAME
 
 rpm - RPM Package Manager
 
-SYNOPSIS
-========
+# SYNOPSIS
 
-QUERYING AND VERIFYING PACKAGES
--------------------------------
+## QUERYING AND VERIFYING PACKAGES
 
-**rpm** {**-q\|\--query**} \[**select-options**\] \[**query-options**\]
+*rpm* {*-q|--query*} [*select-options*] [*query-options*]
 
-**rpm** **\--querytags**
+*rpm* {*-V|--verify*} [*select-options*] [*verify-options*]
 
-**rpm** {**-V\|\--verify**} \[**select-options**\]
-\[**verify-options**\]
+## INSTALLING, UPGRADING, AND REMOVING PACKAGES
 
-INSTALLING, UPGRADING, AND REMOVING PACKAGES
---------------------------------------------
+*rpm* {*-i|--install*} [*install-options*] *PACKAGE_FILE ...*
 
-**rpm** {**-i\|\--install**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*-U|--upgrade*} [*install-options*] *PACKAGE_FILE ...*
 
-**rpm** {**-U\|\--upgrade**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*-F|--freshen*} [*install-options*] *PACKAGE_FILE ...*
 
-**rpm** {**-F\|\--freshen**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*--reinstall*} [*install-options*] *PACKAGE_FILE ...*
 
-**rpm** {**\--reinstall**} \[**install-options**\] *PACKAGE\_FILE \...*
+*rpm* {*-e|--erase*} [*erase-options*] *PACKAGE_NAME ...*
 
-**rpm** {**-e\|\--erase**} \[**\--allmatches**\] \[**\--justdb**\]
-\[**\--nodb**\] \[**\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
-\[**\--test**\] *PACKAGE\_NAME \...*
+*rpm* *--restore* [*select-options*] *PACKAGE_NAME ...*
 
-MISCELLANEOUS
--------------
+## MISC OPERATIONS
 
-**rpm** **\--showrc**
+*rpm* *--querytags*
 
-**rpm** **\--restore** \[**select-options**\]
+*rpm* *--showrc*
 
-select-options
---------------
+# DESCRIPTION
 
-\[*PACKAGE\_NAME*\] \[**-a,\--all \[***SELECTOR*\]\] \[**-f,\--file**
-*FILE*\] \[**\--path** *PATH*\] \[**-g,\--group** *GROUP*\] \[**-p,\--package**
-*PACKAGE\_FILE*\]
-\[**\--tid** *TID*\] \[**\--querybynumber** *HDRNUM*\]
-\[**\--triggeredby** *PACKAGE\_NAME*\] \[**\--whatprovides**
-*CAPABILITY*\] \[**\--whatrequires** *CAPABILITY*\]
-\[**\--whatrecommends** *CAPABILITY*\] \[**\--whatsuggests**
-*CAPABILITY*\] \[**\--whatsupplements** *CAPABILITY*\]
-\[**\--whatenhances** *CAPABILITY*\] \[**\--whatobsoletes**
-*CAPABILITY*\] \[**\--whatconflicts** *CAPABILITY*\]
-
-query-options
--------------
-
-General: \[**\--changelog**\] \[**\--changes**\] \[**\--dupes**\]
-\[**-i,\--info**\] \[**\--last**\] \[**\--qf,\--queryformat**
-*QUERYFMT*\] \[**\--xml**\] \[**\--json**\]
-
-Dependencies: \[**\--conflicts**\] \[**\--enhances**\]
-\[**\--obsoletes**\] \[**\--provides**\] \[**\--recommends**\]
-\[**-R,\--requires**\] \[**\--suggests**\] \[**\--supplements**\]
-
-Files: \[**-c,\--configfiles**\] \[**-d,\--docfiles**\] \[**\--dump**\]
-\[**\--fileclass**\] \[**\--filecolor**\]
-\[**\--fileprovide**\]\[**\--filerequire**\] \[**\--filecaps**\]
-\[**\--filesbypkg**\] \[**-l,\--list**\] \[**-s,\--state**\]
-\[**\--noartifact**\] \[**\--noghost**\] \[**\--noconfig**\]
-
-Scripts and triggers: \[**\--filetriggers**\] \[**\--scripts**\]
-\[**\--triggers,\--triggerscripts**\]
-
-verify-options
---------------
-
-\[**\--nodeps**\] \[**\--nofiles**\] \[**\--noscripts**\]
-\[**\--nodigest**\] \[**\--nosignature**\] \[**\--nolinkto**\]
-\[**\--nofiledigest**\] \[**\--nosize**\] \[**\--nouser**\]
-\[**\--nogroup**\] \[**\--nomtime**\] \[**\--nomode**\]
-\[**\--nordev**\] \[**\--nocaps**\]
-
-install-options
----------------
-
-\[**\--allfiles**\] \[**\--badreloc**\] \[**\--excludepath** *OLDPATH*\]
-\[**\--excludedocs**\] \[**\--force**\] \[**-h,\--hash**\]
-\[**\--ignoresize**\] \[**\--ignorearch**\] \[**\--ignoreos**\]
-\[**\--includedocs**\] \[**\--justdb**\] \[**--nodb**\] \[**\--nodeps**\]
-\[**\--nodigest**\] \[**\--noplugins**\] \[**\--nocaps**\]
-\[**\--noorder**\] \[**\--noverify**\] \[**\--nosignature**\]
-\[**\--noscripts**\] \[**\--notriggers**\] \[**\--oldpackage**\]
-\[**\--percent**\] \[**\--prefix** *NEWPATH*\] \[**\--relocate**
-*OLDPATH***=***NEWPATH*\] \[**\--replacefiles**\]
-\[**\--replacepkgs**\] \[**\--test**\]
-
-DESCRIPTION
-===========
-
-**rpm** is a powerful **Package Manager**, which can be used to build,
+*rpm* is a powerful *Package Manager*, which can be used to build,
 install, query, verify, update, and erase individual software packages.
-A **package** consists of an archive of files and meta-data used to
+A *package* consists of an archive of files and meta-data used to
 install and erase the archive files. The meta-data includes helper
 scripts, file attributes, and descriptive information about the package.
-**Packages** come in two varieties: binary packages, used to encapsulate
+*Packages* come in two varieties: binary packages, used to encapsulate
 software to be installed, and source packages, containing the source
 code and recipe necessary to produce binary packages.
 
-One of the following basic modes must be selected: **Query**,
-**Verify**, **Install/Upgrade/Freshen/Reinstall**, **Uninstall**, **Set
-Owners/Groups**, **Show Querytags**, and **Show Configuration**.
+One of the following basic modes must be selected: *Query*,
+*Verify*, *Install/Upgrade/Freshen/Reinstall*, *Uninstall*, *Set
+Owners/Groups*, *Show Querytags*, and *Show Configuration*.
 
-GENERAL OPTIONS
----------------
+# GENERAL OPTIONS
 
 These options can be used in all the different modes.
 
-**-?, \--help**
+*-?, --help*
+	Print a longer usage message than normal.
 
-:   Print a longer usage message than normal.
+*--version*
+	Print a single line containing the version number of *rpm* being
+	used.
 
-**\--version**
+*--quiet*
+	Print as little as possible - normally only error messages will be
+	displayed.
 
-:   Print a single line containing the version number of **rpm** being
-    used.
+*-v, --verbose*
+	Print verbose information - normally routine progress messages will
+	be displayed.
 
-**\--quiet**
+*-vv*
+	Print lots of ugly debugging information.
 
-:   Print as little as possible - normally only error messages will be
-    displayed.
+*--rcfile* *FILELIST*
+	Replace the default list of configuration files to be read with *FILELIST*.
+	See *rpmrc Configuration* for details.
 
-**-v, \--verbose**
+*--load* *FILE*
+	Load an individual macro file.
 
-:   Print verbose information - normally routine progress messages will
-    be displayed.
+*--macros* *FILELIST*
+	Replace the list of macro files to be loaded with *FILELIST*.
+	See *Macro Configuration* for details.
 
-**-vv**
+*--pipe* *CMD*
+	Pipes the output of *rpm* to the command *CMD*.
 
-:   Print lots of ugly debugging information.
+*--dbpath* *DIRECTORY*
+	Use the database in *DIRECTORY* rather than the default path
+	*/var/lib/rpm*.
 
-**\--rcfile** *FILELIST*
+*--root* *DIRECTORY*
+	Use the file system tree rooted at *DIRECTORY* for all operations.
+	Note that this means the database within *DIRECTORY* will be used
+	for dependency checks and any scriptlet(s) (e.g. *%post* if
+	installing, or *%prep* if building, a package) will be run after a
+	chroot(2) to *DIRECTORY*.
 
-:   Replace the default list of configuration files to be read with *FILELIST*.
-    See **rpmrc Configuration** for details.
+	Note that rpm assumes the environment inside the root is set up by
+	the caller, such as any mounts needed for the operation inside the
+	root directory.
 
-**\--load** *FILE*
+*-D, --define='*MACRO EXPR*'*
+	Defines *MACRO* with value *EXPR*.
 
-:   Load an individual macro file.
+*--undefine='*MACRO*'*
+	Undefines *MACRO*.
 
-**\--macros** *FILELIST*
+*-E, --eval='*EXPR*'*
+	Prints macro expansion of *EXPR*.
 
-:   Replace the list of macro files to be loaded with *FILELIST*.
-    See **Macro Configuration** for details.
-
-**\--pipe** *CMD*
-
-:   Pipes the output of **rpm** to the command *CMD*.
-
-**\--dbpath** *DIRECTORY*
-
-:   Use the database in *DIRECTORY* rather than the default path
-    */var/lib/rpm*.
-
-**\--root** *DIRECTORY*
-
-:   Use the file system tree rooted at *DIRECTORY* for all operations.
-    Note that this means the database within *DIRECTORY* will be used
-    for dependency checks and any scriptlet(s) (e.g. **%post** if
-    installing, or **%prep** if building, a package) will be run after a
-    chroot(2) to *DIRECTORY*.
-
-    Note that rpm assumes the environment inside the root is set up by
-    the caller, such as any mounts needed for the operation inside the
-    root directory.
-
-**-D, \--define=\'***MACRO EXPR***\'**
-
-:   Defines *MACRO* with value *EXPR*.
-
-**\--undefine=\'***MACRO***\'**
-
-:   Undefines *MACRO*.
-
-**-E, \--eval=\'***EXPR***\'**
-
-:   Prints macro expansion of *EXPR*.
-
-More - less often needed - options can be found on the **rpm-misc**(8)
+More - less often needed - options can be found on the *rpm-misc*(8)
 man page.
 
-INSTALL AND UPGRADE OPTIONS
----------------------------
+# INSTALL AND UPGRADE OPTIONS
 
-In these options, *PACKAGE\_FILE* can be either **rpm** binary file or
-ASCII package manifest (see **PACKAGE SELECTION OPTIONS**), and may be
-specified as an **ftp** or **http** URL, in which case the package will
-be downloaded before being installed. See **FTP/HTTP OPTIONS** for
-information on **rpm**\'s **ftp** and **http** client support.
+In these options, *PACKAGE_FILE* can be either *rpm* binary file or
+ASCII package manifest (see *PACKAGE SELECTION OPTIONS*), and may be
+specified as an *ftp* or *http* URL, in which case the package will
+be downloaded before being installed. See *FTP/HTTP OPTIONS* for
+information on *rpm*'s *ftp* and *http* client support.
 
-The general form of an **rpm** install command is
+The general form of an *rpm* install command is
 
-**rpm** {**-i\|\--install**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*-i|--install*} [*install-options*] *PACKAGE_FILE ...*
 
 This installs a new package.
 
-The general form of an **rpm** upgrade command is
+The general form of an *rpm* upgrade command is
 
-**rpm** {**-U\|\--upgrade**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*-U|--upgrade*} [*install-options*] *PACKAGE_FILE ...*
 
 This upgrades or installs the package currently installed to a newer
 version. This is the same as install, except all other version(s) of the
 package are removed after the new package is installed.
 
-**rpm** {**-F\|\--freshen**} \[**install-options**\] *PACKAGE\_FILE
-\...*
+*rpm* {*-F|--freshen*} [*install-options*] *PACKAGE_FILE ...*
 
 This will upgrade packages, but only ones for which an earlier version
 is installed.
 
-The general form of an **rpm** reinstall command is
+The general form of an *rpm* reinstall command is
 
-**rpm** {**\--reinstall**} \[**install-options**\] *PACKAGE\_FILE \...*
+*rpm* {*--reinstall*} [*install-options*] *PACKAGE_FILE ...*
 
 This reinstalls a previously installed package.
 
-**\--allfiles**
+*--allfiles*
+	Installs or upgrades all the missingok files in the package,
+	regardless if they exist.
 
-:   Installs or upgrades all the missingok files in the package,
-    regardless if they exist.
+*--badreloc*
+	Used with *--relocate*, permit relocations on all file paths, not
+	just those *OLDPATH*'s included in the binary package relocation
+	hint(s).
 
-**\--badreloc**
+*--excludepath* *OLDPATH*
+	Don't install files whose name begins with *OLDPATH*.
 
-:   Used with **\--relocate**, permit relocations on all file paths, not
-    just those *OLDPATH*\'s included in the binary package relocation
-    hint(s).
+*--excludeartifacts*
+	Don't install any files which are marked as artifacts, such as
+	build-id links.
 
-**\--excludepath** *OLDPATH*
+*--excludedocs*
+	Don't install any files which are marked as documentation (which
+	includes man pages and texinfo documents).
 
-:   Don\'t install files whose name begins with *OLDPATH*.
+*--force*
+	Same as using *--replacepkgs*, *--replacefiles*, and
+	*--oldpackage*.
 
-**\--excludeartifacts**
+*-h, --hash*
+	Print 50 hash marks as the package archive is unpacked. Use with
+	*-v|--verbose* for a nicer display.
 
-:   Don\'t install any files which are marked as artifacts, such as
-    build-id links.
+*--ignoresize*
+	Don't check mount file systems for sufficient disk space before
+	installing this package.
 
-**\--excludedocs**
+*--ignorearch*
+	Allow installation or upgrading even if the architectures of the
+	binary package and host don't match.
 
-:   Don\'t install any files which are marked as documentation (which
-    includes man pages and texinfo documents).
+*--ignoreos*
+	Allow installation or upgrading even if the operating systems of the
+	binary package and host don't match.
 
-**\--force**
+*--includedocs*
+	Install documentation files. This is the default behavior.
 
-:   Same as using **\--replacepkgs**, **\--replacefiles**, and
-    **\--oldpackage**.
+*--justdb*
+	Update only the database, not the filesystem.
 
-**-h, \--hash**
+*--nodb*
+	Update only the filesystem, not the database.
 
-:   Print 50 hash marks as the package archive is unpacked. Use with
-    **-v\|\--verbose** for a nicer display.
+*--nodigest*
+	Don't verify package or header digests when reading.
 
-**\--ignoresize**
+*--nomanifest*
+	Don't process non-package files as manifests.
 
-:   Don\'t check mount file systems for sufficient disk space before
-    installing this package.
+*--nosignature*
+	Don't verify package or header signatures when reading.
 
-**\--ignorearch**
+*--nodeps*
+	Don't do a dependency check before installing or upgrading a
+	package.
 
-:   Allow installation or upgrading even if the architectures of the
-    binary package and host don\'t match.
+*--nocaps*
+	Don't set file capabilities.
 
-**\--ignoreos**
+*--noorder*
+	Don't reorder the packages for an install. The list of packages
+	would normally be reordered to satisfy dependencies.
 
-:   Allow installation or upgrading even if the operating systems of the
-    binary package and host don\'t match.
+*--noverify*
+	Don't perform verify package files prior to installation.
 
-**\--includedocs**
+*--noplugins*
+	Do not load and execute plugins.
 
-:   Install documentation files. This is the default behavior.
+*--noscripts*
+	Disables execution of package scriptlets. Equivalent to
 
-**\--justdb**
+	*--nopre* *--nopost* *--nopreun* *--nopostun*
+	*--nopretrans* *--noposttrans* *--nopreuntrans* *--nopostuntrans*
 
-:   Update only the database, not the filesystem.
+*--nopre*
+*--nopost*
+*--nopreun*
+*--nopostun*
+*--nopretrans*
+*--noposttrans*
+*--nopreuntrans*
+*--nopostuntrans*
+	Don't execute the scriptlets of the named type.
 
-**\--nodb**
+*--notriggers*
+	Disable execution of package triggers. Equivalent to
 
-:   Update only the filesystem, not the database.
+	*--notriggerprein* *--notriggerin* *--notriggerun*
+	*--notriggerpostun*
 
-**\--nodigest**
+*--notriggerin*
+*--notriggerun*
+*--notriggerprein*
+*--notriggerpostun*
+	Disable execution of the trigger scriptlets of the named type.
 
-:   Don\'t verify package or header digests when reading.
+*--nosysusers*
+	Don't create sysusers from packages
 
-**\--nomanifest**
+*--oldpackage*
+	Allow an upgrade to replace a newer package with an older one.
 
-:   Don\'t process non-package files as manifests.
+*--percent*
+	Print percentages as files are unpacked from the package archive.
+	This is intended to make *rpm* easy to run from other tools.
 
-**\--nosignature**
+*--prefix* *NEWPATH*
+	For relocatable binary packages, translate all file paths that start
+	with the installation prefix in the package relocation hint(s) to
+	*NEWPATH*.
 
-:   Don\'t verify package or header signatures when reading.
+*--relocate* *OLDPATH**=**NEWPATH*
+	For relocatable binary packages, translate all file paths that start
+	with *OLDPATH* in the package relocation hint(s) to *NEWPATH*. This
+	option can be used repeatedly if several *OLDPATH*'s in the package
+	are to be relocated.
 
-**\--nodeps**
+*--replacefiles*
+	Install the packages even if they replace files from other, already
+	installed, packages.
 
-:   Don\'t do a dependency check before installing or upgrading a
-    package.
+*--replacepkgs*
+	Install the packages even if some of them are already installed on
+	this system.
 
-**\--nocaps**
+*--test*
+	Do not install the package, simply check for and report potential
+	conflicts.
 
-:   Don\'t set file capabilities.
+# ERASE OPTIONS
 
-**\--noorder**
+The general form of an *rpm* erase command is
 
-:   Don\'t reorder the packages for an install. The list of packages
-    would normally be reordered to satisfy dependencies.
+*rpm* {*-e|--erase*} [*erase-options*] *PACKAGE_NAME ...*
 
-**\--noverify**
+The following erase-options options may also be used:
 
-:   Don\'t perform verify package files prior to installation.
+*--allmatches*
+	Remove all versions of the package which match *PACKAGE_NAME*.
+	Normally an error is issued if *PACKAGE_NAME* matches multiple
+	packages.
 
-**\--noplugins**
+*--justdb*
+	Update only the database, not the filesystem.
 
-:   Do not load and execute plugins.
+*--nodeps*
+	Don't check dependencies before uninstalling the packages.
 
-**\--noscripts**, **\--nopre**, **\--nopost**, **\--nopreun**, **\--nopostun**, **\--nopretrans**, **\--noposttrans**, **\--nopreuntrans**, **\--nopostuntrans**
+*--test*
+	Don't really uninstall anything, just go through the motions.
+	Useful in conjunction with the *-vv* option for debugging.
 
-:   Don\'t execute the scriptlet of the same name. The **\--noscripts**
-    option is equivalent to
+# QUERY OPTIONS
 
-**\--nopre** **\--nopost** **\--nopreun** **\--nopostun**
-**\--nopretrans** **\--noposttrans** **\--nopreuntrans** **\--nopostuntrans**
+The general form of an *rpm* query command is
 
-and turns off the execution of the corresponding **%pre**, **%post**,
-**%preun**, **%postun** **%pretrans**, **%posttrans**, **%preuntrans**
-and **%postuntrans** scriptlet(s).
-
-**\--notriggers**, **\--notriggerin**, **\--notriggerun**, **\--notriggerprein**, **\--notriggerpostun**
-
-:   Don\'t execute any trigger scriptlet of the named type. The
-    **\--notriggers** option is equivalent to
-
-**\--notriggerprein** **\--notriggerin** **\--notriggerun**
-**\--notriggerpostun**
-
-and turns off execution of the corresponding **%triggerprein**,
-**%triggerin**, **%triggerun**, and **%triggerpostun** scriptlet(s).
-
-**\--nosysusers**
-
-:   Don't create sysusers from packages
-
-**\--oldpackage**
-
-:   Allow an upgrade to replace a newer package with an older one.
-
-**\--percent**
-
-:   Print percentages as files are unpacked from the package archive.
-    This is intended to make **rpm** easy to run from other tools.
-
-**\--prefix** *NEWPATH*
-
-:   For relocatable binary packages, translate all file paths that start
-    with the installation prefix in the package relocation hint(s) to
-    *NEWPATH*.
-
-**\--relocate** *OLDPATH***=***NEWPATH*
-
-:   For relocatable binary packages, translate all file paths that start
-    with *OLDPATH* in the package relocation hint(s) to *NEWPATH*. This
-    option can be used repeatedly if several *OLDPATH*\'s in the package
-    are to be relocated.
-
-**\--replacefiles**
-
-:   Install the packages even if they replace files from other, already
-    installed, packages.
-
-**\--replacepkgs**
-
-:   Install the packages even if some of them are already installed on
-    this system.
-
-**\--test**
-
-:   Do not install the package, simply check for and report potential
-    conflicts.
-
-ERASE OPTIONS
--------------
-
-The general form of an **rpm** erase command is
-
-**rpm** {**-e\|\--erase**} \[**\--allmatches**\] \[**\--justdb\]
-\[\--nodeps**\] \[**\--noscripts**\] \[**\--notriggers**\]
-\[**\--test**\] *PACKAGE\_NAME \...*
-
-The following options may also be used:
-
-**\--allmatches**
-
-:   Remove all versions of the package which match *PACKAGE\_NAME*.
-    Normally an error is issued if *PACKAGE\_NAME* matches multiple
-    packages.
-
-**\--justdb**
-
-:   Update only the database, not the filesystem.
-
-**\--nodeps**
-
-:   Don\'t check dependencies before uninstalling the packages.
-
-**\--noscripts**, **\--nopreun**, **\--nopostun**
-
-:   Don\'t execute the scriptlet of the same name. The **\--noscripts**
-    option during package erase is equivalent to
-
-**\--nopreun** **\--nopostun**
-
-and turns off the execution of the corresponding **%preun**, and
-**%postun** scriptlet(s).
-
-**\--notriggers**, **\--notriggerun**, **\--notriggerpostun**
-
-:   Don\'t execute any trigger scriptlet of the named type. The
-    **\--notriggers** option is equivalent to
-
-**\--notriggerun** **\--notriggerpostun**
-
-and turns off execution of the corresponding **%triggerun**, and
-**%triggerpostun** scriptlet(s).
-
-**\--test**
-
-:   Don\'t really uninstall anything, just go through the motions.
-    Useful in conjunction with the **-vv** option for debugging.
-
-QUERY OPTIONS
--------------
-
-The general form of an **rpm** query command is
-
-**rpm** {**-q\|\--query**} \[**select-options**\] \[**query-options**\]
+*rpm* {*-q|--query*} [*select-options*] [*query-options*]
 
 You may specify the format that package information should be printed
 in. To do this, you use the
 
-**\--qf\|\--queryformat** *QUERYFMT*
+*--qf|--queryformat* *QUERYFMT*
 
 option, followed by the *QUERYFMT* format string. Query formats are
-modified versions of the standard **printf**(3) formatting. The format
+modified versions of the standard *printf*(3) formatting. The format
 is made up of static strings (which may include standard C character
-escapes for newlines, tabs, and other special characters (not including \0))
-and **printf**(3) type formatters. As **rpm** already knows the type to
+escapes for newlines, tabs, and other special characters (not including 0))
+and *printf*(3) type formatters. As *rpm* already knows the type to
 print, the type specifier must be omitted however, and replaced by the
-name of the header tag to be printed, enclosed by **{}** characters. Tag
-names are case insensitive, and the leading **RPMTAG\_** portion of the
+name of the header tag to be printed, enclosed by *{}* characters. Tag
+names are case insensitive, and the leading *RPMTAG_* portion of the
 tag name may be omitted as well.
 
 Alternate output formats may be requested by following the tag with
-**:***typetag*. Currently, the following types are supported:
+*:typetag*. Currently, the following types are supported:
 
-**:armor**
+*:armor*
+	Wrap a public key in ASCII armor.
 
-:   Wrap a public key in ASCII armor.
+*:arraysize*
+	Display number of elements in array tags.
 
-**:arraysize**
+*:base64*
+	Encode binary data using base64.
 
-:   Display number of elements in array tags.
+*:date*
+	Use *strftime*(3) "%c" format.
 
-**:base64**
+*:day*
+	Use *strftime*(3) "%a %b %d %Y" format.
 
-:   Encode binary data using base64.
+*:depflags*
+	Format dependency comparison operator.
 
-**:date**
+*:deptype*
+	Format dependency type.
 
-:   Use **strftime**(3) \"%c\" format.
+*:expand*
+	Perform macro expansion.
 
-**:day**
+*:fflags*
+	Format file flags.
 
-:   Use **strftime**(3) \"%a %b %d %Y\" format.
+*:fstate*
+	Format file state.
 
-**:depflags**
+*:fstatus*
+	Format file verify status.
 
-:   Format dependency comparison operator.
+*:hex*
+	Format in hexadecimal.
 
-**:deptype**
+*:octal*
+	Format in octal.
 
-:   Format dependency type.
+*:humaniec*
+	Human readable number (in IEC 80000). The suffix K = 1024, M =
+	1048576, ...
 
-**:expand**
+*:humansi*
+	Human readable number (in SI). The suffix K = 1000, M = 1000000,
+	...
 
-:   Perform macro expansion.
+*:json*
+	Wrap data in JSON.
 
-**:fflags**
+*:perms*
+	Format file permissions.
 
-:   Format file flags.
+*:pgpsig*
+	Display signature fingerprint and time.
 
-**:fstate**
+*:shescape*
+	Escape single quotes for use in a script.
 
-:   Format file state.
+*:string*
+	Display string format. (default)
 
-**:fstatus**
+*:tagname*
+	Display tag name.
 
-:   Format file verify status.
+*:tagnum*
+	Display tag number.
 
-**:hex**
+*:triggertype*
+	Display trigger suffix.
 
-:   Format in hexadecimal.
+*:vflags*
+	File verification flags.
 
-**:octal**
-
-:   Format in octal.
-
-**:humaniec**
-
-:   Human readable number (in IEC 80000). The suffix K = 1024, M =
-    1048576, \...
-
-**:humansi**
-
-:   Human readable number (in SI). The suffix K = 1000, M = 1000000,
-    \...
-
-**:json**
-
-:   Wrap data in JSON.
-
-**:perms**
-
-:   Format file permissions.
-
-**:pgpsig**
-
-:   Display signature fingerprint and time.
-
-**:shescape**
-
-:   Escape single quotes for use in a script.
-
-**:string**
-
-:   Display string format. (default)
-
-**:tagname**
-
-:   Display tag name.
-
-**:tagnum**
-
-:   Display tag number.
-
-**:triggertype**
-
-:   Display trigger suffix.
-
-**:vflags**
-
-:   File verification flags.
-
-**:xml**
-
-:   Wrap data in simple xml markup.
+*:xml*
+	Wrap data in simple xml markup.
 
 For example, to print only the names of the packages queried, you could
-use **%{NAME}** as the format string. To print the packages name and
+use *%{NAME}* as the format string. To print the packages name and
 distribution information in two columns, you could use
-**%-30{NAME}%{DISTRIBUTION}**. **rpm** will print a list of all of the
-tags it knows about when it is invoked with the **\--querytags**
+*%-30{NAME}%{DISTRIBUTION}*. *rpm* will print a list of all of the
+tags it knows about when it is invoked with the *--querytags*
 argument.
 
 There are three subsets of options for querying: package selection, file
 selection and information selection.
 
-PACKAGE SELECTION OPTIONS
--------------------------
+# PACKAGE SELECTION OPTIONS
+
+*PACKAGE_NAME*
 
-*PACKAGE\_NAME*
+	Query installed package named *PACKAGE_NAME*. To specify the
+	package more precisely the package name may be followed by the
+	version or version and release both separated by a dash or an
+	architecture name separated by a dot. See the output of *rpm -qa*
+	or *rpm -qp* *PACKAGE_FILE* as an example.
 
-:   Query installed package named *PACKAGE\_NAME*. To specify the
-    package more precisely the package name may be followed by the
-    version or version and release both separated by a dash or an
-    architecture name separated by a dot. See the output of **rpm -qa**
-    or **rpm -qp** *PACKAGE\_FILE* as an example.
+*-a, --all* [*SELECTOR*]
+	Query all installed packages.
 
-```{=html}
-<!-- -->
-```
+	An optional *SELECTOR* in the form of tag=pattern can be provided to
+	narrow the selection, for example name="b\*" to query packages whose
+	name starts with "b".
 
-**-a, \--all \[***SELECTOR*\]
+*--dupes*
+	List duplicated packages.
 
-:   Query all installed packages.
+*-f, --file* *FILE*
+	Query package owning installed *FILE*.
 
-An optional *SELECTOR* in the form of tag=pattern can be provided to
-narrow the selection, for example name=\"b\*\" to query packages whose
-name starts with \"b\".
+*--filecaps*
+	List file names with POSIX1.e capabilities.
 
-**\--dupes**
+*--fileclass*
+	List file names with their classes (libmagic classification).
 
-:   List duplicated packages.
+*--filecolor*
+	List file names with their colors (0 for noarch, 1 for 32bit, 2 for
+	64 bit).
 
-**-f, \--file** *FILE*
+*--fileprovide*
+	List file names with their provides.
 
-:   Query package owning installed *FILE*.
+*--filerequire*
+	List file names with their requires.
 
-**\--filecaps**
+*-g, --group* *GROUP*
+	Query packages with the group of *GROUP*.
 
-:   List file names with POSIX1.e capabilities.
+*-p, --package* *PACKAGE_FILE*
+	Query an (uninstalled) package *PACKAGE_FILE*. The *PACKAGE_FILE*
+	may be specified as an *ftp* or *http* style URL, in which case
+	the package header will be downloaded and queried. See *FTP/HTTP
+	OPTIONS* for information on *rpm*'s *ftp* and *http* client
+	support. The *PACKAGE_FILE* argument(s), if not a binary package,
+	will be interpreted as an ASCII package manifest unless
+	*--nomanifest* option is used. In manifests, comments are
+	permitted, starting with a '*#*', and each line of a package
+	manifest file may include white space separated glob expressions,
+	including URL's, that will be expanded to paths that are
+	substituted in place of the package manifest as additional
+	*PACKAGE_FILE* arguments to the query.
 
-**\--fileclass**
+*--path* *PATH*
+	Query package(s) owning *PATH*, whether the file is installed or not.
+	Multiple packages may own a *PATH*, but the file is only owned by the
+	package installed last.
 
-:   List file names with their classes (libmagic classification).
+*--querybynumber* *HDRNUM*
+	Query the *HDRNUM*th database entry directly; this is useful only
+	for debugging.
 
-**\--filecolor**
+*--specfile* *SPECFILE*
+	Parse and query *SPECFILE* as if it were a package. Although not all
+	the information (e.g. file lists) is available, this type of query
+	permits *rpm* to be used to extract information from spec files
+	without having to write a specfile parser.
 
-:   List file names with their colors (0 for noarch, 1 for 32bit, 2 for
-    64 bit).
+*--tid* *TID*
+	Query package(s) that have a given *TID* transaction identifier. A
+	UNIX time stamp is currently used as a transaction identifier. All
+	package(s) installed or erased within a single transaction have a
+	common identifier.
 
-**\--fileprovide**
+*--triggeredby* *PACKAGE_NAME*
+	Query packages that are triggered by package(s) *PACKAGE_NAME*.
 
-:   List file names with their provides.
+*--whatobsoletes* *CAPABILITY*
+	Query all packages that obsolete *CAPABILITY* for proper
+	functioning.
 
-**\--filerequire**
+*--whatprovides* *CAPABILITY*
+	Query all packages that provide the *CAPABILITY* capability.
 
-:   List file names with their requires.
+*--whatrequires* *CAPABILITY*
+	Query all packages that require *CAPABILITY* for proper functioning.
 
-**-g, \--group** *GROUP*
+*--whatconflicts* *CAPABILITY*
+	Query all packages that conflict with *CAPABILITY*.
 
-:   Query packages with the group of *GROUP*.
+*--whatrecommends* *CAPABILITY*
+	Query all packages that recommend *CAPABILITY*.
 
-**-p, \--package** *PACKAGE\_FILE*
+*--whatsuggests* *CAPABILITY*
+	Query all packages that suggest *CAPABILITY*.
 
-:   Query an (uninstalled) package *PACKAGE\_FILE*. The *PACKAGE\_FILE*
-    may be specified as an **ftp** or **http** style URL, in which case
-    the package header will be downloaded and queried. See **FTP/HTTP
-    OPTIONS** for information on **rpm**\'s **ftp** and **http** client
-    support. The *PACKAGE\_FILE* argument(s), if not a binary package,
-    will be interpreted as an ASCII package manifest unless
-    **\--nomanifest** option is used. In manifests, comments are
-    permitted, starting with a \'*\#*\', and each line of a package
-    manifest file may include white space separated glob expressions,
-    including URL\'s, that will be expanded to paths that are
-    substituted in place of the package manifest as additional
-    *PACKAGE\_FILE* arguments to the query.
+*--whatsupplements* *CAPABILITY*
+	Query all packages that supplement *CAPABILITY*.
 
-**\--path** *PATH*
+*--whatenhances* *CAPABILITY*
+	Query all packages that enhance *CAPABILITY*.
 
-:   Query package(s) owning *PATH*, whether the file is installed or not.
-    Multiple packages may own a *PATH*, but the file is only owned by the
-    package installed last.
+# PACKAGE QUERY OPTIONS
 
-**\--querybynumber** *HDRNUM*
+*--changelog*
+	Display change information for the package.
 
-:   Query the *HDRNUM*th database entry directly; this is useful only
-    for debugging.
+*--changes*
+	Display change information for the package with full time stamps.
 
-**\--specfile** *SPECFILE*
+*--conflicts*
+	List capabilities this package conflicts with.
 
-:   Parse and query *SPECFILE* as if it were a package. Although not all
-    the information (e.g. file lists) is available, this type of query
-    permits **rpm** to be used to extract information from spec files
-    without having to write a specfile parser.
+*--dump*
+	Dump file information as follows (implies *-l*):
 
-**\--tid** *TID*
+	path size mtime digest mode owner group isconfig isdoc rdev symlink
 
-:   Query package(s) that have a given *TID* transaction identifier. A
-    UNIX time stamp is currently used as a transaction identifier. All
-    package(s) installed or erased within a single transaction have a
-    common identifier.
+*--enhances*
+	List capabilities enhanced by package(s).
 
-**\--triggeredby** *PACKAGE\_NAME*
+*--filesbypkg*
+	List all the files in each selected package.
 
-:   Query packages that are triggered by package(s) *PACKAGE\_NAME*.
+*--filetriggers*
+	List filetrigger scriptlets from package(s).
 
-**\--whatobsoletes** *CAPABILITY*
+*-i, --info*
+	Display package information, including name, version, and
+	description. This uses the *--queryformat* if one was specified.
 
-:   Query all packages that obsolete *CAPABILITY* for proper
-    functioning.
+*--last*
+	Orders the package listing by install time such that the latest
+	packages are at the top.
 
-**\--whatprovides** *CAPABILITY*
+*-l, --list*
+	List files in package.
 
-:   Query all packages that provide the *CAPABILITY* capability.
+*--obsoletes*
+	List packages this package obsoletes.
 
-**\--whatrequires** *CAPABILITY*
+*--provides*
+	List capabilities this package provides.
 
-:   Query all packages that require *CAPABILITY* for proper functioning.
+*--recommends*
+	List capabilities recommended by package(s).
 
-**\--whatconflicts** *CAPABILITY*
+*-R, --requires*
+	List capabilities on which this package depends.
 
-:   Query all packages that conflict with *CAPABILITY*.
+*--suggests*
+	List capabilities suggested by package(s).
 
-**\--whatrecommends** *CAPABILITY*
+*--supplements*
+	List capabilities supplemented by package(s).
 
-:   Query all packages that recommend *CAPABILITY*.
+*--scripts*
+	List the package specific scriptlet(s) that are used as part of the
+	installation and uninstallation processes.
 
-**\--whatsuggests** *CAPABILITY*
+*-s, --state*
+	Display the *states* of files in the package (implies *-l*). The
+	state of each file is one of *normal*, *not installed*, or
+	*replaced*.
 
-:   Query all packages that suggest *CAPABILITY*.
+*--triggers, --triggerscripts*
+	Display the trigger scripts, if any, which are contained in the
+	package.
 
-**\--whatsupplements** *CAPABILITY*
+*--xml*
+	Format package headers as XML.
 
-:   Query all packages that supplement *CAPABILITY*.
+# FILE SELECTION OPTIONS
 
-**\--whatenhances** *CAPABILITY*
+*-A, --artifactfiles*
+	Only include artifact files (implies *-l*).
 
-:   Query all packages that enhance *CAPABILITY*.
+*-c, --configfiles*
+	Only include configuration files (implies *-l*).
 
-PACKAGE QUERY OPTIONS
----------------------
+*-d, --docfiles*
+	Only include documentation files (implies *-l*).
 
-**\--changelog**
+*-L, --licensefiles*
+	Only include license files (implies *-l*).
 
-:   Display change information for the package.
+*--noartifact*
+	Exclude artifact files.
 
-**\--changes**
+*--noconfig*
+	Exclude config files.
 
-:   Display change information for the package with full time stamps.
+*--noghost*
+	Exclude ghost files.
 
-**\--conflicts**
+# VERIFY OPTIONS
 
-:   List capabilities this package conflicts with.
+The general form of an *rpm* verify command is
 
-**\--dump**
-
-:   Dump file information as follows (implies **-l**):
-
->     path size mtime digest mode owner group isconfig isdoc rdev symlink
->     	
-
-**\--enhances**
-
-:   List capabilities enhanced by package(s).
-
-**\--filesbypkg**
-
-:   List all the files in each selected package.
-
-**\--filetriggers**
-
-:   List filetrigger scriptlets from package(s).
-
-**-i, \--info**
-
-:   Display package information, including name, version, and
-    description. This uses the **\--queryformat** if one was specified.
-
-**\--last**
-
-:   Orders the package listing by install time such that the latest
-    packages are at the top.
-
-**-l, \--list**
-
-:   List files in package.
-
-**\--obsoletes**
-
-:   List packages this package obsoletes.
-
-**\--provides**
-
-:   List capabilities this package provides.
-
-**\--recommends**
-
-:   List capabilities recommended by package(s).
-
-**-R, \--requires**
-
-:   List capabilities on which this package depends.
-
-**\--suggests**
-
-:   List capabilities suggested by package(s).
-
-**\--supplements**
-
-:   List capabilities supplemented by package(s).
-
-**\--scripts**
-
-:   List the package specific scriptlet(s) that are used as part of the
-    installation and uninstallation processes.
-
-**-s, \--state**
-
-:   Display the *states* of files in the package (implies **-l**). The
-    state of each file is one of *normal*, *not installed*, or
-    *replaced*.
-
-**\--triggers, \--triggerscripts**
-
-:   Display the trigger scripts, if any, which are contained in the
-    package.
-
-**\--xml**
-
-:   Format package headers as XML.
-
-FILE SELECTION OPTIONS
-----------------------
-
-**-A, \--artifactfiles**
-
-:   Only include artifact files (implies **-l**).
-
-**-c, \--configfiles**
-
-:   Only include configuration files (implies **-l**).
-
-**-d, \--docfiles**
-
-:   Only include documentation files (implies **-l**).
-
-**-L, \--licensefiles**
-
-:   Only include license files (implies **-l**).
-
-**\--noartifact**
-
-:   Exclude artifact files.
-
-**\--noconfig**
-
-:   Exclude config files.
-
-**\--noghost**
-
-:   Exclude ghost files.
-
-VERIFY OPTIONS
---------------
-
-The general form of an **rpm** verify command is
-
-**rpm** {**-V\|\--verify**} \[**select-options**\]
-\[**verify-options**\]
+*rpm* {*-V|--verify*} [*select-options*] [*verify-options*] [*PACKAGE_NAME ...*]
 
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
@@ -852,226 +623,219 @@ metadata stored in the rpm database. Among other things, verifying
 compares the size, digest, permissions, type, owner and group of each
 file. Any discrepancies are displayed. Files that were not installed
 from the package, for example, documentation files excluded on
-installation using the \"**\--excludedocs**\" option, will be silently
+installation using the "*--excludedocs*" option, will be silently
 ignored.
 
 The package and file selection options are the same as for package
 querying (including package manifest files as arguments). Other options
 unique to verify mode are:
 
-**\--nodeps**
+*--nodeps*
+	Don't verify dependencies of packages.
 
-:   Don\'t verify dependencies of packages.
+*--nodigest*
+	Don't verify package or header digests when reading.
 
-**\--nodigest**
+*--nofiles*
+	Don't verify any attributes of package files.
 
-:   Don\'t verify package or header digests when reading.
+*--noscripts*
+	Don't execute the *%verifyscript* scriptlet (if any).
 
-**\--nofiles**
+*--nosignature*
+	Don't verify package or header signatures when reading.
 
-:   Don\'t verify any attributes of package files.
+*--nolinkto*
+*--nofiledigest* (formerly *--nomd5*)
+*--nosize*
+*--nomtime*
+*--nomode*
+*--nordev*
+	Don't verify the corresponding file attribute.
 
-**\--noscripts**
+*--nouser*
+*--nogroup*
+	Don't verify file user/group ownership. Note that only local
+	*passwd*(5) and *group*(5) databases are consulted.
 
-:   Don\'t execute the **%verifyscript** scriptlet (if any).
-
-**\--nosignature**
-
-:   Don\'t verify package or header signatures when reading.
-
-**\--nolinkto**
-
-:   
-
-**\--nofiledigest** (formerly **\--nomd5**)
-
-:   
-
-**\--nosize**
-
-:   
-
-**\--nomtime**
-
-:   
-
-**\--nomode**
-
-:   
-
-**\--nordev**
-
-:   Don\'t verify the corresponding file attribute.
-
-**\--nouser**
-
-:   
-
-**\--nogroup**
-
-:  Don\'t verify file user/group ownership. Note that only local
-   **passwd**(5) and **group**(5) databases are consulted.
-
-**\--nocaps**
-
-:   Don\'t verify file capabilities.
+*--nocaps*
+	Don't verify file capabilities.
 
 The format of the output is a string of 9 characters, a possible
 attribute marker:
 
-    **a** %**a**rtifact a build side-effect file (such as buildid links).
-    **c** %**c**onfig configuration file.
-    **d** %**d**oc documentation file.
-    **g** %**g**host file (i.e. the file contents are not included in the package payload).
-    **l** %**l**icense license file.
-    **m** %**m**issingok file missing is not a verify failure.
-    **n** %%config(**n**oreplace) (do not replace file).
-    **r** %**r**eadme readme file.
-    **s** **s**pecfile in source package.
+[[ *Marker*
+:- *%files attribute*
+:< *Description*
+|  *a*
+:  %*a*rtifact
+:  a build side-effect file (such as buildid links)
+|  *c*
+:  %*c*onfig
+:  configuration file
+|  *d*
+:  %*d*oc
+:  documentation file
+|  *g*
+:  %*g*host
+:  ghost file (i.e. the file contents are not included in the package payload)
+|  *l*
+:  %*l*icense
+:  license file
+|  *m*
+:  %*m*issingok
+:  file missing is not a verify failure
+|  *n*
+:   %config(*n*oreplace)
+:  do not replace config file
+|  *r*
+:   %*r*eadme
+:  readme file
+|  *s*
+:  N/A
+:  *s*pec file in source package
 
 from the package header, followed by the file name. Each of the 9
 characters denotes the result of a comparison of attribute(s) of the
 file to the value of those attribute(s) recorded in the database. A
-single \"**.**\" (period) means the test passed, while a single
-\"**?**\" (question mark) indicates the test could not be performed
+single "*.*" (period) means the test passed, while a single
+"*?*" (question mark) indicates the test could not be performed
 (e.g. file permissions prevent reading). Otherwise, the (mnemonically
-em**B**oldened) character denotes failure of the corresponding
-**\--verify** test:
+em*B*oldened) character denotes failure of the corresponding
+*--verify* test:
 
-    **S** file **S**ize differs
-    **M** **M**ode differs (includes permissions and file type)
-    **5** digest (formerly MD**5** sum) differs
-    **D** **D**evice major/minor number mismatch
-    **L** read**L**ink(2) path mismatch
-    **U** **U**ser ownership differs
-    **G** **G**roup ownership differs
-    **T** m**T**ime differs
-    **P** ca**P**abilities differ
+[[ *Character*
+:< *Description*
+|  *S*
+:  file *S*ize differs
+|  *M*
+:  *M*ode differs (includes permissions and file type)
+|  *5*
+:  digest (formerly MD*5* sum) differs
+|  *D*
+:  *D*evice major/minor number mismatch
+|  *L*
+:  read*L*ink(2) path mismatch
+|  *U*
+:  *U*ser ownership differs
+|  *G*
+:  *G*roup ownership differs
+|  *T*
+:  m*T*ime differs
+|  *P*
+:  ca*P*abilities differ
 
-MISCELLANEOUS COMMANDS
-----------------------
+# MISCELLANEOUS COMMANDS
 
-**rpm** **\--showrc**
+*rpm* *--showrc*
+	shows the values *rpm* will use for all of the options which are
+	currently set in *rpmrc* and *macros* configuration file(s).
 
-:   shows the values **rpm** will use for all of the options which are
-    currently set in *rpmrc* and *macros* configuration file(s).
+*rpm* *--setperms* | *--setugids* | *--setcaps* *PACKAGE_NAME*
+	obsolete aliases for *--restore*
 
-**rpm** **\--setperms** | **\--setugids** | **\--setcaps** *PACKAGE\_NAME*
+*rpm* *--restore* [*select-options*] *PACKAGE_NAME ...*
+	The option restores file metadata such as timestamp, owner, group,
+	permissions and capabilities of files in packages.
 
-:   obsolete aliases for **\--restore**
+# FTP/HTTP OPTIONS
 
-**rpm** **\--restore** \[**select-options**\]
-
-:   The option restores file metadata such as timestamp, owner, group,
-    permissions and capabilities of files in packages.
-
-FTP/HTTP OPTIONS
-----------------
-
-**rpm** can act as an FTP and/or HTTP client so that packages can be
+*rpm* can act as an FTP and/or HTTP client so that packages can be
 queried or installed from the internet. Package files for install,
-upgrade, and query operations may be specified as an **ftp** or **http**
+upgrade, and query operations may be specified as an *ftp* or *http*
 style URL:
 
-http://HOST\[:PORT\]/path/to/package.rpm
+http://HOST[:PORT]/path/to/package.rpm
 
-ftp://\[USER:PASSWORD\]\@HOST\[:PORT\]/path/to/package.rpm
+ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm
 
-If both the user and password are omitted, anonymous **ftp** is used.
+If both the user and password are omitted, anonymous *ftp* is used.
 
-**rpm** allows the following options to be used with ftp URLs:
+*rpm* allows the following options to be used with ftp URLs:
 
-**rpm** allows the following options to be used with **http** and **ftp** URLs:
+*rpm* allows the following options to be used with *http* and *ftp* URLs:
 
-**\--httpproxy** *HOST*
+*--httpproxy* *HOST*
+	The host *HOST* will be used as a proxy server for all *http* and
+	*ftp* transfers. This option may also be specified by configuring
+	the macro *%\_httpproxy*.
 
-:   The host *HOST* will be used as a proxy server for all **http** and
-    **ftp** transfers. This option may also be specified by configuring
-    the macro **%\_httpproxy**.
+*--httpport* *PORT*
+	The TCP *PORT* number to use for the *http* connection on the
+	proxy http server instead of the default port. This option may also
+	be specified by configuring the macro *%\_httpport*.
 
-**\--httpport** *PORT*
+# LEGACY ISSUES
 
-:   The TCP *PORT* number to use for the **http** connection on the
-    proxy http server instead of the default port. This option may also
-    be specified by configuring the macro **%\_httpport**.
-
-LEGACY ISSUES
-=============
-
-Executing rpmbuild
-------------------
+## Executing rpmbuild
 
 The build modes of rpm are now resident in the */usr/bin/rpmbuild*
-executable. Install the package containing **rpmbuild** (usually
-**rpm-build**) and see **rpmbuild**(8) for documentation of all the
-**rpm** build modes.
+executable. Install the package containing *rpmbuild* (usually
+*rpm-build*) and see *rpmbuild*(8) for documentation of all the
+*rpm* build modes.
 
-FILES
-=====
+# FILES
 
-rpmrc Configuration
--------------------
+## rpmrc Configuration
 
 Each file in the colon separated rpmrc path is read sequentially by
-**rpm** for configuration information. Only the first file in the
+*rpm* for configuration information. Only the first file in the
 list must exist, and tildes will be expanded to the value of
-**\$HOME**. The default rpmrc path is as follows:
+*$HOME*. The default rpmrc path is as follows:
 
-    /usr/lib/rpm/rpmrc:
-    /usr/lib/rpm/<vendor>/rpmrc:
-    /etc/rpmrc:
-    ~/.config/rpm/rpmrc
+	/usr/lib/rpm/rpmrc:
+	/usr/lib/rpm/<vendor>/rpmrc:
+	/etc/rpmrc:
+	~/.config/rpm/rpmrc
 
-If **XDG_CONFIG_HOME** environment variable is set, it replaces ~/.config
+If *XDG_CONFIG_HOME* environment variable is set, it replaces ~/.config
 in the path.
 
 In older rpm versions the path of per-user rpmrc was ~/.rpmrc.
 This is still processed if it exists and the new configuration directory
 does not exist.
 
-Macro Configuration
--------------------
+## Macro Configuration
 
-Each file or **glob**(7) pattern in the colon-separated macro path is
-read sequentially by **rpm** for macro definitions. Tildes will be expanded
+Each file or *glob*(7) pattern in the colon-separated macro path is
+read sequentially by *rpm* for macro definitions. Tildes will be expanded
 to the value of the environment variable *HOME*. The default macro path
 is as follows:
 
-    /usr/lib/rpm/macros:
-    /usr/lib/rpm/macros.d/macros.*:
-    /usr/lib/rpm/platform/%{_target}/macros:
-    /usr/lib/rpm/fileattrs/*.attr:
-    /usr/lib/rpm/<vendor>/macros:
-    /etc/rpm/macros.*:
-    /etc/rpm/macros:
-    /etc/rpm/%{_target}/macros:
-    ~/.config/rpm/macros
+```
+	/usr/lib/rpm/macros:
+	/usr/lib/rpm/macros.d/macros.*:
+	/usr/lib/rpm/platform/%{\_target}/macros:
+	/usr/lib/rpm/fileattrs/*.attr:
+	/usr/lib/rpm/<vendor>/macros:
+	/etc/rpm/macros.*:
+	/etc/rpm/macros:
+	/etc/rpm/%{\_target}/macros:
+	~/.config/rpm/macros
+```
 
-If **XDG_CONFIG_HOME** environment variable is set, it replaces ~/.config
+If *XDG_CONFIG_HOME* environment variable is set, it replaces ~/.config
 in the path.
 
 In older versions of rpm, the path of per-user macros was ~/.rpmmacros.
 This is still processed if it exists and the new configuration directory
 does not exist.
 
-Database
---------
+## Database
 
-    /var/lib/rpm/
+	/var/lib/rpm/
 
-Temporary
----------
+## Temporary
 
-    /var/tmp/rpm*
+	/var/tmp/rpm\*
 
-SEE ALSO
-========
+# SEE ALSO
 
-**rpm-misc**(8), **popt**(3), **rpm2cpio**(8), **rpmbuild**(8), **rpmdb**(8),
-**rpmkeys**(8), **rpmsign**(8), **rpmspec**(8)
+*rpm-misc*(8), *popt*(3), *rpm2cpio*(8), *rpmbuild*(8), *rpmdb*(8),
+*rpmkeys*(8), *rpmsign*(8), *rpmspec*(8)
 
-**rpm \--help** - as **rpm** supports customizing the options via popt
-aliases it\'s impossible to guarantee that what\'s described in the
-manual matches what\'s available.
+*rpm --help* - as *rpm* supports customizing the options via popt
+aliases it's impossible to guarantee that what's described in the
+manual matches what's available.
 
-**http://www.rpm.org/ \<URL:http://www.rpm.org/\>**
+*http://www.rpm.org/*

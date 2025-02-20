@@ -29,6 +29,9 @@ The source for the file utility + library is available from
 The libarchive library for archive access, available from
     https://www.libarchive.org/
 
+The scdoc manual page generator, available from
+    https://git.sr.ht/~sircmpwn/scdoc
+
 You will need a cryptographic library to support digests and an OpenPGP
 implementation to support signatures. rpm-sequoia (>= 1.3.0 required) is
 the most complete option, covering both, and also the default:

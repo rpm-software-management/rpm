@@ -311,6 +311,9 @@ mark_as_advanced(AWK)
 find_program(FIND_DEBUGINFO find-debuginfo)
 mark_as_advanced(FIND_DEBUGINFO)
 
+find_program(SCDOC NAMES scdoc REQUIRED)
+mark_as_advanced(SCDOC)
+
 function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
 	set(HAVENAME HAVE_${FUNC})

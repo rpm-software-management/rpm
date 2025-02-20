@@ -1,34 +1,29 @@
----
-date: 11 January 2001
-section: 8
-title: rpm2cpio
----
+RPM2CPIO(8)
 
-NAME
-====
+# NAME
 
 rpm2cpio - Extract cpio archive from RPM Package Manager (RPM) package.
 
-SYNOPSIS
-========
+# SYNOPSIS
 
-**rpm2cpio** \[filename\]
+*rpm2cpio* *FILE*
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
-**rpm2cpio** converts the .rpm file specified as a single argument to a
-cpio archive on standard out. If a \'-\' argument is given, an rpm
+*rpm2cpio* converts the .rpm file specified as a single argument to a
+cpio archive on standard out. If a '-' argument is given as *FILE*, an rpm
 stream is read from standard in.
 
-**Note:** the CPIO format cannot host individual files over 4GB in size,
-and so this tool is considered obsolete.  Use **rpm2archive** instead.
+*Note:* the CPIO format cannot host individual files over 4GB in size,
+and so this tool is considered obsolete.  Use *rpm2archive* instead.
 
-\
-***rpm2cpio glint-1.0-1.i386.rpm \| cpio -dium***\
-***cat glint-1.0-1.i386.rpm \| rpm2cpio - \| cpio -tv***
+# EXAMPLES
 
-SEE ALSO
-========
+```
+rpm2cpio glint-1.0-1.i386.rpm | cpio -dium
+cat glint-1.0-1.i386.rpm | rpm2cpio - | cpio -tv
+```
 
-**rpm**(8) **rpm2archive**(8)
+# SEE ALSO
+
+*rpm*(8) *rpm2archive*(8)
