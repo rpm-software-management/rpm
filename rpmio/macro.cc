@@ -80,6 +80,8 @@ struct rpmMacroContext_s {
     int depth {};	 /*!< Depth tracking on external recursion */
     int level {};	 /*!< Scope level tracking when on external recursion */
     std::recursive_mutex mutex {};
+
+    rpmMacroContext_s();
 };
 
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
@@ -1870,7 +1872,8 @@ static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
 {
     for (auto const & entry : src->tab) {
 	auto const & me = entry.second.top();
-	pushMacro(dst, me.name, me.opts, me.body, level, me.flags);
+	if (me.level != RMIL_BUILTIN)
+	    pushMacro(dst, me.name, me.opts, me.body, level, me.flags);
     }
 }
 
@@ -2013,9 +2016,24 @@ rpmExpandNumeric(const char *arg)
     return res;
 }
 
+static void initBuiltins(rpmMacroContext_s *mc)
+{
+    /* Define built-in macros */
+    for (const struct builtins_s *b = builtinmacros; b->name; b++) {
+	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
+		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
+    }
+}
+
+rpmMacroContext_s::rpmMacroContext_s()
+{
+    initBuiltins(this);
+}
+
 void macros::clear()
 {
     mc->tab.clear();
+    initBuiltins(mc);
 }
 
 void macros::copy(rpm::macros & dest, int level)
@@ -2110,12 +2128,6 @@ macros::expand_numeric(const std::initializer_list<std::string> & src, int flags
 
 void macros::init(const std::string & macrofiles)
 {
-    /* Define built-in macros */
-    for (const struct builtins_s *b = builtinmacros; b->name; b++) {
-	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
-		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
-    }
-
     ARGV_t pattern, globs = NULL;
     argvSplit(&globs, macrofiles.c_str(), ":");
     for (pattern = globs; pattern && *pattern; pattern++) {
