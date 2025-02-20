@@ -136,6 +136,7 @@ various common operations.
 | `%{suffix:...}`     | expand to suffix part of a file name |
 | `%{url2path:...}`   | convert url to a local path |
 | `%{uncompress:...}` | expand to a command for outputting argument file to stdout, uncompressing as needed |
+| `%{xdg:...}`        | XDG base directory for `cache`, config`, `data` or `state` | 6.0.0
 
 ### Environment info
 

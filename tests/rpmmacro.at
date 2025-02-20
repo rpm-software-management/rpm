@@ -533,6 +533,49 @@ rpm \
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([xdg macro])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+rpm \
+    --eval "%{xdg:cache}" \
+    --eval "%{xdg:config}" \
+    --eval "%{xdg:data}" \
+    --eval "%{xdg:state}"
+],
+[0],
+[/root/.cache
+/root/.config
+/root/.local/share
+/root/.local/state
+],
+[])
+
+RPMTEST_CHECK([
+XDG_CONFIG_HOME=/some/where
+XDG_DATA_HOME=/other/place
+XDG_STATE_HOME=/other/state
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME
+rpm \
+    --eval "%{xdg:config}" \
+    --eval "%{xdg:data}" \
+    --eval "%{xdg:state}"
+],
+[0],
+[/some/where
+/other/place
+/other/state
+],
+[])
+
+RPMTEST_CHECK([
+rpm --eval "%{xdg:xxx}"
+],
+[1],
+[],
+[error: xdg: invalid argument: xxx
+])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([macrobody macro])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([

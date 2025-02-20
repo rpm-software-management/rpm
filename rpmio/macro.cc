@@ -9,6 +9,7 @@
 #include <map>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <stack>
 
@@ -1314,6 +1315,29 @@ static void doRpmver(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pars
     rpmMacroBufAppendStr(mb, VERSION);
 }
 
+const static std::unordered_map<std::string,std::pair<std::string,std::string>> xdgvars = {
+    { "cache",	{ "XDG_CACHE_HOME",	".cache" } },
+    { "config",	{ "XDG_CONFIG_HOME",	".config" } },
+    { "data",	{ "XDG_DATA_HOME",	".local/share" } },
+    { "state",	{ "XDG_STATE_HOME",	".local/state" } },
+};
+
+static void doXdg(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    auto res = xdgvars.find(argv[1]);
+    if (res == xdgvars.end()) {
+	rpmMacroBufErr(mb, 1, "%s: invalid argument: %s\n", argv[0], argv[1]);
+	return;
+    }
+    auto const & vars = res->second;
+    auto mctx = rpm::macros();
+    auto [ rc, xenv ] = mctx.expand({"%{getenv:", vars.first, "}"});
+    if (rc || xenv.empty())
+	xenv = mctx.expand({"%{getenv:HOME}/", vars.second}).second;
+
+    rpmMacroBufAppendStr(mb, xenv.c_str());
+}
+
 static struct builtins_s {
     const char * name;
     macroFunc func;
@@ -1358,6 +1382,7 @@ static struct builtins_s {
     { "url2path",	doFoo,		1,	0 },
     { "verbose",	doVerbose,	-1,	ME_PARSE },
     { "warn",		doOutput,	1,	0 },
+    { "xdg",		doXdg,		1,	0 },
     { NULL,		NULL,		0 }
 };
 
