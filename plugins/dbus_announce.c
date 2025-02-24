@@ -85,35 +85,17 @@ static void dbus_announce_cleanup(rpmPlugin plugin)
 
 static rpmRC send_ts_message(rpmPlugin plugin,
 			     const char * name,
-			     rpmts ts,
-			     int res)
+			     DBusMessage* msg)
 {
     struct dbus_announce_data * state = rpmPluginGetData(plugin);
-    DBusMessage* msg;
-    char * dbcookie = NULL;
 
     if (!state->bus)
 	return RPMRC_OK;
-
-    msg = dbus_message_new_signal("/org/rpm/Transaction", /* object name */
-				  "org.rpm.Transaction",  /* interface name */
-				  name);                  /* signal name */
-    if (msg == NULL)
-	goto err;
-
-    dbcookie = rpmdbCookie(rpmtsGetRdb(ts));
-    rpm_tid_t tid = rpmtsGetTid(ts);
-    if (!dbus_message_append_args(msg,
-				  DBUS_TYPE_STRING, &dbcookie,
-				  DBUS_TYPE_UINT32, &tid,
-				  DBUS_TYPE_INVALID))
-	goto err;
 
     if (!dbus_connection_send(state->bus, msg, NULL))
 	goto err;
 
     dbus_connection_flush(state->bus);
-    dbcookie = _free(dbcookie);
 
     return RPMRC_OK;
 
@@ -121,8 +103,47 @@ static rpmRC send_ts_message(rpmPlugin plugin,
     rpmlog(RPMLOG_WARNING,
 	   "dbus_announce plugin: Error sending message (%s)\n",
 	   name);
-    dbcookie = _free(dbcookie);
     return RPMRC_OK;
+}
+
+static rpmRC send_ts_message_simple(rpmPlugin plugin,
+				    const char * name,
+				    rpmts ts,
+				    int res)
+{
+    DBusMessage* msg = NULL;
+    char * dbcookie = NULL;
+    rpmRC rc = RPMRC_OK;
+
+    msg = dbus_message_new_signal("/org/rpm/Transaction", /* object name */
+				  "org.rpm.Transaction",  /* interface name */
+				  name);                  /* signal name */
+    if (msg != NULL) {
+        dbcookie = rpmdbCookie(rpmtsGetRdb(ts));
+        rpm_tid_t tid = rpmtsGetTid(ts);
+
+        if (dbus_message_append_args(msg,
+				     DBUS_TYPE_STRING, &dbcookie,
+				     DBUS_TYPE_UINT32, &tid,
+				     DBUS_TYPE_INVALID)) {
+	    rc = send_ts_message(plugin, name, msg);
+	} else {
+	    rpmlog(RPMLOG_WARNING,
+	           "dbus_announce plugin: Error setting message args (%s)\n",
+	           name);
+	}
+
+	dbus_message_unref(msg);
+    } else {
+	rpmlog(RPMLOG_WARNING,
+	       "dbus_announce plugin: Error creating signal message (%s)\n",
+	       name);
+    }
+
+    if (dbcookie != NULL)
+	dbcookie = _free(dbcookie);
+
+    return rc;
 }
 
 static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
@@ -132,12 +153,12 @@ static rpmRC dbus_announce_tsm_pre(rpmPlugin plugin, rpmts ts)
     rc = open_dbus(plugin, ts);
     if (rc != RPMRC_OK)
 	return rc;
-    return send_ts_message(plugin, "StartTransaction", ts, RPMRC_OK);
+    return send_ts_message_simple(plugin, "StartTransaction", ts, RPMRC_OK);
 }
 
 static rpmRC dbus_announce_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
-    return send_ts_message(plugin, "EndTransaction", ts, res);
+    return send_ts_message_simple(plugin, "EndTransaction", ts, res);
 }
 
 struct rpmPluginHooks_s dbus_announce_hooks = {
