@@ -14,8 +14,8 @@ set(extra
 set(manuals ${core} ${extra})
 foreach(man ${manuals})
 	add_custom_command(OUTPUT ${man} COMMAND ${SCDOC}
-			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.md
-			> ${man} DEPENDS ${man}.md)
+			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.scd
+			> ${man} DEPENDS ${man}.scd)
 endforeach()
 add_custom_target(man ALL DEPENDS ${manuals})
 
