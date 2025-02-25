@@ -71,6 +71,19 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
+size_t rpmKeyringSize(rpmKeyring keyring, int count_subkeys)
+{
+    if (!keyring) return 0;
+    rdlock lock(keyring->mutex);
+
+    size_t size = 0;
+    for (auto &pair : keyring->keys) {
+	if (count_subkeys || !pair.second->primarykey)
+	    size++;
+    }
+    return size;
+}
+
 rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused)
 {
     if (!keyring || unused != 0)

@@ -406,6 +406,50 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     return rc;
 }
 
+rpmRC rpmtsRebuildKeystore(rpmtxn txn, const char * from)
+{
+    rpmts ts = rpmtxnTs(txn);
+    rpmRC rc = RPMRC_OK;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    keystore_fs ks_fs = {};
+    keystore_rpmdb ks_rpmdb = {};
+    keystore_openpgp_cert_d ks_opengpg = {};
+    rpmKeyringIterator iter = NULL;
+
+    if (rpmtsOpenDB(txn->ts, (O_RDWR|O_CREAT))) {
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+    if (from) {
+	bool found = false;
+	for (keystore *ks : std::vector<keystore*>
+		 {&ks_fs, &ks_rpmdb, &ks_opengpg}) {
+	    if (ks->name == from and ks->name != ts->keystore->name) {
+		ks->load_keys(txn, keyring);
+		found = true;
+	    }
+	}
+	if (not found) {
+	    rpmlog(RPMLOG_ERR, _("No key store backend %s"), from);
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+    }
+    for (keystore *ks : std::vector<keystore*>
+	     {&ks_fs, &ks_rpmdb, &ks_opengpg}) {
+	ks->delete_store(txn);
+    }
+    for (iter = rpmKeyringInitIterator(keyring, 0); auto key = rpmKeyringIteratorNext(iter);) {
+	ts->keystore->import_key(txn, key, 0, 0);
+    }
+    rpmKeyringIteratorFree(iter);
+
+ exit:
+
+    rpmKeyringFree(keyring);
+    return rc;
+}
+
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds key, const void * data),
 		const void * solveData)

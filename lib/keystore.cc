@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/file.h>
+#include <filesystem>
 
 #include <rpm/header.h>
 #include <rpm/rpmbase64.h>
@@ -18,11 +19,13 @@
 #include <rpm/rpmtypes.h>
 
 #include "rpmts_internal.hh"
+#include "rpmmacro_internal.hh"
 
 #include "debug.h"
 
 using std::string;
 using namespace rpm;
+namespace fs = std::filesystem;
 
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
@@ -97,6 +100,13 @@ exit:
 }
 
 
+static rpmRC delete_file_store(std::string path)
+{
+    fs::remove_all(path);
+    return RPMRC_OK;
+}
+
+
 /*****************************************************************************/
 
 rpmRC keystore_fs::load_keys(rpmtxn txn, rpmKeyring keyring)
@@ -148,6 +158,11 @@ rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags f
 
     free(dir);
     return rc;
+}
+
+rpmRC keystore_fs::delete_store(rpmtxn txn)
+{
+    return delete_file_store(expand_path({rpmtxnRootDir(txn), "%{_keyringpath}/"}));
 }
 
 /*****************************************************************************/
@@ -211,6 +226,11 @@ rpmRC keystore_openpgp_cert_d::delete_key(rpmtxn txn, rpmPubkey key)
     free(dirpath);
     free_write_lock(lock_fd);
     return rc;
+}
+
+rpmRC keystore_openpgp_cert_d::delete_store(rpmtxn txn)
+{
+    return delete_file_store(expand_path({rpmtxnRootDir(txn), "%{_keyringpath}/"}));
 }
 
 rpmRC keystore_openpgp_cert_d::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
@@ -310,6 +330,25 @@ rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key)
 {
     return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
 }
+
+rpmRC keystore_rpmdb::delete_store(rpmtxn txn)
+{
+    Header h = NULL;
+    rpmRC rc = RPMRC_OK;
+    rpmdbMatchIterator mi = rpmtsInitIterator(rpmtxnTs(txn), RPMDBI_NAME, "gpg-pubkey", 0);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	rpmRC rrc = rpmdbRemove(rpmtsGetRdb(rpmtxnTs(txn)), headerGetInstance(h)) ?
+	    RPMRC_FAIL : RPMRC_OK;
+	if (rrc != RPMRC_OK) {
+	    rpmlog(RPMLOG_WARNING, "can't remove key %s", headerGetString(h, RPMTAG_NEVR));
+	    rc = rrc;
+	}
+    }
+    rpmdbFreeIterator(mi);
+    return rc;
+}
+
+
 
 rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
 {

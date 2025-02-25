@@ -754,6 +754,14 @@ rpmtsi rpmtsiInit(rpmts ts);
  */
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
 
+/** \ingroup rpmts
+ * Rebuild key store using current settings and fill it with keys form keyring
+ * @param txn		transaction handle
+ * @param from		backend to get the keys from
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmtsRebuildKeystore(rpmtxn txn, const char * from);
+
 #ifdef __cplusplus
 }
 #endif

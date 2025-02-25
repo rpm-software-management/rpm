@@ -27,6 +27,8 @@ The general forms of **rpm**(8) digital signature commands are
 
 **rpmkeys** {**-e\|\--erase\|-d\|\--delete**} *FINGERPRINT \...*
 
+**rpmkeys** {**\--rebuild**} \[*\--from BACKEND*\]
+
 **rpmkeys** {**-K\|\--checksig**} *PACKAGE\_FILE \...*
 
 The **\--checksig** option checks all the digests and signatures
@@ -63,6 +65,18 @@ as Sequoia or GnuPG. For example:
 Erase the key(s) designated by *FINGERPRINT*. For example:
 
 **rpmkeys** **\--erase 771b18d3d7baa28734333c424344591e1964c5fc**
+
+Rebuild the key storage:
+
+**rpmkeys** **\--rebuild**
+
+Recreate the public key storage. Update to the latest format and drop
+unreadable keys.
+
+Adding **\--from BACKEND** will keep the keys from the given
+backend and add it to the configured one during rebuilding.
+Valid values for **BACKEND** are **rpmdb**, **fs**, **openpgp**.
+This can be used to convert from one key storage to another.
 
 SEE ALSO
 ========
