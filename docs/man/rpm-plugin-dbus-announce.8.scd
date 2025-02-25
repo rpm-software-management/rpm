@@ -2,15 +2,15 @@ RPM-PLUGIN-DBUS-ANNOUNCE(8)
 
 # NAME
 
-rpm-plugin-dbus-announce - DBus plugin for the RPM Package Manager
+rpm-plugin-dbus-announce - D-Bus plugin for the RPM Package Manager
 
 # DESCRIPTION
 
 The plugin writes basic information about rpm transactions to the system
-dbus - like packages installed or removed. Other programs can subscribe
+D-Bus - like packages installed or removed. Other programs can subscribe
 to the signals to be notified of the packages on the system change.
 
-# DBUS SIGNALS
+# D-BUS SIGNALS
 
 Sends *StartTransaction*, *EndTransaction*, *StartTransactionDetails*
 and *EndTransactionDetails* messages from the */org/rpm/Transaction*
