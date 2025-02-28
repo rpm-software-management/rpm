@@ -8,21 +8,21 @@ rpm - RPM Package Manager
 
 ## QUERYING AND VERIFYING PACKAGES
 
-*rpm* {*-q|--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
 
-*rpm* {*-V|--verify*} [*select-options*] [*verify-options*]
+*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*]
 
 ## INSTALLING, UPGRADING, AND REMOVING PACKAGES
 
-*rpm* {*-i|--install*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-i*|*--install*} [*install-options*] *PACKAGE_FILE ...*
 
-*rpm* {*-U|--upgrade*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-U*|*--upgrade*} [*install-options*] *PACKAGE_FILE ...*
 
-*rpm* {*-F|--freshen*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-F*|*--freshen*} [*install-options*] *PACKAGE_FILE ...*
 
 *rpm* {*--reinstall*} [*install-options*] *PACKAGE_FILE ...*
 
-*rpm* {*-e|--erase*} [*erase-options*] *PACKAGE_NAME ...*
+*rpm* {*-e*|*--erase*} [*erase-options*] *PACKAGE_NAME ...*
 
 *rpm* *--restore* [*select-options*] *PACKAGE_NAME ...*
 
@@ -51,7 +51,7 @@ Owners/Groups*, *Show Querytags*, and *Show Configuration*.
 
 These options can be used in all the different modes.
 
-*-?, --help*
+*-?*, *--help*
 	Print a longer usage message than normal.
 
 *--version*
@@ -62,7 +62,7 @@ These options can be used in all the different modes.
 	Print as little as possible - normally only error messages will be
 	displayed.
 
-*-v, --verbose*
+*-v*, *--verbose*
 	Print verbose information - normally routine progress messages will
 	be displayed.
 
@@ -98,13 +98,13 @@ These options can be used in all the different modes.
 	the caller, such as any mounts needed for the operation inside the
 	root directory.
 
-*-D, --define='*MACRO EXPR*'*
+*-D*, *--define='*MACRO EXPR*'*
 	Defines *MACRO* with value *EXPR*.
 
 *--undefine='*MACRO*'*
 	Undefines *MACRO*.
 
-*-E, --eval='*EXPR*'*
+*-E*, *--eval='*EXPR*'*
 	Prints macro expansion of *EXPR*.
 
 More - less often needed - options can be found on the *rpm-misc*(8)
@@ -120,19 +120,19 @@ information on *rpm*'s *ftp* and *http* client support.
 
 The general form of an *rpm* install command is
 
-*rpm* {*-i|--install*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-i*|*--install*} [*install-options*] *PACKAGE_FILE ...*
 
 This installs a new package.
 
 The general form of an *rpm* upgrade command is
 
-*rpm* {*-U|--upgrade*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-U*|*--upgrade*} [*install-options*] *PACKAGE_FILE ...*
 
 This upgrades or installs the package currently installed to a newer
 version. This is the same as install, except all other version(s) of the
 package are removed after the new package is installed.
 
-*rpm* {*-F|--freshen*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-F*|*--freshen*} [*install-options*] *PACKAGE_FILE ...*
 
 This will upgrade packages, but only ones for which an earlier version
 is installed.
@@ -167,9 +167,9 @@ This reinstalls a previously installed package.
 	Same as using *--replacepkgs*, *--replacefiles*, and
 	*--oldpackage*.
 
-*-h, --hash*
+*-h*, *--hash*
 	Print 50 hash marks as the package archive is unpacked. Use with
-	*-v|--verbose* for a nicer display.
+	*-v*|*--verbose* for a nicer display.
 
 *--ignoresize*
 	Don't check mount file systems for sufficient disk space before
@@ -283,7 +283,7 @@ This reinstalls a previously installed package.
 
 The general form of an *rpm* erase command is
 
-*rpm* {*-e|--erase*} [*erase-options*] *PACKAGE_NAME ...*
+*rpm* {*-e*|*--erase*} [*erase-options*] *PACKAGE_NAME ...*
 
 The following erase-options options may also be used:
 
@@ -306,12 +306,12 @@ The following erase-options options may also be used:
 
 The general form of an *rpm* query command is
 
-*rpm* {*-q|--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
 
 You may specify the format that package information should be printed
 in. To do this, you use the
 
-*--qf|--queryformat* *QUERYFMT*
+*--qf*|*--queryformat* *QUERYFMT*
 
 option, followed by the *QUERYFMT* format string. Query formats are
 modified versions of the standard *printf*(3) formatting. The format
@@ -423,7 +423,7 @@ selection and information selection.
 	architecture name separated by a dot. See the output of *rpm -qa*
 	or *rpm -qp* *PACKAGE_FILE* as an example.
 
-*-a, --all* [*SELECTOR*]
+*-a*, *--all* [*SELECTOR*]
 	Query all installed packages.
 
 	An optional *SELECTOR* in the form of tag=pattern can be provided to
@@ -433,7 +433,7 @@ selection and information selection.
 *--dupes*
 	List duplicated packages.
 
-*-f, --file* *FILE*
+*-f*, *--file* *FILE*
 	Query package owning installed *FILE*.
 
 *--filecaps*
@@ -452,10 +452,10 @@ selection and information selection.
 *--filerequire*
 	List file names with their requires.
 
-*-g, --group* *GROUP*
+*-g*, *--group* *GROUP*
 	Query packages with the group of *GROUP*.
 
-*-p, --package* *PACKAGE_FILE*
+*-p*, *--package* *PACKAGE_FILE*
 	Query an (uninstalled) package *PACKAGE_FILE*. The *PACKAGE_FILE*
 	may be specified as an *ftp* or *http* style URL, in which case
 	the package header will be downloaded and queried. See *FTP/HTTP
@@ -543,7 +543,7 @@ selection and information selection.
 *--filetriggers*
 	List filetrigger scriptlets from package(s).
 
-*-i, --info*
+*-i*, *--info*
 	Display package information, including name, version, and
 	description. This uses the *--queryformat* if one was specified.
 
@@ -551,7 +551,7 @@ selection and information selection.
 	Orders the package listing by install time such that the latest
 	packages are at the top.
 
-*-l, --list*
+*-l*, *--list*
 	List files in package.
 
 *--obsoletes*
@@ -563,7 +563,7 @@ selection and information selection.
 *--recommends*
 	List capabilities recommended by package(s).
 
-*-R, --requires*
+*-R*, *--requires*
 	List capabilities on which this package depends.
 
 *--suggests*
@@ -576,12 +576,12 @@ selection and information selection.
 	List the package specific scriptlet(s) that are used as part of the
 	installation and uninstallation processes.
 
-*-s, --state*
+*-s*, *--state*
 	Display the *states* of files in the package (implies *-l*). The
 	state of each file is one of *normal*, *not installed*, or
 	*replaced*.
 
-*--triggers, --triggerscripts*
+*--triggers*, *--triggerscripts*
 	Display the trigger scripts, if any, which are contained in the
 	package.
 
@@ -590,16 +590,16 @@ selection and information selection.
 
 # FILE SELECTION OPTIONS
 
-*-A, --artifactfiles*
+*-A*, *--artifactfiles*
 	Only include artifact files (implies *-l*).
 
-*-c, --configfiles*
+*-c*, *--configfiles*
 	Only include configuration files (implies *-l*).
 
-*-d, --docfiles*
+*-d*, *--docfiles*
 	Only include documentation files (implies *-l*).
 
-*-L, --licensefiles*
+*-L*, *--licensefiles*
 	Only include license files (implies *-l*).
 
 *--noartifact*
@@ -615,7 +615,7 @@ selection and information selection.
 
 The general form of an *rpm* verify command is
 
-*rpm* {*-V|--verify*} [*select-options*] [*verify-options*] [*PACKAGE_NAME ...*]
+*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [*PACKAGE_NAME ...*]
 
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package

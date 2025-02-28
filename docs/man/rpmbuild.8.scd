@@ -10,9 +10,9 @@ rpmbuild - Build RPM Package(s)
 
 The general form of *rpmbuild* command is
 
-*rpmbuild* {*-b**STAGE**|-r**STAGE**|-t**STAGE*} [*build-options*] *FILE ...*
+*rpmbuild* {*-b*|*-r*|*-t*}*STAGE* [*build-options*] *FILE ...*
 
-*rpmbuild* {*--rebuild|--recompile*} [*build-options*] *SOURCEPKG ...*
+*rpmbuild* {*--rebuild*|*--recompile*} [*build-options*] *SOURCEPKG ...*
 
 ## MISCELLANEOUS
 
@@ -36,7 +36,7 @@ Configuration*.
 
 These options can be used in all the different modes.
 
-*-?, --help*
+*-?*, *--help*
 	Print a longer usage message then normal.
 
 *--version*
@@ -82,7 +82,7 @@ These options can be used in all the different modes.
 	installing, or *%prep* if building, a package) will be run after a
 	chroot(2) to *DIRECTORY*.
 
-*-D, --define='**MACRO EXPR**'*
+*-D*, *--define='**MACRO EXPR**'*
 	Defines *MACRO* with value *EXPR*.
 
 *--scm=**SCM*

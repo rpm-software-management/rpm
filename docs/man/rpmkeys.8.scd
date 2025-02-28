@@ -6,21 +6,21 @@ rpmkeys - RPM Keyring
 
 # SYNOPSIS
 
-*rpmkeys* {*--list|--import|--erase|--delete|--checksig*}
+*rpmkeys* {*--list*|*--import*|*--erase*|*--delete*|*--checksig*}
 
 # DESCRIPTION
 
 The general forms of *rpm*(8) digital signature commands are
 
-*rpmkeys* {*-l|--list*} [*FINGERPRINT ...*]
+*rpmkeys* {*-l*|*--list*} [*FINGERPRINT ...*]
 
-*rpmkeys* {*-x|--export*} [*FINGERPRINT ...*]
+*rpmkeys* {*-x*|*--export*} [*FINGERPRINT ...*]
 
-*rpmkeys* {*-i|--import*} *PUBKEY ...*
+*rpmkeys* {*-i*|*--import*} *PUBKEY ...*
 
-*rpmkeys* {*-e|--erase|-d|--delete*} *FINGERPRINT ...*
+*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} *FINGERPRINT ...*
 
-*rpmkeys* {*-K|--checksig*} *PACKAGE_FILE ...*
+*rpmkeys* {*-K*|*--checksig*} *PACKAGE_FILE ...*
 
 The *--checksig* option checks all the digests and signatures
 contained in *PACKAGE_FILE* to ensure the integrity and origin of the
@@ -35,14 +35,14 @@ armored public key can be added to the *rpm* persistent keyring using
 The following commands are available for manipulating the persistent
 rpm keyring:
 
-*rpmkeys* {*-l|--list*} [*FINGERPRINT ...*]
+*rpmkeys* {*-l*|*--list*} [*FINGERPRINT ...*]
 
 List currently imported public key(s) (aka certificates) by their
 fingerprint and user ID. If no fingerprints are specified, list all keys.
 
 The fingerprint is the handle used for all operations on the keys.
 
-*rpmkeys* {*-x|--export*} [*FINGERPRINT ...*]
+*rpmkeys* {*-x*|*--export*} [*FINGERPRINT ...*]
 
 Output the key(s) using an ASCII-armor encoding.
 
@@ -51,7 +51,7 @@ as Sequoia or GnuPG. For example:
 
 *rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect *
 
-*rpmkeys* {*-e|--erase|-d|--delete*} *FINGERPRINT ...*
+*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} *FINGERPRINT ...*
 
 Erase the key(s) designated by *FINGERPRINT*. For example:
 

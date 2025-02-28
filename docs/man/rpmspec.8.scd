@@ -8,11 +8,11 @@ rpmspec - RPM Spec Tool
 
 ## QUERYING SPEC FILES
 
-*rpmspec* {*-q|--query*} [*select-options*] [*query-options*] *SPEC_FILE ...*
+*rpmspec* {*-q*|*--query*} [*select-options*] [*query-options*] *SPEC_FILE ...*
 
 ## PARSING SPEC FILES TO STDOUT
 
-*rpmspec* {*-P|--parse*} *SPEC_FILE ...*
+*rpmspec* {*-P*|*--parse*} *SPEC_FILE ...*
 
 ## INVOKING MACRO SHELL
 
@@ -41,12 +41,12 @@ generated during a build of a package like auto generated dependencies.
 
 The general form of an rpm spec query command is
 
-*rpm* {*-q|--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
 
 You may specify the format that the information should be printed in. To
 do this, you use the
 
-*--qf|--queryformat* *QUERYFMT*
+*--qf*|*--queryformat* *QUERYFMT*
 
 option, followed by the *QUERYFMT* format string. See *rpm*(8) for
 details.
