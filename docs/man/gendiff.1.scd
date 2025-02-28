@@ -26,8 +26,8 @@ need to be saved.
 
 Before editing a file, copy the file, appending the extension you have
 chosen to the filename. I.e. if you were going to edit somefile.cpp and
-have chosen the extension "fix", copy it to somefile.cpp.fix before
-editing it. Then edit the first copy (somefile.cpp).
+have chosen the extension "fix", copy it to _somefile.cpp.fix_ before
+editing it. Then edit the first copy (_somefile.cpp_).
 
 After editing all the files you need to edit in this fashion, enter the
 directory one level above where your source code resides, and then type
