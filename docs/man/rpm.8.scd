@@ -479,10 +479,7 @@ _PACKAGE_NAME_
 	for debugging.
 
 *--specfile* _SPECFILE_
-	Parse and query _SPECFILE_ as if it were a package. Although not all
-	the information (e.g. file lists) is available, this type of query
-	permits *rpm* to be used to extract information from spec files
-	without having to write a specfile parser.
+	Obsolete, use *rpmspec*(8) instead.
 
 *--tid* _TID_
 	Query package(s) that have a given _TID_ transaction identifier. A
