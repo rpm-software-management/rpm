@@ -26,7 +26,7 @@ rpm - lesser need options for rpm(8)
 *--nocaps*
 	Don't verify capabilities of files.
 
-*--excludeconfigs, --noconfigs*
+*--excludeconfigs*, *--noconfigs*
 	Do not install configuration files.
 
 *--nohdrchk*
@@ -34,7 +34,7 @@ rpm - lesser need options for rpm(8)
 
 ## Debugging
 
-*-d, --debug*
+*-d*, *--debug*
 	Print debugging information.
 
 *--deploops*
@@ -54,7 +54,7 @@ rpm - lesser need options for rpm(8)
 
 ## Obsolete Options
 
-*-K, --checksig*
+*-K*, *--checksig*
 	See and use *rpmkeys*(8).
 
 *--nodocs*

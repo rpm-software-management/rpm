@@ -6,8 +6,7 @@ rpmdeps - Generate RPM Package Dependencies
 
 # SYNOPSIS
 
-*rpmdeps* *{-P|--provides}* *{-R|--requires}*
-*{--rpmfcdebug}* *FILE ...*
+*rpmdeps* {*-P*|*--provides*} {*-R*|*--requires*} {*--rpmfcdebug*} *FILE ...*
 
 # DESCRIPTION
 

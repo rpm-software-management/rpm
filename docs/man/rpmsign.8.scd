@@ -6,7 +6,7 @@ rpmsign - RPM Package Signing
 
 # SYNOPSIS
 
-*rpmsign* *--addsign|--resign* [*rpmsign-options*] *PACKAGE_FILE
+*rpmsign* {*--addsign*|*--resign*} [*rpmsign-options*] *PACKAGE_FILE
 ...*
 
 *rpmsign* *--delsign* *PACKAGE_FILE ...*

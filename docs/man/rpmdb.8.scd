@@ -6,17 +6,17 @@ rpmdb - RPM Database Tool
 
 # SYNOPSIS
 
-*rpmdb* {*--initdb|--rebuilddb*}
+*rpmdb* {*--initdb*|*--rebuilddb*}
 
 *rpmdb* {*--verifydb*}
 
-*rpmdb* {*--exportdb|--importdb*}
+*rpmdb* {*--exportdb*|*--importdb*}
 
 # DESCRIPTION
 
 The general form of an rpmdb command is
 
-*rpmdb* {*--initdb|--rebuilddb*} [*-v*] [*--dbpath* *DIRECTORY*] [*--root* *DIRECTORY*]
+*rpmdb* {*--initdb*|*--rebuilddb*} [*-v*] [*--dbpath* *DIRECTORY*] [*--root* *DIRECTORY*]
 
 Use *--initdb* to create a new database if one doesn't already exist
 (existing database is not overwritten), use *--rebuilddb* to rebuild
