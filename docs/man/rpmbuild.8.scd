@@ -10,9 +10,9 @@ rpmbuild - Build RPM Package(s)
 
 The general form of *rpmbuild* command is
 
-*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [*build-options*] _FILE_ ...
+*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [build-options] _FILE_ ...
 
-*rpmbuild* {*--rebuild*|*--recompile*} [*build-options*] _SOURCEPKG_ ...
+*rpmbuild* {*--rebuild*|*--recompile*} [build-options] _SOURCEPKG_ ...
 
 ## MISCELLANEOUS
 
@@ -96,7 +96,7 @@ These options can be used in all the different modes.
 
 The general form of an *rpm*(8) build command is
 
-*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [*build-options*] _FILE_ ...
+*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [build-options] _FILE_ ...
 
 The argument used is *-b* if a spec file is being used to build the
 package, *-r* if a source package is to be rebuilt and *-t* if

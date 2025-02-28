@@ -8,23 +8,23 @@ rpm - RPM Package Manager
 
 ## QUERYING AND VERIFYING PACKAGES
 
-*rpm* {*-q*|*--query*} [*select-options*] [*query-options*] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
+*rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
-*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [_PACKAGE_NAME_ ...]
+*rpm* {*-V*|*--verify*} [select-options] [verify-options] [_PACKAGE_NAME_ ...]
 
 ## INSTALLING, UPGRADING, AND REMOVING PACKAGES
 
-*rpm* {*-i*|*--install*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-i*|*--install*} [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-U*|*--upgrade*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-U*|*--upgrade*} [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-F*|*--freshen*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-F*|*--freshen*} [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*--reinstall*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*--reinstall*} [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-e*|*--erase*} [*erase-options*] _PACKAGE_NAME_ ...
+*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
 
-*rpm* *--restore* [*select-options*] _PACKAGE_NAME_ ...
+*rpm* *--restore* [select-options] _PACKAGE_NAME_ ...
 
 ## MISC OPERATIONS
 
@@ -120,26 +120,26 @@ information on *rpm*'s *ftp* and *http* client support.
 
 The general form of an *rpm* install command is
 
-*rpm* {*-i*|*--install*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-i*|*--install*} [install-options] _PACKAGE_FILE_ ...
 
 This installs a new package.
 
 The general form of an *rpm* upgrade command is
 
-*rpm* {*-U*|*--upgrade*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-U*|*--upgrade*} [install-options] _PACKAGE_FILE_ ...
 
 This upgrades or installs the package currently installed to a newer
 version. This is the same as install, except all other version(s) of the
 package are removed after the new package is installed.
 
-*rpm* {*-F*|*--freshen*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*-F*|*--freshen*} [install-options] _PACKAGE_FILE_ ...
 
 This will upgrade packages, but only ones for which an earlier version
 is installed.
 
 The general form of an *rpm* reinstall command is
 
-*rpm* {*--reinstall*} [*install-options*] _PACKAGE_FILE_ ...
+*rpm* {*--reinstall*} [install-options] _PACKAGE_FILE_ ...
 
 This reinstalls a previously installed package.
 
@@ -283,7 +283,7 @@ This reinstalls a previously installed package.
 
 The general form of an *rpm* erase command is
 
-*rpm* {*-e*|*--erase*} [*erase-options*] _PACKAGE_NAME_ ...
+*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
 
 The following erase-options options may also be used:
 
@@ -306,7 +306,7 @@ The following erase-options options may also be used:
 
 The general form of an *rpm* query command is
 
-*rpm* {*-q*|*--query*} [*select-options*] [*query-options*] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
+*rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
 You may specify the format that package information should be printed
 in. To do this, you use the
@@ -615,7 +615,7 @@ _PACKAGE_NAME_
 
 The general form of an *rpm* verify command is
 
-*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [_PACKAGE_NAME_ ...]
+*rpm* {*-V*|*--verify*} [select-options] [verify-options] [_PACKAGE_NAME_ ...]
 
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
@@ -734,7 +734,7 @@ em*B*oldened) character denotes failure of the corresponding
 *rpm* *--setperms* | *--setugids* | *--setcaps* [_PACKAGE_NAME_ ...]
 	obsolete aliases for *--restore*
 
-*rpm* *--restore* [*select-options*] [_PACKAGE_NAME_ ...]
+*rpm* *--restore* [select-options] [_PACKAGE_NAME_ ...]
 	The option restores file metadata such as timestamp, owner, group,
 	permissions and capabilities of files in packages.
 

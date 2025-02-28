@@ -8,7 +8,7 @@ rpmspec - RPM Spec Tool
 
 ## QUERYING SPEC FILES
 
-*rpmspec* {*-q*|*--query*} [*select-options*] [*query-options*] _SPEC_FILE_ ...
+*rpmspec* {*-q*|*--query*} [select-options] [query-options] _SPEC_FILE_ ...
 
 ## PARSING SPEC FILES TO STDOUT
 
@@ -41,7 +41,7 @@ generated during a build of a package like auto generated dependencies.
 
 The general form of an rpm spec query command is
 
-*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [select-options] [query-options]
 
 You may specify the format that the information should be printed in. To
 do this, you use the
