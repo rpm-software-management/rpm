@@ -765,15 +765,6 @@ If both the user and password are omitted, anonymous *ftp* is used.
 	proxy http server instead of the default port. This option may also
 	be specified by configuring the macro *%\_httpport*.
 
-# LEGACY ISSUES
-
-## Executing rpmbuild
-
-The build modes of rpm are now resident in the */usr/bin/rpmbuild*
-executable. Install the package containing *rpmbuild* (usually
-*rpm-build*) and see *rpmbuild*(8) for documentation of all the
-*rpm* build modes.
-
 # FILES
 
 ## rpmrc Configuration
