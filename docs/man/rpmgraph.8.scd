@@ -6,12 +6,12 @@ rpmgraph - Display RPM Package Dependency Graph
 
 # SYNOPSIS
 
-*rpmgraph* *PACKAGE_FILE ...*
+*rpmgraph* _PACKAGE_FILE_ ...
 
 # DESCRIPTION
 
-*rpmgraph* uses *PACKAGE_FILE* arguments to generate a package
-dependency graph. Each *PACKAGE_FILE* argument is read and added to an
+*rpmgraph* uses _PACKAGE_FILE_ arguments to generate a package
+dependency graph. Each _PACKAGE_FILE_ argument is read and added to an
 *rpm*(8) transaction set. The elements of the transaction set are partially
 ordered using a topological sort. The partially ordered elements are
 then printed to standard output.

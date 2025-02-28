@@ -6,7 +6,7 @@ gendiff - utility to aid in error-free diff file generation
 
 # SYNOPSIS
 
-*gendiff* <directory> <diff-extension>
+*gendiff* <_directory_> <_diff-extension_>
 
 # DESCRIPTION
 

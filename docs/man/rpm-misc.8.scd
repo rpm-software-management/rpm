@@ -6,8 +6,8 @@ rpm - lesser need options for rpm(8)
 
 # OPTIONS
 
-*--predefine='**MACRO EXPR**'*
-	Defines *MACRO* with value *EXPR* before loading macro files.
+*--predefine*='_MACRO_ _EXPR_'
+	Defines _MACRO_ with value _EXPR_ before loading macro files.
 
 
 *--color [never|auto|always]*

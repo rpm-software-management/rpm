@@ -6,7 +6,7 @@ rpmsort - Sort input by RPM Package Manager (RPM) versioning
 
 # SYNOPSIS
 
-*rpmsort* *FILES*
+*rpmsort* _FILE_ ...
 
 # DESCRIPTION
 

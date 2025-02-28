@@ -6,38 +6,37 @@ rpmsign - RPM Package Signing
 
 # SYNOPSIS
 
-*rpmsign* {*--addsign*|*--resign*} [*rpmsign-options*] *PACKAGE_FILE
-...*
+*rpmsign* {*--addsign*|*--resign*} [*rpmsign-options*] _PACKAGE_FILE_ ...
 
-*rpmsign* *--delsign* *PACKAGE_FILE ...*
+*rpmsign* *--delsign* _PACKAGE_FILE_ ...
 
-*rpmsign* *--delfilesign* *PACKAGE_FILE ...*
+*rpmsign* *--delfilesign* _PACKAGE_FILE_ ...
 
 ## rpmsign-options
 
-\[*--rpmv3*] [*--rpmv4*] [*--fskpath* *KEY*] [*--signfiles*]
+\[*--rpmv3*] [*--rpmv4*] [*--fskpath* _KEY_] [*--signfiles*]
 
 # DESCRIPTION
 
 *rpmsign* *--addsign* generates and inserts a new OpenPGP signature
-for each *PACKAGE_FILE* given unless a signature with identical
+for each _PACKAGE_FILE_ given unless a signature with identical
 parameters already exists, in which case no action is taken.
 Arbitrary number of V6 signatures can be added.
 
 *rpmsign* *--resign* generates and inserts a new OpenPGP signature
-for each *PACKAGE_FILE*, replacing any and all previous signatures.
+for each _PACKAGE_FILE_, replacing any and all previous signatures.
 
 To create a signature rpmsign needs to verify the package's checksum. As a
 result V4 packages with MD5/SHA1 checksums cannot be signed in FIPS mode.
 
-*rpmsign* *--delsign* *PACKAGE_FILE ...*
+*rpmsign* *--delsign* _PACKAGE_FILE_ ...
 
-Delete all OpenPGP signatures from each package *PACKAGE_FILE* given.
+Delete all OpenPGP signatures from each package _PACKAGE_FILE_ given.
 
-*rpmsign* *--delfilesign* *PACKAGE_FILE ...*
+*rpmsign* *--delfilesign* _PACKAGE_FILE_ ...
 
 Delete all IMA and fsverity file signatures from each package
-*PACKAGE_FILE* given.
+_PACKAGE_FILE_ given.
 
 ## SIGN OPTIONS
 
@@ -74,13 +73,13 @@ Delete all IMA and fsverity file signatures from each package
 
 	Has no effect when signing V6 packages.
 
-*--fskpath* *KEY*
-	Used with *--signfiles*, use file signing key *KEY*.
+*--fskpath* _KEY_
+	Used with *--signfiles*, use file signing key _KEY_.
 
-*--certpath* *CERT*
-	Used with *--signverity*, use file signing certificate *CERT*.
+*--certpath* _CERT_
+	Used with *--signverity*, use file signing certificate _CERT_.
 
-*--verityalgo* *ALG*
+*--verityalgo* _ALG_
 	Used with *--signverity*, to specify the signing algorithm.
 	sha256 and sha512 are supported, with sha256 being the default if
 	this argument is not specified. This can also be specified with the

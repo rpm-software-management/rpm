@@ -12,18 +12,18 @@ rpmkeys - RPM Keyring
 
 The general forms of *rpm*(8) digital signature commands are
 
-*rpmkeys* {*-l*|*--list*} [*FINGERPRINT ...*]
+*rpmkeys* {*-l*|*--list*} [_FINGERPRINT_ ...]
 
-*rpmkeys* {*-x*|*--export*} [*FINGERPRINT ...*]
+*rpmkeys* {*-x*|*--export*} [_FINGERPRINT_ ...]
 
-*rpmkeys* {*-i*|*--import*} *PUBKEY ...*
+*rpmkeys* {*-i*|*--import*} _PUBKEY_ ...
 
-*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} *FINGERPRINT ...*
+*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} _FINGERPRINT_ ...
 
-*rpmkeys* {*-K*|*--checksig*} *PACKAGE_FILE ...*
+*rpmkeys* {*-K*|*--checksig*} _PACKAGE_FILE_ ...
 
 The *--checksig* option checks all the digests and signatures
-contained in *PACKAGE_FILE* to ensure the integrity and origin of the
+contained in _PACKAGE_FILE_ to ensure the integrity and origin of the
 package. Note that signatures are now verified whenever a package is
 read, and *--checksig* is useful to verify all of the digests and
 signatures associated with a package.
@@ -35,14 +35,14 @@ armored public key can be added to the *rpm* persistent keyring using
 The following commands are available for manipulating the persistent
 rpm keyring:
 
-*rpmkeys* {*-l*|*--list*} [*FINGERPRINT ...*]
+*rpmkeys* {*-l*|*--list*} [_FINGERPRINT_...]
 
 List currently imported public key(s) (aka certificates) by their
 fingerprint and user ID. If no fingerprints are specified, list all keys.
 
 The fingerprint is the handle used for all operations on the keys.
 
-*rpmkeys* {*-x*|*--export*} [*FINGERPRINT ...*]
+*rpmkeys* {*-x*|*--export*} [_FINGERPRINT_ ...]
 
 Output the key(s) using an ASCII-armor encoding.
 
@@ -51,9 +51,9 @@ as Sequoia or GnuPG. For example:
 
 *rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect *
 
-*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} *FINGERPRINT ...*
+*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} _FINGERPRINT_ ...
 
-Erase the key(s) designated by *FINGERPRINT*. For example:
+Erase the key(s) designated by _FINGERPRINT_. For example:
 
 *rpmkeys* *--erase 771b18d3d7baa28734333c424344591e1964c5fc*
 
