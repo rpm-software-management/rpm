@@ -6,17 +6,11 @@ rpmbuild - Build RPM Package(s)
 
 # SYNOPSIS
 
-## BUILDING PACKAGES
-
 The general form of *rpmbuild* command is
 
 *rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [build-options] _FILE_ ...
 
 *rpmbuild* {*--rebuild*|*--recompile*} [build-options] _SOURCEPKG_ ...
-
-## MISCELLANEOUS
-
-*rpmbuild* *--showrc*
 
 # DESCRIPTION
 
