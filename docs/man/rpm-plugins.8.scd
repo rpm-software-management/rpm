@@ -29,7 +29,7 @@ to *%{nil}* will prevent the plugin from being run.
 
 This can be done on the RPM command line e.g. with
 *--undefine=\_\_transaction_syslog*. To disable a plugin
-permantently drop a file in */etc/rpm/* that contains
+permantently, place a _macros.\*_ file in _/etc/rpm/_ that contains
 
 ```
 %__transaction_NAME %{nil}

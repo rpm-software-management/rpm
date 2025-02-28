@@ -138,7 +138,7 @@ fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
 %\_openpgp_signer 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
 ```
 
-in a macro configuration file, typically ~/.config/rpm/macros.
+in a macro configuration file, typically _~/.config/rpm/macros_.
 See *Macro Configuration* in *rpm*(8) for more details.
 
 # SEE ALSO

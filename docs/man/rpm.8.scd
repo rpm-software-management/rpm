@@ -745,9 +745,9 @@ queried or installed from the internet. Package files for install,
 upgrade, and query operations may be specified as an *ftp* or *http*
 style URL:
 
-http://HOST[:PORT]/path/to/package.rpm
+_http://HOST[:PORT]/path/to/package.rpm_
 
-ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm
+_ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm_
 
 If both the user and password are omitted, anonymous *ftp* is used.
 
@@ -783,15 +783,17 @@ Each file in the colon separated rpmrc path is read sequentially by
 list must exist, and tildes will be expanded to the value of
 *$HOME*. The default rpmrc path is as follows:
 
+```
 	/usr/lib/rpm/rpmrc:
 	/usr/lib/rpm/<vendor>/rpmrc:
 	/etc/rpmrc:
 	~/.config/rpm/rpmrc
+```
 
-If *XDG_CONFIG_HOME* environment variable is set, it replaces ~/.config
+If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
 in the path.
 
-In older rpm versions the path of per-user rpmrc was ~/.rpmrc.
+In older rpm versions the path of per-user rpmrc was _~/.rpmrc_.
 This is still processed if it exists and the new configuration directory
 does not exist.
 
@@ -814,20 +816,20 @@ is as follows:
 	~/.config/rpm/macros
 ```
 
-If *XDG_CONFIG_HOME* environment variable is set, it replaces ~/.config
+If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
 in the path.
 
-In older versions of rpm, the path of per-user macros was ~/.rpmmacros.
+In older versions of rpm, the path of per-user macros was _~/.rpmmacros_.
 This is still processed if it exists and the new configuration directory
 does not exist.
 
 ## Database
 
-	/var/lib/rpm/
+	/_var/lib/rpm/_
 
 ## Temporary
 
-	/var/tmp/rpm\*
+	_/var/tmp/rpm\*_
 
 # SEE ALSO
 

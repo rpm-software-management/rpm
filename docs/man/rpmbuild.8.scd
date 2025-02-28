@@ -73,7 +73,7 @@ These options can be used in all the different modes.
 
 *--dbpath* _DIRECTORY_
 	Use the database in _DIRECTORY_ rather than the default path
-	*/var/lib/rpm*.
+	_/var/lib/rpm_.
 
 *--root* _DIRECTORY_
 	Use the file system tree rooted at _DIRECTORY_ for all operations.
@@ -238,7 +238,7 @@ much more fine control over what stages of the build to run.
 
 When the *%generate_buildrequires* stage runs and some of the newly
 generated BuildRequires are not satisfied, *rpmbuild* creates an
-intermediate source package ending in *buildreqs.nosrc.rpm*, which has
+intermediate source package ending in _buildreqs.nosrc.rpm_, which has
 the new BuildRequires, and exits with code 11. This package can then be
 used in place of the original source package to resolve and install the
 missing build dependencies in the usual way, such as with
@@ -249,11 +249,11 @@ the presence of specific BuildRequires on the system may yield new
 BuildRequires next time a build is performed with the same source
 package. The easiest way to ensure that all dynamic build dependencies
 are satisfied is to run the *-br* option, install the new
-dependencies of the *buildreqs.nosrc.rpm* package and repeat the whole
+dependencies of the _buildreqs.nosrc.rpm_ package and repeat the whole
 procedure until *rpmbuild* no longer exits with code 11.
 
 If the *-br* command is coupled with *--nodeps*, exit code 11 is
-always returned and a *buildreqs.nosrc.rpm* package is always created.
+always returned and a _buildreqs.nosrc.rpm_ package is always created.
 
 # SHOWRC
 
