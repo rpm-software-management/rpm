@@ -6,12 +6,12 @@ rpmdeps - Generate RPM Package Dependencies
 
 # SYNOPSIS
 
-*rpmdeps* {*-P*|*--provides*} {*-R*|*--requires*} {*--rpmfcdebug*} *FILE ...*
+*rpmdeps* {*-P*|*--provides*} {*-R*|*--requires*} {*--rpmfcdebug*} [_FILE_ ...]
 
 # DESCRIPTION
 
-*rpmdeps* generates package dependencies for the set of *FILE*
-arguments. Each *FILE* argument is searched for Elf32/Elf64, script
+*rpmdeps* generates package dependencies for the set of _FILE_
+arguments. Each _FILE_ argument is searched for Elf32/Elf64, script
 interpreter, or per-script dependencies, and the dependencies are
 printed to stdout.
 

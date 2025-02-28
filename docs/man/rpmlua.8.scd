@@ -6,7 +6,7 @@ rpmlua - RPM Lua interpreter
 
 # SYNOPSIS
 
-*rpmlua* [{*-e*|*--execute*} "*STATEMENT*"] [{*-i*|*--interactive*}] [*SCRIPT_FILE*] [arg1 ...]
+*rpmlua* [{*-e*|*--execute*} "_STATEMENT_"] [{*-i*|*--interactive*}] [_SCRIPT_FILE_] [arg1 ...]
 
 # DESCRIPTION
 
@@ -18,9 +18,9 @@ of the more customary index zero.
 *-i*, *--interactive*
 	Run an interactive session after executing optional script or statement.
 
-*--opts=OPTSTRING*
+*--opts*=_OPTSTRING_
 	Perform *getopt*(3) option processing on the passed arguments according
-	to OPTSTRING.
+	to _OPTSTRING_.
 
 *-e*, *--execute*
 	Execute a Lua statement before executing optional script.

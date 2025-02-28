@@ -10,9 +10,9 @@ rpmbuild - Build RPM Package(s)
 
 The general form of *rpmbuild* command is
 
-*rpmbuild* {*-b*|*-r*|*-t*}*STAGE* [*build-options*] *FILE ...*
+*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [*build-options*] _FILE_ ...
 
-*rpmbuild* {*--rebuild*|*--recompile*} [*build-options*] *SOURCEPKG ...*
+*rpmbuild* {*--rebuild*|*--recompile*} [*build-options*] _SOURCEPKG_ ...
 
 ## MISCELLANEOUS
 
@@ -57,37 +57,37 @@ These options can be used in all the different modes.
 *--rpmfcdebug*
 	Enables to debug dependencies generation.
 
-*--rcfile* *FILELIST*
-	Replace default list of configuration files to be read with *FILELIST*.
+*--rcfile* _FILELIST_
+	Replace default list of configuration files to be read with _FILELIST_.
 	See *rpmrc Configuration* in *rpm*(8) for details.
 
-*--load* *FILE*
+*--load* _FILE_
 	Load an individual macro file.
 
-*--macros* *FILELIST*
-	Replace the list of macro files to be loaded with *FILELIST*.
+*--macros* _FILELIST_
+	Replace the list of macro files to be loaded with _FILELIST_.
 	See *Macro Configuration* in *rpm*(8) for details.
 
-*--pipe* *CMD*
+*--pipe* _CMD_
 	Pipes the output of *rpm* to the command *CMD*.
 
-*--dbpath* *DIRECTORY*
-	Use the database in *DIRECTORY* rather than the default path
+*--dbpath* _DIRECTORY_
+	Use the database in _DIRECTORY_ rather than the default path
 	*/var/lib/rpm*.
 
-*--root* *DIRECTORY*
-	Use the file system tree rooted at *DIRECTORY* for all operations.
-	Note that this means the database within *DIRECTORY* will be used
+*--root* _DIRECTORY_
+	Use the file system tree rooted at _DIRECTORY_ for all operations.
+	Note that this means the database within _DIRECTORY_ will be used
 	for dependency checks and any scriptlet(s) (e.g. *%post* if
 	installing, or *%prep* if building, a package) will be run after a
-	chroot(2) to *DIRECTORY*.
+	chroot(2) to _DIRECTORY_.
 
-*-D*, *--define='**MACRO EXPR**'*
-	Defines *MACRO* with value *EXPR*.
+*-D*, *--define*='_MACRO_ _EXPR_'
+	Defines _MACRO_ with value _EXPR_.
 
-*--scm=**SCM*
-	Select the *SCM* to use with *%autosetup*, if one is not set in the
-	spec file. Note that not all values for *SCM*, e.g., *patch* (the
+*--scm*=_SCM_
+	Select the _SCM_ to use with *%autosetup*, if one is not set in the
+	spec file. Note that not all values for _SCM_, e.g., *patch* (the
 	default) and *gendiff*, *git*, or *quilt* work interchangeably
 	with all other patches and options stated in the %autosetup line,
 	especially option *-p**N*.
@@ -96,7 +96,7 @@ These options can be used in all the different modes.
 
 The general form of an *rpm*(8) build command is
 
-*rpmbuild* {*-b**STAGE**|-r**STAGE**|-t**STAGE*} [*rpmbuild-options*] *FILE ...*
+*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [*build-options*] _FILE_ ...
 
 The argument used is *-b* if a spec file is being used to build the
 package, *-r* if a source package is to be rebuilt and *-t* if
@@ -109,7 +109,7 @@ the following sections in a spec file: *%prep*,
 *%clean*. Finally, binary and source packages are created in an
 assembly stage.
 
-The *STAGE* character specifies the stage to finish with (after doing
+The _STAGE_ character specifies the stage to finish with (after doing
 all the stages preceding it), and is one of:
 
 *-ba*
@@ -161,9 +161,9 @@ all the stages preceding it), and is one of:
 
 The following options may also be used:
 
-*--buildroot* *DIRECTORY* (DEPRECATED)
+*--buildroot* _DIRECTORY_ (DEPRECATED)
 	When building a package, override the buildroot of *rpmbuild*(8) to
-	*DIRECTORY*. This option is deprecated and will be removed in the
+	_DIRECTORY_. This option is deprecated and will be removed in the
 	future, do not introduce new usages.
 
 *--clean*
@@ -208,22 +208,22 @@ The following options may also be used:
 	but *%builddir*/*%buildsubdir* points back to the current working
 	directory. *%prep* is skipped entirely.
 
-*--target* *PLATFORM*
-	When building the package, interpret *PLATFORM* as
+*--target* _PLATFORM_
+	When building the package, interpret _PLATFORM_ as
 	*arch-vendor-os* and set the macros *%\_target*,
 	*%\_target_cpu*, and *%\_target_os* accordingly.
 
-*--with* *OPTION*
-	Enable configure *OPTION* for build.
+*--with* _OPTION_
+	Enable configure _OPTION_ for build.
 
-*--without* *OPTION*
-	Disable configure *OPTION* for build.
+*--without* _OPTION_
+	Disable configure _OPTION_ for build.
 
 # REBUILD AND RECOMPILE OPTIONS
 
-There are two other ways to invoke building with *rpm*(8):
+There are two other ways to invoke building with *rpmbuild*(8):
 
-*rpmbuild* *--rebuild|--recompile* *SOURCEPKG ...*
+*rpmbuild* *--rebuild|--recompile* _SOURCEPKG_ ...
 
 When invoked this way, *rpmbuild* installs the named source package,
 and does a prep, compile and install. In addition, *--rebuild* builds

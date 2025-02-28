@@ -6,7 +6,7 @@ rpm2archive - Create tar archive from RPM Package Manager (RPM) package.
 
 # SYNOPSIS
 
-*rpm2archive* *{-n*|*--nocompression*} {*-f*|*--format=pax|cpio*} *FILES*
+*rpm2archive* *{-n*|*--nocompression*} {*-f*|*--format=pax|cpio*} _FILES_
 
 # DESCRIPTION
 

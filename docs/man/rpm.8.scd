@@ -8,23 +8,23 @@ rpm - RPM Package Manager
 
 ## QUERYING AND VERIFYING PACKAGES
 
-*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [*select-options*] [*query-options*] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
-*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*]
+*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [_PACKAGE_NAME_ ...]
 
 ## INSTALLING, UPGRADING, AND REMOVING PACKAGES
 
-*rpm* {*-i*|*--install*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-i*|*--install*} [*install-options*] _PACKAGE_FILE_ ...
 
-*rpm* {*-U*|*--upgrade*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-U*|*--upgrade*} [*install-options*] _PACKAGE_FILE_ ...
 
-*rpm* {*-F*|*--freshen*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-F*|*--freshen*} [*install-options*] _PACKAGE_FILE_ ...
 
-*rpm* {*--reinstall*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*--reinstall*} [*install-options*] _PACKAGE_FILE_ ...
 
-*rpm* {*-e*|*--erase*} [*erase-options*] *PACKAGE_NAME ...*
+*rpm* {*-e*|*--erase*} [*erase-options*] _PACKAGE_NAME_ ...
 
-*rpm* *--restore* [*select-options*] *PACKAGE_NAME ...*
+*rpm* *--restore* [*select-options*] _PACKAGE_NAME_ ...
 
 ## MISC OPERATIONS
 
@@ -69,50 +69,50 @@ These options can be used in all the different modes.
 *-vv*
 	Print lots of ugly debugging information.
 
-*--rcfile* *FILELIST*
-	Replace the default list of configuration files to be read with *FILELIST*.
-	See *rpmrc Configuration* for details.
+*--rcfile* _FILELIST_
+	Replace the default list of configuration files to be read with
+	_FILELIST_.  See *rpmrc Configuration* for details.
 
-*--load* *FILE*
+*--load* _FILE_
 	Load an individual macro file.
 
-*--macros* *FILELIST*
-	Replace the list of macro files to be loaded with *FILELIST*.
+*--macros* _FILELIST_
+	Replace the list of macro files to be loaded with _FILELIST_.
 	See *Macro Configuration* for details.
 
-*--pipe* *CMD*
-	Pipes the output of *rpm* to the command *CMD*.
+*--pipe* _CMD_
+	Pipes the output of *rpm* to the command _CMD_.
 
-*--dbpath* *DIRECTORY*
-	Use the database in *DIRECTORY* rather than the default path
+*--dbpath* _DIRECTORY_
+	Use the database in _DIRECTORY_ rather than the default path
 	*/var/lib/rpm*.
 
-*--root* *DIRECTORY*
-	Use the file system tree rooted at *DIRECTORY* for all operations.
-	Note that this means the database within *DIRECTORY* will be used
+*--root* _DIRECTORY_
+	Use the file system tree rooted at _DIRECTORY_ for all operations.
+	Note that this means the database within _DIRECTORY_ will be used
 	for dependency checks and any scriptlet(s) (e.g. *%post* if
 	installing, or *%prep* if building, a package) will be run after a
-	chroot(2) to *DIRECTORY*.
+	chroot(2) to _DIRECTORY_.
 
 	Note that rpm assumes the environment inside the root is set up by
 	the caller, such as any mounts needed for the operation inside the
 	root directory.
 
-*-D*, *--define='*MACRO EXPR*'*
-	Defines *MACRO* with value *EXPR*.
+*-D*, *--define*='_MACRO_ _EXPR_'
+	Defines _MACRO_ with value _EXPR_.
 
-*--undefine='*MACRO*'*
-	Undefines *MACRO*.
+*--undefine*='_MACRO_'
+	Undefines _MACRO_.
 
-*-E*, *--eval='*EXPR*'*
-	Prints macro expansion of *EXPR*.
+*-E*, *--eval*='_EXPR_'
+	Prints macro expansion of _EXPR_.
 
 More - less often needed - options can be found on the *rpm-misc*(8)
 man page.
 
 # INSTALL AND UPGRADE OPTIONS
 
-In these options, *PACKAGE_FILE* can be either *rpm* binary file or
+In these options, _PACKAGE_FILE_ can be either *rpm* binary file or
 ASCII package manifest (see *PACKAGE SELECTION OPTIONS*), and may be
 specified as an *ftp* or *http* URL, in which case the package will
 be downloaded before being installed. See *FTP/HTTP OPTIONS* for
@@ -120,26 +120,26 @@ information on *rpm*'s *ftp* and *http* client support.
 
 The general form of an *rpm* install command is
 
-*rpm* {*-i*|*--install*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-i*|*--install*} [*install-options*] _PACKAGE_FILE_ ...
 
 This installs a new package.
 
 The general form of an *rpm* upgrade command is
 
-*rpm* {*-U*|*--upgrade*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-U*|*--upgrade*} [*install-options*] _PACKAGE_FILE_ ...
 
 This upgrades or installs the package currently installed to a newer
 version. This is the same as install, except all other version(s) of the
 package are removed after the new package is installed.
 
-*rpm* {*-F*|*--freshen*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*-F*|*--freshen*} [*install-options*] _PACKAGE_FILE_ ...
 
 This will upgrade packages, but only ones for which an earlier version
 is installed.
 
 The general form of an *rpm* reinstall command is
 
-*rpm* {*--reinstall*} [*install-options*] *PACKAGE_FILE ...*
+*rpm* {*--reinstall*} [*install-options*] _PACKAGE_FILE_ ...
 
 This reinstalls a previously installed package.
 
@@ -149,11 +149,11 @@ This reinstalls a previously installed package.
 
 *--badreloc*
 	Used with *--relocate*, permit relocations on all file paths, not
-	just those *OLDPATH*'s included in the binary package relocation
+	just those _OLDPATH_'s included in the binary package relocation
 	hint(s).
 
-*--excludepath* *OLDPATH*
-	Don't install files whose name begins with *OLDPATH*.
+*--excludepath* _OLDPATH_
+	Don't install files whose name begins with _OLDPATH_.
 
 *--excludeartifacts*
 	Don't install any files which are marked as artifacts, such as
@@ -256,15 +256,15 @@ This reinstalls a previously installed package.
 	Print percentages as files are unpacked from the package archive.
 	This is intended to make *rpm* easy to run from other tools.
 
-*--prefix* *NEWPATH*
+*--prefix* _NEWPATH_
 	For relocatable binary packages, translate all file paths that start
 	with the installation prefix in the package relocation hint(s) to
-	*NEWPATH*.
+	_NEWPATH_.
 
-*--relocate* *OLDPATH**=**NEWPATH*
+*--relocate* _OLDPATH_=_NEWPATH_
 	For relocatable binary packages, translate all file paths that start
-	with *OLDPATH* in the package relocation hint(s) to *NEWPATH*. This
-	option can be used repeatedly if several *OLDPATH*'s in the package
+	with _OLDPATH_ in the package relocation hint(s) to _NEWPATH_. This
+	option can be used repeatedly if several _OLDPATH_'s in the package
 	are to be relocated.
 
 *--replacefiles*
@@ -283,13 +283,13 @@ This reinstalls a previously installed package.
 
 The general form of an *rpm* erase command is
 
-*rpm* {*-e*|*--erase*} [*erase-options*] *PACKAGE_NAME ...*
+*rpm* {*-e*|*--erase*} [*erase-options*] _PACKAGE_NAME_ ...
 
 The following erase-options options may also be used:
 
 *--allmatches*
-	Remove all versions of the package which match *PACKAGE_NAME*.
-	Normally an error is issued if *PACKAGE_NAME* matches multiple
+	Remove all versions of the package which match _PACKAGE_NAME_.
+	Normally an error is issued if _PACKAGE_NAME_ matches multiple
 	packages.
 
 *--justdb*
@@ -306,14 +306,14 @@ The following erase-options options may also be used:
 
 The general form of an *rpm* query command is
 
-*rpm* {*-q*|*--query*} [*select-options*] [*query-options*]
+*rpm* {*-q*|*--query*} [*select-options*] [*query-options*] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
 You may specify the format that package information should be printed
 in. To do this, you use the
 
-*--qf*|*--queryformat* *QUERYFMT*
+*--qf*|*--queryformat* _QUERYFMT_
 
-option, followed by the *QUERYFMT* format string. Query formats are
+option, followed by the _QUERYFMT_ format string. Query formats are
 modified versions of the standard *printf*(3) formatting. The format
 is made up of static strings (which may include standard C character
 escapes for newlines, tabs, and other special characters (not including 0))
@@ -415,26 +415,26 @@ selection and information selection.
 
 # PACKAGE SELECTION OPTIONS
 
-*PACKAGE_NAME*
+_PACKAGE_NAME_
 
-	Query installed package named *PACKAGE_NAME*. To specify the
+	Query installed package named _PACKAGE_NAME_. To specify the
 	package more precisely the package name may be followed by the
 	version or version and release both separated by a dash or an
 	architecture name separated by a dot. See the output of *rpm -qa*
-	or *rpm -qp* *PACKAGE_FILE* as an example.
+	or *rpm -qp* _PACKAGE_FILE_ as an example.
 
-*-a*, *--all* [*SELECTOR*]
+*-a*, *--all* [_SELECTOR_ ...]
 	Query all installed packages.
 
-	An optional *SELECTOR* in the form of tag=pattern can be provided to
+	Optional _SELECTOR_'s in the form of tag=pattern can be provided to
 	narrow the selection, for example name="b\*" to query packages whose
 	name starts with "b".
 
 *--dupes*
 	List duplicated packages.
 
-*-f*, *--file* *FILE*
-	Query package owning installed *FILE*.
+*-f*, *--file* _FILE_
+	Query package owning installed _FILE_.
 
 *--filecaps*
 	List file names with POSIX1.e capabilities.
@@ -452,71 +452,71 @@ selection and information selection.
 *--filerequire*
 	List file names with their requires.
 
-*-g*, *--group* *GROUP*
-	Query packages with the group of *GROUP*.
+*-g*, *--group* _GROUP_
+	Query packages with the group of _GROUP_.
 
-*-p*, *--package* *PACKAGE_FILE*
-	Query an (uninstalled) package *PACKAGE_FILE*. The *PACKAGE_FILE*
+*-p*, *--package* _PACKAGE_FILE_
+	Query an (uninstalled) package _PACKAGE_FILE_. The _PACKAGE_FILE_
 	may be specified as an *ftp* or *http* style URL, in which case
 	the package header will be downloaded and queried. See *FTP/HTTP
 	OPTIONS* for information on *rpm*'s *ftp* and *http* client
-	support. The *PACKAGE_FILE* argument(s), if not a binary package,
+	support. The _PACKAGE_FILE_ argument(s), if not a binary package,
 	will be interpreted as an ASCII package manifest unless
 	*--nomanifest* option is used. In manifests, comments are
 	permitted, starting with a '*#*', and each line of a package
 	manifest file may include white space separated glob expressions,
 	including URL's, that will be expanded to paths that are
 	substituted in place of the package manifest as additional
-	*PACKAGE_FILE* arguments to the query.
+	_PACKAGE_FILE_ arguments to the query.
 
-*--path* *PATH*
-	Query package(s) owning *PATH*, whether the file is installed or not.
-	Multiple packages may own a *PATH*, but the file is only owned by the
+*--path* _PATH_
+	Query package(s) owning _PATH_, whether the file is installed or not.
+	Multiple packages may own a _PATH_, but the file is only owned by the
 	package installed last.
 
-*--querybynumber* *HDRNUM*
-	Query the *HDRNUM*th database entry directly; this is useful only
+*--querybynumber* _HDRNUM_
+	Query the _HDRNUM_ database entry directly; this is useful only
 	for debugging.
 
-*--specfile* *SPECFILE*
-	Parse and query *SPECFILE* as if it were a package. Although not all
+*--specfile* _SPECFILE_
+	Parse and query _SPECFILE_ as if it were a package. Although not all
 	the information (e.g. file lists) is available, this type of query
 	permits *rpm* to be used to extract information from spec files
 	without having to write a specfile parser.
 
-*--tid* *TID*
-	Query package(s) that have a given *TID* transaction identifier. A
+*--tid* _TID_
+	Query package(s) that have a given _TID_ transaction identifier. A
 	UNIX time stamp is currently used as a transaction identifier. All
 	package(s) installed or erased within a single transaction have a
 	common identifier.
 
-*--triggeredby* *PACKAGE_NAME*
-	Query packages that are triggered by package(s) *PACKAGE_NAME*.
+*--triggeredby* _PACKAGE_NAME_
+	Query packages that are triggered by package(s) _PACKAGE_NAME_.
 
-*--whatobsoletes* *CAPABILITY*
-	Query all packages that obsolete *CAPABILITY* for proper
+*--whatobsoletes* _CAPABILITY_
+	Query all packages that obsolete _CAPABILITY_ for proper
 	functioning.
 
-*--whatprovides* *CAPABILITY*
-	Query all packages that provide the *CAPABILITY* capability.
+*--whatprovides* _CAPABILITY_
+	Query all packages that provide the _CAPABILITY_ capability.
 
-*--whatrequires* *CAPABILITY*
-	Query all packages that require *CAPABILITY* for proper functioning.
+*--whatrequires* _CAPABILITY_
+	Query all packages that require _CAPABILITY_ for proper functioning.
 
-*--whatconflicts* *CAPABILITY*
-	Query all packages that conflict with *CAPABILITY*.
+*--whatconflicts* _CAPABILITY_
+	Query all packages that conflict with _CAPABILITY_.
 
-*--whatrecommends* *CAPABILITY*
-	Query all packages that recommend *CAPABILITY*.
+*--whatrecommends* _CAPABILITY_
+	Query all packages that recommend _CAPABILITY_.
 
-*--whatsuggests* *CAPABILITY*
-	Query all packages that suggest *CAPABILITY*.
+*--whatsuggests* _CAPABILITY_
+	Query all packages that suggest _CAPABILITY_.
 
-*--whatsupplements* *CAPABILITY*
-	Query all packages that supplement *CAPABILITY*.
+*--whatsupplements* _CAPABILITY_
+	Query all packages that supplement _CAPABILITY_.
 
-*--whatenhances* *CAPABILITY*
-	Query all packages that enhance *CAPABILITY*.
+*--whatenhances* _CAPABILITY_
+	Query all packages that enhance _CAPABILITY_.
 
 # PACKAGE QUERY OPTIONS
 
@@ -615,7 +615,7 @@ selection and information selection.
 
 The general form of an *rpm* verify command is
 
-*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [*PACKAGE_NAME ...*]
+*rpm* {*-V*|*--verify*} [*select-options*] [*verify-options*] [_PACKAGE_NAME_ ...]
 
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
@@ -731,10 +731,10 @@ em*B*oldened) character denotes failure of the corresponding
 	shows the values *rpm* will use for all of the options which are
 	currently set in *rpmrc* and *macros* configuration file(s).
 
-*rpm* *--setperms* | *--setugids* | *--setcaps* *PACKAGE_NAME*
+*rpm* *--setperms* | *--setugids* | *--setcaps* [_PACKAGE_NAME_ ...]
 	obsolete aliases for *--restore*
 
-*rpm* *--restore* [*select-options*] *PACKAGE_NAME ...*
+*rpm* *--restore* [*select-options*] [_PACKAGE_NAME_ ...]
 	The option restores file metadata such as timestamp, owner, group,
 	permissions and capabilities of files in packages.
 
@@ -755,13 +755,13 @@ If both the user and password are omitted, anonymous *ftp* is used.
 
 *rpm* allows the following options to be used with *http* and *ftp* URLs:
 
-*--httpproxy* *HOST*
-	The host *HOST* will be used as a proxy server for all *http* and
+*--httpproxy* _HOST_
+	The host _HOST_ will be used as a proxy server for all *http* and
 	*ftp* transfers. This option may also be specified by configuring
 	the macro *%\_httpproxy*.
 
-*--httpport* *PORT*
-	The TCP *PORT* number to use for the *http* connection on the
+*--httpport* _PORT_
+	The TCP _PORT_ number to use for the *http* connection on the
 	proxy http server instead of the default port. This option may also
 	be specified by configuring the macro *%\_httpport*.
 

@@ -8,15 +8,15 @@ rpmspec - RPM Spec Tool
 
 ## QUERYING SPEC FILES
 
-*rpmspec* {*-q*|*--query*} [*select-options*] [*query-options*] *SPEC_FILE ...*
+*rpmspec* {*-q*|*--query*} [*select-options*] [*query-options*] _SPEC_FILE_ ...
 
 ## PARSING SPEC FILES TO STDOUT
 
-*rpmspec* {*-P*|*--parse*} *SPEC_FILE ...*
+*rpmspec* {*-P*|*--parse*} _SPEC_FILE_ ...
 
 ## INVOKING MACRO SHELL
 
-*rpmspec* {*--shell*} [*SPEC_FILE ...*]
+*rpmspec* {*--shell*} [_SPEC_FILE_ ...]
 
 # DESCRIPTION
 
@@ -35,7 +35,7 @@ generated during a build of a package like auto generated dependencies.
 
 ## query-options
 
-\[*--qf,--queryformat* *QUERYFMT*] [*--target* *TARGET_PLATFORM*]
+\[*--qf,--queryformat* _QUERYFMT_] [*--target* _TARGET_PLATFORM_]
 
 # QUERY OPTIONS
 
@@ -46,9 +46,9 @@ The general form of an rpm spec query command is
 You may specify the format that the information should be printed in. To
 do this, you use the
 
-*--qf*|*--queryformat* *QUERYFMT*
+*--qf*|*--queryformat* _QUERYFMT_
 
-option, followed by the *QUERYFMT* format string. See *rpm*(8) for
+option, followed by the _QUERYFMT_ format string. See *rpm*(8) for
 details.
 
 # SELECT OPTIONS
