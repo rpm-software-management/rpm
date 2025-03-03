@@ -44,6 +44,9 @@ public:
     virtual rpmRC delete_key(rpmtxn txn, rpmPubkey key);
 };
 
+RPM_GNUC_INTERNAL
+keystore *getKeystore(const char * krtype);
+
 }; /* namespace */
 
 #endif /* _KEYSTORE_H */

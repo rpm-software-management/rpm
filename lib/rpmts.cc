@@ -266,18 +266,12 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-static keystore *getKeystore(rpmts ts)
+static keystore *rpmtsGetKeystore(rpmts ts)
 {
     if (ts->keystore == NULL) {
 	char *krtype = rpmExpand("%{?_keyring}", NULL);
-
-	if (rstreq(krtype, "fs")) {
-	    ts->keystore = new keystore_fs();
-	} else if (rstreq(krtype, "rpmdb")) {
-	    ts->keystore = new keystore_rpmdb();
-	} else if (rstreq(krtype, "openpgp")) {
-	    ts->keystore = new keystore_openpgp_cert_d();
-	} else {
+	ts->keystore = getKeystore(krtype);
+	if (ts->keystore == NULL) {
 	    /* Fall back to using rpmdb if unknown, for now at least */
 	    rpmlog(RPMLOG_WARNING,
 		    _("unknown keyring type: %s, using rpmdb\n"), krtype);
@@ -294,7 +288,7 @@ static void loadKeyring(rpmts ts)
     /* Never load the keyring if signature checking is disabled */
     if ((rpmtsVSFlags(ts) & RPMVSF_MASK_NOSIGNATURES) !=
 	RPMVSF_MASK_NOSIGNATURES) {
-	ts->keystore = getKeystore(ts);
+	ts->keystore = rpmtsGetKeystore(ts);
 	ts->keyring = rpmKeyringNew();
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
 	if (txn) {

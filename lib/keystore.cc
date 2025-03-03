@@ -24,6 +24,20 @@
 using std::string;
 using namespace rpm;
 
+keystore *rpm::getKeystore(const char * krtype)
+{
+    keystore * keystore = NULL;
+    if (rstreq(krtype, "fs")) {
+	keystore = new keystore_fs();
+    } else if (rstreq(krtype, "rpmdb")) {
+	keystore = new keystore_rpmdb();
+    } else if (rstreq(krtype, "openpgp")) {
+	keystore = new keystore_openpgp_cert_d();
+    }
+    return keystore;
+}
+
+
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp);
 
 static rpmRC load_keys_from_glob(rpmtxn txn, rpmKeyring keyring, string glob)
