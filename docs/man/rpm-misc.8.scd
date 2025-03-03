@@ -31,9 +31,6 @@ rpm - lesser need options for rpm(8)
 
 ## Debugging
 
-*-d*, *--debug*
-	Print debugging information.
-
 *--deploops*
 	Print dependency loops as warning.
 
