@@ -257,6 +257,10 @@ rpmRC keystore_rpmdb::load_keys(rpmtxn txn, rpmKeyring keyring)
     rpmdbMatchIterator mi;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
+    rpmts ts = rpmtxnTs(txn);
+    if (rpmtsGetDBMode(ts) == -1 && rpmtsOpenDB(ts, O_RDONLY))
+        return RPMRC_FAIL;
+
     mi = rpmtsInitIterator(rpmtxnTs(txn), RPMDBI_NAME, "gpg-pubkey", 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	struct rpmtd_s pubkeys;
@@ -329,6 +333,9 @@ rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlag
 {
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;
+    rpmts ts = rpmtxnTs(txn);
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	return RPMRC_FAIL;
 
     if (makePubkeyHeader(rpmtxnTs(txn), key, &h) != 0)
 	return rc;
