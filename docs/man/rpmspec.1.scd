@@ -1,4 +1,4 @@
-RPMSPEC(8)
+RPMSPEC(1)
 
 # NAME
 
@@ -129,8 +129,8 @@ popt
 
 # SEE ALSO
 
-*popt*(3), *rpm*(8), *rpmdb*(8), *rpmkeys*(8), *rpmsign*(8),
-*rpm2cpio*(8), *rpmbuild*(8)
+*popt*(3), *rpm*(8), *rpmdb*(8), *rpmkeys*(8), *rpmsign*(1),
+*rpm2cpio*(1), *rpmbuild*(1)
 
 *rpmspec --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

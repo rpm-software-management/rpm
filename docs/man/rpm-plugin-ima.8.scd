@@ -22,4 +22,4 @@ See *rpm-plugins*(8) on how to control plugins in general.
 
 # SEE ALSO
 
-*evmctl*(1), *rpmsign*(8), *rpm*(8)
+*evmctl*(1), *rpmsign*(1), *rpm*(8)

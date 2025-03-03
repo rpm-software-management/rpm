@@ -1,4 +1,4 @@
-RPM2ARCHIVE(8)
+RPM2ARCHIVE(1)
 
 # NAME
 
@@ -42,4 +42,4 @@ cat glint-1.0-1.i386.rpm | rpm2archive - | tar -tvz
 
 # SEE ALSO
 
-*rpm2cpio*(8), *rpm*(8)
+*rpm2cpio*(1), *rpm*(8)

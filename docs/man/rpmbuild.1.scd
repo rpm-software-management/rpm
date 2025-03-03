@@ -1,4 +1,4 @@
-RPMBUILD(8)
+RPMBUILD(1)
 
 # NAME
 
@@ -156,7 +156,7 @@ all the stages preceding it), and is one of:
 The following options may also be used:
 
 *--buildroot* _DIRECTORY_ (DEPRECATED)
-	When building a package, override the buildroot of *rpmbuild*(8) to
+	When building a package, override the buildroot of *rpmbuild*(1) to
 	_DIRECTORY_. This option is deprecated and will be removed in the
 	future, do not introduce new usages.
 
@@ -215,7 +215,7 @@ The following options may also be used:
 
 # REBUILD AND RECOMPILE OPTIONS
 
-There are two other ways to invoke building with *rpmbuild*(8):
+There are two other ways to invoke building with *rpmbuild*(1):
 
 *rpmbuild* *--rebuild|--recompile* _SOURCEPKG_ ...
 
@@ -264,8 +264,8 @@ See *rpm*(8)
 
 # SEE ALSO
 
-*gendiff*(1), *popt*(3), *rpm*(8), *rpm2cpio*(8), *rpmkeys*(8),
-*rpmspec*(8), *rpmsign*(8)
+*gendiff*(1), *popt*(3), *rpm*(8), *rpm2cpio*(1), *rpmkeys*(8),
+*rpmspec*(1), *rpmsign*(1)
 
 *rpmbuild --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
