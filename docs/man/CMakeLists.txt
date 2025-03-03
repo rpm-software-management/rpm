@@ -1,7 +1,7 @@
 set(core
-	gendiff.1 rpm2cpio.8 rpm2archive.8
-	rpm.8 rpmbuild.8 rpmdb.8 rpmkeys.8 rpmsign.8 rpmspec.8
-	rpmdeps.8 rpmgraph.8 rpmlua.8 rpm-misc.8 rpmsort.8
+	gendiff.1 rpm2cpio.1 rpm2archive.1
+	rpm.8 rpmbuild.1 rpmdb.8 rpmkeys.8 rpmsign.1 rpmspec.1
+	rpmdeps.1 rpmgraph.1 rpmlua.1 rpm-misc.8 rpmsort.1
 )
 set(extra
 	rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8

@@ -1,4 +1,4 @@
-RPMDEPS(8)
+RPMDEPS(1)
 
 # NAME
 
@@ -46,4 +46,4 @@ printed to stdout.
 
 # SEE ALSO
 
-*rpm*(8), *rpmbuild*(8)
+*rpm*(8), *rpmbuild*(1)

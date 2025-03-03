@@ -1,4 +1,4 @@
-RPM2CPIO(8)
+RPM2CPIO(1)
 
 # NAME
 
@@ -26,4 +26,4 @@ cat glint-1.0-1.i386.rpm | rpm2cpio - | cpio -tv
 
 # SEE ALSO
 
-*rpm*(8) *rpm2archive*(8)
+*rpm*(8) *rpm2archive*(1)
