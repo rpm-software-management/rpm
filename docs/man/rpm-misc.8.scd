@@ -23,9 +23,6 @@ rpm - lesser need options for rpm(8)
 *--noglob*
 	Do not glob arguments when installing package files.
 
-*--nocaps*
-	Don't verify capabilities of files.
-
 *--excludeconfigs*, *--noconfigs*
 	Do not install configuration files.
 
@@ -42,9 +39,6 @@ rpm - lesser need options for rpm(8)
 
 *--fsmdebug*
 	Print debuging information of payload handling code.
-
-*--rpmfcdebug*
-	Print debug information about files packaged.
 
 *--rpmiodebug*
 	Print debug information about file IO.
