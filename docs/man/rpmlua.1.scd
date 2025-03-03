@@ -1,4 +1,4 @@
-RPMLUA(8)
+RPMLUA(1)
 
 # NAME
 

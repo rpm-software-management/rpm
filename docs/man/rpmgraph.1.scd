@@ -1,4 +1,4 @@
-RPMGRAPH(8)
+RPMGRAPH(1)
 
 # NAME
 

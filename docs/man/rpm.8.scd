@@ -479,7 +479,7 @@ _PACKAGE_NAME_
 	for debugging.
 
 *--specfile* _SPECFILE_
-	Obsolete, use *rpmspec*(8) instead.
+	Obsolete, use *rpmspec*(1) instead.
 
 *--tid* _TID_
 	Query package(s) that have a given _TID_ transaction identifier. A
@@ -821,8 +821,8 @@ does not exist.
 
 # SEE ALSO
 
-*rpm-misc*(8), *popt*(3), *rpm2cpio*(8), *rpmbuild*(8), *rpmdb*(8),
-*rpmkeys*(8), *rpmsign*(8), *rpmspec*(8)
+*rpm-misc*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
+*rpmkeys*(8), *rpmsign*(1), *rpmspec*(1)
 
 *rpm --help* - as *rpm* supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

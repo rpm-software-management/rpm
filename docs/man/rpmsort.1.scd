@@ -1,4 +1,4 @@
-RPMSORT(8)
+RPMSORT(1)
 
 # NAME
 
@@ -10,7 +10,7 @@ rpmsort - Sort input by RPM Package Manager (RPM) versioning
 
 # DESCRIPTION
 
-*rpmsort*(8) sorts the input files, and writes a sorted list to standard
+*rpmsort*(1) sorts the input files, and writes a sorted list to standard
 out - like *sort*(1), but aware of RPM versioning.
 
 If '-' is given as an argument, or no arguments are given, versions are read
