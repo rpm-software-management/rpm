@@ -987,7 +987,7 @@ int checkBuildsystem(rpmSpec spec, const char *name)
 }
 
 static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,
-				struct sectname_s *sc, FD_t fd)
+				struct sectname_s *sc, FD_t fd, int *foundp)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -1015,6 +1015,7 @@ static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,
 	    }
 	    free(buf);
 	    free(args);
+	    *foundp = 1;
 	}
 	free(mn);
     }
@@ -1038,9 +1039,10 @@ static rpmRC parseBuildsystem(rpmSpec spec)
 	}
 
 	for (struct sectname_s *sc = sectList; !rc && sc->name; sc++) {
-	    rc = parseBuildsysSect(spec, buildsystem, sc, fd);
-	    if (!rc && spec->sections[sc->section] == NULL)
-		rc = parseBuildsysSect(spec, "default", sc, fd);
+	    int found = 0;
+	    rc = parseBuildsysSect(spec, buildsystem, sc, fd, &found);
+	    if (!rc && !found)
+		rc = parseBuildsysSect(spec, "default", sc, fd, &found);
 	}
 
 	if (!rc)
