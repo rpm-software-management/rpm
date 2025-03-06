@@ -132,6 +132,12 @@ and friends. These never return NULL (they abort the process on failure),
 so do not check for it. Also all "destructor" type functions in rpm accept
 NULL arguments, don't check for it separately.
 
+On the C++ side, don't catch `std::bad_alloc`, it should abort the process
+just like the C allocators do. Other specific exceptions such as those
+coming from the filesystem should be caught to avoid leaking them into
+C code which cannot handle it - or use the non-throwing versions to begin
+with.
+
 ### Miscellaneous
 
 While many details differ and lot of it does not apply at all, the
