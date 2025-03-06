@@ -14,6 +14,9 @@ Man Pages
 The man pages in *man/* are scdoc sources. 
 They are rendered to the man page format during build.
 
+Consult *man/rpm-man-template.scd* for style guidance, and use it
+as a template for new man pages.
+
 The man pages are also rendered to HTML together with the Reference Manual (see below).
 
 API Reference
