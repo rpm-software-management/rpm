@@ -374,7 +374,7 @@ static int initModule(PyObject *m)
     if (python_version == 0) {
 	python_version = _get_python_version();
 	if (python_version == 0) {
-	    return 0;
+	    return -1;
 	}
     }
 
