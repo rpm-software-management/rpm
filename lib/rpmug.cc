@@ -4,6 +4,7 @@
 #include <string>
 
 #include <errno.h>
+#include <rpm/argv.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
@@ -68,12 +69,11 @@ static int lookup_field(const char *path, const char *val, int vcol, int rcol,
     while ((str = fgets(buf, sizeof(buf), f)) != NULL) {
 	int nf = vcol > rcol ? vcol : rcol;
 	const char *fields[nf + 1];
-	char *tok, *save = NULL;
 	int col = -1;
 
-	while ((tok = strtok_r(str, ":", &save)) != NULL) {
-	    fields[++col] = tok;
-	    str = NULL;
+	ARGV_t tokens = argvSplitString(str, ":", ARGV_NONE);
+	for (ARGV_const_t tok = tokens; tok && *tok; tok++) {
+	    fields[++col] = *tok;
 	    if (col >= nf)
 		break;
 	}
@@ -84,6 +84,7 @@ static int lookup_field(const char *path, const char *val, int vcol, int rcol,
 		rc = 0;
 	    }
 	}
+	argvFree(tokens);
     }
 
     fclose(f);

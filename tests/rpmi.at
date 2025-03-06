@@ -1639,6 +1639,14 @@ runroot rpm -V ${VERIFYOPTS} klang-client klang-common
 [ignore])
 
 RPMTEST_CHECK([
+runroot sed -i -e "s/:x:/::/g" /etc/group
+runroot rpm -V ${VERIFYOPTS} klang-client klang-common
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/klang-server-1.0-1.noarch.rpm
 runroot grep ^klangd /etc/passwd | cut -f1 -d:
 runroot chage -l klangd | grep "Account expires" | cut -f2 -d:
