@@ -780,6 +780,19 @@ runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ])
 RPMTEST_CLEANUP
 
+
+RPMTEST_SETUP_RW([rpmbuild ExclusiveArch])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+runroot rpmbuild \
+	-bb /data/SPECS/test-exclusivearch.spec 2> >(grep "Architecture is not included" | cut -d: -f-2 ) 1> >(grep "^install$")
+],
+[1],
+[error: Architecture is not included
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmbuild scriptlet -f])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([

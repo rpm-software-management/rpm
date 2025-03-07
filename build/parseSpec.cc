@@ -1354,11 +1354,6 @@ static rpmRC finalizeSpec(rpmSpec spec)
     char *os = rpmExpand("%{_target_os}", NULL);
     char *optflags = rpmExpand("%{optflags}", NULL);
 
-    /* XXX Skip valid arch check if not building binary package */
-    if (!(spec->flags & RPMSPEC_ANYARCH) && checkForValidArchitectures(spec)) {
-	goto exit;
-    }
-
     fillOutMainPackage(spec->packages->header);
     /* Define group tag to something when group is undefined in main package*/
     if (!headerIsEntry(spec->packages->header, RPMTAG_GROUP)) {
