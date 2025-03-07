@@ -1331,6 +1331,11 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 			    "%{dirname:%{buildroot}}", RMIL_GLOBAL, 0);
     }
 
+    /* XXX Skip valid arch check if not building binary package */
+    if (!(spec->flags & RPMSPEC_ANYARCH) && checkForValidArchitectures(spec)) {
+	goto exit;
+    }
+
     /* if we get down here nextPart has been set to non-error */
     res = nextPart;
 
