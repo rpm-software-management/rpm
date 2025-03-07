@@ -785,7 +785,15 @@ RPMTEST_SETUP_RW([rpmbuild ExclusiveArch])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
 runroot rpmbuild \
-	-bb /data/SPECS/test-exclusivearch.spec 2> >(grep "Architecture is not included" | cut -d: -f-2 ) 1> >(grep "^install$")
+	-bb /data/SPECS/test-exclusivearch.spec
+],
+[1],
+[stdout],
+[stderr])
+
+RPMTEST_CHECK([
+grep "Architecture is not included" stderr | cut -d: -f-2
+grep "^install$" stdout
 ],
 [1],
 [error: Architecture is not included
