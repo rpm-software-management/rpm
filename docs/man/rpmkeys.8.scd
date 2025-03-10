@@ -6,76 +6,122 @@ rpmkeys - RPM Keyring
 
 # SYNOPSIS
 
-*rpmkeys* {*--list*|*--import*|*--erase*|*--delete*|*--checksig*}
+*rpmkeys* {*-K*|*--checksig*} [options] _PACKAGE_FILE_ ...
+
+*rpmkeys* {*-d*|*--delete*|*-e*|*--erase*} [options] _FINGERPRINT_ ...
+
+*rpmkeys* {*-x*|*--export*} [options] [_FINGERPRINT_ ...]
+
+*rpmkeys* {*-i*|*--import*} [options] _PUBKEY_ ...
+
+*rpmkeys* {*-l*|*--list*} [options] [_FINGERPRINT_ ...]
+
+*rpmkeys* *--rebuild* [options] [rebuild-options]
 
 # DESCRIPTION
 
-The general forms of *rpm*(8) digital signature commands are
+*rpmkeys* is used for manipulating the *rpm* keyring and verifying
+package digital signatures with the contained keys.
 
-*rpmkeys* {*-l*|*--list*} [_FINGERPRINT_ ...]
+For all available operations, see *OPERATIONS*.
 
-*rpmkeys* {*-x*|*--export*} [_FINGERPRINT_ ...]
+# OPERATIONS
 
-*rpmkeys* {*-i*|*--import*} _PUBKEY_ ...
+*-K*,
+*--checksig*
+	Verify the digests and signatures contained in _PACKAGE_FILE_ to
+	ensure the integrity and origin of the package.
 
-*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} _FINGERPRINT_ ...
+*-d*,
+*--delete*,
+*-e*,
+*--erase*
+	Erase the key(s) designated by _FINGERPRINT_.
 
-*rpmkeys* {*-K*|*--checksig*} _PACKAGE_FILE_ ...
+*-x*,
+*--export*
+	Output the key(s) designated by _FINGERPRINT_ using an ASCII-armor
+	encoding.  If _FINGERPRINT_ is not specified, output all keys.
 
-*rpmkeys* {*--rebuild*} [*--from* _BACKEND_]
+*--import*
+	Import ASCII-armored public keys.
+	Digital signatures cannot be verified without the corresponding
+	public key (aka certificate).
 
-The *--checksig* option checks all the digests and signatures
-contained in _PACKAGE_FILE_ to ensure the integrity and origin of the
-package. Note that signatures are now verified whenever a package is
-read, and *--checksig* is useful to verify all of the digests and
-signatures associated with a package.
+*-l*,
+*--list*
+	List currently imported public key(s) (aka certificates) by their
+	fingerprint and user ID. If no fingerprints are specified, list all
+	keys.
 
-Digital signatures cannot be verified without a public key. An ASCII
-armored public key can be added to the *rpm* persistent keyring using
-*--import*.
+*--rebuild*
+	Recreate the public key storage. Update to the latest format and drop
+	unreadable keys.
 
-The following commands are available for manipulating the persistent
-rpm keyring:
+# ARGUMENTS
 
-*rpmkeys* {*-l*|*--list*} [_FINGERPRINT_...]
+_FINGERPRINT_
+	The handle used for all operations on the keys.
+_PACKAGE_FILE_
+	An *rpm* package file or a manifest.
+_PUBKEY_
+	An ASCII-armored OpenPGP public key (aka certificate).
 
-List currently imported public key(s) (aka certificates) by their
-fingerprint and user ID. If no fingerprints are specified, list all keys.
+# OPTIONS
 
-The fingerprint is the handle used for all operations on the keys.
+See *rpm.common*(8) for the options common to all *rpm* executables.
 
-*rpmkeys* {*-x*|*--export*} [_FINGERPRINT_ ...]
+# REBUILD OPTIONS
 
-Output the key(s) using an ASCII-armor encoding.
+*--from* <*fs*|*openpgp*|*rpmdb*>
+	Use the keys from the specified backend to rebuild the currently
+	configured keystore backend.
+	This can be used to convert from one key storage to another.
 
-Exporting allows for inspecting the data with specialized tools, such
-as Sequoia or GnuPG. For example:
+# OUTPUT
+*--checksig*
+```
+<_PACKAGE_FILE_>: <element> <element> <OK|NOT OK>
+```
 
-*rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect *
+	With *--verbose*:
+```
+<_PACKAGE_FILE_>:
+    <element>: <OK|NOTFOUND|BAD>
+    ...
+```
 
-*rpmkeys* {*-e*|*--erase*|*-d*|*--delete*} _FINGERPRINT_ ...
+*--list*
+```
+<fingerprint> <name> <userid> public key
+```
 
-Erase the key(s) designated by _FINGERPRINT_. For example:
+# CONFIGURATION
 
-*rpmkeys* *--erase 771b18d3d7baa28734333c424344591e1964c5fc*
+There are several configurables affecting the behavior of this
+verification, see *rpm.config*(5) for details:
+- *%\_keyring*
+- *%\_keyring_path*
+- *%\_pkgverify_flags*
+- *%\_pkgverify_level*
 
-Rebuild the key storage:
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
 
-*rpmkeys* *--rebuild*
+# EXAMPLES
 
-Recreate the public key storage. Update to the latest format and drop
-unreadable keys.
+*rpmkeys --export 771b18d3d7baa28734333c424344591e1964c5fc | sq inspect*
+	Export key 771b18d3d7baa28734333c424344591e1964c5fc for inspecting
+	with sequoia-sq.
 
-*--from* _BACKEND_
+*rpmkeys --erase 771b18d3d7baa28734333c424344591e1964c5fc*
+	Erase key 771b18d3d7baa28734333c424344591e1964c5fc from the keyring.
 
-Use the keys from _BACKEND_ as content to build the configured
-backend.  Valid values for _BACKEND_ are *rpmdb*, *fs*, *openpgp*.
-This can be used to convert from one key storage to another.
+*rpmkeys -K hello-2.0-1.x86_64.rpm*
+	Verify hello-2.0-1.x86_64.rpm package file.
 
 # SEE ALSO
-
-*popt*(3), *rpm*(8), *rpmdb*(8), *rpmsign*(1), *rpm2cpio*(1),
-*rpmbuild*(1), *rpmspec*(1)
+*popt*(3), *rpm*(8), *rpmsign*(1)
 
 *rpmkeys --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
