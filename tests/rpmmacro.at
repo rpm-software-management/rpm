@@ -333,6 +333,19 @@ arg
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([macro %dump])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+rpm --eval "%dump" 2>&1 | head -3
+],
+[0],
+[[========================
+-20: P	<builtin>
+-20: S	<builtin>
+]],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([uncompress macro 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
