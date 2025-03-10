@@ -1239,6 +1239,31 @@ static char *doShrink(const char *arg)
     return buf;
 }
 
+/*
+ * Trim the body by removing all leading and trailing
+ * whitespaces on every line
+ */
+static char *doTrim(const char *arg)
+{
+    char *b, *p, *i, c, iter_c;
+    char *buf = b = p = xstrdup(arg);
+    int was_newline = 1;
+    int will_newline = 0;
+    while ((c = *p++) != 0) {
+        if(risblank(c) && (was_newline || will_newline))
+            continue;
+        was_newline = iseol(c);
+        i = p;
+
+        while ((iter_c = *i++) != 0 && risblank(iter_c));
+        will_newline = iseol(iter_c) || (iter_c == 0);
+
+        *b++ = c;
+    }
+    *b = 0;
+    return buf;
+}
+
 static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
     char *buf = NULL;
@@ -1252,6 +1277,8 @@ static void doFoo(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	b = dirname(buf);
     } else if (rstreq("shrink", me->name)) {
 	b = buf = doShrink(argv[1]);
+    } else if (rstreq("trim", me->name)) {
+        b = buf = doTrim(argv[1]);
     } else if (rstreq("quote", me->name)) {
 	if (mb->flags & RPMEXPAND_KEEP_QUOTED) {
 	    b = buf = unsplitQuoted(argv + 1, " ");
@@ -1348,6 +1375,7 @@ static struct builtins_s {
     { "sub",		doString,	1,	0 },
     { "suffix",		doFoo,		1,	0 },
     { "trace",		doTrace,	0,	0 },
+    { "trim",		doFoo,		1,	0 },
     { "u2p",		doFoo,		1,	0 },
     { "shescape",	doShescape,	1,	0 },
     { "uncompress",	doUncompress,	1,	0 },
