@@ -2048,6 +2048,7 @@ int macros::define(const std::string & macro, int level)
 
 void macros::dump(FILE *fp)
 {
+    if (fp == NULL) fp = stderr;
     fprintf(fp, "========================\n");
     for (auto & entry : mc->tab) {
 	auto const & me = entry.second.top();
