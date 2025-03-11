@@ -33,7 +33,7 @@ Spec files describe how software is build and packaged.
   * [→ Scriptlet Expansion](scriptlet_expansion.md)
 * [%files section](#files-section)
   * [→ Users and Groups](users_and_groups.md)
-* [%changelog section](changelog-section)
+* [%changelog section](#changelog-section)
 
 ## Generic syntax
 
