@@ -59,6 +59,7 @@ typedef enum pgpTag_e {
     PGPTAG_USER_ATTRIBUTE	= 17, /*!< User Attribute packet */
     PGPTAG_ENCRYPTED_MDC	= 18, /*!< Integrity protected encrypted data */
     PGPTAG_MDC			= 19, /*!< Manipulaion detection code packet */
+    PGPTAG_PADDING		= 21, /*!< Padding packet */
     PGPTAG_PRIVATE_60		= 60, /*!< Private or Experimental Values */
     PGPTAG_COMMENT		= 61, /*!< Comment */
     PGPTAG_PRIVATE_62		= 62, /*!< Private or Experimental Values */
@@ -88,7 +89,8 @@ typedef enum pgpSigType_e {
     PGPSIGTYPE_KEY_REVOKE	 = 0x20, /*!< Key revocation */
     PGPSIGTYPE_SUBKEY_REVOKE	 = 0x28, /*!< Subkey revocation */
     PGPSIGTYPE_CERT_REVOKE	 = 0x30, /*!< Certification revocation */
-    PGPSIGTYPE_TIMESTAMP	 = 0x40  /*!< Timestamp */
+    PGPSIGTYPE_TIMESTAMP	 = 0x40, /*!< Timestamp */
+    PGPSIGTYPE_THIRD_PARTY	 = 0x50, /*!< Third-Party Confirmation */
 } pgpSigType;
 
 /** \ingroup rpmpgp
@@ -104,7 +106,11 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_ECDSA		= 19,	/*!< ECDSA */
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
     PGPPUBKEYALGO_DH		= 21,	/*!< Diffie-Hellman (X9.42) */
-    PGPPUBKEYALGO_EDDSA		= 22	/*!< EdDSA */
+    PGPPUBKEYALGO_EDDSA		= 22,	/*!< EdDSA */
+    PGPPUBKEYALGO_X25519	= 25,	/*!< X25519 */
+    PGPPUBKEYALGO_X448		= 26,	/*!< X448 */
+    PGPPUBKEYALGO_ED25519	= 27,	/*!< Ed25519 */
+    PGPPUBKEYALGO_ED448		= 28,	/*!< Ed448 */
 } pgpPubkeyAlgo;
 
 /** \ingroup rpmpgp
@@ -122,6 +128,9 @@ typedef enum pgpSymkeyAlgo_e {
     PGPSYMKEYALGO_AES_192	=  8,	/*!< AES(192-bit key) */
     PGPSYMKEYALGO_AES_256	=  9,	/*!< AES(256-bit key) */
     PGPSYMKEYALGO_TWOFISH	= 10,	/*!< TWOFISH(256-bit key) */
+    PGPSYMKEYALGO_CAMELLIA_128	= 11,	/*!< Camellia with 128-bit */
+    PGPSYMKEYALGO_CAMELLIA_192	= 12,	/*!< Camellia with 192-bit */
+    PGPSYMKEYALGO_CAMELLIA_256	= 13,	/*!< Camellia with 256-bit */
     PGPSYMKEYALGO_NOENCRYPT	= 110	/*!< no encryption */
 } pgpSymkeyAlgo;
 
@@ -199,6 +208,8 @@ typedef enum pgpSubType_e {
     PGPSUBTYPE_FEATURES		=  30, /*!< feature flags (gpg) */
     PGPSUBTYPE_EMBEDDED_SIG	=  32, /*!< embedded signature (gpg) */
     PGPSUBTYPE_ISSUER_FINGERPRINT= 33, /*!< issuer fingerprint */
+    PGPSUBTYPE_INTREC_FINGERPRINT= 35, /*!< intended recipient fingerprint */
+    PGPSUBTYPE_PFERER_AEAD	= 39,  /*!<  preferred AEAD ciphercuites */
 
     PGPSUBTYPE_INTERNAL_100	= 100, /*!< internal or user-defined */
     PGPSUBTYPE_INTERNAL_101	= 101, /*!< internal or user-defined */
