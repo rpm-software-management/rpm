@@ -56,7 +56,7 @@ typedef enum pgpTag_e {
     PGPTAG_USER_ID		= 13, /*!< User ID */
     PGPTAG_PUBLIC_SUBKEY	= 14, /*!< Public Subkey */
     PGPTAG_COMMENT_OLD		= 16, /*!< Comment (from OpenPGP draft) */
-    PGPTAG_PHOTOID		= 17, /*!< PGP's photo ID */
+    PGPTAG_USER_ATTRIBUTE	= 17, /*!< User Attribute packet */
     PGPTAG_ENCRYPTED_MDC	= 18, /*!< Integrity protected encrypted data */
     PGPTAG_MDC			= 19, /*!< Manipulaion detection code packet */
     PGPTAG_PRIVATE_60		= 60, /*!< Private or Experimental Values */
@@ -64,6 +64,8 @@ typedef enum pgpTag_e {
     PGPTAG_PRIVATE_62		= 62, /*!< Private or Experimental Values */
     PGPTAG_CONTROL		= 63  /*!< Control (GPG) */
 } pgpTag;
+
+#define PGPTAG_PHOTOID PGPTAG_USER_ATTRIBUTE /* legacy name */
 
 /** \ingroup rpmpgp
  * 5.2.1. Signature Types
