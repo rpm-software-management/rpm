@@ -139,7 +139,7 @@ static struct pgpValTbl_s const pgpTagTbl[] = {
     { PGPTAG_USER_ID,		"User ID" },
     { PGPTAG_PUBLIC_SUBKEY,	"Public Subkey" },
     { PGPTAG_COMMENT_OLD,	"Comment (from OpenPGP draft)" },
-    { PGPTAG_PHOTOID,		"PGP's photo ID" },
+    { PGPTAG_USER_ATTRIBUTE,	"User Attribute" },
     { PGPTAG_ENCRYPTED_MDC,	"Integrity protected encrypted data" },
     { PGPTAG_MDC,		"Manipulaion detection code packet" },
     { PGPTAG_PRIVATE_60,	"Private #60" },
