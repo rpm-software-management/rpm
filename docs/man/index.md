@@ -6,7 +6,7 @@ title: rpm.org - RPM Manual Pages
 
 ## Tools
 * [rpm (8)](rpm.8.scd)
-* [rpm-misc (8)](rpm-misc.8.scd)
+* [rpm-common (8)](rpm-common.8.scd)
 * [rpmbuild (1)](rpmbuild.1.scd)
 * [rpmdeps (1)](rpmdeps.1.scd)
 * [rpmdb (8)](rpmdb.8.scd)

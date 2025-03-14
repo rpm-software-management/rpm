@@ -8,9 +8,9 @@ rpmbuild - Build RPM Package(s)
 
 The general form of *rpmbuild* command is
 
-*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [build-options] _FILE_ ...
+*rpmbuild* {*-b*|*-r*|*-t*}_STAGE_ [options] [build-options] _FILE_ ...
 
-*rpmbuild* {*--rebuild*|*--recompile*} [build-options] _SOURCEPKG_ ...
+*rpmbuild* {*--rebuild*|*--recompile*} [options] [build-options] _SOURCEPKG_ ...
 
 # DESCRIPTION
 
@@ -26,65 +26,9 @@ One of the following basic modes must be selected: *Build Package*,
 *Build Package from Tarball*, *Recompile Package*, *Show
 Configuration*.
 
-# GENERAL OPTIONS
+# OPTIONS
 
-These options can be used in all the different modes.
-
-*-?*, *--help*
-	Print a longer usage message then normal.
-
-*--version*
-	Print a single line containing the version number of *rpm* being
-	used.
-
-*--quiet*
-	Print as little as possible - normally only error messages will be
-	displayed.
-
-*-v*
-	Print verbose information - normally routine progress messages will
-	be displayed.
-
-*-vv*
-	Print lots of ugly debugging information.
-
-*--rpmfcdebug*
-	Enables to debug dependencies generation.
-
-*--rcfile* _FILELIST_
-	Replace default list of configuration files to be read with _FILELIST_.
-	See *rpmrc Configuration* in *rpm*(8) for details.
-
-*--load* _FILE_
-	Load an individual macro file.
-
-*--macros* _FILELIST_
-	Replace the list of macro files to be loaded with _FILELIST_.
-	See *Macro Configuration* in *rpm*(8) for details.
-
-*--pipe* _CMD_
-	Pipes the output of *rpm* to the command *CMD*.
-
-*--dbpath* _DIRECTORY_
-	Use the database in _DIRECTORY_ rather than the default path
-	_/var/lib/rpm_.
-
-*--root* _DIRECTORY_
-	Use the file system tree rooted at _DIRECTORY_ for all operations.
-	Note that this means the database within _DIRECTORY_ will be used
-	for dependency checks and any scriptlet(s) (e.g. *%post* if
-	installing, or *%prep* if building, a package) will be run after a
-	chroot(2) to _DIRECTORY_.
-
-*-D*, *--define*='_MACRO_ _EXPR_'
-	Defines _MACRO_ with value _EXPR_.
-
-*--scm*=_SCM_
-	Select the _SCM_ to use with *%autosetup*, if one is not set in the
-	spec file. Note that not all values for _SCM_, e.g., *patch* (the
-	default) and *gendiff*, *git*, or *quilt* work interchangeably
-	with all other patches and options stated in the %autosetup line,
-	especially option *-p**N*.
+See *rpm-common*(8) for the options common to all operations.
 
 # BUILD OPTIONS
 
@@ -155,11 +99,6 @@ all the stages preceding it), and is one of:
 
 The following options may also be used:
 
-*--buildroot* _DIRECTORY_ (DEPRECATED)
-	When building a package, override the buildroot of *rpmbuild*(1) to
-	_DIRECTORY_. This option is deprecated and will be removed in the
-	future, do not introduce new usages.
-
 *--clean*
 	Remove the build tree after the packages are made.
 
@@ -189,6 +128,17 @@ The following options may also be used:
 	Remove the spec file after the build (may also be used standalone,
 	e.g. "*rpmbuild* *--rmspec foo.spec*").
 
+*--rpmfcdebug*
+	Print debug information on file classification and dependency
+	generation.
+
+*--scm*=_SCM_
+	Select the _SCM_ to use with *%autosetup*, if one is not set in the
+	spec file. Note that not all values for _SCM_, e.g., *patch* (the
+	default) and *gendiff*, *git*, or *quilt* work interchangeably
+	with all other patches and options stated in the %autosetup line,
+	especially option *-p**N*.
+
 *--short-circuit*
 	Skip straight to specified stage (i.e., skip all stages leading up
 	to the specified stage). Only valid with *-bc*, *-bi*, and
@@ -201,11 +151,6 @@ The following options may also be used:
 	directory. The build tree is set up as if *%setup* was used,
 	but *%builddir*/*%buildsubdir* points back to the current working
 	directory. *%prep* is skipped entirely.
-
-*--target* _PLATFORM_
-	When building the package, interpret _PLATFORM_ as
-	*arch-vendor-os* and set the macros *%\_target*,
-	*%\_target_cpu*, and *%\_target_os* accordingly.
 
 *--with* _OPTION_
 	Enable configure _OPTION_ for build.
@@ -249,23 +194,14 @@ procedure until *rpmbuild* no longer exits with code 11.
 If the *-br* command is coupled with *--nodeps*, exit code 11 is
 always returned and a _buildreqs.nosrc.rpm_ package is always created.
 
-# SHOWRC
-
-The command
-
-*rpmbuild* *--showrc*
-
-shows the values *rpmbuild* will use for all of the options are
-currently set in *rpmrc* and *macros* configuration file(s).
-
 # FILES
 
-See *rpm*(8)
+See *rpm-common*(8)
 
 # SEE ALSO
 
-*gendiff*(1), *popt*(3), *rpm*(8), *rpm2cpio*(1), *rpmkeys*(8),
-*rpmspec*(1), *rpmsign*(1)
+*gendiff*(1), *popt*(3), *rpm*(8), *rpm-common*(8),
+*rpm2cpio*(1), *rpmkeys*(8), *rpmspec*(1), *rpmsign*(1)
 
 *rpmbuild --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
