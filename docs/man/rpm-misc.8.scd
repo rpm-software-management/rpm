@@ -20,9 +20,6 @@ rpm - lesser need options for rpm(8)
 	Disable the SELinux plugin if available. This stops
 	the plugin from setting SELinux contexts for files and scriptlets.
 
-*--noglob*
-	Do not glob arguments when installing package files.
-
 *--excludeconfigs*, *--noconfigs*
 	Do not install configuration files.
 
