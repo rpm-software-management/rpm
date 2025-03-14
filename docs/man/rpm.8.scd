@@ -159,6 +159,9 @@ This reinstalls a previously installed package.
 	Don't install any files which are marked as artifacts, such as
 	build-id links.
 
+*--excludeconfigs*, *--noconfigs*
+	Do not install configuration files.
+
 *--excludedocs*
 	Don't install any files which are marked as documentation (which
 	includes man pages and texinfo documents).
@@ -191,6 +194,11 @@ This reinstalls a previously installed package.
 
 *--nodb*
 	Update only the filesystem, not the database.
+
+*--nocontexts*
+	Don't set SELinux contexts for files and scriptlets.
+	Only effective if *rpm-plugin-selinux*(8) is installed
+	and active.
 
 *--nodigest*
 	Don't verify package or header digests when reading.

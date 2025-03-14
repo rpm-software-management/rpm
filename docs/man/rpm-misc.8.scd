@@ -16,13 +16,6 @@ rpm - lesser need options for rpm(8)
 
 ##  Switching off features
 
-*--nocontexts*
-	Disable the SELinux plugin if available. This stops
-	the plugin from setting SELinux contexts for files and scriptlets.
-
-*--excludeconfigs*, *--noconfigs*
-	Do not install configuration files.
-
 *--nohdrchk*
 	Don't verify database header(s) when retrieved.
 
