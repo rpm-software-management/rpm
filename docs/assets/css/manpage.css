@@ -1,0 +1,77 @@
+body {
+    font-family: monospace;
+    font-size: 14px;
+}
+
+h1, h2, h3 {
+    font-family: monospace;
+}
+h1 {
+    font-size: 32px;
+}
+h2 {
+    font-size: 21px;
+}
+h3 {
+    font-size: 18px;
+}
+
+header p.header-date {
+    display: none;
+}
+
+footer {
+    height: 1em;
+    background: url('https://rpm.org/images/bg_hr.png') repeat-x top;
+}
+footer p {
+    float: left;
+}
+footer p#version {
+    width: 25%;
+    text-align: left;
+}
+footer p#index {
+    width: 50%;
+    text-align: center;
+}
+footer p#date {
+    width: 25%;
+    text-align: right;
+}
+
+blockquote {
+    color: #000000;
+    border: 0;
+    margin-left: 0;
+    padding-left: 4ch;
+}
+
+/* Remove empty line above option descriptions */
+p + blockquote {
+    margin-top: -0.8em;
+}
+
+table {
+    width: 100%;
+}
+
+pre, code {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+pre code {
+    margin-left: 4ch;
+}
+
+/* Fancy section anchor links */
+h2 a, h3 a {
+    display: none;
+}
+h2:hover a, h3:hover a {
+    display: inline;
+    text-decoration: none;
+    margin-left: -0.3em;
+}
