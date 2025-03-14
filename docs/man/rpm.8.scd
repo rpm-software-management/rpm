@@ -14,23 +14,21 @@ rpm - RPM Package Manager
 
 ## INSTALLING, UPGRADING, AND REMOVING PACKAGES
 
-*rpm* {*-i*|*--install*} [install-options] _PACKAGE_FILE_ ...
+*rpm* {*-i*|*--install*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-U*|*--upgrade*} [install-options] _PACKAGE_FILE_ ...
+*rpm* {*-U*|*--upgrade*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-F*|*--freshen*} [install-options] _PACKAGE_FILE_ ...
+*rpm* {*-F*|*--freshen*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*--reinstall*} [install-options] _PACKAGE_FILE_ ...
+*rpm* {*--reinstall*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
+*rpm* {*-e*|*--erase*} [transaction-options] [erase-options] _PACKAGE_NAME_ ...
 
 *rpm* *--restore* [select-options] _PACKAGE_NAME_ ...
 
 ## MISC OPERATIONS
 
 *rpm* *--querytags*
-
-*rpm* *--showrc*
 
 # DESCRIPTION
 
@@ -47,68 +45,9 @@ One of the following basic modes must be selected: *Query*,
 *Verify*, *Install/Upgrade/Freshen/Reinstall*, *Uninstall*, *Set
 Owners/Groups*, *Show Querytags*, and *Show Configuration*.
 
-# GENERAL OPTIONS
+# OPTIONS
 
-These options can be used in all the different modes.
-
-*-?*, *--help*
-	Print a longer usage message than normal.
-
-*--version*
-	Print a single line containing the version number of *rpm* being
-	used.
-
-*--quiet*
-	Print as little as possible - normally only error messages will be
-	displayed.
-
-*-v*, *--verbose*
-	Print verbose information - normally routine progress messages will
-	be displayed.
-
-*-vv*
-	Print lots of ugly debugging information.
-
-*--rcfile* _FILELIST_
-	Replace the default list of configuration files to be read with
-	_FILELIST_.  See *rpmrc Configuration* for details.
-
-*--load* _FILE_
-	Load an individual macro file.
-
-*--macros* _FILELIST_
-	Replace the list of macro files to be loaded with _FILELIST_.
-	See *Macro Configuration* for details.
-
-*--pipe* _CMD_
-	Pipes the output of *rpm* to the command _CMD_.
-
-*--dbpath* _DIRECTORY_
-	Use the database in _DIRECTORY_ rather than the default path
-	*/var/lib/rpm*.
-
-*--root* _DIRECTORY_
-	Use the file system tree rooted at _DIRECTORY_ for all operations.
-	Note that this means the database within _DIRECTORY_ will be used
-	for dependency checks and any scriptlet(s) (e.g. *%post* if
-	installing, or *%prep* if building, a package) will be run after a
-	chroot(2) to _DIRECTORY_.
-
-	Note that rpm assumes the environment inside the root is set up by
-	the caller, such as any mounts needed for the operation inside the
-	root directory.
-
-*-D*, *--define*='_MACRO_ _EXPR_'
-	Defines _MACRO_ with value _EXPR_.
-
-*--undefine*='_MACRO_'
-	Undefines _MACRO_.
-
-*-E*, *--eval*='_EXPR_'
-	Prints macro expansion of _EXPR_.
-
-More - less often needed - options can be found on the *rpm-misc*(8)
-man page.
+See *rpm-common*(8) for the options common to all operations.
 
 # INSTALL AND UPGRADE OPTIONS
 
@@ -170,10 +109,6 @@ This reinstalls a previously installed package.
 	Same as using *--replacepkgs*, *--replacefiles*, and
 	*--oldpackage*.
 
-*-h*, *--hash*
-	Print 50 hash marks as the package archive is unpacked. Use with
-	*-v*|*--verbose* for a nicer display.
-
 *--ignoresize*
 	Don't check mount file systems for sufficient disk space before
 	installing this package.
@@ -189,36 +124,78 @@ This reinstalls a previously installed package.
 *--includedocs*
 	Install documentation files. This is the default behavior.
 
+*--nocontexts*
+	Don't set SELinux contexts for files and scriptlets.
+	Only effective if *rpm-plugin-selinux*(8) is installed
+	and active.
+
+*--nocaps*
+	Don't set file capabilities.
+
+*--noverify*
+	Don't perform verify package files prior to installation.
+
+*--nosysusers*
+	Don't create sysusers from packages
+
+*--oldpackage*
+	Allow an upgrade to replace a newer package with an older one.
+
+*--prefix* _NEWPATH_
+	For relocatable binary packages, translate all file paths that start
+	with the installation prefix in the package relocation hint(s) to
+	_NEWPATH_.
+
+*--relocate* _OLDPATH_=_NEWPATH_
+	For relocatable binary packages, translate all file paths that start
+	with _OLDPATH_ in the package relocation hint(s) to _NEWPATH_. This
+	option can be used repeatedly if several _OLDPATH_'s in the package
+	are to be relocated.
+
+*--replacefiles*
+	Install the packages even if they replace files from other, already
+	installed, packages.
+
+*--replacepkgs*
+	Install the packages even if some of them are already installed on
+	this system.
+
+# ERASE OPTIONS
+
+The general form of an *rpm* erase command is
+
+*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
+
+The following erase-options options may also be used:
+
+*--allmatches*
+	Remove all versions of the package which match _PACKAGE_NAME_.
+	Normally an error is issued if _PACKAGE_NAME_ matches multiple
+	packages.
+
+# TRANSACTION OPTIONS
+The transaction options are common to *--install*, *--upgrade*,
+*--reinstall* and *--erase* operations.
+
+*--deploops*
+	Print dependency loops as warnings.
+
+*-h*, *--hash*
+	Print 50 hash marks as the package archive is unpacked. Use with
+	*-v*|*--verbose* for a nicer display.
+
 *--justdb*
 	Update only the database, not the filesystem.
 
 *--nodb*
 	Update only the filesystem, not the database.
 
-*--nocontexts*
-	Don't set SELinux contexts for files and scriptlets.
-	Only effective if *rpm-plugin-selinux*(8) is installed
-	and active.
-
-*--nodigest*
-	Don't verify package or header digests when reading.
-
-*--nosignature*
-	Don't verify package or header signatures when reading.
-
 *--nodeps*
-	Don't do a dependency check before installing or upgrading a
-	package.
-
-*--nocaps*
-	Don't set file capabilities.
+	Don't check dependencies before uninstalling the packages.
 
 *--noorder*
 	Don't reorder the packages for an install. The list of packages
 	would normally be reordered to satisfy dependencies.
-
-*--noverify*
-	Don't perform verify package files prior to installation.
 
 *--noplugins*
 	Do not load and execute plugins.
@@ -251,60 +228,12 @@ This reinstalls a previously installed package.
 *--notriggerpostun*
 	Disable execution of the trigger scriptlets of the named type.
 
-*--nosysusers*
-	Don't create sysusers from packages
-
-*--oldpackage*
-	Allow an upgrade to replace a newer package with an older one.
-
 *--percent*
 	Print percentages as files are unpacked from the package archive.
 	This is intended to make *rpm* easy to run from other tools.
 
-*--prefix* _NEWPATH_
-	For relocatable binary packages, translate all file paths that start
-	with the installation prefix in the package relocation hint(s) to
-	_NEWPATH_.
-
-*--relocate* _OLDPATH_=_NEWPATH_
-	For relocatable binary packages, translate all file paths that start
-	with _OLDPATH_ in the package relocation hint(s) to _NEWPATH_. This
-	option can be used repeatedly if several _OLDPATH_'s in the package
-	are to be relocated.
-
-*--replacefiles*
-	Install the packages even if they replace files from other, already
-	installed, packages.
-
-*--replacepkgs*
-	Install the packages even if some of them are already installed on
-	this system.
-
 *--test*
-	Do not install the package, simply check for and report potential
-	conflicts.
-
-# ERASE OPTIONS
-
-The general form of an *rpm* erase command is
-
-*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
-
-The following erase-options options may also be used:
-
-*--allmatches*
-	Remove all versions of the package which match _PACKAGE_NAME_.
-	Normally an error is issued if _PACKAGE_NAME_ matches multiple
-	packages.
-
-*--justdb*
-	Update only the database, not the filesystem.
-
-*--nodeps*
-	Don't check dependencies before uninstalling the packages.
-
-*--test*
-	Don't really uninstall anything, just go through the motions.
+	Don't really execute anything, just go through the motions.
 	Useful in conjunction with the *-vv* option for debugging.
 
 # QUERY OPTIONS
@@ -735,10 +664,6 @@ em*B*oldened) character denotes failure of the corresponding
 
 # MISCELLANEOUS COMMANDS
 
-*rpm* *--showrc*
-	shows the values *rpm* will use for all of the options which are
-	currently set in *rpmrc* and *macros* configuration file(s).
-
 *rpm* *--setperms* | *--setugids* | *--setcaps* [_PACKAGE_NAME_ ...]
 	obsolete aliases for *--restore*
 
@@ -746,93 +671,12 @@ em*B*oldened) character denotes failure of the corresponding
 	The option restores file metadata such as timestamp, owner, group,
 	permissions and capabilities of files in packages.
 
-# FTP/HTTP OPTIONS
-
-*rpm* can act as an FTP and/or HTTP client so that packages can be
-queried or installed from the internet. Package files for install,
-upgrade, and query operations may be specified as an *ftp* or *http*
-style URL:
-
-_http://HOST[:PORT]/path/to/package.rpm_
-
-_ftp://[USER:PASSWORD]@HOST[:PORT]/path/to/package.rpm_
-
-If both the user and password are omitted, anonymous *ftp* is used.
-
-*rpm* allows the following options to be used with ftp URLs:
-
-*rpm* allows the following options to be used with *http* and *ftp* URLs:
-
-*--httpproxy* _HOST_
-	The host _HOST_ will be used as a proxy server for all *http* and
-	*ftp* transfers. This option may also be specified by configuring
-	the macro *%\_httpproxy*.
-
-*--httpport* _PORT_
-	The TCP _PORT_ number to use for the *http* connection on the
-	proxy http server instead of the default port. This option may also
-	be specified by configuring the macro *%\_httpport*.
-
 # FILES
-
-## rpmrc Configuration
-
-Each file in the colon separated rpmrc path is read sequentially by
-*rpm* for configuration information. Only the first file in the
-list must exist, and tildes will be expanded to the value of
-*$HOME*. The default rpmrc path is as follows:
-
-```
-	/usr/lib/rpm/rpmrc:
-	/usr/lib/rpm/<vendor>/rpmrc:
-	/etc/rpmrc:
-	~/.config/rpm/rpmrc
-```
-
-If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
-in the path.
-
-In older rpm versions the path of per-user rpmrc was _~/.rpmrc_.
-This is still processed if it exists and the new configuration directory
-does not exist.
-
-## Macro Configuration
-
-Each file or *glob*(7) pattern in the colon-separated macro path is
-read sequentially by *rpm* for macro definitions. Tildes will be expanded
-to the value of the environment variable *HOME*. The default macro path
-is as follows:
-
-```
-	/usr/lib/rpm/macros:
-	/usr/lib/rpm/macros.d/macros.*:
-	/usr/lib/rpm/platform/%{\_target}/macros:
-	/usr/lib/rpm/fileattrs/*.attr:
-	/usr/lib/rpm/<vendor>/macros:
-	/etc/rpm/macros.*:
-	/etc/rpm/macros:
-	/etc/rpm/%{\_target}/macros:
-	~/.config/rpm/macros
-```
-
-If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
-in the path.
-
-In older versions of rpm, the path of per-user macros was _~/.rpmmacros_.
-This is still processed if it exists and the new configuration directory
-does not exist.
-
-## Database
-
-	/_var/lib/rpm/_
-
-## Temporary
-
-	_/var/tmp/rpm\*_
+See *rpm-common*(8).
 
 # SEE ALSO
 
-*rpm-misc*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
+*rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
 *rpmkeys*(8), *rpmsign*(1), *rpmspec*(1)
 
 *rpm --help* - as *rpm* supports customizing the options via popt
