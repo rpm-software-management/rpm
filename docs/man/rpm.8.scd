@@ -1,37 +1,33 @@
 RPM(8)
 
 # NAME
-
 rpm - RPM Package Manager
 
 # SYNOPSIS
-
-## QUERYING AND VERIFYING PACKAGES
-
+## Querying and verifying packages
 *rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
 *rpm* {*-V*|*--verify*} [select-options] [verify-options] [_PACKAGE_NAME_ ...]
 
-## INSTALLING, UPGRADING, AND REMOVING PACKAGES
-
+## Installing, upgrading and removing packages
 *rpm* {*-i*|*--install*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
 *rpm* {*-U*|*--upgrade*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
 *rpm* {*-F*|*--freshen*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
 
-*rpm* {*--reinstall*} [transaction-options] [install-options] _PACKAGE_FILE_ ...
+*rpm* *--reinstall* [transaction-options] [install-options] _PACKAGE_FILE_ ...
+
+*rpm* *--restore* [transaction-options] [select-options] _PACKAGE_NAME_ ...
 
 *rpm* {*-e*|*--erase*} [transaction-options] [erase-options] _PACKAGE_NAME_ ...
 
-*rpm* *--restore* [select-options] _PACKAGE_NAME_ ...
-
-## MISC OPERATIONS
-
+## Misc operations
 *rpm* *--querytags*
 
-# DESCRIPTION
+See *rpm-common*(8) for operations common to all rpm executables.
 
+# DESCRIPTION
 *rpm* is a powerful *Package Manager*, which can be used to build,
 install, query, verify, update, and erase individual software packages.
 A *package* consists of an archive of files and meta-data used to
@@ -41,47 +37,72 @@ scripts, file attributes, and descriptive information about the package.
 software to be installed, and source packages, containing the source
 code and recipe necessary to produce binary packages.
 
-One of the following basic modes must be selected: *Query*,
-*Verify*, *Install/Upgrade/Freshen/Reinstall*, *Uninstall*, *Set
-Owners/Groups*, *Show Querytags*, and *Show Configuration*.
+# OPERATIONS
+## Querying and verifying packages
+*-V*,
+*--verify*
+	Verify package(s), comparing information about the installed files in
+	the package with information about the files taken from the package
+	metadata stored in the rpm database. Among other things, verifying
+	compares the size, digest, permissions, type, owner and group of each
+	file. Any discrepancies are displayed.
+*-q*,
+*--query*
+	Query package files or installed package(s).
+
+## Installing, upgrading and removing packages
+*-i*,
+*--install*
+	Install new package(s) without considering upgrade scenarios.
+	This is considered special usage, normally installations should
+	be done with *--upgrade*.
+
+*-U*,
+*--upgrade*
+	Install or upgrade package(s) to a newer version. Old and/or
+	obsoleted package(s) are removed after the new package is installed.
+
+*-F*,
+*--freshen*
+	Upgrade package(s), but only ones for which an earlier version
+	is installed.
+
+*--reinstall*
+	Reinstall previously installed package(s).
+
+*--restore*
+	Restore file metadata such as timestamp, owner, group,
+	permissions and capabilities of files of installed package(s).
+
+*-e*,
+*--erase*
+	Erase installed packages.
+
+## Misc operations
+*--querytags*
+	Dump known querytags. Useful with the *--queryformat* option.
+
+See *rpm-common*(8) for the operations common to all rpm executables.
+
+# ARGUMENTS
+_PACKAGE_FILE_
+	Either *rpm* binary file or ASCII package manifest
+	(see *PACKAGE SELECTION OPTIONS*), and may be
+	specified as an *ftp* or *http* URL, in which case the package will
+	be downloaded before being installed. See *FTP/HTTP OPTIONS* for
+	information on *rpm*'s *ftp* and *http* client support.
+
+_PACKAGE_NAME_
+	Installed package named _PACKAGE_NAME_. To specify the
+	package more precisely the package name may be followed by the
+	version or version and release both separated by a dash or an
+	architecture name separated by a dot. See the output of *rpm -qa*
+	or *rpm -qp* _PACKAGE_FILE_ as an example.
 
 # OPTIONS
-
 See *rpm-common*(8) for the options common to all operations.
 
 # INSTALL AND UPGRADE OPTIONS
-
-In these options, _PACKAGE_FILE_ can be either *rpm* binary file or
-ASCII package manifest (see *PACKAGE SELECTION OPTIONS*), and may be
-specified as an *ftp* or *http* URL, in which case the package will
-be downloaded before being installed. See *FTP/HTTP OPTIONS* for
-information on *rpm*'s *ftp* and *http* client support.
-
-The general form of an *rpm* install command is
-
-*rpm* {*-i*|*--install*} [install-options] _PACKAGE_FILE_ ...
-
-This installs a new package.
-
-The general form of an *rpm* upgrade command is
-
-*rpm* {*-U*|*--upgrade*} [install-options] _PACKAGE_FILE_ ...
-
-This upgrades or installs the package currently installed to a newer
-version. This is the same as install, except all other version(s) of the
-package are removed after the new package is installed.
-
-*rpm* {*-F*|*--freshen*} [install-options] _PACKAGE_FILE_ ...
-
-This will upgrade packages, but only ones for which an earlier version
-is installed.
-
-The general form of an *rpm* reinstall command is
-
-*rpm* {*--reinstall*} [install-options] _PACKAGE_FILE_ ...
-
-This reinstalls a previously installed package.
-
 *--allfiles*
 	Installs or upgrades all the missingok files in the package,
 	regardless if they exist.
@@ -161,13 +182,6 @@ This reinstalls a previously installed package.
 	this system.
 
 # ERASE OPTIONS
-
-The general form of an *rpm* erase command is
-
-*rpm* {*-e*|*--erase*} [erase-options] _PACKAGE_NAME_ ...
-
-The following erase-options options may also be used:
-
 *--allmatches*
 	Remove all versions of the package which match _PACKAGE_NAME_.
 	Normally an error is issued if _PACKAGE_NAME_ matches multiple
@@ -237,25 +251,20 @@ The transaction options are common to *--install*, *--upgrade*,
 	Useful in conjunction with the *-vv* option for debugging.
 
 # QUERY OPTIONS
+*--qf* _QUERYFMT_,
+*--queryformat* _QUERYFMT_
+	Specify the format that package information should be printed in.
+	See *QUERY FORMAT* for the format description.
 
-The general form of an *rpm* query command is
-
-*rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
-
-You may specify the format that package information should be printed
-in. To do this, you use the
-
-*--qf*|*--queryformat* _QUERYFMT_
-
-option, followed by the _QUERYFMT_ format string. Query formats are
-modified versions of the standard *printf*(3) formatting. The format
-is made up of static strings (which may include standard C character
-escapes for newlines, tabs, and other special characters (not including 0))
-and *printf*(3) type formatters. As *rpm* already knows the type to
-print, the type specifier must be omitted however, and replaced by the
-name of the header tag to be printed, enclosed by *{}* characters. Tag
-names are case insensitive, and the leading *RPMTAG_* portion of the
-tag name may be omitted as well.
+## QUERY FORMAT
+The rpm queryformat is modeled after the standard *printf*(3) formatting.
+The format is made up of static strings (which may include standard C
+character escapes for newlines, tabs, and other special characters
+(not including 0)) and *printf*(3) type formatters.
+As *rpm* already knows the type to print, the type specifier must be
+omitted however, and replaced by the name of the header tag to be printed,
+enclosed by *{}* characters. Tag names are case insensitive, and the
+leading *RPMTAG_* portion of the tag name may be omitted as well.
 
 Alternate output formats may be requested by following the tag with
 *:typetag*. Currently, the following types are supported:
@@ -348,15 +357,6 @@ There are three subsets of options for querying: package selection, file
 selection and information selection.
 
 # PACKAGE SELECTION OPTIONS
-
-_PACKAGE_NAME_
-
-	Query installed package named _PACKAGE_NAME_. To specify the
-	package more precisely the package name may be followed by the
-	version or version and release both separated by a dash or an
-	architecture name separated by a dot. See the output of *rpm -qa*
-	or *rpm -qp* _PACKAGE_FILE_ as an example.
-
 *-a*, *--all* [_SELECTOR_ ...]
 	Query all installed packages.
 
@@ -526,7 +526,6 @@ _PACKAGE_NAME_
 	Format package headers as XML.
 
 # FILE SELECTION OPTIONS
-
 *-A*, *--artifactfiles*
 	Only include artifact files (implies *-l*).
 
@@ -549,19 +548,6 @@ _PACKAGE_NAME_
 	Exclude ghost files.
 
 # VERIFY OPTIONS
-
-The general form of an *rpm* verify command is
-
-*rpm* {*-V*|*--verify*} [select-options] [verify-options] [_PACKAGE_NAME_ ...]
-
-Verifying a package compares information about the installed files in
-the package with information about the files taken from the package
-metadata stored in the rpm database. Among other things, verifying
-compares the size, digest, permissions, type, owner and group of each
-file. Any discrepancies are displayed. Files that were not installed
-from the package, for example, documentation files excluded on
-installation using the "*--excludedocs*" option, will be silently
-ignored.
 
 The package and file selection options are the same as for package
 querying (including package manifest files as arguments). Other options
@@ -598,8 +584,10 @@ unique to verify mode are:
 *--nocaps*
 	Don't verify file capabilities.
 
-The format of the output is a string of 9 characters, a possible
-attribute marker:
+# OUTPUT
+*--verify*
+	The format of the output is a string of 9 characters, a possible
+	attribute marker:
 
 [[ *Marker*
 :- *%files attribute*
@@ -632,14 +620,14 @@ attribute marker:
 :  N/A
 :  *s*pec file in source package
 
-from the package header, followed by the file name. Each of the 9
-characters denotes the result of a comparison of attribute(s) of the
-file to the value of those attribute(s) recorded in the database. A
-single "*.*" (period) means the test passed, while a single
-"*?*" (question mark) indicates the test could not be performed
-(e.g. file permissions prevent reading). Otherwise, the (mnemonically
-em*B*oldened) character denotes failure of the corresponding
-*--verify* test:
+	from the package header, followed by the file name. Each of the 9
+	characters denotes the result of a comparison of attribute(s) of the
+	file to the value of those attribute(s) recorded in the database. A
+	single "*.*" (period) means the test passed, while a single
+	"*?*" (question mark) indicates the test could not be performed
+	(e.g. file permissions prevent reading). Otherwise, the (mnemonically
+	em*B*oldened) character denotes failure of the corresponding
+	*--verify* test:
 
 [[ *Character*
 :< *Description*
@@ -662,20 +650,13 @@ em*B*oldened) character denotes failure of the corresponding
 |  *P*
 :  ca*P*abilities differ
 
-# MISCELLANEOUS COMMANDS
-
-*rpm* *--setperms* | *--setugids* | *--setcaps* [_PACKAGE_NAME_ ...]
-	obsolete aliases for *--restore*
-
-*rpm* *--restore* [select-options] [_PACKAGE_NAME_ ...]
-	The option restores file metadata such as timestamp, owner, group,
-	permissions and capabilities of files in packages.
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
 
 # FILES
 See *rpm-common*(8).
 
 # SEE ALSO
-
 *rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
 *rpmkeys*(8), *rpmsign*(1), *rpmspec*(1)
 
