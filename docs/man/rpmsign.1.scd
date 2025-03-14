@@ -1,47 +1,57 @@
 RPMSIGN(1)
 
 # NAME
-
 rpmsign - RPM Package Signing
 
 # SYNOPSIS
-
 *rpmsign* {*--addsign*|*--resign*} [options] [sign-options] _PACKAGE_FILE_ ...
 
 *rpmsign* *--delsign* [options] _PACKAGE_FILE_ ...
 
 *rpmsign* *--delfilesign* [options] _PACKAGE_FILE_ ...
 
-## rpmsign-options
-
-\[*--rpmv3*] [*--rpmv4*] [*--fskpath* _KEY_] [*--signfiles*]
-
 # DESCRIPTION
-
-*rpmsign* *--addsign* generates and inserts a new OpenPGP signature
-for each _PACKAGE_FILE_ given unless a signature with identical
-parameters already exists, in which case no action is taken.
-Arbitrary number of V6 signatures can be added.
-
-*rpmsign* *--resign* generates and inserts a new OpenPGP signature
-for each _PACKAGE_FILE_, replacing any and all previous signatures.
+*rpmsign* is used to manipulate digital OpenPGP signatures on *rpm* package
+files.
 
 To create a signature rpmsign needs to verify the package's checksum. As a
 result V4 packages with MD5/SHA1 checksums cannot be signed in FIPS mode.
 
-*rpmsign* *--delsign* _PACKAGE_FILE_ ...
+# OPERATIONS
+*--addsign*
+	Generate and insert a new OpenPGP signature
+	for each _PACKAGE_FILE_ given unless a signature with identical
+	parameters already exists, in which case no action is taken.
+	Arbitrary number of V6 signatures can be added.
 
-Delete all OpenPGP signatures from each package _PACKAGE_FILE_ given.
+*--resign*
+	Generates and inserts a new OpenPGP signature
+	for each _PACKAGE_FILE_, replacing any and all previous signatures.
 
-*rpmsign* *--delfilesign* _PACKAGE_FILE_ ...
+*--delsign*
+	Delete all OpenPGP signatures from each package _PACKAGE_FILE_ given.
 
-Delete all IMA and fsverity file signatures from each package
-_PACKAGE_FILE_ given.
+*--delfilesign*
+	Delete all IMA and fsverity file signatures from each package
+	_PACKAGE_FILE_ given.
+
+# ARGUMENTS
+_PACKAGE_FILE_
+	An *rpm* package file.
 
 # OPTIONS
-See *rpm-common*(8) for the options common to all operations.
+See *rpm-common*(8) for the options common to all *rpm* executables.
 
 # SIGN OPTIONS
+*--certpath* _CERT_
+	Used with *--signverity*, use file signing certificate _CERT_.
+
+*--fskpath* _KEY_
+	Used with *--signfiles*, use file signing key _KEY_.
+
+*--key-id* _KEYID_
+	Use key _KEYID_ for signing. Overrides *%\_openpgp_sign_id*
+	configuration.
 
 *--rpmv3*
 	Request RPM V3 header+payload signature addition on V4 packages.
@@ -59,8 +69,9 @@ See *rpm-common*(8) for the options common to all operations.
 	Useful for making V6 packages signature verifiable
 	with rpm 4.x versions.
 
-	V4 compatibility signatures are only ever added if the signing algorithm
-	is one of those known to V4: RSA, EcDSA, EdDSA (and original DSA).
+	V4 compatibility signatures are only ever added if the signing
+	algorithm is one of those known to V4: RSA, EcDSA, EdDSA
+	(and original DSA).
 	Only one V4 signature can be present in a package, so this is
 	added only on the first *--addsign* with a V4 compatible
 	algorithm, and ignored otherwise.
@@ -76,26 +87,10 @@ See *rpm-common*(8) for the options common to all operations.
 
 	Has no effect when signing V6 packages.
 
-*--fskpath* _KEY_
-	Used with *--signfiles*, use file signing key _KEY_.
-
-*--certpath* _CERT_
-	Used with *--signverity*, use file signing certificate _CERT_.
-
-*--verityalgo* _ALG_
-	Used with *--signverity*, to specify the signing algorithm.
-	sha256 and sha512 are supported, with sha256 being the default if
-	this argument is not specified. This can also be specified with the
-	macro *%\_verity_algorithm*.
-
 *--signfiles*
-	Sign package files. The macro *%\_binary_filedigest_algorithm*
-	must be set to a supported algorithm before building the package.
-	The supported algorithms are SHA1, SHA256, SHA384, and SHA512, which
-	are represented as 2, 8, 9, and 10 respectively. The file signing
-	key (RSA private key) must be set before signing the package, it can
-	be configured on the command line with *--fskpath* or the macro
-	%\_file_signing_key.
+	Sign package files. The file signing key (RSA private key) must
+	be set before signing the package, it can be configured on the
+	command line with *--fskpath* or the macro %\_file_signing_key.
 
 *--signverity*
 	Sign package files with fsverity signatures. The file signing key
@@ -105,9 +100,13 @@ See *rpm-common*(8) for the options common to all operations.
 	can be configured on the command line with *--certpath* or the
 	macro %\_file_signing_cert.
 
+*--verityalgo* _ALG_
+	Used with *--signverity*, to specify the signing algorithm.
+	sha256 and sha512 are supported, with sha256 being the default if
+	this argument is not specified. This can also be specified with the
+	macro *%\_verity_algorithm*.
 
-# CONFIGURING SIGNING KEYS
-
+# CONFIGURATION
 In order to sign packages, you need to create your own OpenPGP key pair
 (aka certificate) and configure *rpm*(8) to use it. The following macros are
 available:
@@ -133,6 +132,7 @@ Implementation specific macros:
 *%\_sq_path*
 	The location of your Sequoia configuration if not the default.
 
+# EXAMPLES
 For example, to configure rpm to sign with Sequoia PGP using a key with
 fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
 
@@ -142,12 +142,23 @@ fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
 ```
 
 in a macro configuration file, typically _~/.config/rpm/macros_.
-See *Macro Configuration* in *rpm*(8) for more details.
+See *Macro Configuration* in *rpm-common*(8) for more details.
+
+*rpmsign --addsign hello-2.0-1.x64_rpm*
+	Add a signature to _hello-2.0-1.x64_rpm_ package.
+
+*rpmsign --resign --key-id 771b18d3d7baa28734333c424344591e1964c5fc hello-2.0-1.x64_rpm*
+	Replace all signatures in _hello-2.0-1.x64_rpm_ package by
+	a signature using key `771b18d3d7baa28734333c424344591e1964c5fc`.
+
+*rpmsign --delsign --delfilesign hello-2.0-1.x64_rpm*
+	Delete all signatures from _hello-2.0-1.x64_rpm_ package.
+
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
 
 # SEE ALSO
-
-*popt*(3), *rpm*(8), *rpm-common*(8) *rpmdb*(8), *rpmkeys*(8), *rpm2cpio*(1),
-*rpmbuild*(1), *rpmspec*(1)
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1)
 
 *rpmsign --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

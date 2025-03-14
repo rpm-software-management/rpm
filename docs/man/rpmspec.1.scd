@@ -1,25 +1,16 @@
 RPMSPEC(1)
 
 # NAME
-
 rpmspec - RPM Spec Tool
 
 # SYNOPSIS
-
-## QUERYING SPEC FILES
-
-*rpmspec* {*-q*|*--query*} [options] [select-options] [query-options] _SPEC_FILE_ ...
-
-## PARSING SPEC FILES TO STDOUT
+*rpmspec* {*-q*|*--query*} [options] [query-options] _SPEC_FILE_ ...
 
 *rpmspec* {*-P*|*--parse*} [options] _SPEC_FILE_ ...
 
-## INVOKING MACRO SHELL
-
-*rpmspec* {*--shell*} [options] [_SPEC_FILE_ ...]
+*rpmspec* *--shell* [options] [_SPEC_FILE_ ...]
 
 # DESCRIPTION
-
 *rpmspec* is a tool for querying a spec file. More specifically for
 querying hypothetical packages which would be created from the given
 spec file. So querying a spec file with *rpmspec* is similar to
@@ -29,24 +20,31 @@ built package. E. g. you can't query BUILDTIME with *rpmspec* for
 obvious reasons. You also cannot query other fields automatically
 generated during a build of a package like auto generated dependencies.
 
+# OPERATIONS
+*-q*,
+*--query*
+	Query parsed spec header, similarly to querying packages.
+
+*-P*,
+*--parse*
+	Output parsed spec file to the standard output. That is,
+	conditionals are handled, macros parsed and so on.
+
+*--shell*
+	Invoke an interactive shell for inspecting macros, optionally
+	after parsing a spec. Mainly useful for troubleshooting.
+
+# ARGUMENTS
+_SPECFILE_
+	RPM spec file used for building packages with rpmbuild.
+
 # OPTIONS
 See *rpm-common*(8) for the options common to all operations.
 
 # QUERY OPTIONS
-
-The general form of an rpm spec query command is
-
-*rpm* {*-q*|*--query*} [select-options] [query-options]
-
-You may specify the format that the information should be printed in. To
-do this, you use the
-
-*--qf*|*--queryformat* _QUERYFMT_
-
-option, followed by the _QUERYFMT_ format string. See *rpm*(8) for
-details.
-
-# SELECT OPTIONS
+*--qf* _QUERYFMT_,
+*--queryformat* _QUERYFMT_
+	Specify output format for spec queries. See *rpm*(8) for details.
 
 *--rpms*
 	Operate on the all binary package headers generated from spec.
@@ -60,72 +58,72 @@ details.
 *--srpm*
 	Operate on the source package header(s) generated from spec.
 
+# ENVIRONMENT
+See *rpm-common*(8).
+
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
+
 # EXAMPLES
+*rpmspec -q rpm.spec*
+	Get list of binary packages which would be generated from the rpm
+	spec file, eg:
+	```
+	rpm-4.11.3-3.fc20.x86_64
+	rpm-libs-4.11.3-3.fc20.x86_64
+	rpm-build-libs-4.11.3-3.fc20.x86_64
+	...
+	```
 
-Get list of binary packages which would be generated from the rpm spec
-file:
-```
-$ rpmspec -q rpm.spec
-rpm-4.11.3-3.fc20.x86_64
-rpm-libs-4.11.3-3.fc20.x86_64
-rpm-build-libs-4.11.3-3.fc20.x86_64
-...
-```
+*rpmspec -q --qf "%{name}: %{summary}n" rpm.spec*
+	Get summary infos for single binary packages generated from the
+	rpm spec file, eg:
+	```
+	rpm: The RPM package management system
+	rpm-libs: Libraries for manipulating RPM packages
+	rpm-build-libs: Libraries for building and signing RPM packages
+	...
+	```
 
-Get summary infos for single binary packages generated from the rpm spec file:
+*rpmspec -q --srpm rpm.spec*
+	Get the source package which would be generated from the rpm spec
+	file, eg:
+	```
+	rpm-4.11.3-3.fc20.x86_64
+	```
 
-```
-$ rpmspec -q --qf "%{name}: %{summary}n" rpm.spec
-rpm: The RPM package management system
-rpm-libs: Libraries for manipulating RPM packages
-rpm-build-libs: Libraries for building and signing RPM packages
-...
-```
+*rpmspec -P rpm.spec*
+	Parse the rpm spec file to stdout, eg:
+	```
+	Summary: The RPM package management system
+	Name: rpm
+	Version: 4.14.0
+	...
+	```
 
-Get the source package which would be generated from the rpm spec file:
+*rpmspec --shell*
+	Run interactive macro shell for debugging macros, eg:
+	```
+	> %define foo bar
+	> %foo
+	bar
+	> %(date)
+	Tue Apr 13 03:55:37 PM EEST 2021
+	> %getncpus
+	8
+	```
 
-```
-$ rpmspec -q --srpm rpm.spec
-rpm-4.11.3-3.fc20.x86_64
-```
-
-Parse the rpm spec file to stdout:
-
-```
-$ rpmspec -P rpm.spec
-Summary: The RPM package management system
-Name: rpm
-Version: 4.14.0
-...
-```
-
-Run interactive macro shell for debugging macros:
-
-```
-$ rpmspec --shell
-> %define foo bar
-> %foo
-bar
-> %(date)
-Tue Apr 13 03:55:37 PM EEST 2021
-> %getncpus
-8
-```
-
-Run interactive macros shell in spec context:
-
-```
-$ rpmspec --shell popt.spec
-%name
-popt
-%version
-1.18
-```
+*rpmspec --shell popt.spec*
+	Run interactive macros shell in spec context, eg:
+	```
+	%name
+	popt
+	%version
+	1.18
+	```
 
 # SEE ALSO
-
-*popt*(3), *rpm*(8), *rpm-common*(8), *rpmdb*(8), *rpmkeys*(8), *rpmsign*(1),
-*rpm2cpio*(1), *rpmbuild*(1)
+*popt*(3), *rpm*(8), *rpmbuild*(1)
 
 *rpmspec --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
