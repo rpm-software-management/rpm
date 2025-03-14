@@ -1,0 +1,61 @@
+#!/bin/bash
+#
+# Create a Jekyll-ready HTML page from the given scdoc(5) file.
+#
+# Uses scd2html(1) with custom post-processing that does the following:
+#   - Adds a Jekyll front matter block
+#   - Adds a footer with the RPM version, index link and timestamp
+#   - Turns canonical man page references and URLs into links
+#   - Tweaks section anchor links
+
+SCD_FILE=$1
+OUT_FILE=$2
+SCD_BASE=$(basename ${SCD_FILE%.*})
+
+# Conventional name(SECTION) string
+MAN_NAME=$(echo $SCD_BASE | sed 's/\.\(.\)$/(\1)/')
+
+# Section number
+MAN_SECN=$(echo $SCD_BASE | sed 's/^.\+\(.\)$/\1/')
+
+# Matches all our manual names
+NAME_PAT="rpm[-\.[:alnum:]]*\|gendiff"
+
+HEADER="\
+---
+layout: default
+title: rpm.org - $MAN_NAME
+css: manpage.css
+---
+"
+
+FOOTER="\
+<footer>
+<p id=\"version\">RPM @CMAKE_PROJECT_VERSION@</p>
+<p id=\"index\"><a href="./">Index</a></p>
+<p id=\"date\">$(date -I)</p>
+</footer>
+"
+
+add_header() {
+    cat <(echo "$HEADER") -
+}
+
+add_footer() {
+    cat - <(echo "$FOOTER")
+}
+
+add_links() {
+    sed -e 's#<b>\('$NAME_PAT'\)</b>(\([1-8]\))#<a href="\1.\2">\1(\2)</a>#g' \
+        -e 's#<b>\(https\?://[^<]*\)</b>#<a href="\1">\1</a>#g'
+}
+
+mod_anchors() {
+    sed 's/¶/#/'
+}
+
+post_process() {
+    add_header | add_footer | add_links | mod_anchors;
+}
+
+@SCD2HTML@ -f < $SCD_FILE | post_process > $OUT_FILE

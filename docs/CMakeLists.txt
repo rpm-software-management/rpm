@@ -1,5 +1,3 @@
-add_subdirectory(man)
-
 if (WITH_DOXYGEN)
     find_package(Doxygen REQUIRED)
 endif()
@@ -60,6 +58,7 @@ set(site_files
 	_config.yml
 	_layouts/default.html
 	_layouts/favicon.ico
+	assets/css/manpage.css
 	man/index.md
 	Gemfile
 	index.md
@@ -96,3 +95,5 @@ if (PODMAN)
 	)
 	add_custom_target(site COMMAND ${JEKYLL} DEPENDS pages image)
 endif()
+
+add_subdirectory(man)
