@@ -195,9 +195,6 @@ This reinstalls a previously installed package.
 *--nodigest*
 	Don't verify package or header digests when reading.
 
-*--nomanifest*
-	Don't process non-package files as manifests.
-
 *--nosignature*
 	Don't verify package or header signatures when reading.
 
@@ -454,6 +451,12 @@ _PACKAGE_NAME_
 
 *-g*, *--group* _GROUP_
 	Query packages with the group of _GROUP_.
+
+*--noglob*
+	Do not glob arguments when installing package files.
+
+*--nomanifest*
+	Don't process non-package files as manifests.
 
 *-p*, *--package* _PACKAGE_FILE_
 	Query an (uninstalled) package _PACKAGE_FILE_. The _PACKAGE_FILE_
