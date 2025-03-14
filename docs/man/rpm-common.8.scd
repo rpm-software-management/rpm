@@ -32,9 +32,6 @@ options and operations documented in this manual:
 *--showrc*
 	Dump information about *rpm* configuration to standard output.
 
-# ARGUMENTS
-The common operations take no arguments.
-
 # OPTIONS
 *--color* <_MODE_>
 	Use terminal colors for highlighting error and debug message,
