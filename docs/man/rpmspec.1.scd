@@ -8,15 +8,15 @@ rpmspec - RPM Spec Tool
 
 ## QUERYING SPEC FILES
 
-*rpmspec* {*-q*|*--query*} [select-options] [query-options] _SPEC_FILE_ ...
+*rpmspec* {*-q*|*--query*} [options] [select-options] [query-options] _SPEC_FILE_ ...
 
 ## PARSING SPEC FILES TO STDOUT
 
-*rpmspec* {*-P*|*--parse*} _SPEC_FILE_ ...
+*rpmspec* {*-P*|*--parse*} [options] _SPEC_FILE_ ...
 
 ## INVOKING MACRO SHELL
 
-*rpmspec* {*--shell*} [_SPEC_FILE_ ...]
+*rpmspec* {*--shell*} [options] [_SPEC_FILE_ ...]
 
 # DESCRIPTION
 
@@ -29,13 +29,8 @@ built package. E. g. you can't query BUILDTIME with *rpmspec* for
 obvious reasons. You also cannot query other fields automatically
 generated during a build of a package like auto generated dependencies.
 
-## select-options
-
-\[*--rpms*] [*--srpm*]
-
-## query-options
-
-\[*--qf,--queryformat* _QUERYFMT_] [*--target* _TARGET_PLATFORM_]
+# OPTIONS
+See *rpm-common*(8) for the options common to all operations.
 
 # QUERY OPTIONS
 
@@ -129,7 +124,7 @@ popt
 
 # SEE ALSO
 
-*popt*(3), *rpm*(8), *rpmdb*(8), *rpmkeys*(8), *rpmsign*(1),
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpmdb*(8), *rpmkeys*(8), *rpmsign*(1),
 *rpm2cpio*(1), *rpmbuild*(1)
 
 *rpmspec --help* - as rpm supports customizing the options via popt
