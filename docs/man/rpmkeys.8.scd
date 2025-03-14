@@ -69,7 +69,7 @@ _PUBKEY_
 
 # OPTIONS
 
-See *rpm.common*(8) for the options common to all *rpm* executables.
+See *rpm-common*(8) for the options common to all *rpm* executables.
 
 # REBUILD OPTIONS
 
@@ -121,7 +121,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	Verify hello-2.0-1.x86_64.rpm package file.
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpmsign*(1)
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpmsign*(1)
 
 *rpmkeys --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

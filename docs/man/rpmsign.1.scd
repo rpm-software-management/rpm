@@ -6,11 +6,11 @@ rpmsign - RPM Package Signing
 
 # SYNOPSIS
 
-*rpmsign* {*--addsign*|*--resign*} [sign-options] _PACKAGE_FILE_ ...
+*rpmsign* {*--addsign*|*--resign*} [options] [sign-options] _PACKAGE_FILE_ ...
 
-*rpmsign* *--delsign* _PACKAGE_FILE_ ...
+*rpmsign* *--delsign* [options] _PACKAGE_FILE_ ...
 
-*rpmsign* *--delfilesign* _PACKAGE_FILE_ ...
+*rpmsign* *--delfilesign* [options] _PACKAGE_FILE_ ...
 
 ## rpmsign-options
 
@@ -38,7 +38,10 @@ Delete all OpenPGP signatures from each package _PACKAGE_FILE_ given.
 Delete all IMA and fsverity file signatures from each package
 _PACKAGE_FILE_ given.
 
-## SIGN OPTIONS
+# OPTIONS
+See *rpm-common*(8) for the options common to all operations.
+
+# SIGN OPTIONS
 
 *--rpmv3*
 	Request RPM V3 header+payload signature addition on V4 packages.
@@ -143,7 +146,7 @@ See *Macro Configuration* in *rpm*(8) for more details.
 
 # SEE ALSO
 
-*popt*(3), *rpm*(8), *rpmdb*(8), *rpmkeys*(8), *rpm2cpio*(1),
+*popt*(3), *rpm*(8), *rpm-common*(8) *rpmdb*(8), *rpmkeys*(8), *rpm2cpio*(1),
 *rpmbuild*(1), *rpmspec*(1)
 
 *rpmsign --help* - as rpm supports customizing the options via popt

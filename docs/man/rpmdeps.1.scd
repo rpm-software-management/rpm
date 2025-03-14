@@ -6,7 +6,7 @@ rpmdeps - Generate RPM Package Dependencies
 
 # SYNOPSIS
 
-*rpmdeps* {*-P*|*--provides*} {*-R*|*--requires*} {*--rpmfcdebug*} [_FILE_ ...]
+*rpmdeps* [options] {*-P*|*--provides*} {*-R*|*--requires*} [_FILE_ ...]
 
 # DESCRIPTION
 
@@ -16,6 +16,7 @@ interpreter, or per-script dependencies, and the dependencies are
 printed to stdout.
 
 # OPTIONS
+See *rpm-common*(8) for the options common to all operations.
 
 *-P, --provides*
 	Print the provides
@@ -46,4 +47,4 @@ printed to stdout.
 
 # SEE ALSO
 
-*rpm*(8), *rpmbuild*(1)
+*rpm*(8), *rpmbuild*(1), *rpm-common*(8)

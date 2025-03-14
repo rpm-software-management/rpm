@@ -6,7 +6,7 @@ rpmgraph - Display RPM Package Dependency Graph
 
 # SYNOPSIS
 
-*rpmgraph* _PACKAGE_FILE_ ...
+*rpmgraph* [options] _PACKAGE_FILE_ ...
 
 # DESCRIPTION
 
@@ -27,6 +27,9 @@ or printed using the *dotty* graph editor from the *graphviz*
 package. There are no *rpmgraph* specific options, only common *rpm*
 options. See the *rpmgraph* usage message for what is currently
 implemented.
+
+# OPTIONS
+See *rpm-common*(8) for the options common to all rpm commands.
 
 # SEE ALSO
 
