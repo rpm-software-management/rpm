@@ -52,6 +52,7 @@ RUN dnf -y install \
   dwz \
   fsverity-utils fsverity-utils-devel \
   scdoc \
+  scd2html \
   sequoia-sq \
   libasan \
   libubsan

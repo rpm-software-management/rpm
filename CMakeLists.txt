@@ -317,6 +317,9 @@ mark_as_advanced(PODMAN)
 find_program(SCDOC NAMES scdoc REQUIRED)
 mark_as_advanced(SCDOC)
 
+find_program(SCD2HTML NAMES scd2html)
+mark_as_advanced(SCD2HTML)
+
 function(chkdef func req)
 	string(TOUPPER ${func} FUNC)
 	set(HAVENAME HAVE_${FUNC})

@@ -1,5 +1,3 @@
-add_subdirectory(man)
-
 if (WITH_DOXYGEN)
     find_package(Doxygen REQUIRED)
 endif()
@@ -96,3 +94,5 @@ if (PODMAN)
 	)
 	add_custom_target(site COMMAND ${JEKYLL} DEPENDS pages image)
 endif()
+
+add_subdirectory(man)
