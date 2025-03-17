@@ -68,3 +68,29 @@ foreach(file ${site_files})
 endforeach()
 
 add_custom_target(pages)
+
+if (ENABLE_JEKYLL)
+	option(JEKYLL_SERVE "Serve site locally when built" ON)
+	set(JEKYLL_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH
+	    "Directory to build from")
+
+	find_program(PODMAN podman REQUIRED)
+	mark_as_advanced(PODMAN)
+	configure_file(Containerfile Containerfile COPYONLY)
+
+	set(image rpm/jekyll)
+	set(JEKYLL ${PODMAN} run -v ${JEKYLL_SOURCE_DIR}:/srv:z
+				 -it --rm -p 4000:4000 ${image})
+	if (JEKYLL_SERVE)
+		set(JEKYLL ${JEKYLL} serve --host 0.0.0.0)
+	else()
+		set(JEKYLL ${JEKYLL} build)
+	endif()
+
+	add_custom_command(OUTPUT image
+		COMMAND ${PODMAN} build -t ${image} .
+		COMMAND touch image
+		DEPENDS Containerfile
+	)
+	add_custom_target(site COMMAND ${JEKYLL} DEPENDS pages image)
+endif()
