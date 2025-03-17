@@ -2004,7 +2004,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([keyring rebuild rpmdb])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 
 runroot rpmkeys \
         --define "_keyring rpmdb" \
@@ -2062,7 +2061,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([keyring rebuild fs])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 
 runroot rpmkeys \
         --define "_keyring rpmdb" \
@@ -2136,7 +2134,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([keyring rebuild openpgp])
 AT_KEYWORDS([rpmkeys signature])
-RPMTEST_INIT
 
 runroot rpmkeys \
         --define "_keyring rpmdb" \
