@@ -1254,14 +1254,14 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %{__git} config gc.auto 0\
 %{__git} add --force .\
 GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_timestamp}\\\
-	%{__git} commit %{-q} --allow-empty -a\\\
+	%{__git} commit %{-q} --no-gpg-sign --allow-empty -a\\\
 	--author "%{__scm_author}" -m "%{NAME}-%{VERSION} base"\
 %{__git} checkout --track -b rpm-build
 
 %__scm_apply_git(qp:m:)\
 %{__git} apply --index --reject %{-p:-p%{-p*}} -\
 GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_timestamp}\\\
-	%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
+	%{__git} commit %{-q} --no-gpg-sign -m %{-m*} --author "%{__scm_author}"
 
 # Git, using "git am" (-m is unused)
 %__scm_setup_git_am(q)\
