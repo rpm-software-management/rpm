@@ -1,0 +1,139 @@
+#!/bin/bash -e
+
+rpmhome=$(rpm --eval "%{xdg:config}/rpm")
+macros="macros"
+# if oldstyle config exists, then use that instead
+if [[ ! -d "${rpmhome}" && ( -f ~/.rpmmacros || -f ~/.rpmrc) ]]; then
+    rpmhome="${HOME}"
+    macros=".rpmmacros"
+fi
+mkdir -p "${rpmhome}"
+
+email="rpmbuild-${USER}@$(uname -n)"
+keypath="${rpmhome}/${email}.asc"
+
+function log()
+{
+    echo -e $* 1>&2
+}
+
+function error()
+{
+    log $*
+    exit 1
+}
+
+function progpath()
+{
+    which ${1} 2> /dev/null
+}
+
+function setup_autosign()
+{
+    log "Setting up ${1} autosigning in ${rpmhome}/${macros}"
+    echo "# Added by rpm-setup-autosign" >> ${rpmhome}/${macros}
+    echo "%_openpgp_sign ${1}" >> ${rpmhome}/${macros}
+    echo "%_openpgp_autosign_id ${2}" >> ${rpmhome}/${macros}
+}
+
+function genkey_sq()
+{
+    log "Generating key ${email}"
+    local keyfp=$(sq key generate \
+                     --batch \
+                     --quiet \
+                     --own-key \
+                     --without-password \
+                     --can-sign \
+                     --cannot-authenticate \
+                     --cannot-encrypt \
+                     --email "${email}" \
+                   2>&1 | awk '/Fingerprint/{print $2}')
+
+    log "Exporting public key (certificate) to ${keypath}"
+    sq cert export --cert "${keyfp}" > ${keypath}
+
+    setup_autosign sq ${keyfp}
+}
+
+function genkey_gpg()
+{
+    log "Generating key ${email}"
+    gpg \
+        --batch \
+        --quiet \
+        --passphrase "" \
+        --quick-generate-key "<${email}>" \
+        "default" "sign"
+
+    log "Exporting public key (certificate) to ${keypath}"
+    gpg --export --armor "${email}" > ${keypath}
+
+    setup_autosign gpg "${email}"
+}
+
+if [ -z "${USER}" ]; then
+    error "USER environment variable not set"
+fi
+
+if [ -f "${keypath}" ]; then
+    error "File ${keypath} already exists, script already run?"
+fi
+
+autosign=$(rpm --eval "%{?_openpgp_autosign_id}")
+if [ -n "${autosign}" ]; then
+    log "Autosign already configured"
+    exit 0
+fi
+
+# is there an explicit signing program configured?
+prog=$(rpm --eval "%{?_openpgp_sign}")
+if [ -z "${prog}" ]; then
+    # is there a legacy signing setup, indicating gpg?
+    gpgname=$(rpm --eval "%{?_gpg_name}")
+    if [ -n "${gpgname}" ]; then
+        prog="gpg"
+    fi
+fi
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+    -p|--prog)
+        prog="${2}"
+        shift
+        ;;
+    *)
+        error "Unknown argument: ${1}"
+        ;;
+    esac
+    shift
+done
+
+# if still not known, try to autodetect by presence
+if [ -z "${prog}" ]; then
+    for p in sq gpg; do
+        if [ -n "$(progpath ${p})" ]; then
+            prog="${p}"
+            break
+        fi
+    done
+fi
+
+case $prog in
+gpg)
+    genkey_gpg
+    ;;
+sq)
+    genkey_sq
+    ;;
+*)
+    if [ -z "${prog}" ]; then
+        error "No signing program found, install sequoia-sq or gnupg"
+    else
+        error "Unknown signing program: ${prog}"
+    fi
+    ;;
+esac
+
+log "To import this public key (certificate), run:"
+log "\tsudo rpmkeys --import ${keypath}"
