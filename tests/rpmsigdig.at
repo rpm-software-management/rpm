@@ -320,7 +320,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([[
-runroot sq --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
+runroot sq --home=none --cert-store=${krpath} cert list --gossip 2>&1 | grep -e "^ - [[:xdigit:]]\{40\}" | cut -c4-
 ]],
 [0],
 [771B18D3D7BAA28734333C424344591E1964C5FC
@@ -1448,7 +1448,7 @@ AT_KEYWORDS([rpmsign sequoia signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.config/rpm/macros
+cat << EOF > ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 %_sq_path ${HOME}/.config/rpm/sq
@@ -1512,7 +1512,7 @@ AT_KEYWORDS([rpmsign signature multisig v4])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.config/rpm/macros
+cat << EOF > ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
 EOF
@@ -1626,9 +1626,10 @@ AT_KEYWORDS([rpmsign signature multisig v6])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 
 RPMTEST_CHECK([
-cat << EOF >> ${HOME}/.config/rpm/macros
+cat << EOF > ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
 %_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
+%_openpgp_autosign_id %{_openpgp_sign_id}
 EOF
 
 runroot sq key import /data/keys/*.secret
