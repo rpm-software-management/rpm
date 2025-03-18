@@ -12,6 +12,6 @@ There are two separate sets of documents here:
 * [RPM's Reference Manual](manual/index.md)
 
 The API documention is also build here. But if you see this it is probably not built yet. 
-If it is built (in-tree) it can be found [here](librpm/html/index.html).
+If it is built (in-tree) it can be found [here](html/index.html).
 
 The API documentation for the release can be found on [rpm.org's Documentation page](https://rpm.org/documentation.html)
