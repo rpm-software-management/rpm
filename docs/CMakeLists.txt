@@ -22,7 +22,7 @@ if (doxsrc)
 	install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
 endif()
 
-install(FILES
+set(manuals
   	manual/about.md
 	manual/arch_dependencies.md
 	manual/autosetup.md
@@ -51,5 +51,20 @@ install(FILES
 	manual/tags.md
 	manual/triggers.md
 	manual/tsort.md
-	TYPE DOC
 )
+install(FILES ${manuals} TYPE DOC)
+
+set(site_files
+	_config.yml
+	_layouts/default.html
+	_layouts/favicon.ico
+	Gemfile
+	index.md
+	${manuals}
+)
+
+foreach(file ${site_files})
+	configure_file(${file} ${file} COPYONLY)
+endforeach()
+
+add_custom_target(pages)
