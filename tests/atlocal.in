@@ -90,6 +90,7 @@ snapshot()
             bwrap --unshare-pid --dev-bind $RPMTEST / --clearenv \
                   --setenv PATH $(env -i sh -c 'echo $PATH') \
                   --setenv HOME /root \
+                  --setenv USER root \
                   --setenv GPG_TTY "" \
                   --chdir / --dev /dev --proc /proc --die-with-parent "$@"
         ;;

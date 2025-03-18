@@ -2195,3 +2195,47 @@ runroot rpmkeys --define "_keyring openpgp" -Kv /data/RPMS/hello-2.0-1.x86_64-si
 ],
 [ignore])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([autosign setup])
+AT_KEYWORDS([autosign signature])
+
+rpmconf=$(rpm --eval "%{_rpmconfigdir}")
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpm-setup-autosign
+],
+[0],
+[],
+[Autosign already configured
+])
+
+RPMTEST_CHECK([
+runroot rm -rf /root/.config/rpm
+runroot ${RPM_CONFIGDIR_PATH}/rpm-setup-autosign -p gpg
+],
+[0],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+cmd=$(grep ^sudo stderr | cut -c6-)
+test -n "${cmd}" && runroot ${cmd}
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet /data/SPECS/vattrtest.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
