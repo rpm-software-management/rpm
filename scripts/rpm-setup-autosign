@@ -1,0 +1,49 @@
+#!/bin/bash -e
+
+rpmhome=$(rpm --eval "%{xdg:config}/rpm")
+email="rpmbuild-${USER}@$(uname -n)"
+keypath=${rpmhome}/${email}.asc
+
+function log()
+{
+    echo $* 1>&2
+}
+
+function setup_autosign()
+{
+    echo "%_openpgp_sign ${1}" >> ${rpmhome}/macros
+    echo "%_openpgp_autosign_id ${2}" >> ${rpmhome}/macros
+}
+
+function genkey_sq()
+{
+    log "Generating key ${email}"
+    local keyid=$(sq key generate \
+                     --batch \
+                     --quiet \
+                     --own-key \
+                     --without-password \
+                     --can-sign \
+                     --cannot-authenticate \
+                     --cannot-encrypt \
+                     --email ${email} \
+                   2>&1 | awk '/Fingerprint/{print $2}')
+
+    log "Exporting key to ${keypath}"
+    sq cert export --cert-email "${email}" > ${keypath}
+
+    log "Setting up autosigning"
+    setup_autosign sq ${keyid}
+}
+
+autosign=$(rpm --eval "%{?_openpgp_autosign_id}")
+if [ -n "${autosign}" ]; then
+    log "Autosign already configured"
+    exit 0
+fi
+
+genkey_sq
+
+log "To import this key, run:"
+log "sudo rpmkeys --import ${keypath}"
+
