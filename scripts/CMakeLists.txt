@@ -11,7 +11,7 @@ install(PROGRAMS
 	rpm_macros_provides.sh
 	rpmdb_dump rpmdb_load
 	rpm2cpio.sh tgpg
-	sysusers.sh
+	sysusers.sh rpm-setup-autosign
 	DESTINATION ${RPM_CONFIGDIR}
 )
 install(FILES
