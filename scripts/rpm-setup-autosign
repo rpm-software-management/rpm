@@ -10,7 +10,7 @@ fi
 mkdir -p "${rpmhome}"
 
 email="rpmbuild-${USER}@$(uname -n)"
-keypath=${rpmhome}/${email}.asc
+keypath="${rpmhome}/${email}.asc"
 
 function log()
 {
@@ -48,7 +48,7 @@ function genkey_sq()
                      --can-sign \
                      --cannot-authenticate \
                      --cannot-encrypt \
-                     --email ${email} \
+                     --email "${email}" \
                    2>&1 | awk '/Fingerprint/{print $2}')
 
     log "Exporting public key (certificate) to ${keypath}"
@@ -72,7 +72,7 @@ function genkey_gpg()
     gpg --export --armor "${email}" > ${keypath}
 
     log "Setting up autosigning"
-    setup_autosign gpg ${email}
+    setup_autosign gpg "${email}"
 }
 
 autosign=$(rpm --eval "%{?_openpgp_autosign_id}")
