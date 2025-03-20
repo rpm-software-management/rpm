@@ -40,7 +40,7 @@ function setup_autosign()
 function genkey_sq()
 {
     log "Generating key ${email}"
-    local keyid=$(sq key generate \
+    local keyfp=$(sq key generate \
                      --batch \
                      --quiet \
                      --own-key \
@@ -51,11 +51,11 @@ function genkey_sq()
                      --email ${email} \
                    2>&1 | awk '/Fingerprint/{print $2}')
 
-    log "Exporting key to ${keypath}"
-    sq cert export --cert-email "${email}" > ${keypath}
+    log "Exporting public key (certificate) to ${keypath}"
+    sq cert export --cert "${keyfp}" > ${keypath}
 
     log "Setting up autosigning"
-    setup_autosign sq ${keyid}
+    setup_autosign sq ${keyfp}
 }
 
 function genkey_gpg()
@@ -68,7 +68,7 @@ function genkey_gpg()
         --quick-generate-key "<${email}>" \
         "default" "sign"
 
-    log "Exporting key to ${keypath}"
+    log "Exporting public key (certificate) to ${keypath}"
     gpg --export --armor "${email}" > ${keypath}
 
     log "Setting up autosigning"
@@ -81,7 +81,7 @@ if [ -n "${autosign}" ]; then
     exit 0
 fi
 
-# is there an explicit signing program config?
+# is there an explicit signing program configured?
 prog=$(rpm --eval "%{?_openpgp_sign}")
 if [ -z "${prog}" ]; then
     # is there a legacy signing setup, indicating gpg?
@@ -137,6 +137,6 @@ if [ -z "${prog}" ]; then
     exit 1
 fi
 
-log "To import this key, run:"
+log "To import this public key (certificate), run:"
 log "sudo rpmkeys --import ${keypath}"
 
