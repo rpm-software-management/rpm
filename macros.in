@@ -133,7 +133,7 @@
 
 %_keyringpath		%{_dbpath}/pubkeys/
 
-# Location of passwd(5) and group(5)
+# Location of passwd(5) and group(5), as : separated list
 %_passwd_path		/etc/passwd
 %_group_path		/etc/group
 

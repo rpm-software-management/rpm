@@ -54,7 +54,7 @@ static const char *grpfile(void)
  * Lookup an arbitrary field based on contents of another in a ':' delimited
  * file, such as /etc/passwd or /etc/group.
  */
-static int lookup_field(const char *path, const char *val, int vcol, int rcol,
+static int lookup_field_in_file(const char *path, const char *val, int vcol, int rcol,
 			char **ret)
 {
     int rc = -1; /* assume not found */
@@ -89,6 +89,25 @@ static int lookup_field(const char *path, const char *val, int vcol, int rcol,
 
     fclose(f);
 
+    return rc;
+}
+
+/*
+ * Lookup an arbitrary field based on contents of another in a ':' delimited
+ * file, such as /etc/passwd or /etc/group. Look at multiple files listed in
+ * path separated by colons
+ */
+static int lookup_field(const char *path, const char *val, int vcol, int rcol,
+			char **ret)
+{
+    ARGV_t paths = argvSplitString(path, ":", ARGV_SKIPEMPTY);
+    int rc = -1;
+    for (ARGV_t p = paths; *p; p++) {
+	rc = lookup_field_in_file(*p, val, vcol, rcol, ret);
+	if (!rc)
+	    break;
+    }
+    argvFree(paths);
     return rc;
 }
 
