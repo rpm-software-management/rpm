@@ -101,7 +101,7 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 There are several configurables affecting the behavior of this
 verification, see *rpm.config*(5) for details:
 - *%\_keyring*
-- *%\_keyring_path*
+- *%\_keyringpath*
 - *%\_pkgverify_flags*
 - *%\_pkgverify_level*
 
