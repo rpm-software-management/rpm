@@ -21,6 +21,7 @@ English. Command-line switches belong to *OPTIONS* and *OPERATIONS*
 as appropriate.
 
 Typographic conventions:
+- Use imperative style when describing functionality
 - Use hard wrapping at 80 columns for all text
 - Use bold for literal values such as command name and options:
 *cmd* does X, with option *--do-this* does Y instead
