@@ -625,3 +625,22 @@ runroot rpm -Vv ${VERIFYOPTS} verifyfiles
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([alternative passwd location])
+AT_KEYWORDS([verify])
+
+runroot rpmbuild -bb --quiet /data/SPECS/klang.spec
+runroot rpm -Uvh /build/RPMS/noarch/klang-*
+echo "klangd:x:1111:1111::/:/sbin/nologin\n" >> ${RPMTEST}/usr/lib/passwd
+echo "plong:x:1111:1111:Plong fu:/var/lib/plong:/sbin/nologin\n" >> ${RPMTEST}/usr/lib/passwd
+
+RPMTEST_CHECK([
+
+runroot rpm -D "_passwd_path /usr/lib/passwd:/etc/passwd" -V klang-server
+],
+[1],
+[.....U...    /var/lib/klangd
+.....U...    /var/lib/plongd
+],
+[])
+RPMTEST_CLEANUP
