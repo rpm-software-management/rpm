@@ -124,7 +124,8 @@ various common operations.
 | `%{sub:...}`     | expand to substring (see Lua `string.sub()`) | 4.19.0
 | `%{upper:...}`   | uppercase a string | 4.19.0
 | `%{shescape:...}`| single quote with escapes for use in shell | 4.18.0
-| `%{shrink:...}`  | trim leading and trailing whitespace, reduce intermediate whitespace to a single space | 4.14.0
+| `%{shrink:...}`  | delete newline symbols, trim leading and trailing whitespace, and reduce intermediate whitespace to a single space | 4.14.0
+| `%{trim:...}`    | keep newline symbols, trim leading and trailing whitespace in each line |
 
 ### File and path operations
 
