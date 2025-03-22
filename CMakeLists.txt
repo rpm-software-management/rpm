@@ -432,7 +432,7 @@ foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened)
 	if (found)
 		add_compile_options(${flag})
 	endif()
-	unset(found)
+	unset(found CACHE)
 endforeach()
 
 # generated sources
