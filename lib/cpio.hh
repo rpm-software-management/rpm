@@ -20,12 +20,16 @@ typedef struct rpmcpio_s * rpmcpio_t;
  * @param mode		XXX
  * @return CPIO object
  **/
+RPM_GNUC_INTERNAL
 rpmcpio_t rpmcpioOpen(FD_t fd, char mode);
 
+RPM_GNUC_INTERNAL
 int rpmcpioClose(rpmcpio_t cpio);
 
+RPM_GNUC_INTERNAL
 off_t rpmcpioTell(rpmcpio_t cpio);
 
+RPM_GNUC_INTERNAL
 rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 
 /**
@@ -40,6 +44,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
 RPM_GNUC_INTERNAL
 int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize);
 
+RPM_GNUC_INTERNAL
 ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
 
 /**
@@ -66,6 +71,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx);
 RPM_GNUC_INTERNAL
 void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
 
+RPM_GNUC_INTERNAL
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
 
 #endif	/* H_CPIO */
