@@ -759,7 +759,7 @@ static int rpm_redirect2null(lua_State *L)
 {
     int target_fd, fd, r, e;
 
-    check_deprecated(L, "rpm.redirect2null", "4.20.0");
+    check_deprecated(L, "rpm.redirect2null", "4.20.0", "5.99.0");
 
     if (!_rpmlua_have_forked)
 	return luaL_error(L, "redirect2null not permitted in this context");
@@ -1365,19 +1365,38 @@ static int luaopen_rpm(lua_State *L)
     return 1;
 }
 
-void check_deprecated(lua_State *L, const char *func, const char *deprecated_in)
+void check_deprecated(lua_State *L, const char *func,
+		      const char *deprecated_in, const char *removed_in)
 {
-    int warn = 1;
+    int err = 1;
+    const char *rpmversion = NULL;
     lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");
-    if (lua_isstring(L, -1)) {
-	rpmver v1 = rpmverParse(lua_tostring(L, -1));
-	rpmver v2 = rpmverParse(deprecated_in);
-	if (v1 && v2 && rpmverCmp(v1, v2) < 0)
-	    warn = 0;
+    if (lua_isstring(L, -1))
+	rpmversion = lua_tostring(L, -1);
+    if (rpmversion) {
+	rpmver v1 = rpmverParse(rpmversion);
+	rpmver v2 = rpmverParse(removed_in);
+	if (v2 && rpmverCmp(v1, v2) < 0)
+	    err = 0;
 	rpmverFree(v2);
 	rpmverFree(v1);
     }
     lua_pop(L, 1);
+
+    if (err) {
+	luaL_error(L, "%s() is no longer available, use rpm.spawn() or rpm.execute() instead", func);
+	return; /* not reached */
+    }
+
+    int warn = 1;
+    if (rpmversion) {
+	rpmver v1 = rpmverParse(rpmversion);
+	rpmver v2 = rpmverParse(deprecated_in);
+	if (v2 && rpmverCmp(v1, v2) < 0)
+	    warn = 0;
+	rpmverFree(v2);
+	rpmverFree(v1);
+    }
 
     if (warn) {
 	fprintf(stderr,

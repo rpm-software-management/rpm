@@ -808,9 +808,8 @@ runroot rpm -U --nosignature /data/RPMS/luafork-1.0-1.noarch.rpm
 
 RPMTEST_CHECK([
 RPMDB_RESET
-
-runroot rpmbuild -bb --quiet /data/SPECS/luafork.spec
-runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm
+# binary pre-built on rpm 4.20 gets deprecation warnings
+runroot rpm -U --nosignature /data/RPMS/luafork-1.0-1-deprecated.noarch.rpm
 ],
 [0],
 [child
@@ -818,6 +817,19 @@ runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm
 [warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
 warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
 ])
+
+RPMTEST_CHECK([
+RPMDB_RESET
+
+# new uses get an error
+runroot rpmbuild -bb --quiet /data/SPECS/luafork.spec
+runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm
+],
+[1],
+[],
+[[error: lua script failed: [string "%prein(luafork-1.0-1.noarch)"]:1: posix.fork() is no longer available, use rpm.spawn() or rpm.execute() instead
+error: luafork-1.0-1.noarch: install failed
+]])
 
 RPMTEST_CLEANUP
 
