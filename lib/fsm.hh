@@ -21,9 +21,11 @@ typedef struct rpmpsm_s * rpmpsm;
  * @return		0 on success
  */
 
+RPM_GNUC_INTERNAL
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
+RPM_GNUC_INTERNAL
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
