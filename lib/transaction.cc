@@ -1170,11 +1170,13 @@ static rpm_loff_t countPkgs(rpmts ts, rpmElementTypes types)
     return npkgs;
 }
 
+namespace {
 struct vfydata_s {
     char *msg;
     int type[3];
     int vfylevel;
 };
+}
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
