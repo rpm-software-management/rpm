@@ -929,6 +929,7 @@ exit:
     return res;
 }
 
+static
 struct sectname_s sectList[] = {
     { "prep", SECT_PREP, PART_PREP, 0 },
     { "conf", SECT_CONF, PART_CONF, 0 },

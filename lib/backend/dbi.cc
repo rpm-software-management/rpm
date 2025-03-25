@@ -13,6 +13,7 @@
 #include "rpmdb_internal.hh"
 #include "debug.h"
 
+static
 const struct rpmdbOps_s *backends[] = {
 #if defined(ENABLE_SQLITE)
     &sqlite_dbops,
