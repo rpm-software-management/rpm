@@ -118,11 +118,13 @@ static int readFile(FD_t fd, char **msg)
     return (count != 0);
 }
 
+namespace {
 struct vfydata_s {
     int seen;
     int bad;
     int verbose;
 };
+}
 
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
