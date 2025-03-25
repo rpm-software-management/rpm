@@ -24,6 +24,7 @@ typedef int (*rpmfiChdirCb)(rpmfi fi, void *data);
  * @param data		caller private callback data
  * @return		string pool handle (weak reference)
  */
+RPM_GNUC_INTERNAL
 int rpmfiSetOnChdir(rpmfi fi, rpmfiChdirCb cb, void *data);
 
 /** \ingroup rpmfi
@@ -110,6 +111,7 @@ rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix);
 RPM_GNUC_INTERNAL
 void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc);
 
+RPM_GNUC_INTERNAL
 rpmfiles rpmfiFiles(rpmfi fi);
 
 /** \ingroup rpmfi

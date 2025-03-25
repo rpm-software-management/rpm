@@ -20,6 +20,7 @@ enum rpmdbRebuildFlags_e {
  * @param db		rpm database
  * @return		new rpm database reference
  */
+RPM_GNUC_INTERNAL
 rpmdb rpmdbLink(rpmdb db);
 
 /** \ingroup rpmdb
@@ -104,6 +105,7 @@ const char *rpmdbHome(rpmdb db);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const char * keyp, size_t keylen);
 
@@ -112,6 +114,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
  * Return database iterator.
  * @param mi		rpm database iterator
  */
+RPM_GNUC_INTERNAL
 void rpmdbSortIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -119,6 +122,7 @@ void rpmdbSortIterator(rpmdbMatchIterator mi);
  * Return database iterator.
  * @param mi		rpm database iterator
  */
+RPM_GNUC_INTERNAL
 void rpmdbUniqIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -130,6 +134,7 @@ void rpmdbUniqIterator(rpmdbMatchIterator mi);
  * @param neg		mode
  * return		0 on success, 1 on failure (bad args)
  */
+RPM_GNUC_INTERNAL
 int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int neg);
 
 /** \ingroup rpmdb
@@ -139,6 +144,7 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int 
  * @param hdrNums	hash of package instances
  * @return		0 on success, 1 on failure (bad args)
  */
+RPM_GNUC_INTERNAL
 int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash const & hdrNums);
 
 /** \ingroup rpmdb
