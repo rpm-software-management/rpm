@@ -1170,9 +1170,8 @@ rpm \
 ],
 [1],
 [],
-[warning: rpm.redirect2null(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
-error: lua script failed: [[string "<lua>"]]:1: redirect2null not permitted in this context]
-)
+[[error: lua script failed: [string "<lua>"]:1: rpm.redirect2null() is no longer available, use rpm.spawn() or rpm.execute() instead
+]])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([lua library path])
@@ -1627,23 +1626,10 @@ nil	No such file or directory	2.0
 RPMTEST_CHECK([
 rpmlua -e 'pid = posix.fork(); if pid == 0 then a,b,c=rpm.redirect2null(-1); print(string.format("%s\t%s\t%s", a,b,c)); io.flush() else posix.wait(pid) end'
 ],
-[0],
-[nil	Bad file descriptor	9.0
-],
-[stderr])
-
-# stderr output from the above is flaky due to the fork, post-processing
-# ought to be more reliable
-RPMTEST_CHECK([
-cat stderr | sort
-],
-[0],
-[warning: posix.fork(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
-warning: posix.wait(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
-warning: rpm.redirect2null(): .fork(), .exec(), .wait() and .redirect2null() are deprecated, use rpm.spawn() or rpm.execute() instead
-warning: runaway fork() in Lua script
-],
-[])
+[255],
+[],
+[[error: lua script failed: [string "<execute>"]:1: posix.fork() is no longer available, use rpm.spawn() or rpm.execute() instead
+]])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua rpm spawn])
