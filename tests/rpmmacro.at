@@ -1514,6 +1514,27 @@ thing
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([span macro])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+rpm \
+	--macros /data/macros.testfile \
+	--eval "%{multi1}"
+],
+[0],
+[
+  aa
+
+bb
+  cc
+dd
+
+   eee
+
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([macro traceback])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([

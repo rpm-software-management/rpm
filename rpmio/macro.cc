@@ -1315,6 +1315,11 @@ static void doRpmver(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *pars
     rpmMacroBufAppendStr(mb, VERSION);
 }
 
+static void doSpan(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
+{
+    rpmMacroBufAppendStr(mb, argv[1]);
+}
+
 const static std::unordered_map<std::string,std::pair<std::string,std::string>> xdgvars = {
     { "cache",	{ "XDG_CACHE_HOME",	".cache" } },
     { "config",	{ "XDG_CONFIG_HOME",	".config" } },
@@ -1371,6 +1376,7 @@ static struct builtins_s {
     { "reverse",	doString,	1,	0 },
     { "rpmversion",	doRpmver,	0,	0 },
     { "shrink",		doFoo,		1,	0 },
+    { "span",		doSpan,		1,	0 },
     { "sub",		doString,	1,	0 },
     { "suffix",		doFoo,		1,	0 },
     { "trace",		doTrace,	0,	0 },
