@@ -4,7 +4,7 @@
 #include <rpm/rpmutil.h>
 
 /* A single item from an index database (i.e. the "data returned"). */
-typedef struct dbiIndexItem_s {
+typedef struct RPM_GNUC_INTERNAL dbiIndexItem_s {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
 

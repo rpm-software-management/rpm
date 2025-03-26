@@ -23,7 +23,7 @@ bool dbiIndexItem_s::operator == (const dbiIndexItem_s & other) const
 }
 
 /* Items retrieved from the index database.*/
-struct dbiIndexSet_s {
+struct RPM_GNUC_INTERNAL dbiIndexSet_s {
     vector<dbiIndexItem_s> recs;	/*!< array of records */
 };
 
