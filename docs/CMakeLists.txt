@@ -73,7 +73,7 @@ endforeach()
 # Generates additional Jekyll pages to build
 add_custom_target(pages)
 
-if (ENABLE_JEKYLL)
+if (PODMAN)
 	option(JEKYLL_SERVE "Serve site locally when built" ON)
 	set(JEKYLL_SOURCE_DIR ${site_dir} CACHE PATH "Directory to build from")
 

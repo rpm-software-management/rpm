@@ -20,7 +20,6 @@ option(ENABLE_BDB_RO "Enable read-only Berkeley DB rpmdb support (EXPERIMENTAL)"
 option(ENABLE_TESTSUITE "Enable test-suite" OFF)
 option(ENABLE_ASAN "Enable address-sanitizer" OFF)
 option(ENABLE_UBSAN "Enable undefined behavior-sanitizer" OFF)
-option(ENABLE_JEKYLL "Enable Jekyll page generation" OFF)
 
 option(WITH_CAP "Build with capability support" ON)
 option(WITH_ACL "Build with ACL support" ON)
@@ -311,6 +310,9 @@ mark_as_advanced(AWK)
 
 find_program(FIND_DEBUGINFO find-debuginfo)
 mark_as_advanced(FIND_DEBUGINFO)
+
+find_program(PODMAN podman)
+mark_as_advanced(PODMAN)
 
 find_program(SCDOC NAMES scdoc REQUIRED)
 mark_as_advanced(SCDOC)
