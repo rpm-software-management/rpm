@@ -21,10 +21,22 @@ MAN_SECN=$(echo $SCD_BASE | sed 's/^.\+\(.\)$/\1/')
 # Matches all our manual names
 NAME_PAT="rpm[-\.[:alnum:]]*\|gendiff"
 
+get_type() {
+    case $1 in
+        rpm-plugin*) echo plugin; return ;;
+    esac
+    case $2 in
+        1|8) echo tool ;;
+        5) echo config ;;
+    esac
+}
+
 HEADER="\
 ---
 layout: default
 title: rpm.org - $MAN_NAME
+name: $MAN_NAME
+type: $(get_type $MAN_NAME $MAN_SECN)
 css: manpage.css
 ---
 "
