@@ -33,9 +33,9 @@ static struct rpmSignArgs sargs;
 
 static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
-	N_("sign package(s)"), NULL },
+	N_("sign package(s), adding a new signature"), NULL },
     { "resign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_RESIGN,
-	N_("sign package(s) (identical to --addsign)"), NULL },
+	N_("resign package(s), deleting any previous signatures"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
 #if defined(WITH_IMAEVM) || defined(WITH_FSVERITY)
