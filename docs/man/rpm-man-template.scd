@@ -60,6 +60,7 @@ command only has a single main operation.
 
 # ARGUMENTS
 Describe positional _ARGUMENT_ placeholders from *SYNOPSIS* here.
+If the command takes no arguments, delete this section.
 
 _ARGUMENT_
 	File of type X.
@@ -69,6 +70,7 @@ call the placeholder _FILE_.
 
 # OPTIONS
 Describe common options in this section.
+If the command takes no options, delete this section.
 
 Typographic conventions:
 - Put option aliases on separate lines
@@ -120,12 +122,15 @@ if necessary.
 
 # CONFIGURATION
 List main configurables affecting this program here, but don't describe.
+If the command has no relevant configuration, delete this section.
+
 See *rpm.config*(5) for details:
 - *%\_bar_mode*
 - *%\_foo_mode*
 
 # ENVIRONMENT
 Describe environment variables affecting program execution.
+If the command has no relevant environment variables, delete this section.
 
 # EXIT STATUS
 On success, 0 is returned, a non-zero failure code otherwise.
@@ -146,7 +151,8 @@ If command output is included in the description, use indented literal block.
 	```
 
 # FILES
-Describe files specific to this command, or remove if there are none.
+Describe files specific to this command.
+Delete this section if there are none.
 
 # SEE ALSO
 *rpm*(8) *rpm.common*(8) *popt*(3)
