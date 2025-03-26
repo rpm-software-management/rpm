@@ -58,6 +58,7 @@ set(site_files
 	_config.yml
 	_layouts/default.html
 	_layouts/favicon.ico
+	man/index.md
 	Gemfile
 	index.md
 	${manuals}
