@@ -13,23 +13,23 @@ title: rpm.org - RPM Manual Pages
 ## System Tools
 
 {% for page in tools -%}
-- [{{ page.name }}]({{ page.slug }})
+- [{{ page.name }}]({{ page.slug }}) - {{ page.summary }}
 {% endfor %}
 
 ## User Programs
 
 {% for page in progs -%}
-- [{{ page.name }}]({{ page.slug }})
+- [{{ page.name }}]({{ page.slug }}) - {{ page.summary }}
 {% endfor %}
 
 ## Configuration & File Formats
 
 {% for page in configs -%}
-- [{{ page.name }}]({{ page.slug }})
+- [{{ page.name }}]({{ page.slug }}) - {{ page.summary }}
 {% endfor %}
 
 ## Plugins
 
 {% for page in plugins -%}
-- [{{ page.name }}]({{ page.slug }})
+- [{{ page.name }}]({{ page.slug }}) - {{ page.summary }}
 {% endfor %}
