@@ -5,6 +5,7 @@
 # Uses scd2html(1) with custom post-processing that does the following:
 #   - Adds a Jekyll front matter block
 #   - Adds a footer with the RPM version, index link and timestamp
+#   - Extracts the man page summary for use on the index page
 #   - Turns canonical man page references and URLs into links
 #   - Tweaks section anchor links
 
@@ -20,6 +21,13 @@ MAN_SECN=$(echo $SCD_BASE | sed 's/^.\+\(.\)$/\1/')
 
 # Matches all our manual names
 NAME_PAT="rpm[-\.[:alnum:]]*\|gendiff"
+
+get_summary() {
+    # Takes lines from NAME section, joins them into one and strips program
+    # prefix and any *bold* markup
+    sed -n '/^# NAME$/,/^#/p' $SCD_FILE | sed -e '/^$/d' -e '/^#/d' | xargs | \
+    sed -e 's/^[^ - ]\+ - //' -e 's/\*//g'
+}
 
 get_type() {
     case $1 in
@@ -38,6 +46,7 @@ layout: default
 title: rpm.org - $MAN_NAME
 name: $MAN_NAME
 type: $(get_type $MAN_NAME $MAN_SECN)
+summary: $(get_summary $SCD_FILE)
 css: manpage.css
 ---
 "
