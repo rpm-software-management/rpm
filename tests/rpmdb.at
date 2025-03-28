@@ -83,7 +83,8 @@ RPMTEST_CHECK([
 # XXX FIXME: should not use system rpmdb for anything, but there's a
 # mystery failure here if pointed to /data/misc which should be equally
 # read-only at this point.
-rpmdb --exportdb --dbpath /usr/lib/sysimage/rpm > rdonly.list
+rpmdb --define "_db_backend sqlite" \
+	--exportdb --dbpath /usr/lib/sysimage/rpm > rdonly.list
 test -s rdonly.list
 ],
 [0],
@@ -677,6 +678,10 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP_RW([rpmdb vacuum])
 AT_KEYWORDS([install rpmdb sqlite])
+# this is only relevant with sqlite db, make sure we get one
+echo "%_db_backend sqlite" >> $RPMTEST/root/.config/rpm/macros
+RPMDB_RESET
+
 RPMTEST_CHECK([
 runroot rpm -U --noscripts --nodeps --ignorearch --noverify --nosignature \
   /data/RPMS/hello-1.0-1.i386.rpm
