@@ -27,6 +27,9 @@ typedef enum dbCtrlOp_e {
     DB_CTRL_INDEXSYNC		= 5
 } dbCtrlOp;
 
+struct dbiCursor_s {
+};
+
 typedef struct dbiIndex_s * dbiIndex;
 typedef struct dbiCursor_s * dbiCursor;
 
