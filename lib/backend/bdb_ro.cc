@@ -29,8 +29,6 @@ union _dbswap {
 \
   }
 
-struct dbiCursor_s;
-
 struct bdb_kv {
     unsigned char *kv;
     unsigned int len;
@@ -51,7 +49,7 @@ struct bdb_db {
     unsigned int spares[32];	/* spare pages for each splitpoint */
 };
 
-struct bdb_cur {
+struct bdb_cur : public dbiCursor_s {
     struct bdb_db *db;
 
     struct bdb_kv key;		/* key and value from the db entry */
@@ -663,19 +661,19 @@ static int bdbro_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
 static dbiCursor bdbro_CursorInit(dbiIndex dbi, unsigned int flags)
 {
     /* Secondary indexes may be missing */
-    return (dbi && dbi->dbi_db) ? (dbiCursor)cur_open((struct bdb_db *)dbi->dbi_db) : NULL;
+    return (dbi && dbi->dbi_db) ? cur_open((struct bdb_db *)dbi->dbi_db) : NULL;
 }
 
 static dbiCursor bdbro_CursorFree(dbiIndex dbi, dbiCursor dbc)
 {
     if (dbc)
-	cur_close((struct bdb_cur *)dbc);
+	cur_close(static_cast<bdb_cur *>(dbc));
     return NULL;
 }
 
 static void appenddbt(dbiCursor dbc, unsigned char *val, unsigned int vallen, dbiIndexSet *setp)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)dbc;
+    struct bdb_cur *cur = static_cast<bdb_cur *>(dbc);
     dbiIndexSet set;
     unsigned int i;
     unsigned int nrecs = vallen / (2 * sizeof(uint32_t));
@@ -708,7 +706,7 @@ static rpmRC bdbro_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum,
 static rpmRC bdbro_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                           dbiIndexSet *set, int searchType)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)dbc;
+    struct bdb_cur *cur = static_cast<bdb_cur *>(dbc);
     int r;
 
     if (!cur)
@@ -752,7 +750,7 @@ static rpmRC bdbro_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_
 
 static const void *bdbro_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)dbc;
+    struct bdb_cur *cur = static_cast<bdb_cur *>(dbc);
     if (!cur || !cur->key.kv)
 	return 0;
     if (keylen)
@@ -774,7 +772,7 @@ static rpmRC bdbro_pkgdbDel(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum)
 static rpmRC bdbro_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 	unsigned char **hdrBlob, unsigned int *hdrLen)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)dbc;
+    struct bdb_cur *cur = static_cast<bdb_cur *>(dbc);
     int r;
     if (hdrNum) {
 	unsigned char hdrkey[4];
@@ -798,7 +796,7 @@ static rpmRC bdbro_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 
 static unsigned int bdbro_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
 {
-    struct bdb_cur *cur = (struct bdb_cur *)dbc;
+    struct bdb_cur *cur = static_cast<bdb_cur *>(dbc);
     if (!cur || !cur->key.kv || cur->key.len != 4)
         return 0;
     return getui32(cur->key.kv, cur->db->swapped);

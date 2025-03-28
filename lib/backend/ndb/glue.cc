@@ -14,7 +14,7 @@
 
 #include "debug.h"
 
-struct dbiCursor_s {
+struct ndb_cursor : public dbiCursor_s {
     dbiIndex dbi; 
     const void *key;
     unsigned int keylen;
@@ -278,15 +278,15 @@ static int ndb_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
     return 0;
 }
 
-static dbiCursor ndb_CursorInit(dbiIndex dbi, unsigned int flags)
+static ndb_cursor *ndb_cursor_init(dbiIndex dbi, unsigned int flags)
 {
-    dbiCursor dbc = new dbiCursor_s {};
+    ndb_cursor *dbc = new ndb_cursor {};
     dbc->dbi = dbi;
     dbc->flags = flags;
     return dbc;
 }
 
-static dbiCursor ndb_CursorFree(dbiIndex dbi, dbiCursor dbc)
+static ndb_cursor *ndb_cursor_free(dbiIndex dbi, ndb_cursor *dbc)
 {
     if (dbc) {
 	if (dbc->list)
@@ -297,9 +297,20 @@ static dbiCursor ndb_CursorFree(dbiIndex dbi, dbiCursor dbc)
     }
     return NULL;
 }
+static dbiCursor ndb_CursorInit(dbiIndex dbi, unsigned int flags)
+{
+    return ndb_cursor_init(dbi, flags);
+}
+
+static dbiCursor ndb_CursorFree(dbiIndex dbi, dbiCursor _dbc)
+{
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
+    ndb_cursor_free(dbi, dbc);
+    return NULL;
+}
 
 
-static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+static void setdata(ndb_cursor *dbc,  unsigned int hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     if (ndbenv->data)
@@ -309,8 +320,9 @@ static void setdata(dbiCursor dbc,  unsigned int hdrNum, unsigned char *hdrBlob,
     ndbenv->datalen = hdrLen;
 }
 
-static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor _dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     unsigned int hnum = *hdrNum;
     rpmRC rc = RPMRC_OK;
@@ -333,8 +345,9 @@ static rpmRC ndb_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, un
     return rc;
 }
 
-static rpmRC ndb_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+static rpmRC ndb_pkgdbDel(dbiIndex dbi, dbiCursor _dbc,  unsigned int hdrNum)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
     dbc->hdrNum = 0;
     if (ndbenv->hdrNum == hdrNum)
@@ -343,8 +356,9 @@ static rpmRC ndb_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 }
 
 /* iterate over all packages */
-static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor dbc, unsigned char **hdrBlob, unsigned int *hdrLen)
+static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor _dbc, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     rpmRC rc;
     unsigned int hdrNum;
 
@@ -374,9 +388,10 @@ static rpmRC ndb_pkgdbIter(dbiIndex dbi, dbiCursor dbc, unsigned char **hdrBlob,
     return rc;
 }
 
-static rpmRC ndb_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
+static rpmRC ndb_pkgdbGet(dbiIndex dbi, dbiCursor _dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
     rpmRC rc;
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     struct ndbEnv_s *ndbenv = (struct ndbEnv_s *)dbc->dbi->dbi_rpmdb->db_dbenv;
 
     if (!hdrNum)
@@ -394,8 +409,9 @@ static rpmRC ndb_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsi
     return rc;
 }
 
-static unsigned int ndb_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
+static unsigned int ndb_pkgdbKey(dbiIndex dbi, dbiCursor _dbc)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     return dbc->hdrNum;
 }
 
@@ -417,8 +433,9 @@ static void addtoset(dbiIndexSet *set, unsigned int *pkglist, unsigned int pkgli
 }
 
 /* Iterate over all index entries */
-static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
+static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor _dbc, dbiIndexSet *set)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     rpmRC rc;
     if (!dbc->list) {
 	/* setup iteration list on first call */
@@ -464,8 +481,9 @@ static rpmRC ndb_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
     return rc;
 }
 
-static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int searchType)
+static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor _dbc, const char *keyp, size_t keylen, dbiIndexSet *set, int searchType)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     rpmRC rc;
     unsigned int *pkglist = 0, pkglistn = 0;
 
@@ -503,8 +521,9 @@ static rpmRC ndb_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t 
     return rc;
 }
 
-static rpmRC ndb_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC ndb_idxdbPutOne(dbiIndex dbi, dbiCursor _dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     return rpmidxPut((rpmidxdb)dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
 }
 
@@ -513,8 +532,9 @@ static rpmRC ndb_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, H
     return tag2index(dbi, rpmtag, hdrNum, h, ndb_idxdbPutOne);
 }
 
-static rpmRC ndb_idxdbDelOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC ndb_idxdbDelOne(dbiIndex dbi, dbiCursor _dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     return rpmidxDel((rpmidxdb)dbc->dbi->dbi_db, (const unsigned char *)keyp, keylen, rec->hdrNum, rec->tagNum);
 }
 
@@ -523,8 +543,9 @@ static rpmRC ndb_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, H
     return tag2index(dbi, rpmtag, hdrNum, h, ndb_idxdbDelOne);
 }
 
-static const void * ndb_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
+static const void * ndb_idxdbKey(dbiIndex dbi, dbiCursor _dbc, unsigned int *keylen)
 {
+    ndb_cursor *dbc = static_cast<ndb_cursor *>(_dbc);
     if (dbc->key && keylen)
 	*keylen = dbc->keylen;
     return dbc->key;
