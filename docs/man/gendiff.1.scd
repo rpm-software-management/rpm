@@ -2,7 +2,7 @@ GENDIFF(1)
 
 # NAME
 
-gendiff - utility to aid in error-free diff file generation
+gendiff - Utility to aid in error-free diff file generation
 
 # SYNOPSIS
 

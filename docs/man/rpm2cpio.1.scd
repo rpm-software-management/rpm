@@ -2,7 +2,7 @@ RPM2CPIO(1)
 
 # NAME
 
-rpm2cpio - Extract cpio archive from RPM Package Manager (RPM) package.
+rpm2cpio - Extract cpio archive from RPM Package Manager (RPM) package
 
 # SYNOPSIS
 
