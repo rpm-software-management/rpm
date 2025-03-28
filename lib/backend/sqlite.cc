@@ -14,14 +14,14 @@
 
 static const int sleep_ms = 50;
 
-struct dbiCursor_s {
+struct sqlite_cursor : public dbiCursor_s {
     sqlite3 *sdb;
     sqlite3_stmt *stmt;
     const char *fmt;
     int flags;
     rpmTagVal tag;
     int ctype;
-    struct dbiCursor_s *subc;
+    struct sqlite_cursor *subc;
 
     const void *key;
     unsigned int keylen;
@@ -45,7 +45,7 @@ static void rpm_match3(sqlite3_context *sctx, int argc, sqlite3_value **argv)
     sqlite3_result_int(sctx, match);
 }
 
-static int dbiCursorReset(dbiCursor dbc)
+static int dbiCursorReset(sqlite_cursor *dbc)
 {
     if (dbc->stmt) {
 	sqlite3_reset(dbc->stmt);
@@ -54,7 +54,7 @@ static int dbiCursorReset(dbiCursor dbc)
     return 0;
 }
 
-static rpmRC dbiCursorResult(dbiCursor dbc)
+static rpmRC dbiCursorResult(sqlite_cursor *dbc)
 {
     int rc = sqlite3_errcode(dbc->sdb);
     int err = (rc != SQLITE_OK && rc != SQLITE_DONE && rc != SQLITE_ROW);
@@ -65,7 +65,7 @@ static rpmRC dbiCursorResult(dbiCursor dbc)
     return err ? RPMRC_FAIL : RPMRC_OK;
 }
 
-static rpmRC dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
+static rpmRC dbiCursorPrep(sqlite_cursor *dbc, const char *fmt, ...)
 {
     if (dbc->stmt == NULL) {
 	char *cmd = NULL;
@@ -84,7 +84,7 @@ static rpmRC dbiCursorPrep(dbiCursor dbc, const char *fmt, ...)
     return dbiCursorResult(dbc);
 }
 
-static rpmRC dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
+static rpmRC dbiCursorBindPkg(sqlite_cursor *dbc, unsigned int hnum,
 				void *blob, unsigned int bloblen)
 {
     int rc = 0;
@@ -101,7 +101,7 @@ static rpmRC dbiCursorBindPkg(dbiCursor dbc, unsigned int hnum,
     return dbiCursorResult(dbc);
 }
 
-static rpmRC dbiCursorBindIdx(dbiCursor dbc, const char *key, int keylen,
+static rpmRC dbiCursorBindIdx(sqlite_cursor *dbc, const char *key, int keylen,
 				dbiIndexItem rec)
 {
     int rc;
@@ -433,9 +433,9 @@ static int sqlite_Ctrl(rpmdb rdb, dbCtrlOp ctrl)
     return rc;
 }
 
-static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
+static sqlite_cursor *sqlite_cursor_init(dbiIndex dbi, unsigned int flags)
 {
-    dbiCursor dbc = new dbiCursor_s {};
+    sqlite_cursor *dbc = new sqlite_cursor {};
     dbc->sdb = (sqlite3 *)dbi->dbi_db;
     dbc->flags = flags;
     dbc->tag = rpmTagGetValue(dbi->dbi_file);
@@ -449,12 +449,12 @@ static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
     return dbc;
 }
 
-static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
+static sqlite_cursor *sqlite_cursor_free(dbiIndex dbi, sqlite_cursor *dbc)
 {
     if (dbc) {
 	sqlite3_finalize(dbc->stmt);
 	if (dbc->subc)
-	    dbiCursorFree(dbi, dbc->subc);
+	    sqlite_cursor_free(dbi, dbc->subc);
 	if (dbc->flags & DBC_WRITE)
 	    sqlexec(dbc->sdb, "RELEASE '%s'", dbi->dbi_file);
 	delete dbc;
@@ -462,14 +462,27 @@ static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor dbc)
     return NULL;
 }
 
-static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
+static dbiCursor sqlite_CursorInit(dbiIndex dbi, unsigned int flags)
+{
+    return sqlite_cursor_init(dbi, flags);
+}
+
+static dbiCursor sqlite_CursorFree(dbiIndex dbi, dbiCursor _dbc)
+{
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
+    sqlite_cursor_free(dbi, dbc);
+    return NULL;
+}
+
+static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor _dbc,  unsigned int *hdrNum, unsigned char *hdrBlob, unsigned int hdrLen)
 {
     rpmRC rc = RPMRC_OK;
-    dbiCursor dbwc = NULL;
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
+    sqlite_cursor *dbwc = NULL;
 
     /* Avoid trashing existing query cursor on header rewrite */
     if (hdrNum && *hdrNum) {
-	dbwc = dbiCursorInit(dbi, DBC_WRITE);
+	dbwc = sqlite_cursor_init(dbi, DBC_WRITE);
 	dbc = dbwc;
     }
 
@@ -493,13 +506,14 @@ static rpmRC sqlite_pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
     rc = dbiCursorResult(dbc);
 
     if (dbwc)
-	dbiCursorFree(dbi, dbwc);
+	sqlite_cursor_free(dbi, dbwc);
 
     return rc;
 }
 
-static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor _dbc,  unsigned int hdrNum)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     rpmRC rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?;",
 			    dbi->dbi_file);
 
@@ -512,8 +526,9 @@ static rpmRC sqlite_pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
     return dbiCursorResult(dbc);
 }
 
-static rpmRC sqlite_stepPkg(dbiCursor dbc, unsigned char **hdrBlob, unsigned int *hdrLen)
+static rpmRC sqlite_stepPkg(dbiCursor _dbc, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     int rc = sqlite3_step(dbc->stmt);
 
     if (rc == SQLITE_ROW) {
@@ -526,8 +541,9 @@ static rpmRC sqlite_stepPkg(dbiCursor dbc, unsigned char **hdrBlob, unsigned int
     return (rc == SQLITE_DONE) ? RPMRC_NOTFOUND : dbiCursorResult(dbc);
 }
 
-static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
+static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor _dbc, unsigned int hdrNum, unsigned char **hdrBlob, unsigned int *hdrLen)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     rpmRC rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q' WHERE hnum=?",
 				dbi->dbi_file);
 
@@ -540,9 +556,10 @@ static rpmRC sqlite_pkgdbByKey(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
     return dbiCursorResult(dbc);
 }
 
-static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor dbc,
+static rpmRC sqlite_pkgdbIter(dbiIndex dbi, dbiCursor _dbc,
 				unsigned char **hdrBlob, unsigned int *hdrLen)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     rpmRC rc = RPMRC_OK;
     if (dbc->stmt == NULL) {
 	rc = dbiCursorPrep(dbc, "SELECT hnum, blob FROM '%q'", dbi->dbi_file);
@@ -567,16 +584,18 @@ static rpmRC sqlite_pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum, u
     return rc;
 }
 
-static unsigned int sqlite_pkgdbKey(dbiIndex dbi, dbiCursor dbc)
+static unsigned int sqlite_pkgdbKey(dbiIndex dbi, dbiCursor _dbc)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     return sqlite3_column_int(dbc->stmt, 0);
 }
 
-static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
+static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor _dbc,
 			    const char *keyp, size_t keylen, int searchType,
 			    dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_NOTFOUND;
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
 
     if (searchType == DBC_PREFIX_SEARCH) {
 	rc = dbiCursorPrep(dbc, "SELECT hnum, idx FROM '%q' "
@@ -612,15 +631,16 @@ static rpmRC sqlite_idxdbByKey(dbiIndex dbi, dbiCursor dbc,
     return rc;
 }
 
-static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor dbc, dbiIndexSet *set)
+static rpmRC sqlite_idxdbIter(dbiIndex dbi, dbiCursor _dbc, dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_OK;
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
 
     if (dbc->stmt == NULL) {
 	rc = dbiCursorPrep(dbc, "SELECT DISTINCT key FROM '%q' ORDER BY key",
 				dbi->dbi_file);
 	if (set)
-	    dbc->subc = dbiCursorInit(dbi, 0);
+	    dbc->subc = sqlite_cursor_init(dbi, 0);
     }
 
     if (!rc) {
@@ -662,8 +682,9 @@ static rpmRC sqlite_idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size
     return rc;
 }
 
-static rpmRC sqlite_idxdbPutOne(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
+static rpmRC sqlite_idxdbPutOne(dbiIndex dbi, dbiCursor _dbc, const char *keyp, size_t keylen, dbiIndexItem rec)
 {
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     rpmRC rc = dbiCursorPrep(dbc, "INSERT INTO '%q' VALUES(?, ?, ?)",
 			dbi->dbi_file);
 
@@ -683,7 +704,7 @@ static rpmRC sqlite_idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum
 
 static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    dbiCursor dbc = dbiCursorInit(dbi, DBC_WRITE);
+    sqlite_cursor *dbc = sqlite_cursor_init(dbi, DBC_WRITE);
     rpmRC rc = dbiCursorPrep(dbc, "DELETE FROM '%q' WHERE hnum=?", dbi->dbi_file);
 
     if (!rc)
@@ -693,13 +714,14 @@ static rpmRC sqlite_idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum
 	while (sqlite3_step(dbc->stmt) == SQLITE_ROW) {};
 
     rc = dbiCursorResult(dbc);
-    dbiCursorFree(dbi, dbc);
+    sqlite_cursor_free(dbi, dbc);
     return rc;
 }
 
-static const void * sqlite_idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen)
+static const void * sqlite_idxdbKey(dbiIndex dbi, dbiCursor _dbc, unsigned int *keylen)
 {
     const void *key = NULL;
+    sqlite_cursor *dbc = static_cast<sqlite_cursor *>(_dbc);
     if (dbc) {
 	key = dbc->key;
 	if (key && keylen)
