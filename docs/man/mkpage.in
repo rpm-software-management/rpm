@@ -26,8 +26,9 @@ get_type() {
         rpm-plugin*) echo plugin; return ;;
     esac
     case $2 in
-        1|8) echo tool ;;
+        1) echo program ;;
         5) echo config ;;
+        8) echo tool ;;
     esac
 }
 
