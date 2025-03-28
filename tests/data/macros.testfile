@@ -27,3 +27,13 @@ read
 %dnl expansion depends on the braces inside %dnl line
 %dnl e.g. '}' change this meaning
 me}
+
+%multi1 %{span:
+  aa
+
+bb
+  cc
+dd
+
+   eee
+}

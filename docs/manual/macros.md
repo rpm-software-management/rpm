@@ -121,6 +121,7 @@ various common operations.
 | `%{lower:...}`   | lowercase a string | 4.19.0
 | `%{rep:...}`     | repeat a string (see Lua `string.rep()`) | 4.19.0
 | `%{reverse:...}` | reverse a string | 4.19.0
+| `%{span:...}`    | as-is string, handy for wrapping multiline macros | 6.0.0
 | `%{sub:...}`     | expand to substring (see Lua `string.sub()`) | 4.19.0
 | `%{upper:...}`   | uppercase a string | 4.19.0
 | `%{shescape:...}`| single quote with escapes for use in shell | 4.18.0
