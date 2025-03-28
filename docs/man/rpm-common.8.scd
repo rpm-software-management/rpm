@@ -165,10 +165,10 @@ list must exist, and tildes will be expanded to the value of
 *$HOME*. The default rpmrc path is as follows:
 
 ```
-	/usr/lib/rpm/rpmrc:
-	/usr/lib/rpm/<vendor>/rpmrc:
-	/etc/rpmrc:
-	~/.config/rpm/rpmrc
+/usr/lib/rpm/rpmrc:
+/usr/lib/rpm/<vendor>/rpmrc:
+/etc/rpmrc:
+~/.config/rpm/rpmrc
 ```
 
 If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
@@ -186,15 +186,15 @@ to the value of the environment variable *HOME*. The default macro path
 is as follows:
 
 ```
-	/usr/lib/rpm/macros:
-	/usr/lib/rpm/macros.d/macros.*:
-	/usr/lib/rpm/platform/%{\_target}/macros:
-	/usr/lib/rpm/fileattrs/*.attr:
-	/usr/lib/rpm/<vendor>/macros:
-	/etc/rpm/macros.*:
-	/etc/rpm/macros:
-	/etc/rpm/%{\_target}/macros:
-	~/.config/rpm/macros
+/usr/lib/rpm/macros:
+/usr/lib/rpm/macros.d/macros.*:
+/usr/lib/rpm/platform/%{\_target}/macros:
+/usr/lib/rpm/fileattrs/*.attr:
+/usr/lib/rpm/<vendor>/macros:
+/etc/rpm/macros.*:
+/etc/rpm/macros:
+/etc/rpm/%{\_target}/macros:
+~/.config/rpm/macros
 ```
 
 If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
@@ -206,11 +206,15 @@ does not exist.
 
 ## Database
 
-	/_var/lib/rpm/_
+```
+/var/lib/rpm/
+```
 
 ## Temporary
 
-	_/var/tmp/rpm\*_
+```
+/var/tmp/rpm\*
+```
 
 # SEE ALSO
 *popt*(3), *rpm*(8)
