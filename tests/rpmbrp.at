@@ -26,3 +26,13 @@ runroot ls -1 $TD/*
 ],
 [ignore])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP([check-rpaths])
+AT_KEYWORDS([build brp])
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/check-rpaths-worker /data/misc/libboth-rpath-and-runpath.so
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
