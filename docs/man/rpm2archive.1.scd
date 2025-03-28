@@ -2,7 +2,7 @@ RPM2ARCHIVE(1)
 
 # NAME
 
-rpm2archive - Create tar archive from RPM Package Manager (RPM) package.
+rpm2archive - Create tar archive from RPM Package Manager (RPM) package
 
 # SYNOPSIS
 

@@ -1,0 +1,88 @@
+#!/bin/bash
+#
+# Create a Jekyll-ready HTML page from the given scdoc(5) file.
+#
+# Uses scd2html(1) with custom post-processing that does the following:
+#   - Adds a Jekyll front matter block
+#   - Adds a footer with the RPM version and timestamp
+#   - Extracts the man page summary for use on the index page
+#   - Turns section headings into fancy bookmark links
+#   - Turns canonical man page references and URLs into links
+#   - Tweaks the stylesheet
+
+SCD_FILE=$1
+OUT_FILE=$2
+SCD_BASE=$(basename ${SCD_FILE%.*})
+OUT_BASE=$(basename ${OUT_FILE%.*})
+
+# Conventional name(SECTION) string
+MAN_NAME=$(echo $SCD_BASE | sed 's/\.\(.\)$/(\1)/')
+
+# Section number
+MAN_SECN=$(echo $SCD_BASE | sed 's/^.\+\(.\)$/\1/')
+
+# Matches all our manual names
+NAME_PAT="rpm[-\.[:alnum:]]*\|gendiff"
+
+get_summary() {
+    # Takes lines from NAME section, joins them into one and strips program
+    # prefix and any *bold* markup
+    sed -n '/^# NAME$/,/^#/p' $SCD_FILE | sed -e '/^$/d' -e '/^#/d' | xargs | \
+    sed -e 's/^[^ - ]\+ - //' -e 's/\*//g'
+}
+
+get_type() {
+    case $1 in
+        rpm-plugin*) echo plugin; return ;;
+    esac
+    case $2 in
+        1) echo program ;;
+        5) echo config ;;
+        8) echo tool ;;
+    esac
+}
+
+PREAMBLE="\
+---
+layout: default
+title: rpm.org - $MAN_NAME
+name: $MAN_NAME
+type: $(get_type $MAN_NAME $MAN_SECN)
+summary: $(get_summary $SCD_FILE)
+filename: $OUT_BASE
+---
+
+<style type="text/css">
+$(cat @CMAKE_CURRENT_SOURCE_DIR@/style.css)
+</style>
+"
+
+FOOTER="\
+<footer>
+<div id=\"version\"><p>RPM @CMAKE_PROJECT_VERSION@</p></div>
+<div id=\"date\"><p>$(date -I)</p></div>
+</footer>
+"
+
+add_preamble() {
+    cat <(echo "$PREAMBLE") -
+}
+
+add_footer() {
+    cat - <(echo "$FOOTER")
+}
+
+add_links() {
+    sed -e 's#<b>\('$NAME_PAT'\)</b>(\(.\))#<a href="\1.\2">\1(\2)</a>#g' \
+        -e 's#<b>\(https\?://[^<]*\)</b>#<a href="\1">\1</a>#g'
+}
+
+add_bookmarks() {
+    sed 's/\(<h. id=".*">\)\(.*\) <a .* \(href=".*"\)>¶/\1<a class="perma" \3>\2/'
+}
+
+post_process() {
+    add_preamble | add_footer | add_links | add_bookmarks;
+}
+
+@SCD2HTML@ -f < $SCD_FILE | post_process > $OUT_FILE

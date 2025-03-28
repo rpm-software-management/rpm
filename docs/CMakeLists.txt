@@ -1,5 +1,3 @@
-add_subdirectory(man)
-
 if (WITH_DOXYGEN)
     find_package(Doxygen REQUIRED)
 endif()
@@ -54,29 +52,31 @@ set(manuals
 )
 install(FILES ${manuals} TYPE DOC)
 
+# Configure the Jekyll site to build
+set(site_dir ${CMAKE_BINARY_DIR}/site)
 set(site_files
 	_config.yml
 	_layouts/default.html
 	_layouts/favicon.ico
+	man/index.md
 	Gemfile
 	index.md
 	${manuals}
 )
-
+file(MAKE_DIRECTORY ${site_dir})
 foreach(file ${site_files})
-	configure_file(${file} ${file} COPYONLY)
+	configure_file(${file} ${site_dir}/${file} COPYONLY)
 endforeach()
 
+# Generates additional Jekyll pages to build
 add_custom_target(pages)
 
-if (ENABLE_JEKYLL)
+if (PODMAN)
 	option(JEKYLL_SERVE "Serve site locally when built" ON)
-	set(JEKYLL_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH
-	    "Directory to build from")
+	set(JEKYLL_SOURCE_DIR ${site_dir} CACHE PATH "Directory to build from")
 
 	find_program(PODMAN podman REQUIRED)
 	mark_as_advanced(PODMAN)
-	configure_file(Containerfile Containerfile COPYONLY)
 
 	set(image rpm/jekyll)
 	set(JEKYLL ${PODMAN} run -v ${JEKYLL_SOURCE_DIR}:/srv:z
@@ -88,9 +88,11 @@ if (ENABLE_JEKYLL)
 	endif()
 
 	add_custom_command(OUTPUT image
-		COMMAND ${PODMAN} build -t ${image} .
+		COMMAND ${PODMAN} build -t ${image} ${CMAKE_CURRENT_SOURCE_DIR}
 		COMMAND touch image
 		DEPENDS Containerfile
 	)
 	add_custom_target(site COMMAND ${JEKYLL} DEPENDS pages image)
 endif()
+
+add_subdirectory(man)

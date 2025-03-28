@@ -1,0 +1,62 @@
+# Builds & deploys a Jekyll site to GitHub Pages.
+name: GitHub Pages deployment
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - docs/**
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          podman build --target base --tag rpm -f tests/Dockerfile .
+
+      - name: Generate Jekyll pages
+        run: |
+          mkdir _build
+          podman run -v $PWD:/srv:z --workdir /srv/_build --rm rpm sh -c \
+            "cmake .. && make pages"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./_build/site
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

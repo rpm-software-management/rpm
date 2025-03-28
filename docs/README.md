@@ -31,12 +31,12 @@ The reference manual in the *manual/* dir is an GitHub Pages site. It is rendere
 
 The Reference Manual is currently not shipped in rendered form in the tarball.
 
-To render the site locally, configure your build with the CMake option
-`ENABLE_JEKYLL=ON` and run:
+To render the site locally, run the following command from your CMake build
+directory (requires Podman):
 
     make site
 
-This uses Podman to build the site and then serves it locally at
+This builds the site in a container and then serves it locally at
 `http://0.0.0.0:4000` for preview.  You can further tweak this behavior with
 the following CMake options:
 
@@ -45,9 +45,9 @@ the following CMake options:
 - `JEKYLL_SOURCE_DIR`: The source path to build, useful for building the
   [rpm-web](https://github.com/rpm-software-management/rpm-web) site locally
   (e.g. in a dedicated CMake build directory).  Default:
-  `${CMAKE_BINARY_DIR}/docs`.
+  `${CMAKE_BINARY_DIR}/site`.
 
 If you wish to render the site manually, prepare the source pages by running
 `make pages` and then follow the steps in [this
 article](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll)
-(the source directory to build is located at `${CMAKE_BINARY_DIR}/docs`).
+(the source directory to build is located at `${CMAKE_BINARY_DIR}/site`).
