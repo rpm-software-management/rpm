@@ -18,6 +18,9 @@ Released   : 20100423
 <title>{{ page.title }}</title>
 <link href="https://rpm.org/stylesheets/style.css" rel="stylesheet" type="text/css" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="{{ site.baseurl }}/_layouts/favicon.ico">
+{% if page.css %}
+<link href="{{ site.baseurl }}/assets/css/{{ page.css }}" rel="stylesheet" type="text/css" media="screen" />
+{% endif %}
 </head>
 <body>
 <div id="wrapper">
