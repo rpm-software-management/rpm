@@ -26,14 +26,18 @@ set(manuals
 	manual/autosetup.md
 	manual/boolean_dependencies.md
 	manual/buildprocess.md
+	manual/buildsystem.md
 	manual/conditionalbuilds.md
 	manual/dependencies.md
 	manual/dependency_generators.md
 	manual/devel_documentation.md
 	manual/dynamic_specs.md
 	manual/file_triggers.md
+	manual/format_header.md
+	manual/format_lead.md
 	manual/format_v3.md
 	manual/format_v4.md
+	manual/format_v6.md
 	manual/index.md
 	manual/large_files.md
 	manual/lua.md
@@ -49,6 +53,7 @@ set(manuals
 	manual/tags.md
 	manual/triggers.md
 	manual/tsort.md
+	manual/users_and_groups.md
 )
 install(FILES ${manuals} TYPE DOC)
 
