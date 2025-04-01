@@ -32,7 +32,7 @@ See *rpm-config*(5) for details:
 On success, 0 is returned, a non-zero failure code otherwise.
 
 # FILES
-_~/.config/rpm/rpmbuild-\*.asc_
+_~/.config/rpm/rpmbuild-\*.asc_++
 _~/.config/rpm/macros_
 
 # EXAMPLES
