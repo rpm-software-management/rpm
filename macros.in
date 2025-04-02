@@ -1,11 +1,7 @@
-#/*! \page config_macros Default configuration: @RPM_CONFIGDIR@/macros
-# \verbatim
-#
 # This is a global RPM configuration file. All changes made here will
-# be lost when the rpm package is upgraded. Any per-system configuration
-# should be added to /etc/rpm/macros, while per-user configuration should
-# be added to ~/.rpmmacros.
+# be lost when the rpm package is upgraded.
 #
+# See rpm-macrofile(5) and rpm-config(5) for more information.
 
 #==============================================================================
 # ---- A macro that expands to nothing.
