@@ -12,11 +12,6 @@ if (DOXYGEN_FOUND)
 	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}
 			ALL USE_STAMP_FILE)
 	set(doxsrc ${CMAKE_CURRENT_BINARY_DIR})
-elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html)
-	set(doxsrc ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
-if (doxsrc)
 	install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
 endif()
 
