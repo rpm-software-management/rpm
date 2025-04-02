@@ -654,7 +654,7 @@ unique to verify mode are:
 On success, 0 is returned, a non-zero failure code otherwise.
 
 # FILES
-See *rpm-common*(8).
+See *rpm-common*(8), *rpm-config*(5) and *rpm-rpmrc*(5).
 
 # SEE ALSO
 *rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),

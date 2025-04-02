@@ -157,53 +157,6 @@ On success, 0 is returned, a non-zero failure code otherwise.
 
 # FILES
 
-## rpmrc Configuration
-
-Each file in the colon separated rpmrc path is read sequentially by
-*rpm* for configuration information. Only the first file in the
-list must exist, and tildes will be expanded to the value of
-*$HOME*. The default rpmrc path is as follows:
-
-```
-/usr/lib/rpm/rpmrc:
-/usr/lib/rpm/<vendor>/rpmrc:
-/etc/rpmrc:
-~/.config/rpm/rpmrc
-```
-
-If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
-in the path.
-
-In older rpm versions the path of per-user rpmrc was _~/.rpmrc_.
-This is still processed if it exists and the new configuration directory
-does not exist.
-
-## Macro Configuration
-
-Each file or *glob*(7) pattern in the colon-separated macro path is
-read sequentially by *rpm* for macro definitions. Tildes will be expanded
-to the value of the environment variable *HOME*. The default macro path
-is as follows:
-
-```
-/usr/lib/rpm/macros:
-/usr/lib/rpm/macros.d/macros.*:
-/usr/lib/rpm/platform/%{\_target}/macros:
-/usr/lib/rpm/fileattrs/*.attr:
-/usr/lib/rpm/<vendor>/macros:
-/etc/rpm/macros.*:
-/etc/rpm/macros:
-/etc/rpm/%{\_target}/macros:
-~/.config/rpm/macros
-```
-
-If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
-in the path.
-
-In older versions of rpm, the path of per-user macros was _~/.rpmmacros_.
-This is still processed if it exists and the new configuration directory
-does not exist.
-
 ## Database
 
 ```
@@ -217,4 +170,4 @@ does not exist.
 ```
 
 # SEE ALSO
-*popt*(3), *rpm*(8)
+*popt*(3), *rpm*(8) *rpm-config*(5), *rpm-rpmrc*(5)
