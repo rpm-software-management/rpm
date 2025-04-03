@@ -130,6 +130,10 @@ If you plan on using cryptographic signatures you will need a version
 of GPG, available from
     http://www.gnupg.org/
 
+If you wish to build the API reference manual (in HTML format), use
+-DWITH_DOXYGEN=ON.  This requires Doxygen which is available from
+    https://github.com/doxygen/
+
 OpenMP multithreading support is automatically enabled if your C compiler has
 support for OpenMP version 4.5 or higher (to disable, use -DENABLE_OPENMP=OFF
 option).  For GCC, OpenMP 4.5 is fully supported since GCC 6.1,
