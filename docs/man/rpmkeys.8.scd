@@ -99,7 +99,7 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 # CONFIGURATION
 
 There are several configurables affecting the behavior of this
-verification, see *rpm.config*(5) for details:
+verification, see *rpm-config*(5) for details:
 - *%\_keyring*
 - *%\_keyringpath*
 - *%\_pkgverify_flags*
@@ -121,7 +121,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	Verify hello-2.0-1.x86_64.rpm package file.
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpm-common*(8), *rpmsign*(1)
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpmsign*(1)
 
 *rpmkeys --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
