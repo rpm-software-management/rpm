@@ -631,6 +631,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     int res = -1; /* assume failure */
     rpmRC rc;
     struct rpmtd_s utd;
+    off_t fileSize;
     off_t headerStart;
     off_t sigStart;
     struct sigTarget_s sigt_v3;
@@ -722,11 +723,16 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     } else if (deleting) {	/* Nuke all the signature tags. */
 	deleteSigs(sigh);
     } else {
+	fileSize = fdSize(fd);
+	if (fileSize < 0) {
+	    rpmlog(RPMLOG_ERR, _("Could not get a file size of %s\n"), rpm);
+	    goto exit;
+	}
 	/* Signature target containing header + payload */
 	sigt_v3.fd = fd;
 	sigt_v3.start = headerStart;
 	sigt_v3.fileName = rpm;
-	sigt_v3.size = fdSize(fd) - headerStart;
+	sigt_v3.size = fileSize - headerStart;
 
 	/* Signature target containing only header */
 	sigt_v4 = sigt_v3;
