@@ -76,7 +76,7 @@ Typographic conventions:
 - Put option aliases on separate lines
 - Put option arguments with pre-determined values into <> (see below)
 
-See *rpm.common*(8) for the options common to all *rpm* executables.
+See *rpm-common*(8) for the options common to all *rpm* executables.
 
 *-d*,
 *--do-this*
@@ -124,7 +124,7 @@ if necessary.
 List main configurables affecting this program here, but don't describe.
 If the command has no relevant configuration, delete this section.
 
-See *rpm.config*(5) for details:
+See *rpm-config*(5) for details:
 - *%\_bar_mode*
 - *%\_foo_mode*
 
@@ -155,6 +155,6 @@ Describe files specific to this command.
 Delete this section if there are none.
 
 # SEE ALSO
-*rpm*(8) *rpm.common*(8) *popt*(3)
+*rpm*(8) *rpm-common*(8) *rpm-config*(5) *popt*(3)
 
 *http://www.rpm.org/*
