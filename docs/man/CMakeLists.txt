@@ -14,8 +14,9 @@ set(extra
 # Build all manuals
 set(manuals ${core} ${extra})
 foreach(man ${manuals})
-	add_custom_command(OUTPUT ${man} COMMAND ${SCDOC}
-			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.scd
+	add_custom_command(OUTPUT ${man} COMMAND
+			sed '1 s/$$/ \"RPM ${CMAKE_PROJECT_VERSION}\"/'
+			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.scd | ${SCDOC}
 			> ${man} DEPENDS ${man}.scd)
 endforeach()
 add_custom_target(man ALL DEPENDS ${manuals})
