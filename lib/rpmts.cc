@@ -400,7 +400,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     return rc;
 }
 
-rpmRC rpmtsRebuildKeystore(rpmtxn txn, const char * from)
+rpmRC rpmtxnRebuildKeystore(rpmtxn txn, const char * from)
 {
     rpmts ts = rpmtxnTs(txn);
     rpmRC rc = RPMRC_OK;
