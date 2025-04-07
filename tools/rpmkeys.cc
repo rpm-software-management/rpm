@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 
 	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
 	if (txn) {
-	    ec = rpmtsRebuildKeystore(txn, from);
+	    ec = rpmtxnRebuildKeystore(txn, from);
 	    rpmtxnEnd(txn);
 	}
 	break;

@@ -365,6 +365,14 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen);
 rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key);
 
 /** \ingroup rpmts
+ * Rebuild key store using current settings and fill it with keys form keyring
+ * @param txn		transaction handle
+ * @param from		backend to get the keys from
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmtxnRebuildKeystore(rpmtxn txn, const char * from);
+
+/** \ingroup rpmts
  * Retrieve handle for keyring used for this transaction set
  * @param ts            transaction set
  * @param autoload	load default keyring if keyring is not set
@@ -753,14 +761,6 @@ rpmtsi rpmtsiInit(rpmts ts);
  * @return		next transaction element of type, NULL on termination
  */
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
-
-/** \ingroup rpmts
- * Rebuild key store using current settings and fill it with keys form keyring
- * @param txn		transaction handle
- * @param from		backend to get the keys from
- * @return		RPMRC_OK on success
- */
-rpmRC rpmtsRebuildKeystore(rpmtxn txn, const char * from);
 
 #ifdef __cplusplus
 }
