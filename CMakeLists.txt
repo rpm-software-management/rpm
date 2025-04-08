@@ -51,7 +51,7 @@ set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 # - incrementing a more significant version segment resets changes to
 #   any less significant segments
 set(RPM_SOVERSION 10)
-set(RPM_LIBVERSION ${RPM_SOVERSION}.0.0)
+set(RPM_LIBVERSION ${RPM_SOVERSION}.6.0)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
