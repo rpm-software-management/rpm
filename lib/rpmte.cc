@@ -35,6 +35,7 @@ struct rpmte_s {
     void *userdata;		/*!< Application private user data. */
 
     Header h;			/*!< Package header. */
+    Header auxh;		/*!< Auxiliary data (from install) */
     char * NEVR;		/*!< Package name-version-release. */
     char * NEVRA;		/*!< Package name-version-release.arch. */
     char * name;		/*!< Name: */
@@ -248,6 +249,7 @@ rpmte rpmteFree(rpmte te)
 	fdFree(te->fd);
 	rpmfilesFree(te->files);
 	headerFree(te->h);
+	headerFree(te->auxh);
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
@@ -272,6 +274,17 @@ rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
     }
 
     return p;
+}
+
+Header rpmteHeaderAux(rpmte te, int init)
+{
+    Header auxh = NULL;
+    if (te != NULL) {
+	if (te->auxh == NULL && init == 1)
+	    te->auxh = headerNew();
+	auxh = headerLink(te->auxh);
+    }
+    return auxh;
 }
 
 unsigned int rpmteDBInstance(rpmte te) 
