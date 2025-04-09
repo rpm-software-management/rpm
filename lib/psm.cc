@@ -705,9 +705,26 @@ static void markReplacedInstance(rpmts ts, rpmte te)
     rpmdbFreeIterator(mi);
 }
 
+static void mergeAux(Header auxh, Header h)
+{
+    struct rpmtd_s td;
+    HeaderIterator hi = headerInitIterator(auxh);
+    while (headerNext(hi, &td)) {
+	/* Don't allow overwriting package data from aux */
+	if (headerIsEntry(h, td.tag))
+	    continue;
+	if (rpmtdCount(&td) > 0) {
+	    (void) headerPut(h, &td, HEADERPUT_DEFAULT);
+	}
+	rpmtdFreeData(&td);
+    }
+    headerFreeIterator(hi);
+}
+
 static rpmRC dbAdd(rpmts ts, rpmte te)
 {
     Header h = rpmteHeader(te);
+    Header auxh = rpmteHeaderAux(te, 0);
     rpm_time_t installTime = rpmtsGetTime(ts, 1);
     rpmfs fs = rpmteGetFileStates(te);
     rpm_count_t fc = rpmfsFC(fs);
@@ -724,6 +741,9 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
     headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
     headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
 
+    if (auxh)
+	mergeAux(auxh, h);
+
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
     rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
@@ -732,6 +752,7 @@ static rpmRC dbAdd(rpmts ts, rpmte te)
 	rpmteSetDBInstance(te, headerGetInstance(h));
 	ts->members->installedPackages.insert({headerGetInstance(h), te});
     }
+    headerFree(auxh);
     headerFree(h);
     return rc;
 }
