@@ -335,6 +335,8 @@ Instprefixes   | 1099 | string array
 Origbasenames  | 1120 | string array | Original Basenames (relocated packages only)
 Origdirindexes | 1119 | int32 array  | Original Dirindexes (relocated packages only)
 Origdirnames   | 1121 | string array | Original Dirnames (relocated packages only)
+Packagedigests | 5118 | string array | Package digests calculated during verification
+Packagedigestalgos | 5119 | int32    | Algorithms used for Packagedigests
 
 
 ## Source packages

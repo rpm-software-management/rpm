@@ -42,6 +42,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 [0],
 [],
 [])
+
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <manifest glob fallback>])
