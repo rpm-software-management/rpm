@@ -724,7 +724,7 @@ static void mergeAux(Header auxh, Header h)
 static rpmRC dbAdd(rpmts ts, rpmte te)
 {
     Header h = rpmteHeader(te);
-    Header auxh = rpmteGetAux(te, 1);
+    Header auxh = rpmteHeaderAux(te, 0);
     rpm_time_t installTime = rpmtsGetTime(ts, 1);
     rpmfs fs = rpmteGetFileStates(te);
     rpm_count_t fc = rpmfsFC(fs);

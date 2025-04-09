@@ -2240,3 +2240,38 @@ runroot rpm -U /build/RPMS/noarch/vattrtest-1.0-1.noarch.rpm
 [],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([package verification digest])
+AT_KEYWORDS([install digest verify])
+
+RPMTEST_CHECK([
+runroot rpm -U \
+		--define "_pkgverify_digests aa:bb:zz" \
+		--ignorearch --ignoreos --nodeps --nosignature --justdb \
+		/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm
+
+runroot rpm -qa --qf "[[%{packagedigestalgos} %{packagedigests}\n]]" | sort -n
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+RPMDB_RESET
+runroot rpm -U \
+		--define "_pkgverify_digests 2:8:12345:10" \
+		--ignorearch --ignoreos --nodeps --nosignature --justdb \
+		/data/RPMS/hello-2.0-1.{i686,x86_64}.rpm
+
+runroot rpm -qa --qf "[[%{packagedigestalgos:hashalgo} %{packagedigests}\n]]" | sort -n
+],
+[0],
+[SHA1 70d8bfc198823acdec9b3d793770e12ead6ae047
+SHA1 7299fad790a49e571a7ec4d60bef5d51597085fa
+SHA256 3328b90a578d18dba45abc584395795115c6c024abd561ce533ec175619925ff
+SHA256 e05a5191e214b1f05ae2448ebe493e55c6313ab68eaf040b83baa80e25f15d54
+SHA512 4db194ba2cb8b5e5cbb6f8d0dc1ec50be15cb20cdefa74b2b14a74032789b7411f4365dc4e69c7e3e37882f549d5f6e91b863eb51629e6ab72438e54b8eeedf5
+SHA512 5e0a11bf9c4f353b9197446d722e66cc322030e164929356e3fb669201597be77f3a44b4bd6f4fddf8746768809b43dae28f4fad1de315ef42a78e130847eb05
+],
+[])
+RPMTEST_CLEANUP

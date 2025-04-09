@@ -695,6 +695,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # Set to 0x0 for full compatibility with v4 packages.
 %_pkgverify_flags 0x20100
 
+# Which algorithms to calculate package digests on during verification.
+%_pkgverify_digests 8:10
+
 # Minimize writes during transactions (at the cost of more reads) to
 # conserve eg SSD disks (EXPERIMENTAL).
 # 1			enable

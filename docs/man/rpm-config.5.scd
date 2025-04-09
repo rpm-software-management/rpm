@@ -107,6 +107,12 @@ opposed opposed to just package building) parts:
 *%\_passwd_path* _PATH_
 	Location of passwd(5) files as : separated list
 
+*%\_pkgverify_digests* _HASHALGO_[:_HASHALGO_:...]
+	Colon separated lists of algorithms to calculate digests on the
+	entire package files during verification. The algorithms are stored
+	in in the *Packagedigestalgos* tag, and the digests themselves in
+	the *Packagedigests* tag of packages in the rpmdb.
+
 *%\_pkgverify_flags* _VSFLAGS_
 	Transaction package verification flags, used for fine-grained
 	control of *%\_pkgverify_level* operation.
@@ -208,6 +214,17 @@ for example:
 '0x20100'
 >>>
 ```
+
+## Hash algorithms
+The following hash algorithms are known to rpm, but availability can
+vary depending how rpm and it's underlying libraries have been built:
+- *1* : MD5 (obsolete)
+- *2* : SHA1 (obsolete)
+- *8* : SHA256
+- *9* : SHA384
+- *10* : SHA512
+- *12* : SHA3-256
+- *14* : SHA3-512
 
 # ENVIRONMENT
 If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
