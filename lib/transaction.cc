@@ -38,6 +38,7 @@
 #include "rpmlock.hh"
 #include "rpmds_internal.hh"
 #include "rpmfi_internal.hh"	/* only internal apis */
+#include "rpmio_internal.hh"
 #include "rpmte_internal.hh"	/* only internal apis */
 #include "rpmts_internal.hh"
 #include "rpmvs.hh"
@@ -1212,6 +1213,43 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
     return (sinfo->rc == 0);
 }
 
+static ARGI_t initPkgDigests(FD_t fd)
+{
+    ARGI_t ids = NULL;
+    char *digests = rpmExpand("%{?_pkgverify_digests}", NULL);
+    ARGV_t vals = argvSplitString(digests, ":", 0);
+
+    for (ARGV_t v = vals; v && *v; v++) {
+	uint32_t alg = atoi(*v);
+	if (alg) {
+	    /* Try to ensure unique ids for the digests */
+	    uint32_t id = (RPMTAG_PACKAGEDIGESTS << 16) | alg;
+	    fdInitDigestID(fd, alg, id, 0);
+	    argiAdd(&ids, -1, id);
+	}
+    }
+
+    argvFree(vals);
+    free(digests);
+    return ids;
+}
+
+static void finiPkgDigests(FD_t fd, ARGI_t ids, Header auxh)
+{
+    for (int i = 0; i < argiCount(ids); i++) {
+	char *pkgdig = NULL;
+	uint32_t id = argiData(ids)[i];
+	fdFiniDigest(fd, id, (void **)&pkgdig, NULL, 1);
+	if (pkgdig) {
+	    uint32_t alg = 0xffff & id;
+	    headerPutString(auxh, RPMTAG_PACKAGEDIGESTS, pkgdig);
+	    headerPutUint32(auxh, RPMTAG_PACKAGEDIGESTALGOS, &alg, 1);
+	    free(pkgdig);
+	}
+    }
+    argiFree(ids);
+}
+
 static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
 {
     struct vfydata_s vd = {
@@ -1221,10 +1259,13 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
     };
     int verified = 0;
     int prc = RPMRC_FAIL;
+    Header auxh = rpmteHeaderAux(p, 1);
 
     FD_t fd = (FD_t)rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
     if (fd != NULL) {
+	ARGI_t ids = initPkgDigests(fd);
 	prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
+	finiPkgDigests(fd, ids, prc ? NULL : auxh);
 	rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
     }
 
@@ -1242,6 +1283,7 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
 	rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
 
     vd.msg = _free(vd.msg);
+    headerFree(auxh);
     return prc;
 }
 
