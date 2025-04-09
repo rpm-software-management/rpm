@@ -23,6 +23,7 @@ extern "C" {
 #define	HEADER_REGIONS		64
 #define HEADER_I18NTABLE	100
 #define	HEADER_SIGBASE		256
+#define HEADER_SIGTOP		999
 #define	HEADER_TAGBASE		1000
 
 /** \ingroup rpmtag

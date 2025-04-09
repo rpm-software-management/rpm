@@ -429,7 +429,7 @@ static int putSignature(Header sigh, rpmtd sigtd, int multisig)
 	char **arr = (char **)xmalloc(1 * sizeof(*arr));
 	arr[0] = b64;
 
-	rpmtd_s mtd = {
+	struct rpmtd_s mtd = {
 	    .tag = RPMSIGTAG_OPENPGP,
 	    .type = RPM_STRING_ARRAY_TYPE,
 	    .count = 1,
@@ -691,7 +691,6 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     /* Only v6 packages have this */
     if (headerIsEntry(sigh, RPMSIGTAG_RESERVED)) {
 	flags |= RPMSIGN_FLAG_RPMV6;
-	reserveTag = RPMSIGTAG_RESERVED;
 	/* v3 signatures are not welcome in v6 packages */
 	if (flags & RPMSIGN_FLAG_RPMV3) {
 	    rpmlog(RPMLOG_WARNING,
