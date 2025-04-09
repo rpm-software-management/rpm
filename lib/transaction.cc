@@ -1212,6 +1212,39 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
     return (sinfo->rc == 0);
 }
 
+static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
+{
+    struct vfydata_s vd = {
+	.msg = NULL,
+	.type = { -1, -1, -1, },
+	.vfylevel = vfylevel,
+    };
+    int verified = 0;
+    int prc = RPMRC_FAIL;
+
+    FD_t fd = (FD_t)rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    if (fd != NULL) {
+	prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
+	rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+    }
+
+    if (prc == RPMRC_OK)
+	prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+
+    /* Record verify result */
+    if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
+	verified |= RPMSIG_SIGNATURE_TYPE;
+    if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
+	verified |= RPMSIG_DIGEST_TYPE;
+    rpmteSetVerified(p, verified);
+
+    if (prc)
+	rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
+
+    vd.msg = _free(vd.msg);
+    return prc;
+}
+
 static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
 {
     int rc = 0;
@@ -1229,35 +1262,8 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED))) {
 	struct rpmvs_s *vs = rpmvsCreate(vfylevel, vsflags, keyring);
-	struct vfydata_s vd = {
-	    .msg = NULL,
-	    .type = { -1, -1, -1, },
-	    .vfylevel = vfylevel,
-	};
-	int verified = 0;
-	int prc = RPMRC_FAIL;
-
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
-	FD_t fd = (FD_t)rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-	if (fd != NULL) {
-	    prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
-	    rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-	}
-
-	if (prc == RPMRC_OK)
-	    prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
-
-	/* Record verify result */
-	if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_SIGNATURE_TYPE;
-	if (vd.type[RPMSIG_DIGEST_TYPE] == RPMRC_OK)
-	    verified |= RPMSIG_DIGEST_TYPE;
-	rpmteSetVerified(p, verified);
-
-	if (prc)
-	    rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
-
-	vd.msg = _free(vd.msg);
+	verifyPackage(ts, p, vs, vfylevel);
 	rpmvsFree(vs);
     }
     rpmtsNotify(ts, NULL, RPMCALLBACK_VERIFY_STOP, total, total);
