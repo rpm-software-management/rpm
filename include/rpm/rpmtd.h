@@ -254,6 +254,7 @@ typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_TAGNAME	= 22,	/* tag name (any type) */
     RPMTD_FORMAT_TAGNUM		= 23,	/* tag number (any type) */
     RPMTD_FORMAT_JSON		= 24,	/* json format (any type) */
+    RPMTD_FORMAT_HASHALGO	= 25,	/* digest algorithm name (int types) */
 } rpmtdFormats;
 
 /** \ingroup rpmtd
