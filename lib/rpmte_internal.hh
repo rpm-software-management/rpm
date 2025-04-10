@@ -97,6 +97,9 @@ rpmfs rpmteGetFileStates(rpmte te);
 RPM_GNUC_INTERNAL
 void rpmteSetVerified(rpmte te, int verified);
 
+RPM_GNUC_INTERNAL
+Header rpmteHeaderAux(rpmte te, int init);
+
 /** \ingroup rpmte
  * Retrieve size in bytes of package header.
  * @param te		transaction element
