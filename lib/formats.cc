@@ -591,6 +591,14 @@ static char *tagnumFormat(rpmtd td, char **emsg)
     return num;
 }
 
+static char *hashalgoFormat(rpmtd td, char **emsg)
+{
+    const char *alg = pgpValString(PGPVAL_HASHALGO, rpmtdGetNumber(td));
+    if (rstreqn(alg, "Unknown", 7))
+	alg = "Unknown";
+    return rstrdup(alg);
+}
+
 static const struct headerFmt_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_STRING,	"string",
 	RPM_NULL_CLASS,		stringFormat },
@@ -644,6 +652,8 @@ static const struct headerFmt_s rpmHeaderFormats[] = {
 	RPM_NULL_CLASS,		tagnumFormat },
     { RPMTD_FORMAT_JSON,	"json",
 	RPM_NULL_CLASS,		jsonFormat },
+    { RPMTD_FORMAT_HASHALGO,	"hashalgo",
+	RPM_NUMERIC_CLASS,	hashalgoFormat },
     { RPMTD_FORMAT_STRING,	NULL, 		RPM_NULL_CLASS,	NULL }
 };
 

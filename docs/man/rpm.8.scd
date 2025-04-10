@@ -302,6 +302,9 @@ Alternate output formats may be requested by following the tag with
 *:fstatus*
 	Format file verify status.
 
+*:hashalgo*
+	Display hash algorithm name.
+
 *:hex*
 	Format in hexadecimal.
 
