@@ -414,6 +414,21 @@ RSA/SHA256, Thu Apr  6 13:02:32 2017, Key ID 4344591e1964c5fc
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([hashalgo extension])
+AT_KEYWORDS([query digest])
+RPMTEST_CHECK([
+rpm -q \
+	--qf "%{filedigestalgo:hashalgo}\n" \
+	--qf "%{longsize:hashalgo}\n" \
+	"${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[SHA256
+Unknown
+],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 RPMTEST_SETUP([integer array perms format query])
 AT_KEYWORDS([query])
