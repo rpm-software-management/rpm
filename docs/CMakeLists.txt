@@ -54,5 +54,6 @@ install(FILES
 	manual/tags.md
 	manual/triggers.md
 	manual/tsort.md
+	macros.rpmsign-sequoia
 	TYPE DOC
 )
