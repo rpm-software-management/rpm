@@ -186,3 +186,8 @@ requirements are generally accepted though.
 
 Translations should be submitted through [Fedora Weblate](https://translate.fedoraproject.org/projects/rpm/),
 the upstream project cannot review translations.
+
+## AI Policy
+
+As a policy, the RPM project does not accept use of generative AI
+in contributions.
