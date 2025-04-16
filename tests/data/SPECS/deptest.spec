@@ -1,5 +1,7 @@
+%{?!ver:%define ver 1.0}
+
 Name:		deptest-%{pkg}
-Version:	1.0
+Version:	%{ver}
 Release:	1
 Summary:	Testing dependency behavior
 
