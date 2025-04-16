@@ -252,10 +252,10 @@ struct rpmEIU {
     rpmRC rpmrc;
 };
 
-static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia)
+static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
+		      int numPackages)
 {
     rpmps ps;
-    int numPackages = rpmtsNElements(ts);
 
     int rc = 0;
     int stop = 0;
@@ -656,7 +656,7 @@ restart:
     if (eiu->numFailed) goto exit;
 
     if (eiu->numRPMS) {
-        int rc = rpmcliTransaction(ts, ia);
+        int rc = rpmcliTransaction(ts, ia, eiu->numPkgs);
         if (rc < 0)
             eiu->numFailed += eiu->numRPMS;
 	else if (rc > 0)
@@ -763,7 +763,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     free(qfmt);
 
     if (numFailed) goto exit;
-    numFailed = rpmcliTransaction(ts, ia);
+    numFailed = rpmcliTransaction(ts, ia, numPackages);
 exit:
     rpmtsEmpty(ts);
     rpmtsSetVSFlags(ts, ovsflags);
@@ -791,7 +791,7 @@ int rpmRestore(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
     rc = rpmcliArgIter(ts, qva, argv);
     if (rc == 0) {
-	rc = rpmcliTransaction(ts, ia);
+	rc = rpmcliTransaction(ts, ia, rpmtsNElements(ts));
     }
 
     rpmtsEmpty(ts);
