@@ -379,3 +379,17 @@ rpmspec -q --srpm \
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP([rpmspec --shell])
+AT_KEYWORDS([rpmspec shell])
+RPMTEST_CHECK([
+echo '%version' | \
+rpmspec --shell /data/SPECS/hello.spec
+],
+[0],
+[> %version
+1.0
+> ],
+[RPM version AT_PACKAGE_VERSION macro shell
+])
+RPMTEST_CLEANUP
