@@ -74,6 +74,7 @@ static int doShell(rpmSpec spec)
 	free(exp);
 	if (*line)
 	    add_history(line);
+	free(line);
     }
     return 0;
 }
