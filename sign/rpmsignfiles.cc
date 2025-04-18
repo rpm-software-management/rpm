@@ -18,23 +18,6 @@
 
 #define MAX_SIGNATURE_LENGTH 1024
 
-static const char *hash_algo_name[] = {
-    "none",	/* invalid */
-    "md5", 	/* RPM_HASH_MD5 */
-    "sha1", 	/* RPM_HASH_SHA1 */
-    "rmd160",	/* RPM_HASH_RIPEMD160 */
-    "reserved1",/* reserved */
-    "md2",	/* RPM_HASH_MD2 */
-    "tgr192", 	/* RPM_HASH_TIGER192 */
-    "haval5160",/* RPM_HASH_HAVAL_5_160 */
-    "sha256",	/* RPM_HASH_SHA256 */
-    "sha384",	/* RPM_HASH_SHA384 */
-    "sha512",	/* RPM_HASH_SHA512 */
-    "sha224",	/* RPM_HASH_SHA224 */
-};
-
-#define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
-
 static char *signFile(const char *algo, const uint8_t *fdigest, int diglen,
 const char *key, char *keypass, uint32_t *siglenp)
 {
@@ -92,13 +75,37 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     }
 
     algo = rpmfiDigestAlgo(fi);
-    if (algo < 1 || algo >= ARRAY_SIZE(hash_algo_name)) {
-	rpmlog(RPMLOG_ERR, _("File digest algorithm id is invalid"));
-	goto exit;
+    switch (algo) {
+        case 1:
+            algoname = "md5";
+            break;
+        case 2:
+            algoname = "sha1";
+            break;
+        case 8:
+            algoname = "sha256";
+            break;
+        case 9:
+            algoname = "sha384";
+            break;
+        case 10:
+            algoname = "sha512";
+            break;
+        case 11:
+            algoname = "sha224";
+            break;
+        case 12:
+            algoname = "sha3-256";
+            break;
+        case 14:
+            algoname = "sha3-512";
+            break;
+        default:
+            rpmlog(RPMLOG_ERR, _("File digest algorithm id is invalid"));
+            goto exit;
     }
 
     diglen = rpmDigestLength(algo);
-    algoname = hash_algo_name[algo];
 
     headerDel(sigh, RPMTAG_FILESIGNATURELENGTH);
     headerDel(sigh, RPMTAG_FILESIGNATURES);

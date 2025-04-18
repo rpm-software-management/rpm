@@ -10,12 +10,13 @@ contents:
 |   RPMSIGTAG_   |      RPMTAG_      | Version | Algorithm      | Location |  Range  |
 |     :---:      |    :-------:      |  :---:  |  :-----:       |   :--:   | :-----: |
 |       MD5      |     SIGMD5        |   3.0   | MD5            |    S     |   HP    |
-|       PGP      |     SIGPGP        |   3.0   | OpenPGP/RSA    |    S     |   HP    |      
+|       PGP      |     SIGPGP        |   3.0   | OpenPGP/RSA    |    S     |   HP    |
 |       GPG      |     SIGGPG        |   3.0   | OpenPGP/DSA    |    S     |   HP    |
 |       SHA1     |   SHA1HEADER      |   4.0   | SHA1           |    S     |   H     |
 |       RSA      |    RSAHEADER      |   4.0   | OpenPGP/RSA    |    S     |   H     |
 |       DSA      |    DSAHEADER      |   4.0   | OpenPGP/DSA    |    S     |   H     |
 |      SHA256    |  SHA256HEADER     |  4.14   | SHA256         |    S     |   H     |
+|     SHA3-256   |  SHA3_256_HEADER  |   6.0   | SHA3-256       |    S     |   H     |
 |        -       |  PAYLOADDIGEST    |  4.14   | SHA256 (*)     |    H     |   Pc    |
 |        -       |  PAYLOADDIGESTALT |  4.16   | SHA256 (*)     |    H     |   P     |
 |        -       |     FILEMD5       |   3.0   | MD5            |    H     |   F     |
