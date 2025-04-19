@@ -51,7 +51,7 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
 int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR)
 {
     char *reqname = NULL;
-    int flags = RPMSENSE_RPMLIB|RPMSENSE_LESS|RPMSENSE_EQUAL;
+    int flags = RPMSENSE_RPMLIB|RPMSENSE_EQUAL;
     int res;
 
     /* XXX HACK: avoid changing rpmlibNeedsFeature() for just one user */
