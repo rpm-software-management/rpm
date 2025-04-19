@@ -57,8 +57,8 @@ Macro name              | Description
 
 Macro name                      | Description
 --------------------------------|------------
-`%_binary_filedigest_algorithm` | Compression algorithm of binary packages
-`%_source_filedigest_algorithm` | Compression algorithm of source packages
+`%_binary_filedigest_algorithm` | File digest algorithm to use for binary packages
+`%_source_filedigest_algorithm` | File digest algorithm to use for source packages
 `%_changelog_trimage`           | Maximum age of `%changelog` entries
 `%_changelog_trimtime`          | Cut-off date of `%changelog` entries
 
