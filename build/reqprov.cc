@@ -48,10 +48,10 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
     return addReqProv(pkg, tagN, N, EVR, Flags, index) ? RPMRC_FAIL : RPMRC_OK;
 }
 
-int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR)
+int rpmlibNeedsFeature(Package pkg, const char * feature)
 {
     char *reqname = NULL;
-    int flags = RPMSENSE_RPMLIB|RPMSENSE_EQUAL;
+    int flags = RPMSENSE_RPMLIB;
     int res;
 
     /* XXX HACK: avoid changing rpmlibNeedsFeature() for just one user */
@@ -60,7 +60,7 @@ int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEV
 
     rasprintf(&reqname, "rpmlib(%s)", feature);
 
-    res = addReqProv(pkg, RPMTAG_REQUIRENAME, reqname, featureEVR, flags, 0);
+    res = addReqProv(pkg, RPMTAG_REQUIRENAME, reqname, NULL, flags, 0);
 
     free(reqname);
 

@@ -596,11 +596,10 @@ int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag);
  * Add rpmlib feature dependency.
  * @param pkg		package
  * @param feature	rpm feature name (i.e. "rpmlib(Foo)" for feature Foo)
- * @param featureEVR	rpm feature epoch/version/release
  * @return		0 always
  */
 RPM_GNUC_INTERNAL
-int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR);
+int rpmlibNeedsFeature(Package pkg, const char * feature);
 
 RPM_GNUC_INTERNAL
 rpmRC checkForEncoding(Header h, int addtag);

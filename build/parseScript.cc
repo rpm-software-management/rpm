@@ -363,7 +363,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
 	    goto exit;
 	}
-	(void) rpmlibNeedsFeature(pkg, "BuiltinLuaScripts", "4.2.2-1");
+	(void) rpmlibNeedsFeature(pkg, "BuiltinLuaScripts");
     } else if (progArgv[0][0] == '<') {
 	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
@@ -375,7 +375,7 @@ int parseScript(rpmSpec spec, int parsePart)
     }
 
     if (scriptFlags) {
-	rpmlibNeedsFeature(pkg, "ScriptletExpansion", "4.9.0-1");
+	rpmlibNeedsFeature(pkg, "ScriptletExpansion");
     }
 
     /* Trigger script insertion is always delayed in order to */
@@ -409,8 +409,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	    td.data = (void *) *progArgv;
 	    td.type = RPM_STRING_TYPE;
 	} else {
-	    (void) rpmlibNeedsFeature(pkg,
-			"ScriptletInterpreterArgs", "4.0.3-1");
+	    (void) rpmlibNeedsFeature(pkg, "ScriptletInterpreterArgs");
 	    td.data = progArgv;
 	    td.type = RPM_STRING_ARRAY_TYPE;
 	}

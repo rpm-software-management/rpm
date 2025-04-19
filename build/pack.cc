@@ -307,21 +307,21 @@ static char *getIOFlags(Package pkg)
 	} else if (rstreq(s+1, "bzdio")) {
 	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    (void) rpmlibNeedsFeature(pkg, "PayloadIsBzip2", "3.0.5-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsBzip2");
 #endif
 #ifdef HAVE_LZMA_H
 	} else if (rstreq(s+1, "xzdio")) {
 	    compr = "xz";
-	    (void) rpmlibNeedsFeature(pkg, "PayloadIsXz", "5.2-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsXz");
 	} else if (rstreq(s+1, "lzdio")) {
 	    compr = "lzma";
-	    (void) rpmlibNeedsFeature(pkg, "PayloadIsLzma", "4.4.6-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsLzma");
 #endif
 #ifdef HAVE_ZSTD
 	} else if (rstreq(s+1, "zstdio")) {
 	    compr = "zstd";
 	    /* Add prereq on rpm version that understands zstd payloads */
-	    (void) rpmlibNeedsFeature(pkg, "PayloadIsZstd", "5.4.18-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsZstd");
 #endif
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
@@ -345,15 +345,15 @@ static void finalizeDeps(Package pkg)
 {
     /* check if the package has a dependency with a '~' */
     if (haveCharInDep(pkg, '~'))
-	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
+	(void) rpmlibNeedsFeature(pkg, "TildeInVersions");
 
     /* check if the package has a dependency with a '^' */
     if (haveCharInDep(pkg, '^'))
-	(void) rpmlibNeedsFeature(pkg, "CaretInVersions", "4.15.0-1");
+	(void) rpmlibNeedsFeature(pkg, "CaretInVersions");
 
     /* check if the package has a rich dependency */
     if (haveRichDep(pkg))
-	(void) rpmlibNeedsFeature(pkg, "RichDependencies", "4.12.0-1");
+	(void) rpmlibNeedsFeature(pkg, "RichDependencies");
 
     /* All dependencies added finally, write them into the header */
     for (int i = 0; i < PACKAGE_NUM_DEPS; i++) {
@@ -757,7 +757,7 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     }
 
     if (cheating) {
-	(void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
+	(void) rpmlibNeedsFeature(pkg, "ShortCircuited");
     }
 
     if ((rc = getPkgFilename(pkg->header, filename)))
@@ -846,7 +846,7 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 		    rpmSpecGetSection(spec, RPMBUILD_NONE));
 
     if (rpmSpecGetSection(spec, RPMBUILD_BUILDREQUIRES)) {
-	(void) rpmlibNeedsFeature(sourcePkg, "DynamicBuildRequires", "4.15.0-1");
+	(void) rpmlibNeedsFeature(sourcePkg, "DynamicBuildRequires");
     }
 
     /* XXX this should be %_srpmdir */

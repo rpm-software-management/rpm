@@ -1358,9 +1358,9 @@ RPMTEST_CHECK([
 runroot rpm  -qp --requires /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm
 ],
 [0],
-[rpmlib(CompressedFileNames) = 3.0.4-1
-rpmlib(FileDigests) = 4.6.0-1
-rpmlib(PayloadFilesHavePrefix) = 4.0-1
+[rpmlib(CompressedFileNames)
+rpmlib(FileDigests)
+rpmlib(PayloadFilesHavePrefix)
 ],
 [])
 
@@ -1394,11 +1394,11 @@ RPMTEST_CHECK([
 runroot rpm  -qp --requires /build/RPMS/noarch/filetypes-1.0-1.noarch.rpm
 ],
 [0],
-[rpmlib(CompressedFileNames) = 3.0.4-1
-rpmlib(FileDigests) = 4.6.0-1
-rpmlib(LargeFiles) = 4.12.0-1
-rpmlib(PayloadFilesHavePrefix) = 4.0-1
-rpmlib(PayloadIsZstd) = 5.4.18-1
+[rpmlib(CompressedFileNames)
+rpmlib(FileDigests)
+rpmlib(LargeFiles)
+rpmlib(PayloadFilesHavePrefix)
+rpmlib(PayloadIsZstd)
 ],
 [])
 RPMTEST_CLEANUP
