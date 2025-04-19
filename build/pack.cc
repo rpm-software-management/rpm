@@ -459,7 +459,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     uint8_t * MD5 = NULL;
     char * pld = NULL;
     char * upld = NULL;
-    uint32_t pld_algo = RPM_HASH_SHA256; /* TODO: macro configuration */
+    uint32_t pld_algo = rpmExpandNumeric("%{_payload_digest_algorithm}")?:RPM_HASH_SHA256;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0; /* uncompressed */
     rpm_loff_t payloadSize = 0; /* compressed */

@@ -59,6 +59,7 @@ Macro name                      | Description
 --------------------------------|------------
 `%_binary_filedigest_algorithm` | File digest algorithm to use for binary packages
 `%_source_filedigest_algorithm` | File digest algorithm to use for source packages
+`%_payload_digest_algorithm`    | Digest algorithm used for payload checksums
 `%_changelog_trimage`           | Maximum age of `%changelog` entries
 `%_changelog_trimtime`          | Cut-off date of `%changelog` entries
 
