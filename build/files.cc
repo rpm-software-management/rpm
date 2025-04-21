@@ -1022,7 +1022,19 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
     int override_date = 0;
     time_t mtime_clamp = 0;
     char *srcdate = getenv("SOURCE_DATE_EPOCH");
+    char *msrcdate = getenv("SOURCE_DATE_EPOCH_MTIME");
     char *mtime_policy_str = rpmExpand("%{?build_mtime_policy}", NULL);
+
+    /* If SOURCE_DATE_EPOCH_MTIME is set, use it for file modification time
+     * stamps, it is supposed to be newer. This can be used if we might want to
+     * compare if the file content remains the same when a build dependency
+     * changes while a build script embeds SOURCE_DATE_EPOCH in the file
+     * content. mtimes are required to increase with new versions and releases
+     * of an rpm with the same name, as rsync without --checksum and similar
+     * tools would get confused if the content changes without newer mtime. */
+    if (msrcdate != NULL) {
+       srcdate = msrcdate;
+    }
 
     /* backward compatibility */
     if (!*mtime_policy_str) {

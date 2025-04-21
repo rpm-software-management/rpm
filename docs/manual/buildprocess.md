@@ -110,6 +110,7 @@ The supported values for `%build_mtime_policy` are:
   leave the mtimes as is
 * `clamp_to_source_date_epoch`
   clamp the mtimes so that they are not bigger than the `SOURCE_DATE_EPOCH`
+  or `SOURCE_DATE_EPOCH_MTIME` if it is set. The latter takes precedence.
 * `clamp_to_buildtime`
   clamp the mtimes so that they are not bigger than the package build time (i.e. the time that
   is used for the `BUILDTIME` tag)
