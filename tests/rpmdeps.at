@@ -313,17 +313,23 @@ AT_KEYWORDS([install, boolean])
 runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
 	--define "reqs (deptest-two with flavor = desktop)" \
+	--define "provs feat = 4.0" \
 	  /data/SPECS/deptest.spec
 
 runroot rpmbuild --quiet -bb \
 	--define "pkg two" \
-	--define "provs flavor = desktop" \
+	--define "provs flavor = desktop feat = 1.5" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg three" \
+	--define "reqs (feat >= 1.0 with feat < 3.0)" \
 	  /data/SPECS/deptest.spec
 
 # satisfied WITH require in transaction
 RPMTEST_CHECK([
 RPMDB_RESET
-runroot rpm -U /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U /build/RPMS/noarch/deptest-two-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-three-1.0-1.noarch.rpm /build/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 ],
 [0],
 [],

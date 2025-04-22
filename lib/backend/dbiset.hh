@@ -51,9 +51,10 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
 
 /**
  * Remove an index set from another.
+ * The sets are sorted as a side-effect if sorted is 0.
  * @param set          set of index database items
  * @param oset         set of entries that should be removed
- * @param sorted       oset is already sorted?
+ * @param sorted       are set and oset is already sorted?
  * @return             0 success, 1 failure (no items found)
  */
 RPM_GNUC_INTERNAL
@@ -61,9 +62,10 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
 
 /**
  * Filter (intersect) an index set with another.
+ * The sets are sorted as a side-effect if sorted is 0.
  * @param set          set of index database items
  * @param oset         set of entries that should be intersected
- * @param sorted       oset is already sorted?
+ * @param sorted       are set and oset are already sorted?
  * @return             0 success, 1 failure (no items removed)
  */
 RPM_GNUC_INTERNAL
