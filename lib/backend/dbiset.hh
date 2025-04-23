@@ -65,7 +65,7 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
  * The sets are sorted as a side-effect if sorted is 0.
  * @param set          set of index database items
  * @param oset         set of entries that should be intersected
- * @param sorted       are set and oset are already sorted?
+ * @param sorted       are set and oset already sorted?
  * @return             0 success, 1 failure (no items removed)
  */
 RPM_GNUC_INTERNAL
