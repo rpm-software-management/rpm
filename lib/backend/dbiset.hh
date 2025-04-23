@@ -54,7 +54,7 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
  * The sets are sorted as a side-effect if sorted is 0.
  * @param set          set of index database items
  * @param oset         set of entries that should be removed
- * @param sorted       are set and oset is already sorted?
+ * @param sorted       are set and oset already sorted?
  * @return             0 success, 1 failure (no items found)
  */
 RPM_GNUC_INTERNAL
