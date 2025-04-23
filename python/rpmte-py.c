@@ -209,6 +209,20 @@ rpmte_Verified(rpmteObject * s)
     return Py_BuildValue("i", rpmteVerified(s->te));
 }
 
+static PyObject *
+rpmte_VfyLevel(rpmteObject *s)
+{
+    return Py_BuildValue("i", rpmteVfyLevel(s->te));
+}
+
+static PyObject *
+rpmte_SetVfyLevel(rpmteObject *s, PyObject *arg)
+{
+    int vfylevel = -1;
+    if (!PyArg_Parse(arg, "i", &vfylevel))
+	return NULL;
+    return Py_BuildValue("i", rpmteSetVfyLevel(s->te, vfylevel));
+}
 
 static struct PyMethodDef rpmte_methods[] = {
     {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
@@ -257,6 +271,10 @@ static struct PyMethodDef rpmte_methods[] = {
 "te.Files() -- Return file info set of element.\n" },
     {"Verified",(PyCFunction)rpmte_Verified,	METH_NOARGS,
 "te.Verified() -- Return element verification status.\n" },
+    {"VfyLevel",(PyCFunction)rpmte_VfyLevel,	METH_NOARGS,
+     "Return per-element verification level.\n" },
+    {"SetVfyLevel",(PyCFunction)rpmte_SetVfyLevel, METH_O,
+     "Set per-element verification level.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 

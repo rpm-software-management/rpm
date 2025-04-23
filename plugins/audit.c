@@ -68,7 +68,6 @@ static rpmRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     int nelem = rpmtsNElements(ts);
     struct teop *ops = xcalloc(nelem, sizeof(*ops));
     char *dir = audit_encode_nv_string("root_dir", rpmtsRootDir(ts), 0);
-    int enforce = (rpmtsVfyLevel(ts) & RPMSIG_SIGNATURE_TYPE) != 0;
 
     getAuditOps(ts, ops, nelem);
 
@@ -80,6 +79,7 @@ static rpmRC audit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 	    char *eventTxt = NULL;
 	    int verified = (rpmteVerified(p) & RPMSIG_SIGNATURE_TYPE) ? 1 : 0;
 	    int result = (rpmteFailed(p) == 0);
+	    int enforce = (rpmteVfyLevel(p) & RPMSIG_SIGNATURE_TYPE) != 0;
 
 	    rasprintf(&eventTxt,
 		    "op=%s %s sw_type=rpm key_enforce=%u gpg_res=%u %s",

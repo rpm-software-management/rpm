@@ -25,6 +25,11 @@ def runts(ts):
         return 1
     return 0
 
+def matchTe(te, args):
+    if te.NEVRA() in args or te.NEVR() in args or te.N() in args:
+        return True
+    return False
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--install', nargs='+', default=[])
@@ -35,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('--root', default='/', action='store')
     parser.add_argument('-n', '--dry-run', action='store_true')
     parser.add_argument('--nosignature', action='store_true')
+    parser.add_argument('--skip-signature', nargs='+', default=[])
     parser.add_argument('--nodeps', action='store_true')
     parser.add_argument('--noorder', action='store_true')
     parser.add_argument('-v', '--verbose', action='store_true')
@@ -56,6 +62,11 @@ if __name__ == '__main__':
 
     if args.nosignature:
         ts.setVfyLevel(rpm.RPMSIG_DIGEST_TYPE)
+
+    if args.skip_signature:
+        for te in ts:
+            if te.Type() == rpm.TR_ADDED and matchTe(te, args.skip_signature):
+                te.SetVfyLevel(rpm.RPMSIG_DIGEST_TYPE)
 
     if not args.noorder:
         ts.order()
