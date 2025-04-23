@@ -101,6 +101,8 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
     if (set->recs.empty() || oset == NULL || oset->recs.empty())
 	return 1;
 
+    if (set->recs.size() > 1 && !sorted)
+	dbiIndexSetSort(set);
     if (oset->recs.size() > 1 && !sorted)
 	dbiIndexSetSort(oset);
 
@@ -120,6 +122,8 @@ int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted)
 	return num ? 0 : 1;
     }
 
+    if (set->recs.size() > 1 && !sorted)
+	dbiIndexSetSort(set);
     if (oset->recs.size() > 1 && !sorted)
 	dbiIndexSetSort(oset);
 
