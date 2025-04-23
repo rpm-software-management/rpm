@@ -65,6 +65,7 @@ struct rpmte_s {
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
     uint8_t *badrelocs;		/*!< (TR_ADDED) Bad relocations (or NULL) */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
+    int vfylevel;		/*!< (TR_ADDED) Per-pkg verify level (if any) */
     int verified;		/*!< (TR_ADDED) Verification status */
     int addop;			/*!< (TR_ADDED) RPMTE_INSTALL/UPDATE/REINSTALL */
 
@@ -176,6 +177,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     p->pkgFileSize = 0;
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
+    p->vfylevel = -1;
 
     p->dependencies[RPMTAG_NAME] = \
 	rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
@@ -786,6 +788,24 @@ void rpmteSetVerified(rpmte te, int verified)
 int rpmteVerified(rpmte te)
 {
     return (te != NULL) ? te->verified : 0;
+}
+
+int rpmteSetVfyLevel(rpmte te, int vfylevel)
+{
+    int ovfylevel = -1;
+    if (te != NULL) {
+	ovfylevel = te->vfylevel;
+	te->vfylevel = vfylevel;
+    }
+    return ovfylevel;
+}
+
+int rpmteVfyLevel(rpmte te)
+{
+    int vfylevel = -1;
+    if (te != NULL)
+	vfylevel = (te->vfylevel >= 0) ? te->vfylevel : rpmtsVfyLevel(te->ts);
+    return vfylevel;
 }
 
 int rpmteAddOp(rpmte te)

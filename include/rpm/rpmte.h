@@ -264,6 +264,23 @@ rpmfiles rpmteFiles(rpmte te);
  */
 int rpmteVerified(rpmte te);
 
+/** \ingroup rpmte
+ * Get enforced per-package verify level. If per-package verify level
+ * isn't set for this element, rpmtsVfyLevel() value is returned.
+ * @param te            transaction element
+ * @return              package verify level
+ */
+int rpmteVfyLevel(rpmte te);
+
+/** \ingroup rpmte
+ * Set enforced per-package verify level.
+ * vfylevel -1 means using transaction verify level.
+ * @param te            transaction set
+ * @param vfylevel      new per-package verify level
+ * @return              old per-package verify level
+ */
+int rpmteSetVfyLevel(rpmte te, int vfylevel);
+
 #ifdef __cplusplus
 }
 #endif
