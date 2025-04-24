@@ -1265,7 +1265,8 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
     if (fd != NULL) {
 	ARGI_t ids = initPkgDigests(fd);
 	prc = rpmpkgRead(vs, fd, NULL, NULL, &vd.msg);
-	finiPkgDigests(fd, ids, prc ? NULL : auxh);
+	int test = rpmtsFlags(ts) & RPMTRANS_FLAG_TEST;
+	finiPkgDigests(fd, ids, (test || prc) ? NULL : auxh);
 	rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
     }
 

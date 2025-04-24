@@ -11,6 +11,15 @@ runpython prpm.py --nodeps --nosignature \
 [],
 [])
 
+RPMTEST_CHECK([[
+runroot rpm -qa --qf "[%{packagedigestalgos:hashalgo} %{packagedigests}\n]"
+]],
+[0],
+[SHA256 e05a5191e214b1f05ae2448ebe493e55c6313ab68eaf040b83baa80e25f15d54
+SHA512 5e0a11bf9c4f353b9197446d722e66cc322030e164929356e3fb669201597be77f3a44b4bd6f4fddf8746768809b43dae28f4fad1de315ef42a78e130847eb05
+],
+[])
+
 RPMTEST_CHECK([
 runpython prpm.py --nodeps --nosignature \
 		-i /data/RPMS/hlinktest-1.0-1.noarch.rpm \
