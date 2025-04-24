@@ -107,8 +107,8 @@ opposed opposed to just package building) parts:
 *%\_passwd_path* _PATH_
 	Location of passwd(5) files as : separated list
 
-*%\_pkgverify_digests* _HASHALGO_[:_HASHALGO_:...]
-	Colon separated lists of hash algorithms to calculate digests on the
+*%\_pkgverify_digests* _HASHALGOS_
+	A colon separated list of hash algorithms to calculate digests on the
 	entire package files during verification. The calculated digests
 	are stored in the *Packagedigests* tag of packages in the rpmdb,
 	and the corresponding algorithms in in the *Packagedigestalgos* tag.
