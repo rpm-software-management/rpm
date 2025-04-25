@@ -132,6 +132,14 @@ runroot()
     snapshot exec "$@"
 }
 
+runpython()
+{
+    snapshot exec \
+	--setenv LD_PRELOAD ${ASANLIB} \
+	--setenv ASAN_OPTIONS detect_leaks=0 \
+	"$@"
+}
+
 runroot_user()
 {
     case $1 in

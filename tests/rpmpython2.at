@@ -1,0 +1,31 @@
+
+RPMTEST_SETUP_RW([prpm install])
+AT_KEYWORDS([install python])
+AT_SKIP_IF([$PYTHON_DISABLED])
+
+RPMTEST_CHECK([
+runpython prpm.py --nodeps --nosignature \
+		-i /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runpython prpm.py --nodeps --nosignature \
+		-i /data/RPMS/hlinktest-1.0-1.noarch.rpm \
+		-e hello
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qa
+],
+[0],
+[hlinktest-1.0-1.noarch
+],
+[])
+
+RPMTEST_CLEANUP

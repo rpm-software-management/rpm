@@ -30,6 +30,7 @@ set(TESTSUITE_AT
 	rpmmacro.at
 	rpmdevel.at
 	rpmpython.at
+	rpmpython2.at
 	rpmdepmatch.at
 	rpmquery.at
 	rpmspec.at
