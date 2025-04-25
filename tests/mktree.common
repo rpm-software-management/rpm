@@ -20,6 +20,7 @@ make_install()
     mkdir -p $DESTDIR/$script_dir
     cp rpmtests atlocal mktree.common setup.sh $DESTDIR/$script_dir/
     cp @CMAKE_CURRENT_SOURCE_DIR@/rpmtests.sh $DESTDIR/$script_dir/
+    cp @CMAKE_CURRENT_SOURCE_DIR@/prpm.py $DESTDIR/@CMAKE_INSTALL_BINDIR@
 
     touch $DESTDIR/.rpmtestsuite
 }
