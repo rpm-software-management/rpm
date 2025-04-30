@@ -28,6 +28,7 @@ set(TESTSUITE_AT
 	rpmgeneral.at
 	rpmvercmp.at
 	rpmmacro.at
+	rpmapi.at
 	rpmdevel.at
 	rpmpython.at
 	rpmpython2.at
@@ -61,10 +62,10 @@ foreach(at ${TESTSUITE_AT})
 	FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at "m4_include([${at}])\n")
 endforeach()
 
-set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint)
+set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint readpkgnullts)
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
-	target_link_libraries(${prg} PRIVATE librpmio)
+	target_link_libraries(${prg} PRIVATE librpm)
 endforeach()
 string(REPLACE ";" " " TESTPROG_NAMES "${TESTPROGS}")
 

@@ -1,0 +1,13 @@
+AT_BANNER([RPM API tests])
+
+RPMTEST_SETUP([[rpmReadPackage() with NULL ts]])
+AT_KEYWORDS([[api signature]])
+RPMTEST_CHECK([[
+readpkgnullts /data/RPMS/hello-2.0-1.x86_64-signed.rpm
+]],
+[4],
+[hello-2.0-1.x86_64
+],
+[warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+])
+RPMTEST_CLEANUP
