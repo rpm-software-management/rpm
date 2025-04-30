@@ -429,27 +429,29 @@ rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
     rpmPubkey key = NULL;
 
     if (sig && ctx) {
-	rdlock lock(keyring->mutex);
-	auto keyid = key2str(pgpDigParamsSignID(sig));
 	std::vector<std::pair<int, std::string>> results = {};
+	if (keyring) {
+	    auto keyid = key2str(pgpDigParamsSignID(sig));
+	    rdlock lock(keyring->mutex);
 
-	/* Look for verifying key */
-	auto range = keyring->keys.equal_range(keyid);
+	    /* Look for verifying key */
+	    auto range = keyring->keys.equal_range(keyid);
 
-	for (auto it = range.first; it != range.second; ++it) {
-	    key = it->second;
+	    for (auto it = range.first; it != range.second; ++it) {
+		key = it->second;
 
-	    /* Do the parameters match the signature? */
-	    if (pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
-		!= pgpDigParamsAlgo(key->pgpkey, PGPVAL_PUBKEYALGO))
-	    {
-		continue;
+		/* Do the parameters match the signature? */
+		if (pgpDigParamsAlgo(sig, PGPVAL_PUBKEYALGO)
+		    != pgpDigParamsAlgo(key->pgpkey, PGPVAL_PUBKEYALGO))
+		{
+		    continue;
+		}
+
+		rc = pubKeyVerify(key, sig, ctx, results);
+
+		if (rc == RPMRC_OK)
+		    break;
 	    }
-
-	    rc = pubKeyVerify(key, sig, ctx, results);
-
-	    if (rc == RPMRC_OK)
-		break;
 	}
 
 	/* No key, sanity check signature*/
