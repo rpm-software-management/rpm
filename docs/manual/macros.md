@@ -116,13 +116,13 @@ various common operations.
 
 | Macro            | Description | Introduced
 | ---------------- | ----------- | ----------
-| `%{gsub:...}`    | replace occurences of pattern in a string (see Lua `string.gsub()`) | 4.19.0
+| `%{gsub:...}`    | replace occurences of pattern in a string (see Lua [`string.gsub()`][]) | 4.19.0
 | `%{len:...}`     | string length | 4.19.0
 | `%{lower:...}`   | lowercase a string | 4.19.0
-| `%{rep:...}`     | repeat a string (see Lua `string.rep()`) | 4.19.0
+| `%{rep:...}`     | repeat a string (see Lua [`string.rep()`][]) | 4.19.0
 | `%{reverse:...}` | reverse a string | 4.19.0
 | `%{span:...}`    | as-is string, handy for wrapping multiline macros | 6.0.0
-| `%{sub:...}`     | expand to substring (see Lua `string.sub()`) | 4.19.0
+| `%{sub:...}`     | expand to substring (see Lua [`string.sub()`][]) | 4.19.0
 | `%{upper:...}`   | uppercase a string | 4.19.0
 | `%{shescape:...}`| single quote with escapes for use in shell | 4.18.0
 | `%{shrink:...}`  | trim leading and trailing whitespace, reduce intermediate whitespace to a single space | 4.14.0
@@ -418,3 +418,8 @@ packaging similar to the autoconf variables that are used in building packages:
 | `%_oldincludedir`  | /usr/include
 | `%_infodir`        | %{_datadir}/info
 | `%_mandir`         | %{_datadir}/man
+
+
+[`string.gsub()`]: https://www.lua.org/manual/5.4/manual.html#pdf-string.gsub
+[`string.rep()`]: https://www.lua.org/manual/5.4/manual.html#pdf-string.rep
+[`string.sub()`]: https://www.lua.org/manual/5.4/manual.html#pdf-string.sub
