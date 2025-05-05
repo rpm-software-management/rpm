@@ -123,7 +123,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 # SEE ALSO
 *popt*(3), *rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpmsign*(1)
 
-*rpmkeys --help* - as rpm supports customizing the options via popt
+*rpmkeys --help* - as *rpm*(8) supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
 manual matches what's available.
 
