@@ -7,8 +7,8 @@ rpmsort - Sort input by RPM Package Manager (RPM) versioning
 *rpmsort* [ _FILE_ ... ]
 
 # DESCRIPTION
-*rpmsort*(1) sorts the input files, and writes a sorted list to standard
-out - like *sort*(1), but aware of RPM versioning.
+*rpmsort*(1) sorts the content of the input files, and writes a sorted list
+to standard out - like *sort*(1), but aware of RPM versioning.
 
 # ARGUMENTS
 _FILE_

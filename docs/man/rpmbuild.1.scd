@@ -89,7 +89,7 @@ all the stages preceding it), and is one of:
 	Build just the source package, but also parse and include dynamic
 	build dependencies - executes up to and including the
 	*%generate_buildrequires* stage and then skips straight to the
-	assembly stage, without creating binary packages. This command can
+	assembly stage, without creating binary packages. This option can
 	be used to fully resolve dynamic build dependencies. See the
 	*DYNAMIC BUILD DEPENDENCIES* section for details.
 
@@ -191,7 +191,7 @@ are satisfied is to run the *-br* option, install the new
 dependencies of the _buildreqs.nosrc.rpm_ package and repeat the whole
 procedure until *rpmbuild* no longer exits with code 11.
 
-If the *-br* command is coupled with *--nodeps*, exit code 11 is
+If the *-br* option is coupled with *--nodeps*, exit code 11 is
 always returned and a _buildreqs.nosrc.rpm_ package is always created.
 
 # FILES

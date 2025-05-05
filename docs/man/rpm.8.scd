@@ -43,7 +43,7 @@ code and recipe necessary to produce binary packages.
 *--verify*
 	Verify package(s), comparing information about the installed files in
 	the package with information about the files taken from the package
-	metadata stored in the rpm database. Among other things, verifying
+	metadata stored in the *rpm* database. Among other things, verifying
 	compares the size, digest, permissions, type, owner and group of each
 	file. Any discrepancies are displayed.
 *-q*,
@@ -104,7 +104,7 @@ See *rpm-common*(8) for the options common to all operations.
 
 # INSTALL AND UPGRADE OPTIONS
 *--allfiles*
-	Installs or upgrades all the missingok files in the package,
+	Installs or upgrades all the *missingok* files in the package,
 	regardless if they exist.
 
 *--badreloc*
