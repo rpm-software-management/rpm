@@ -1180,7 +1180,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	if (pkg->rpmformat >= 6 || fl->largeFiles) {
 	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
 	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
-            (void) rpmlibNeedsFeature(pkg, "LargeFiles", "4.12.0-1");
+            (void) rpmlibNeedsFeature(pkg, "LargeFiles");
 	} else {
 	    rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
 	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
@@ -1291,15 +1291,15 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 
     if (digestalgo != RPM_HASH_MD5) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
-	rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
+	rpmlibNeedsFeature(pkg, "FileDigests");
     }
 
     if (fl->haveCaps) {
-	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
+	rpmlibNeedsFeature(pkg, "FileCaps");
     }
 
     if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}"))
-	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
+	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix");
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
@@ -1314,7 +1314,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	headerConvert(h, HEADERCONV_EXPANDFILELIST);
     } else {
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
+	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames");
     }
 }
 
@@ -2610,7 +2610,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     /* Verify that file attributes scope over hardlinks correctly. */
     if (checkHardLinks(fl.files))
-	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets", "4.0.4-1");
+	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets");
 
     genCpioListAndHeader(&fl, spec, pkg, 0);
 
