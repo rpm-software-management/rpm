@@ -511,6 +511,23 @@ rpm \
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([trim macro])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+rpm \
+    --eval "%{trim: 
+    h e 
+  l  
+    l   o  }"
+],
+[0],
+[
+h e
+l
+l   o
+])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([suffix macro])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
@@ -641,6 +658,9 @@ rpm --eval "%{dump:foo}"
 rpm --eval "%{shrink:%%%%}"
 rpm --eval "%{shrink %%%%}"
 rpm --eval "%shrink %%%%"
+rpm --eval "%{trim:%%%%}"
+rpm --eval "%{trim %%%%}"
+rpm --eval "%trim %%%%"
 rpm --eval "%verbose foo"
 ],
 [0],
@@ -666,6 +686,9 @@ foobar
 
 bar
 bar baz\baz
+%%
+%%
+%%
 %%
 %%
 %%
