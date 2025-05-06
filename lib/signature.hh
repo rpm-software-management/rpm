@@ -27,6 +27,7 @@ int rpmWriteSignature(FD_t fd, Header h);
 
 /** \ingroup signature
  * Generate signature and write to file
+ * @param SHA3_256	SHA3_256 digest
  * @param SHA256	SHA256 digest
  * @param SHA1		SHA1 digest
  * @param MD5		MD5 digest
@@ -35,7 +36,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param fd		output file
  * @param rpmver	rpm format version (4 or 6)
  */
-rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
+rpmRC rpmGenerateSignature(char *SHA3_256, char *SHA256, char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,
 			int rpmver);
 

@@ -197,10 +197,11 @@ files and their headers.
 _VSFLAGS_ is formed by bitwise or'ing the individual flags:
 - *0x00001* (RPMVSF_NOHDRCHK): don't verify headers from rpmdb
 - *0x00100* (RPMVSF_NOSHA1HEADER): don't verify header SHA1 digest
-- *0x00200* (RPMVSF_NOSHA256HEADER): don't verify header SHA255 digest
+- *0x00200* (RPMVSF_NOSHA256HEADER): don't verify header SHA256 digest
 - *0x00400* (RPMVSF_NODSAHEADER): don't verify header DSA signature(s)
 - *0x00800* (RPMVSF_NORSAHEADER): don't verify header RSA signature(s)
 - *0x01000* (RPMVSF_NOOPENPGP): don't verify header OpenPGP signature(s)
+- *0x02000* (RPMVSF_NOSHA3_256_HEADER): don't verify header SHA3_256 digest
 - *0x10000* (RPMVSF_NOPAYLOAD): don't verify package payload digest
 - *0x20000* (RPMVSF_NOMD5): don't verify legacy header+payload MD5 digest
 - *0x40000* (RPMVSF_NODSA): don't verify legacy header+payload DSA signature

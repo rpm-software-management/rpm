@@ -382,6 +382,21 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #%_source_payload	w9.gzdio
 %_binary_payload	%[ %_rpmformat >=6 ? "w19.zstdio" : "w9.gzdio" ]
 
+#	Algorithm to use for generating the payload digest and alternate
+#	(uncompressed) payload digest.
+#	WARNING: non-SHA256 is backwards incompatible with rpm < 6.0!
+#	The supported algorithms may depend on the underlying crypto
+#	implementation but generally at least the following are supported:
+#	1	MD5
+#	2	SHA1
+#	8	SHA256 (default)
+#	9	SHA384
+#	10	SHA512
+#	12	SHA3-256
+#	14	SHA3-512
+#
+%_payload_digest_algorithm	8
+
 #	Algorithm to use for generating file checksum digests on build.
 #	If not specified or 0, MD5 is used.
 #	WARNING: non-MD5 is backwards incompatible with rpm < 4.6!
