@@ -170,3 +170,53 @@ test-test3-1.0-1.x86_64
 [warning: invalid rpm format 9 requested, using 4
 ])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([spec overridden format])
+AT_KEYWORDS([rpmformat build])
+
+RPMTEST_CHECK([
+runroot rpmbuild -ba \
+		--quiet \
+		--with pkgfmt \
+		--define "_myrpmformat 6" \
+		/data/SPECS/subpkg-mini.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --qf "%{rpmformat} %{name}\n" \
+	/build/RPMS/*/subpkg-mini-*.rpm /build/SRPMS/subpkg-mini*.rpm
+]],
+[0],
+[6 subpkg-mini
+6 subpkg-mini-test2
+6 subpkg-mini-test3
+6 subpkg-mini
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -ba \
+		--quiet \
+		--with pkgfmt \
+		--define "_myrpmformat 4" \
+		/data/SPECS/subpkg-mini.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --qf "%{rpmformat} %{name}\n" \
+	/build/RPMS/*/subpkg-mini-*.rpm /build/SRPMS/subpkg-mini*.rpm
+]],
+[0],
+[4 subpkg-mini
+4 subpkg-mini-test2
+4 subpkg-mini-test3
+4 subpkg-mini
+],
+[])
+RPMTEST_CLEANUP

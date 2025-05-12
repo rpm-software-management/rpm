@@ -1361,12 +1361,21 @@ static rpmRC finalizeSpec(rpmSpec spec)
 	headerPutString(spec->packages->header, RPMTAG_GROUP, "Unspecified");
     }
 
+    spec->rpmformat = rpmExpandNumeric("%{?_rpmformat}");
+
+    if (spec->rpmformat != 4 && spec->rpmformat != 6) {
+	int default_rpmformat = 4;
+	rpmlog(RPMLOG_WARNING,
+		   _("invalid rpm format %d requested, using %d\n"),
+		   spec->rpmformat, default_rpmformat);
+	spec->rpmformat = 4;
+    }
+
     for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	headerPutString(pkg->header, RPMTAG_OS, os);
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
 	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
 	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
-
 
 	if (pkg != spec->packages) {
 	    copyInheritedTags(pkg->header, spec->packages->header);

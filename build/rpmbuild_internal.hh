@@ -128,6 +128,7 @@ typedef struct Package_s * Package;
 struct rpmSpec_s {
     char * buildHost;
     rpm_time_t buildTime;
+    unsigned int rpmformat;	/* v4, v6? */
 
     char * specFile;	/*!< Name of the spec file. */
     char * buildRoot;
@@ -189,7 +190,6 @@ struct Package_s {
     rpmds dependencies[PACKAGE_NUM_DEPS];
     rpmfiles cpioList;
     ARGV_t dpaths;
-    unsigned int rpmformat;	/* v4, v6? */
 
     struct Source * icon;
 

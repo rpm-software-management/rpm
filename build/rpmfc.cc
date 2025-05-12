@@ -1702,7 +1702,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add per-file colors(#files) */
     headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor.data(), fc->nfiles);
     
-    if (pkg->rpmformat >= 6) {
+    if (spec->rpmformat >= 6) {
 	/* Add mime types(#mime types) */
 	for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->mdict); id++) {
 	    headerPutString(pkg->header, RPMTAG_MIMEDICT,

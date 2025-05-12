@@ -450,7 +450,8 @@ exit:
  */
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 		      const char *fileName, char **cookie,
-		      rpm_time_t buildTime, const char* buildHost)
+		      rpm_time_t buildTime, const char* buildHost,
+		      uint32_t rpmformat)
 {
     FD_t fd = NULL;
     char * rpmio_flags = NULL;
@@ -481,8 +482,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
-    if (pkg->rpmformat >= 6)
-	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &(pkg->rpmformat), 1);
+    if (rpmformat >= 6)
+	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &rpmformat, 1);
 
     /* Create a dummy payload digests to get the header size right */
     pld = (char *)nullDigest(pld_algo, 1);
@@ -490,7 +491,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGEST, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, pld);
     pld = _free(pld);
-    if (pkg->rpmformat >= 6) {
+    if (rpmformat >= 6) {
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
     }
@@ -517,12 +518,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     sigStart = Ftell(fd);
 
     /* Generate and write a placeholder signature header */
-    if (pkg->rpmformat < 6) {
+    if (rpmformat < 6) {
 	SHA1 = (char *)nullDigest(RPM_HASH_SHA1, 1);
 	MD5 = (uint8_t *)nullDigest(RPM_HASH_MD5, 0);
     }
     SHA256 = (char *)nullDigest(RPM_HASH_SHA256, 1);
-    if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, pkg->rpmformat))
+    if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, rpmformat))
 	goto exit;
     SHA1 = _free(SHA1);
     SHA256 = _free(SHA256);
@@ -553,7 +554,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     headerPutString(pkg->header, RPMTAG_PAYLOADDIGESTALT, upld);
     pld = _free(pld);
 
-    if (pkg->rpmformat >= 6) {
+    if (rpmformat >= 6) {
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZE);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZEALT);
@@ -567,7 +568,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
 
     /* Calculate the digests */
-    if (pkg->rpmformat < 6) {
+    if (rpmformat < 6) {
 	/* SHA1 and legacy MD5 on header + payload only in v4 */
 	fdInitDigestID(fd, RPM_HASH_MD5, RPMTAG_SIGMD5, 0);
 	fdInitDigestID(fd, RPM_HASH_SHA1, RPMTAG_SHA1HEADER, 0);
@@ -587,7 +588,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Generate the signature. Now with right values */
     if (rpmGenerateSignature(SHA256, SHA1, MD5, payloadEnd - hdrStart,
-				archiveSize, fd, pkg->rpmformat)) {
+				archiveSize, fd, rpmformat)) {
 	goto exit;
     }
 
@@ -763,7 +764,8 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     if ((rc = getPkgFilename(pkg->header, filename)))
 	return rc;
 
-    rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost);
+    rc = writeRPM(pkg, NULL, *filename, NULL, spec->buildTime, spec->buildHost,
+		  spec->rpmformat);
     if (rc == RPMRC_OK) {
 	/* Do check each written package if enabled */
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", *filename, NULL);
@@ -854,7 +856,7 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", sourcePkg->filename, NULL);
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(sourcePkg, &spec->sourcePkgId, sourcePkg->filename, cookie, spec->buildTime, spec->buildHost);
+	rc = writeRPM(sourcePkg, &spec->sourcePkgId, sourcePkg->filename, cookie, spec->buildTime, spec->buildHost, spec->rpmformat);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
