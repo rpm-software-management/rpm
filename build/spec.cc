@@ -15,7 +15,6 @@
 
 #include "rpmfi_internal.hh"		/* rpmfiles stuff */
 #include "rpmbuild_internal.hh"
-#include "rpmlog_internal.hh"
 
 #include "debug.h"
 
@@ -103,15 +102,6 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->policyList = NULL;
     p->pool = rpmstrPoolLink(pool);
     p->dpaths = NULL;
-    p->rpmformat = rpmExpandNumeric("%{?_rpmformat}");
-
-    if (p->rpmformat != 4 && p->rpmformat != 6) {
-	int default_rpmformat = 4;
-	rpmlogOnce(0, "rpmformat", RPMLOG_WARNING,
-		   _("invalid rpm format %d requested, using %d\n"),
-		   p->rpmformat, default_rpmformat);
-	p->rpmformat = 4;
-    }
 
     if (name)
 	p->name = rpmstrPoolId(p->pool, name, 1);
