@@ -45,6 +45,7 @@ static const rpmTagVal copyTagsDuringParse[] = {
     RPMTAG_UPSTREAMRELEASES,
     RPMTAG_GROUP,
     RPMTAG_MODULARITYLABEL,
+    RPMTAG_SOURCENEVR,
     0
 };
 
