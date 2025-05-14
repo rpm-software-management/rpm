@@ -13,6 +13,7 @@ RUN dnf -y install \
   autoconf \
   bubblewrap \
   cmake \
+  fedora-repos-rawhide \
   gettext-devel \
   debugedit \
   doxygen \
@@ -67,7 +68,7 @@ RUN if which dnf5; then \
 
 # If updates to specific packages are needed, do it here
 # RUN dnf --enablerepo=updates update ...
-RUN dnf -y --enablerepo=updates install "sequoia-sq >= 1.0"
+RUN dnf -y --enablerepo=rawhide install "sequoia-sq >= 1.3" "rpm-sequoia >= 1.8" "crypto-policies >= 20250402"
 RUN dnf clean all
 
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
