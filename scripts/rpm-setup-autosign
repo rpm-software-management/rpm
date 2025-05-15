@@ -14,12 +14,12 @@ keypath="${rpmhome}/${email}.asc"
 
 function log()
 {
-    echo -e $* 1>&2
+    echo -e "$@" 1>&2
 }
 
 function error()
 {
-    log $*
+    log "$@"
     exit 1
 }
 
