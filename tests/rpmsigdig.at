@@ -1664,6 +1664,58 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
 RPMTEST_CHECK([
+cat << EOF > ${HOME}/.config/rpm/macros
+%_openpgp_sign sq
+%_openpgp_sign_id 036824F0AC60AED6F1A3256F88190469F6D7255E3D8E41C577233AA03E0BB9D3
+%_sq_path ${HOME}/.config/rpm/sq
+EOF
+
+runroot sq --home ${HOME}/.config/rpm/sq key import /data/keys/*v6*.secret
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+runroot rpmsign --addsign /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[error: Unsupported OpenPGP pubkey algorithm 27 for rpm v3/v4 signatures
+])
+
+RPMTEST_CHECK([
+runroot rpmsign --addsign --rpmv6 /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
+
+# The test reflects what I *assume* this should return as v6 key ids are the
+# first 64 bits of the fingerprint, but this is very cursory skim through
+# rfc-9580 and might not be right. What we're currently getting as the
+# signer key is the last 64bit as with v4 keys, and when this doesn't match
+# with what we get from the subkey ids, rpm does not find the key.
+# In addition, rpm-sequoia 1.8 doesn't handle the v6 trailer so it's BAD
+# instead of NOKEY.
+# Header OpenPGP V6 Ed25519/SHA512 signature, key ID 0e00df3ed2d7b65e: BAD
+#RPMTEST_CHECK([
+#runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+#],
+#[0],
+#[/tmp/hello-2.0-1.x86_64.rpm:
+#    Header OpenPGP V6 Ed25519/SHA512 signature, key ID 6118abe481c41473: NOKEY
+#    Header OpenPGP RSA signature: NOTFOUND
+#    Header OpenPGP DSA signature: NOTFOUND
+#    Header SHA256 digest: OK
+#    Payload SHA256 digest: OK
+#    Legacy OpenPGP RSA signature: NOTFOUND
+#    Legacy OpenPGP DSA signature: NOTFOUND
+#],
+#[])
+
+RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-v6-ed25519-test.asc
 ],
 [0],
@@ -1677,6 +1729,22 @@ runroot rpmkeys --list
 [ac60aed6-682474ea: v6-ed25519-testkey public key
 ],
 [])
+
+# This is currently failing, see the NOKEY case above
+#RPMTEST_CHECK([
+#runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+#],
+#[0],
+#[/tmp/hello-2.0-1.x86_64.rpm:
+#    Header OpenPGP V6 Ed25519/SHA512 signature, key fingerprint 036824f0ac60aed6f1a3256f88190469f6d7255e3d8e41c577233aa03e0bb9d3 OK
+#    Header OpenPGP RSA signature: NOTFOUND
+#    Header OpenPGP DSA signature: NOTFOUND
+#    Header SHA256 digest: OK
+#    Payload SHA256 digest: OK
+#    Legacy OpenPGP RSA signature: NOTFOUND
+#    Legacy OpenPGP DSA signature: NOTFOUND
+#],
+#[])
 
 RPMTEST_CHECK([
 runroot rpmkeys --delete ac60aed6-682474ea

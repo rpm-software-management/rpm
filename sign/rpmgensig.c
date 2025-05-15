@@ -131,13 +131,11 @@ exit:
 }
 
 /* Wrap a raw signature in an rpmtd and sanity check, return NULL on fail */
-static rpmtd makeSigTag(int ishdr, uint8_t *pkt, size_t pktlen)
+static rpmtd makeSigTag(uint8_t *pkt, size_t pktlen)
 {
     pgpDigParams sigp = NULL;
-    rpmTagVal sigtag;
     rpmtd sigtd = NULL;
     unsigned int hash_algo;
-    unsigned int pubkey_algo;
     int ver;
 
     if (pgpPrtParams(pkt, pktlen, PGPTAG_SIGNATURE, &sigp)) {
@@ -151,23 +149,6 @@ static rpmtd makeSigTag(int ishdr, uint8_t *pkt, size_t pktlen)
 	goto exit;
     }
 
-    pubkey_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
-    switch (pubkey_algo) {
-    case PGPPUBKEYALGO_DSA:
-    case PGPPUBKEYALGO_ECDSA:
-    case PGPPUBKEYALGO_EDDSA:
-	sigtag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
-	break;
-    case PGPPUBKEYALGO_RSA:
-	sigtag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
-	break;
-    default:
-	rpmlog(RPMLOG_ERR, _("Unsupported OpenPGP pubkey algorithm %u\n"),
-		pubkey_algo);
-	goto exit;
-	break;
-    }
-
     ver = pgpDigParamsVersion(sigp);
     if (ver < 4) {
 	rpmlog(RPMLOG_WARNING, _("Deprecated OpenPGP signature version %d\n"),
@@ -176,12 +157,12 @@ static rpmtd makeSigTag(int ishdr, uint8_t *pkt, size_t pktlen)
 
     /* Looks sane, create the tag data */
     sigtd = rpmtdNew();
-    sigtd->tag = sigtag;
     sigtd->flags |= RPMTD_ALLOCED;
     sigtd->count = pktlen;
     sigtd->data = memcpy(xmalloc(pktlen), pkt, pktlen);;
-    sigtd->tag = sigtag;
     sigtd->type = RPM_BIN_TYPE;
+    /* Hack: the actual tag gets decided in putSignature() based on this */
+    sigtd->tag = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
 
 exit:
     pgpDigParamsFree(sigp);
@@ -317,7 +298,7 @@ exit_nowait:
 }
 
 /* Generate an OpenPGP signature(s) for a target */
-static rpmtd makeGPGSignature(int ishdr, sigTarget sigt)
+static rpmtd makeGPGSignature(sigTarget sigt)
 {
     char * sigfile = rstrscat(NULL, sigt->fileName, ".sig", NULL);
     struct stat st;
@@ -355,7 +336,7 @@ static rpmtd makeGPGSignature(int ishdr, sigTarget sigt)
     rpmlog(RPMLOG_DEBUG, "Got %zd bytes of OpenPGP sig\n", pktlen);
 
     /* Parse the signature, change signature tag as appropriate. */
-    sigtd = makeSigTag(ishdr, pkt, pktlen);
+    sigtd = makeSigTag(pkt, pktlen);
 exit:
     (void) unlink(sigfile);
     free(sigfile);
@@ -402,10 +383,8 @@ static int haveSignature(rpmtd sigtd, Header sigh)
 {
     struct rpmtd_s oldtd;
     int rc = 0; /* assume no */
-    rpmTagVal tag = headerIsEntry(sigh, RPMSIGTAG_RESERVED) ?
-			RPMTAG_OPENPGP : sigtd->tag;
 
-    if (!headerGet(sigh, tag, &oldtd, HEADERGET_DEFAULT))
+    if (!headerGet(sigh, sigtd->tag, &oldtd, HEADERGET_DEFAULT))
 	return rc;
 
     pgpDigParams newsig = tdParams(sigtd);
@@ -421,9 +400,11 @@ static int haveSignature(rpmtd sigtd, Header sigh)
     return rc;
 }
 
-static int putSignature(Header sigh, rpmtd sigtd, int multisig)
+static int putSignature(Header sigh, rpmtd sigtd, int multisig, int ishdr,
+			rpmSignFlags flags)
 {
-    int rc = 1;
+    int rc = -1;
+
     if (multisig) {
 	char *b64 = rpmBase64Encode(sigtd->data, sigtd->count, 0);
 	char **arr = (char **)xmalloc(1 * sizeof(*arr));
@@ -438,11 +419,48 @@ static int putSignature(Header sigh, rpmtd sigtd, int multisig)
 	    .ix = -1,
 	    .size = 0,
 	};
-	rc = (headerPut(sigh, &mtd, HEADERPUT_APPEND) == 0);
+	if (haveSignature(&mtd, sigh)) {
+	    rc = 1;
+	} else {
+	    rc = (headerPut(sigh, &mtd, HEADERPUT_APPEND) == 0) ? -1 : 0;
+	}
 	rpmtdFreeData(&mtd);
     } else {
-	rc = (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0);
+	unsigned int pubkey_algo = sigtd->tag;
+	uint32_t sigtag = 0;
+	switch (pubkey_algo) {
+	case PGPPUBKEYALGO_DSA:
+	case PGPPUBKEYALGO_ECDSA:
+	case PGPPUBKEYALGO_EDDSA:
+	    sigtag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
+	    break;
+	case PGPPUBKEYALGO_RSA:
+	    sigtag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
+	    break;
+	default:
+	    break;
+	}
+
+	if (sigtag) {
+	    sigtd->tag = sigtag;
+	    if (haveSignature(sigtd, sigh)) {
+		rc = 1;
+	    } else {
+		rc = (headerPut(sigh, sigtd, HEADERPUT_DEFAULT) == 0) ? -1 : 0;
+	    }
+	    sigtd->tag = pubkey_algo;
+	} else {
+	    /* If we did a v6 signature, we can ignore the error here */
+	    if (flags & RPMSIGN_FLAG_RPMV6) {
+		rc = 0;
+	    } else {
+		rpmlog(RPMLOG_ERR,
+			_("Unsupported OpenPGP pubkey algorithm %u for rpm v3/v4 signatures\n"),
+			pubkey_algo);
+	    }
+	}
     }
+
     return rc;
 }
 
@@ -459,23 +477,17 @@ static int addSignature(Header sigh, rpmSignFlags flags,
     rpmtd sigtd = NULL;
     
     /* Make a header signature */
-    if ((sigtd = makeGPGSignature(1, sigt_v4)) == NULL)
+    if ((sigtd = makeGPGSignature(sigt_v4)) == NULL)
 	goto exit;
-
-    /* See if we already have a signature by the same key and parameters */
-    if (haveSignature(sigtd, sigh)) {
-	rc = 1;
-	goto exit;
-    }
 
     /* Add a v6 signature if requested */
     if (flags & RPMSIGN_FLAG_RPMV6)
-	if (putSignature(sigh, sigtd, 1))
+	if ((rc = putSignature(sigh, sigtd, 1, 1, flags)))
 	    goto exit;
 
     /* Add a v4 signature if requested */
     if (flags & RPMSIGN_FLAG_RPMV4) {
-	if (putSignature(sigh, sigtd, 0))
+	if ((rc = putSignature(sigh, sigtd, 0, 1, flags)))
 	    goto exit;
 
 	/* Only consider v3 signature if also adding v4 */
@@ -483,10 +495,10 @@ static int addSignature(Header sigh, rpmSignFlags flags,
 	    rpmtdFree(sigtd);
 
 	    /* Assume the same signature test holds for v3 signature too */
-	    if ((sigtd = makeGPGSignature(0, sigt_v3)) == NULL)
+	    if ((sigtd = makeGPGSignature(sigt_v3)) == NULL)
 		goto exit;
 
-	    if (putSignature(sigh, sigtd, 0))
+	    if ((rc = putSignature(sigh, sigtd, 0, 0, flags)))
 		goto exit;
 	}
     }
