@@ -117,6 +117,15 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
+runroot rpmkeys -l 771b18d3d7baa28734333c424344591e1964c5fc 771B18D3D7BAA28734333C424344591E1964C5FC
+],
+[0],
+[771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpmkeys -d abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
@@ -258,6 +267,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 [])
 
 RPMTEST_CHECK([
+runroot rpmkeys -l 771b18d3d7baa28734333c424344591e1964c5fc 771B18D3D7BAA28734333C424344591E1964C5FC
+],
+[0],
+[771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
+RPMTEST_CHECK([
 runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
@@ -368,6 +385,14 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-with-new-subkey.rpm
 ],
 [])
 
+RPMTEST_CHECK([
+runroot rpmkeys -l 771b18d3d7baa28734333c424344591e1964c5fc 771B18D3D7BAA28734333C424344591E1964C5FC
+],
+[0],
+[771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+771b18d3d7baa28734333c424344591e1964c5fc rpm.org RSA testkey <rsa@rpm.org> public key
+],
+[])
 RPMTEST_CHECK([
 runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
