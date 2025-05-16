@@ -81,8 +81,9 @@ static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, voi
 	    while ((key = rpmKeyringIteratorNext(iter))) {
 		const char * fp = rpmPubkeyFingerprintAsHex(key);
 		const char * keyid = rpmPubkeyKeyIDAsHex(key);
-		if (!strcmp(*arg, fp) || !strcmp(*arg, keyid) ||
-		    !strcmp(*arg, keyid+8)) {
+		if (!rstrcasecmp(*arg, fp) || !rstrcasecmp(*arg, keyid) ||
+		    !rstrcasecmp(*arg, keyid+8))
+		{
 		    found = true;
 		}
 		if (found)
