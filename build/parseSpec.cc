@@ -692,6 +692,9 @@ static int initSourceHeader(rpmSpec spec)
 
     /* Only specific tags are added to the source package header */
     headerCopyTags(spec->packages->header, sourcePkg->header, sourceTags);
+	char *nevr = headerGetAsString(sourcePkg->header, RPMTAG_NEVR);
+	headerPutString(spec->packages->header, RPMTAG_SOURCENEVR, nevr);
+	free(nevr);
 
     /* Add the build restrictions */
     for (int i=0; i<PACKAGE_NUM_DEPS; i++) {

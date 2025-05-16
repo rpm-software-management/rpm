@@ -2438,6 +2438,22 @@ No hello.debug
 [ignore])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmbuild multiple subpackages source_nevr])
+AT_KEYWORDS([build] [source_nevr])
+RPMTEST_CHECK([
+runroot rpmbuild --quiet \
+  -ba ${RPMDATA}/SPECS/test-subpackages-epoch.spec
+rpm -q --queryformat '%{NEVR} %{SOURCERPM} %{SOURCENEVR}\n' ${RPMTEST}/build/RPMS/*/test-*.rpm
+],
+[0],
+[test-1:1.0-1 test-1.0-1.src.rpm test-1:1.0-1
+test-debuginfo-1:1.0-1 test-1.0-1.src.rpm test-1:1.0-1
+test-test2-1:1.0-1 test-1.0-1.src.rpm test-1:1.0-1
+test-test3-0:1.0-1 test-1.0-1.src.rpm test-1:1.0-1
+],
+[ignore])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([manual debuginfo package])
 AT_KEYWORDS([build debuginfo])
 RPMTEST_CHECK([
