@@ -64,14 +64,6 @@ static int matchingKeys(rpmts ts, ARGV_const_t args, int callback(rpmPubkey, voi
     if (args) {
 	for (char * const * arg = args; *arg; arg++) {
 	    int found = false;
-	    size_t klen = strlen(*arg);
-
-	    /* Allow short keyid while we're transitioning */
-	    if (klen != 40 && klen != 16 && klen != 8) {
-		rpmlog(RPMLOG_ERR, ("invalid key id: %s\n"), *arg);
-		ec = EXIT_FAILURE;
-		continue;
-	    }
 
 	    /* Check for valid hex chars */
 	    for (c=*arg; *c; c++) {
