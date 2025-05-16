@@ -121,7 +121,7 @@ runroot rpmkeys -d abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
-[error: invalid key id: abcd
+[error: key not found: abcd
 error: invalid key id: gimmekey
 error: key not found: 1111aaaa2222bbbb
 ])
@@ -262,7 +262,7 @@ runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
-[error: invalid key id: abcd
+[error: key not found: abcd
 error: invalid key id: gimmekey
 error: key not found: 1111aaaa2222bbbb
 ])
@@ -373,7 +373,7 @@ runroot rpmkeys --delete abcd gimmekey 1111aaaa2222bbbb
 ],
 [1],
 [],
-[error: invalid key id: abcd
+[error: key not found: abcd
 error: invalid key id: gimmekey
 error: key not found: 1111aaaa2222bbbb
 ])
@@ -2273,5 +2273,32 @@ SHA256 e05a5191e214b1f05ae2448ebe493e55c6313ab68eaf040b83baa80e25f15d54
 SHA512 4db194ba2cb8b5e5cbb6f8d0dc1ec50be15cb20cdefa74b2b14a74032789b7411f4365dc4e69c7e3e37882f549d5f6e91b863eb51629e6ab72438e54b8eeedf5
 SHA512 5e0a11bf9c4f353b9197446d722e66cc322030e164929356e3fb669201597be77f3a44b4bd6f4fddf8746768809b43dae28f4fad1de315ef42a78e130847eb05
 ],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([openpgp v6 keys and signatures])
+AT_KEYWORDS([rpmsign sequoia signature v6])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
+
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-v6-ed25519-test.asc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list 036824f0ac60aed6f1a3256f88190469f6d7255e3d8e41c577233aa03e0bb9d3
+],
+[0],
+[036824f0ac60aed6f1a3256f88190469f6d7255e3d8e41c577233aa03e0bb9d3 v6-ed25519-testkey public key
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete 036824f0ac60aed6f1a3256f88190469f6d7255e3d8e41c577233aa03e0bb9d3
+],
+[0],
+[],
 [])
 RPMTEST_CLEANUP
