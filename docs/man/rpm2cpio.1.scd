@@ -20,7 +20,7 @@ _FILE_
 	An *rpm* package file. If *-* is passed, standard input is used.
 
 # OPTIONS
-*rpmcpio* has no options.
+*rpm2cpio* has no options.
 
 # EXIT STATUS
 On success, 0 is returned, a non-zero failure code otherwise.
