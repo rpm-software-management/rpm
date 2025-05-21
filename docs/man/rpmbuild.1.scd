@@ -200,7 +200,7 @@ See *rpm-common*(8)
 
 # SEE ALSO
 
-*gendiff*(1), *popt*(3), *rpm*(8), *rpm-common*(8),
+*gendiff*(1), *popt*(3), *rpm*(8), *rpm-common*(8), *rpmbuild-config*(5),
 *rpm2cpio*(1), *rpmkeys*(8), *rpmspec*(1), *rpmsign*(1),
 *rpm-setup-autosign*(1)
 
