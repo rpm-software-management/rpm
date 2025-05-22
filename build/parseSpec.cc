@@ -1360,6 +1360,9 @@ static rpmRC finalizeSpec(rpmSpec spec)
     if (!headerIsEntry(spec->packages->header, RPMTAG_GROUP)) {
 	headerPutString(spec->packages->header, RPMTAG_GROUP, "Unspecified");
     }
+    char *nevr = headerGetAsString(spec->sourcePackage->header, RPMTAG_NEVR);
+    headerPutString(spec->packages->header, RPMTAG_SOURCENEVR, nevr);
+    free(nevr);
 
     spec->rpmformat = rpmExpandNumeric("%{?_rpmformat}");
 
