@@ -132,12 +132,6 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
 
-    /* Skip all the old stuff v6 doesn't have */
-    if (rpmver >= 6) {
-	reserveTag = RPMSIGTAG_RESERVED;
-	goto reserve;
-    }
-
     if (SHA1) {
 	rpmtdReset(&td);
 	td.tag = RPMSIGTAG_SHA1;
