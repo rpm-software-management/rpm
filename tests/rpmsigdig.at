@@ -1612,3 +1612,31 @@ rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" hello-2.0-1.x86_64-badima.rpm
 ],
 [])
 RPMTEST_CLEANUP
+
+AT_SETUP([openpgp v6 keys and signatures])
+AT_KEYWORDS([rpmsign sequoia signature v6])
+AT_SKIP_IF([test x$PGP = xdummy])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-v6-ed25519-test.asc
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --list
+],
+[0],
+[ac60aed6-682474ea: v6-ed25519-testkey public key
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --delete ac60aed6-682474ea
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
