@@ -1350,7 +1350,7 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump /data/RPMS/attrtest-1.0-1.noarch.rpm
 # XXX the reserve tag size is currently WRONG here due to #3768
 RPMTEST_CHECK([
 cp /data/misc/rpmdump6-addsign-v6.txt expout
-runroot ${RPM_CONFIGDIR_PATH}/rpmdump /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm| sed -n '/^Signature:$/,/^Header:$/p'
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 | sed -n '/^Signature:$/,/^Header:$/p'
 ],
 [0],
 [expout],
@@ -1399,15 +1399,16 @@ SIGPGP: (none)
 [])
 
 RPMTEST_CHECK([
-runroot rpmsign --delsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+runroot rpmsign --delsign /data/RPMS/attrtest-1.0-1.noarch.rpm-v6
 ],
 [0],
-[],
+[/data/RPMS/attrtest-1.0-1.noarch.rpm-v6:
+],
 [])
 
 RPMTEST_CHECK([
 cp /data/misc/rpmdump6-delsign-v6.txt expout
-runroot ${RPM_CONFIGDIR_PATH}/rpmdump /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm| sed -n '/^Signature:$/,/^Header:$/p'
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 | sed -n '/^Signature:$/,/^Header:$/p'
 ],
 [0],
 [expout],
