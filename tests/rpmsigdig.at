@@ -1199,6 +1199,15 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [])
 
+# XXX the reserve tag size is currently WRONG here due to #3768
+RPMTEST_CHECK([
+cp /data/misc/rpmdump4-addsign-v6.txt expout
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /tmp/hello-2.0-1.x86_64.rpm | sed -n '/^Signature:$/,/^Header:$/p'
+],
+[0],
+[expout],
+[])
+
 RPMTEST_CHECK([
 # resigning with identical key shouldn't add anything
 runroot rpmsign --addsign --rpmv6 /tmp/hello-2.0-1.x86_64.rpm &> /dev/null
@@ -1288,6 +1297,13 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [])
 
+RPMTEST_CHECK([
+cp /data/misc/rpmdump4-delsign-v6.txt expout
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /tmp/hello-2.0-1.x86_64.rpm | sed -n '/^Signature:$/,/^Header:$/p'
+],
+[0],
+[expout],
+[])
 RPMTEST_CLEANUP
 
 AT_SETUP([rpmsign --addsign multisig v6])
@@ -1331,6 +1347,15 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump /data/RPMS/attrtest-1.0-1.noarch.rpm
 [],
 [])
 
+# XXX the reserve tag size is currently WRONG here due to #3768
+RPMTEST_CHECK([
+cp /data/misc/rpmdump6-addsign-v6.txt expout
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm| sed -n '/^Signature:$/,/^Header:$/p'
+],
+[0],
+[expout],
+[])
+
 RPMTEST_CHECK([
 for t in DSAHEADER RSAHEADER SIGGPG SIGPGP OPENPGP; do
     runroot rpm -qp --qf "$t: %{$t}\n" /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 | grep \(none\)
@@ -1371,6 +1396,21 @@ done
 SIGGPG: (none)
 SIGPGP: (none)
 ],
+[])
+
+RPMTEST_CHECK([
+runroot rpmsign --delsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+cp /data/misc/rpmdump6-delsign-v6.txt expout
+runroot ${RPM_CONFIGDIR_PATH}/rpmdump /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm| sed -n '/^Signature:$/,/^Header:$/p'
+],
+[0],
+[expout],
 [])
 RPMTEST_CLEANUP
 
