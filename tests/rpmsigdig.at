@@ -1310,26 +1310,30 @@ runroot rpmkeys --import /data/keys/*.pub
 [ignore])
 
 RPMTEST_CHECK([
-runroot rpmbuild -bb --quiet \
-	--define "_rpmfilever 6" \
-	/data/SPECS/attrtest.spec
-runroot rpmsign --addsign /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /dev/null
+runroot rpmsign --addsign /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 > /dev/null
 ],
 [0],
 [],
 [ignore])
 
 RPMTEST_CHECK([
-runroot rpmkeys -K /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+runroot rpmkeys -K /data/RPMS/attrtest-1.0-1.noarch.rpm-v6
 ],
 [0],
-[/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm: digests signatures OK
+[/data/RPMS/attrtest-1.0-1.noarch.rpm-v6: digests signatures OK
 ],
 [])
 
 RPMTEST_CHECK([
+runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 > /dev/null
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
 for t in DSAHEADER RSAHEADER SIGGPG SIGPGP OPENPGP; do
-    runroot rpm -qp --qf "$t: %{$t}\n" /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | grep \(none\)
+    runroot rpm -qp --qf "$t: %{$t}\n" /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 | grep \(none\)
 done
 ],
 [ignore],
@@ -1343,23 +1347,23 @@ SIGPGP: (none)
 RPMTEST_CHECK([
 runroot rpmsign --resign --rpmv4 \
 	--key-id E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 \
-	/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm > /dev/null
+	/data/RPMS/attrtest-1.0-1.noarch.rpm-v6 > /dev/null
 ],
 [0],
 [],
 [ignore])
 
 RPMTEST_CHECK([
-runroot rpmkeys -K /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+runroot rpmkeys -K /data/RPMS/attrtest-1.0-1.noarch.rpm-v6
 ],
 [0],
-[/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm: digests signatures OK
+[/data/RPMS/attrtest-1.0-1.noarch.rpm-v6: digests signatures OK
 ],
 [])
 
 RPMTEST_CHECK([
 for t in DSAHEADER RSAHEADER SIGGPG SIGPGP OPENPGP; do
-    runroot rpm -qp --qf "$t: %{$t}\n" /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm | grep \(none\)
+    runroot rpm -qp --qf "$t: %{$t}\n" /data/RPMS/attrtest-1.0-1.noarch.rpm-v6 | grep \(none\)
 done
 ],
 [ignore],
