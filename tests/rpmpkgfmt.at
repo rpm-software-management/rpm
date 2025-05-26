@@ -13,4 +13,37 @@ runroot_other ${RPM_CONFIGDIR_PATH}/rpmdump ${pkg}
 [0],
 [expout],
 [])
+
+RPMTEST_CHECK([
+rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm
+],
+[0],
+[4
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpm v6 format])
+AT_KEYWORDS([rpmformat v6])
+RPMDB_INIT
+
+RPMTEST_CHECK([
+rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/data/RPMS/attrtest-1.0-1.noarch.rpm-v6
+],
+[0],
+[6
+],
+[])
+RPMTEST_CLEANUP
+
+AT_SETUP([rpm v3 format])
+AT_KEYWORDS([rpmformat install query v3])
+RPMDB_INIT
+RPMTEST_CHECK([
+rpm -qp --qf "%{rpmformat}\n" /data/RPMS/hello-1.0-1.x86_64.rpm-v3
+],
+[0],
+[3
+],
+[ignore])
 RPMTEST_CLEANUP

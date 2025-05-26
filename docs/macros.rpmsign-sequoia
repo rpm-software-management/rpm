@@ -1,0 +1,26 @@
+#==============================================================================
+# ---- Sequoia signature macros.
+#	The signature to use and the location of configuration files for
+#	signing packages with Sequoia.
+#
+#	To enable signing with sequoia-sq, just copy this file to /etc/rpm:
+#	cp /usr/share/doc/rpm/macros.rpmsign-sequoia /etc/rpm/
+#
+# Unlike GnuPG, Sequoia doesn't support specifying the signer key by
+# email or name match, you need to supply the hex fingerprint (or keyid)
+#%_gpg_name
+#%_gpg_path
+
+%__gpg	/usr/bin/sq
+
+#	Macro(s) to hold the arguments passed to Sequoia for package
+#	signing.  Expansion result is parsed by popt, so be sure to use
+#	%{shescape} where needed.
+#
+
+%__gpg_sign_cmd %{__gpg} %{__gpg} sign \
+	%{?_gpg_sign_cmd_extra_args} \
+        %{?_gpg_name:--signer %{_gpg_name}} \
+        --binary --signature-file %{shescape:%{?__signature_filename}} \
+        %{?__plaintext_filename:-- %{shescape:%{__plaintext_filename}}}
+

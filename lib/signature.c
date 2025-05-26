@@ -120,6 +120,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
     int gpgSize = rpmExpandNumeric("%{__gpg_reserved_space}");
     rpm_off_t size32 = size;
     rpm_off_t payloadSize32 = payloadSize;
+    rpmTagVal reserveTag = RPMSIGTAG_RESERVEDSPACE;
 
     /* Prepare signature */
     if (SHA256) {
@@ -166,7 +167,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 	 * Put the 64bit size variants into the header, but
 	 * modify spaceSize so that the resulting header has
 	 * the same size. Note that this only works if all tags
-	 * with a lower number than RPMSIGTAG_RESERVEDSPACE are
+	 * with a lower number than RPMSIGTAG_RESERVEDSPACE/PAD are
 	 * already added and no tag with a higher number is
 	 * added yet.
 	 */
@@ -199,7 +200,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
     if (spaceSize > 0) {
 	reservedSpace = (uint8_t *)xcalloc(spaceSize, sizeof(char));
 	rpmtdReset(&td);
-	td.tag = RPMSIGTAG_RESERVEDSPACE;
+	td.tag = reserveTag;
 	td.count = spaceSize;
 	td.type = RPM_BIN_TYPE;
 	td.data = reservedSpace;

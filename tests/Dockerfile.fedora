@@ -13,6 +13,7 @@ RUN dnf -y install \
   autoconf \
   bubblewrap \
   cmake \
+  fedora-repos-rawhide \
   gettext-devel \
   debugedit \
   doxygen \
@@ -53,8 +54,21 @@ RUN dnf -y install \
   pandoc \
   libasan \
   libubsan
+
+RUN if which dnf5; then \
+	# Fedora 41+ \
+	rpm -e --nodeps --nodb \
+	    rpm-plugin-ima; \
+    else \
+	# Fedora 40 \
+	rpm -e --nodeps --nodb \
+	    rpm-sign-libs \
+	    python3-rpm; \
+    fi;
+
 # If updates to specific packages are needed, do it here
 # RUN dnf --enablerepo=updates update ...
+RUN dnf -y --enablerepo=rawhide install "sequoia-sq >= 1.3" "rpm-sequoia >= 1.8" "crypto-policies >= 20250402"
 RUN dnf clean all
 
 RUN echo "%_dbpath $(rpm --eval '%_dbpath')" > /root/.rpmmacros
@@ -65,17 +79,7 @@ RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
            /usr/bin/pkg-config
 
 # Self-destruct stock rpm
-RUN if which dnf5; then \
-	# Fedora 41+ \
-	rpm -e --nodeps --nodb \
-	    rpm-plugin-ima; \
-    else \
-	# Fedora 40 \
-	rpm -e --nodeps --nodb \
-	    rpm-sign-libs \
-	    python3-rpm; \
-    fi; \
-    rpm -e --nodeps --nodb \
+RUN rpm -e --nodeps --nodb \
 	rpm \
 	rpm-libs \
 	rpm-build-libs
