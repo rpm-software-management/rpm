@@ -45,9 +45,9 @@ static const char *sigTagName(uint32_t tag)
     case RPMSIGTAG_LONGARCHIVESIZE: return "Longarchivesize";
     case RPMSIGTAG_SHA256: return "Sha256";
     case RPMSIGTAG_FILESIGNATURES: return "Filesignatures";
-    case RPMSIGTAG_FILESIGNATURELENGTH: return "filesignaturelength";
-    case RPMSIGTAG_VERITYSIGNATURES: return "veritysignatures";
-    case RPMSIGTAG_VERITYSIGNATUREALGO: return "veritysignaturealgo";
+    case RPMSIGTAG_FILESIGNATURELENGTH: return "Filesignaturelength";
+    case RPMSIGTAG_VERITYSIGNATURES: return "Veritysignatures";
+    case RPMSIGTAG_VERITYSIGNATUREALGO: return "Veritysignaturealgo";
     case RPMSIGTAG_RESERVED: return "Reserved";
     default:
 	break;
