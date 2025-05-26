@@ -269,7 +269,10 @@ static int getOutputFrom(ARGV_t argv,
 	return -1;
     }
     
-    sighandler_t oldhandler = signal(SIGPIPE, SIG_IGN);
+    struct sigaction act, oact;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &act, &oact);
 
     child = fork();
     if (child < 0) {
@@ -285,7 +288,8 @@ static int getOutputFrom(ARGV_t argv,
 	goto exit;
     }
     if (child == 0) {
-	signal(SIGPIPE, SIG_DFL);
+	act.sa_handler = SIG_DFL;
+	sigaction(SIGPIPE, &act, NULL);
 
 	close(toProg[1]);
 	close(fromProg[0]);
@@ -424,7 +428,7 @@ reap:
     ret = 0;
 
 exit:
-    signal(SIGPIPE, oldhandler);
+    sigaction(SIGPIPE, &oact, NULL);
     return ret;
 }
 
