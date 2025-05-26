@@ -48,6 +48,7 @@ static const char *sigTagName(uint32_t tag)
     case RPMSIGTAG_FILESIGNATURELENGTH: return "Filesignaturelength";
     case RPMSIGTAG_VERITYSIGNATURES: return "Veritysignatures";
     case RPMSIGTAG_VERITYSIGNATUREALGO: return "Veritysignaturealgo";
+    case RPMSIGTAG_OPENPGP: return "Openpgp";
     case RPMSIGTAG_RESERVED: return "Reserved";
     default:
 	break;
