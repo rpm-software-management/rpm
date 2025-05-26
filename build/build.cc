@@ -436,6 +436,10 @@ static int buildSpec(rpmts ts, BTA_t buildArgs, rpmSpec spec, int what)
 	    what &= ~(RPMBUILD_PREP|RPMBUILD_RMBUILD);
 	}
 
+	/* If we don't create a build dir, we can't very well remove it */
+	if (!(what & RPMBUILD_MKBUILDDIR))
+	    what &= ~(RPMBUILD_RMBUILD);
+
 	if ((what & RPMBUILD_CHECKBUILDREQUIRES) &&
 	    (rc = doCheckBuildRequires(ts, spec, test)))
 		goto exit;

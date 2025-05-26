@@ -92,6 +92,52 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-1.0-1.src.rpm
 
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmbuild -rs srpm])
+AT_KEYWORDS([build])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bs /data/SPECS/minibr.spec
+],
+[0],
+[Wrote: /build/SRPMS/minibr-1-1.src.rpm
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmbuild -rs /build/SRPMS/minibr-1-1.src.rpm
+],
+[0],
+[Installing /build/SRPMS/minibr-1-1.src.rpm
+Wrote: /build/SRPMS/minibr-1-1.src.rpm
+],
+[ignore])
+
+# must not leave junk behind
+RPMTEST_CHECK([
+ls ${RPMTEST}/build/BUILD
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -rs --with genbr /build/SRPMS/minibr-1-1.src.rpm
+],
+[0],
+[Installing /build/SRPMS/minibr-1-1.src.rpm
+Wrote: /build/SRPMS/minibr-1-1.src.rpm
+],
+[ignore])
+
+# must not leave junk behind
+RPMTEST_CHECK([
+ls ${RPMTEST}/build/BUILD
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmbuild -b buildsystem])
 AT_KEYWORDS([build buildsystem])
 
