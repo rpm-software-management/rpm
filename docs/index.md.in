@@ -1,0 +1,10 @@
+---
+layout: default
+title: rpm.org - Documentation
+---
+
+# RPM @CMAKE_PROJECT_VERSION@ Documentation
+
+* [Man pages](man/)
+* [Reference Manual](manual/)
+* [API Documentation](api/)
