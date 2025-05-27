@@ -50,19 +50,26 @@ The Signature can contain several tags of different types:
 Name        	    | Tag   | Header Type
 --------------------|-------|------------
 HEADERSIGNATURES    |   62  | BIN
-DSA                 |  267  | BIN
-RSA                 |  268  | BIN
+DSA (legacy)        |  267  | BIN
+RSA (legacy)        |  268  | BIN
 SHA256              |  272  | STRING
 FILESIGNATURES      |  274  | STRING_ARRAY
 VERITYSIGNATURES    |  276  | STRING_ARRAY
 VERITYSIGNATUREALGO |  277  | INT_32
+OPENPGP             |  278  | STRING_ARRAY
 RESERVED            |  999  | BIN
 
 All packages carry at least HEADERSIGNATURES, SHA256 and RESERVED tags.
 
-On digitally signed packages, one of RSA or DSA tags is present and
-contains an OpenPGP signature on the Header. The RSA tag is used for
-RSA signatures and the DSA tag is used for EcDSA signatures.
+On digitally signed packages, the OPENPGP tag will contain one or more
+base64-encoded OpenPGP signatures on the Header. The number of signatures
+per package is unlimited except for the limits presented by the containing
+header. The signatures in the OPENPGP tag are known as RPM v6 signatures.
+
+In addition, a v6 package with an RPM v6 signature may also have one
+one of the RSA or DSA tags present, known as RPM v4 signatures.
+These exist solely for the purpose of RPM 4.x compatability, RPM will ignore
+v4 signature tags if v6 signatures are present.
 
 Tags numbers above 999, including those of v3 (header+payload) signatures,
 are considered illegal on v6 packages.
