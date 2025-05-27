@@ -174,7 +174,7 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
 	 * Put the 64bit size variants into the header, but
 	 * modify spaceSize so that the resulting header has
 	 * the same size. Note that this only works if all tags
-	 * with a lower number than RPMSIGTAG_RESERVEDSPACE/PAD are
+	 * with a lower number than RPMSIGTAG_RESERVEDSPACE/RESERVED are
 	 * already added and no tag with a higher number is
 	 * added yet.
 	 */
