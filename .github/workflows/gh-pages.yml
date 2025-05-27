@@ -35,7 +35,7 @@ jobs:
         run: |
           mkdir _build
           podman run -v $PWD:/srv:z --workdir /srv/_build --rm rpm sh -c \
-            "cmake .. && make pages"
+            "cmake -DWITH_DOXYGEN=ON .. && make pages"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
