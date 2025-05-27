@@ -55,7 +55,7 @@ css: manpage.css
 
 FOOTER="\
 <footer>
-<p id=\"version\">RPM @CMAKE_PROJECT_VERSION@</p>
+<p id=\"version\">RPM {{ site.version }}</p>
 <p id=\"index\"><a href="./">Index</a></p>
 <p id=\"date\">$(date -I)</p>
 </footer>
