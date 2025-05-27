@@ -56,3 +56,5 @@ install(FILES
 	manual/tsort.md
 	TYPE DOC
 )
+
+configure_file(index.md.in index.md @ONLY)
