@@ -12,6 +12,7 @@
 SCD_FILE=$1
 OUT_FILE=$2
 SCD_BASE=$(basename ${SCD_FILE%.*})
+OUT_BASE=$(basename ${OUT_FILE%.*})
 
 # Conventional name(SECTION) string
 MAN_NAME=$(echo $SCD_BASE | sed 's/\.\(.\)$/(\1)/')
@@ -42,9 +43,10 @@ get_type() {
 
 HEADER="\
 ---
+topic: manpage
 layout: default
-title: rpm.org - $MAN_NAME
-name: $MAN_NAME
+title: $MAN_NAME
+slug: $OUT_BASE
 type: $(get_type $MAN_NAME $MAN_SECN)
 summary: $(get_summary $SCD_FILE)
 css: manpage.css
