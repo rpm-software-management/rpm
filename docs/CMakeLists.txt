@@ -1,3 +1,8 @@
+set(site_dir ${CMAKE_BINARY_DIR}/site)
+
+# Generates Jekyll source pages
+add_custom_target(pages)
+
 if (WITH_DOXYGEN)
     find_package(Doxygen REQUIRED)
 endif()
@@ -6,13 +11,14 @@ if (DOXYGEN_FOUND)
 	file(GLOB headers ${CMAKE_SOURCE_DIR}/include/rpm/*.h)
 	set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
 	set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
+	set(DOXYGEN_HTML_OUTPUT ${site_dir}/api)
 	if (ENABLE_WERROR)
 		set(DOXYGEN_WARN_AS_ERROR YES)
 	endif()
 	doxygen_add_docs(apidoc librpm/Doxyheader.h ${headers}
 			ALL USE_STAMP_FILE)
-	set(doxsrc ${CMAKE_CURRENT_BINARY_DIR})
-	install(DIRECTORY ${doxsrc}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
+	add_dependencies(pages apidoc)
+	install(DIRECTORY ${DOXYGEN_HTML_OUTPUT}/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/API)
 endif()
 
 set(manuals
@@ -53,7 +59,6 @@ set(manuals
 install(FILES ${manuals} TYPE DOC)
 
 # Configure the Jekyll site to build
-set(site_dir ${CMAKE_BINARY_DIR}/site)
 set(site_files
 	_layouts/default.html
 	_layouts/favicon.ico
@@ -68,9 +73,6 @@ configure_file(_config.yml.in ${site_dir}/_config.yml @ONLY)
 foreach(file ${site_files})
 	configure_file(${file} ${site_dir}/${file} COPYONLY)
 endforeach()
-
-# Generates additional Jekyll pages to build
-add_custom_target(pages)
 
 if (PODMAN)
 	option(JEKYLL_SERVE "Serve site locally when built" ON)
