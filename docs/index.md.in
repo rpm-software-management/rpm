@@ -3,7 +3,7 @@ layout: default
 title: rpm.org - Documentation
 ---
 
-# RPM {{ site.version }} Documentation
+# RPM @CMAKE_PROJECT_VERSION@ Documentation
 
 * [Man pages](man/)
 * [Reference Manual](manual/)

@@ -65,11 +65,10 @@ set(site_files
 	assets/css/manpage.css
 	man/index.md
 	Gemfile
-	index.md
 	${manuals}
 )
 file(MAKE_DIRECTORY ${site_dir})
-configure_file(_config.yml.in ${site_dir}/_config.yml @ONLY)
+configure_file(index.md.in ${site_dir}/index.md @ONLY)
 foreach(file ${site_files})
 	configure_file(${file} ${site_dir}/${file} COPYONLY)
 endforeach()
