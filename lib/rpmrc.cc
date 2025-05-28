@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <filesystem>
 
 #include <fcntl.h>
 #include <stdarg.h>
@@ -47,6 +48,8 @@
 
 using wrlock = std::unique_lock<std::shared_mutex>;
 using rdlock = std::shared_lock<std::shared_mutex>;
+
+namespace fs = std::filesystem;
 
 static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
@@ -358,6 +361,83 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
+static void moveConfigFiles(std::string userdir)
+{
+    fs::path home = std::getenv("HOME");
+    std::error_code ec;
+    std::error_code ec2;
+    fs::path oldmacros = home / ".rpmmacros";
+    fs::path oldrpmrc = home / ".rpmrc";
+    fs::path macros_target = "";
+    fs::path rpmrc_target = "";
+
+    if (userdir.substr(0, 2) == "~/")
+	userdir.replace(0, 1, home);
+
+    fs::path userdir_path = userdir;
+    fs::path newmacros = userdir_path / "macros";
+    fs::path newrpmrc = userdir_path / "rpmrc";
+
+    if (!fs::is_regular_file(oldmacros) && !fs::is_regular_file(oldrpmrc))
+	return;
+
+    fs::create_directories(userdir_path, ec);
+    if (ec) goto err;
+
+    if (fs::is_regular_file(oldmacros)) {
+	fs::copy(oldmacros, newmacros, ec);
+	if (ec) goto err;
+	macros_target = fs::relative(newmacros, home, ec);
+	if (ec) goto err;
+    }
+    if (fs::is_regular_file(oldrpmrc)) {
+	fs::copy(oldrpmrc, newrpmrc, ec);
+	if (ec) goto err;
+	rpmrc_target = fs::relative(newrpmrc, home, ec);
+	if (ec) goto err;
+    }
+
+    if (fs::is_regular_file(oldmacros)) {
+	fs::remove(oldmacros, ec);
+	if (ec) goto undo_remove;
+	fs::create_symlink(macros_target , oldmacros, ec);
+	if (ec) goto undo_remove;
+    }
+    if (fs::is_regular_file(oldrpmrc)) {
+	fs::remove(oldrpmrc, ec);
+	if (ec) goto undo_remove;
+	fs::create_symlink(rpmrc_target , oldrpmrc, ec);
+	if (ec) goto undo_remove;
+    }
+
+    if (fs::is_symlink(oldmacros))
+	rpmlog(RPMLOG_WARNING, "Migrated %s to %s (leaving a symlink)\n",
+	       oldmacros.c_str(), newmacros.c_str());
+    if (fs::is_symlink(oldrpmrc))
+	rpmlog(RPMLOG_WARNING, "Migrated %s to %s (leaving a symlink)\n",
+	       oldrpmrc.c_str(), newrpmrc.c_str());
+    return;
+undo_remove:
+    if (fs::is_symlink(oldmacros))
+	fs::remove(oldmacros, ec2);
+    if (fs::is_symlink(oldrpmrc))
+	fs::remove(oldrpmrc, ec2);
+
+    if (fs::is_regular_file(newmacros))
+	fs::copy(oldmacros, newmacros, ec2);
+    if (fs::is_regular_file(newrpmrc))
+	fs::copy(oldrpmrc, newrpmrc, ec2);
+err:
+    /* userdir_path did not exist at the beginning */
+    fs::remove_all(userdir_path, ec2);
+    if (fs::exists(oldmacros))
+	rpmlog(RPMLOG_ERR, "Could not migrate %s to %s: %s\n",
+	       oldmacros.c_str(), newmacros.c_str(), ec.message().c_str());
+    if (fs::exists(oldrpmrc))
+	rpmlog(RPMLOG_ERR, "Could not migrate %s to %s: %s\n",
+	       oldrpmrc.c_str(), newrpmrc.c_str(), ec.message().c_str());
+}
+
 static void setDefaults(void)
 {
     /* If either is missing, we need to go through this whole dance */
@@ -380,6 +460,9 @@ static void setDefaults(void)
 	const char *oldmacros = "~/.rpmmacros";
 	const char *oldrc = "~/.rpmrc";
 	if (rpmGlob(oldmacros, NULL, NULL) == 0 || rpmGlob(oldrc, NULL, NULL) == 0) {
+	    
+	    moveConfigFiles(userdir);
+	    
 	    free(usermacros);
 	    free(userrc);
 	    usermacros = xstrdup(oldmacros);
