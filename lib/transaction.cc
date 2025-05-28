@@ -1724,6 +1724,7 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
      * (which is only happens with %prein and %preun scriptlets) or not.
      */
     if (rc != RPMRC_OK) {
+	ts->scriptError = 1;
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
@@ -1879,7 +1880,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, PKG_TRANSFILETRIGGERIN);
     }
     /* Final exit code */
-    rc = nfailed ? -1 : 0;
+    rc = (nfailed || ts->scriptError) ? -1 : 0;
 
 exit:
     /* Run post transaction hook for all plugins */

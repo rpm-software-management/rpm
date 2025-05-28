@@ -136,7 +136,7 @@ RPMTEST_CHECK([
 runroot rpm -U ${pkgfile1}
 runroot rpm -U --define "exitpost 1" ${pkgfile2}
 ],
-[0],
+[1],
 [],
 [warning: %post(scriptfail-2.0-1.noarch) scriptlet failed, exit status 1
 ])
@@ -170,7 +170,7 @@ RPMTEST_CHECK([
 runroot rpm -e ${pkgname}
 runroot rpm -U --define "exitposttrans 1" ${pkgfile1}
 ],
-[0],
+[1],
 [],
 [warning: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
@@ -204,7 +204,7 @@ runroot rpm -e ${pkgname}
 runroot rpm -U ${pkgfile1}
 runroot rpm -U --define "exitpostun 1" ${pkgfile2}
 ],
-[0],
+[1],
 [],
 [warning: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
@@ -222,7 +222,7 @@ runroot rpm -e ${pkgname}
 runroot rpm -U ${pkgfile1}
 runroot rpm -U --define "exitpostuntrans 1" ${pkgfile2}
 ],
-[0],
+[1],
 [],
 [warning: %postuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
@@ -425,7 +425,7 @@ runroot rpm -U \
 	--nosignature \
 	/data/RPMS/foo-1.0-1.noarch.rpm
 ],
-[0],
+[1],
 [triggers-1.0-1 TRIGGERPREIN 1 0
 triggers-1.0-1 TRIGGERIN 1 1
 ],
@@ -437,7 +437,7 @@ runroot rpm -e \
 	--define "failtriggerun 1" \
 	foo
 ],
-[0],
+[1],
 [triggers-1.0-1 TRIGGERUN 1 0
 triggers-1.0-1 TRIGGERPOSTUN 1 0
 ],
@@ -450,7 +450,7 @@ runroot rpm -U \
 	--nosignature \
 	/data/RPMS/foo-1.0-1.noarch.rpm
 ],
-[0],
+[1],
 [triggers-1.0-1 TRIGGERPREIN 1 0
 triggers-1.0-1 TRIGGERIN 1 1
 ],
@@ -462,7 +462,7 @@ runroot rpm -e \
 	--define "failtriggerpostun 1" \
 	foo
 ],
-[0],
+[1],
 [triggers-1.0-1 TRIGGERUN 1 0
 triggers-1.0-1 TRIGGERPOSTUN 1 0
 ],
@@ -675,7 +675,7 @@ runroot rpm -U \
 	--define "failfiletriggerin 1" \
 	/build/RPMS/noarch/testdoc-1.0-1.noarch.rpm
 ],
-[0],
+[1],
 [FILETRIGGERIN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -691,7 +691,7 @@ runroot rpm -e \
 	--define "failtransfiletriggerun 1" \
 	testdoc
 ],
-[0],
+[1],
 [TRANSFILETRIGGERUN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -711,7 +711,7 @@ runroot rpm -U \
 	--define "failtransfiletriggerin 1" \
 	/build/RPMS/noarch/testdoc-1.0-1.noarch.rpm
 ],
-[0],
+[1],
 [FILETRIGGERIN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -727,7 +727,7 @@ runroot rpm -e \
 	--define "failtransfiletriggerun 1" \
 	testdoc
 ],
-[0],
+[1],
 [TRANSFILETRIGGERUN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -748,7 +748,7 @@ runroot rpm -e \
 	--define "failfiletriggerun 1" \
 	testdoc
 ],
-[0],
+[1],
 [TRANSFILETRIGGERUN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -769,7 +769,7 @@ runroot rpm -e \
 	--define "failfiletriggerpostun 1" \
 	testdoc
 ],
-[0],
+[1],
 [TRANSFILETRIGGERUN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
@@ -790,7 +790,7 @@ runroot rpm -e \
 	--define "failtransfiletriggerpostun 1" \
 	testdoc
 ],
-[0],
+[1],
 [TRANSFILETRIGGERUN
 /usr/share/doc/testdoc/examples/example1
 /usr/share/doc/testdoc/examples/example2
