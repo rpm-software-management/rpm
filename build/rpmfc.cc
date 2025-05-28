@@ -66,6 +66,7 @@ struct rpmfc_s {
     int fwhite;		/*!< no. of "white" files */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
+    int rpmformat;	/*!< Rpm package format */
     string buildRoot;	/*!< (Build) root dir */
 
     vector<rpmfcAttr> atypes;	/*!< known file attribute types */
@@ -1611,10 +1612,16 @@ rpmRC rpmfcApply(rpmfc fc)
     }
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
-	/* ... then generate dependencies using %{__find_requires} et al. */
-	rpmlog(RPMLOG_WARNING,
-	    _("Deprecated external dependency generator is used!\n"));
-	rc = rpmfcApplyExternal(fc);
+	if (fc->rpmformat < 6) {
+	    /* ... then generate dependencies using %{__find_requires} et al. */
+	    rpmlog(RPMLOG_WARNING,
+		_("Deprecated external dependency generator is used!\n"));
+	    rc = rpmfcApplyExternal(fc);
+	} else {
+	    rpmlog(RPMLOG_ERR,
+		_("External dependency generator is incompatible with v6 packages\n"));
+	    rc = RPMRC_FAIL;
+	}
     } else {
 	/* ... otherwise generate per-file dependencies */
 	rc = rpmfcApplyInternal(fc);
@@ -1645,6 +1652,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     fc->pkg = pkg;
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
+    fc->rpmformat = spec->rpmformat;
 
     rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
     while ((idx = rpmfiNext(fi)) >= 0) {
