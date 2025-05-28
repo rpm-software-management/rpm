@@ -1283,12 +1283,17 @@ runroot rpmbuild -bb --quiet \
 ])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP_RW([Dependency generation 1])
+RPMTEST_SETUP_RW([Dependency generation 1.1])
 AT_KEYWORDS([build])
 
+RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet \
 		--define "_binary_payload w9.gzdio" \
 		/data/SPECS/filedep.spec
+],
+[0],
+[],
+[])
 
 RPMTEST_CHECK([
 runroot rpm  -qp --requires /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
@@ -1310,9 +1315,9 @@ runroot rpm -qp --provides /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
 ],
 [])
 
-RPMTEST_CHECK([
-runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEREQUIRE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
-],
+RPMTEST_CHECK([[
+runroot rpm -qp --qf '["%{FILENAMES}\t%{FILEREQUIRE}"\n]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
 [0],
 ["/etc/foo.conf	"
 "/usr/bin/bar	/bin/f00f"
@@ -1322,9 +1327,9 @@ runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEREQUIRE}"\n]]' /build/RPMS/noarch/f
 ],
 [])
 
-RPMTEST_CHECK([
-runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEPROVIDE}"\n]]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
-],
+RPMTEST_CHECK([[
+runroot rpm -qp --qf '["%{FILENAMES}\t%{FILEPROVIDE}"\n]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
 [0],
 ["/etc/foo.conf	"
 "/usr/bin/bar	"
@@ -1332,6 +1337,100 @@ runroot rpm -qp --qf '[["%{FILENAMES}\t%{FILEPROVIDE}"\n]]' /build/RPMS/noarch/f
 "/usr/share/doc/filedep	"
 "/usr/share/doc/filedep/README	"
 ],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp \
+	--qf '[%{FILEDEPENDSN}\n]\n' \
+	--qf '[%{FILEDEPENDSX}\n]\n' \
+	/build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+[0
+1
+1
+0
+0
+
+0
+0
+1
+0
+0
+0
+0
+
+],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([Dependency generation 1.2])
+AT_KEYWORDS([build])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+		--define "_binary_payload w9.gzdio" \
+		--define "_use_internal_dependency_generator 0" \
+		/data/SPECS/filedep.spec
+],
+[0],
+[],
+[warning: Deprecated external dependency generator is used!
+])
+
+RPMTEST_CHECK([
+runroot rpm  -qp --requires /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+],
+[0],
+[/bin/f00f
+/bin/sh
+rpmlib(CompressedFileNames) <= 3.0.4-1
+rpmlib(FileDigests) <= 4.6.0-1
+rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qp --provides /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+],
+[0],
+[filedep = 1.0-1
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --qf '["%{FILENAMES}\t%{FILEREQUIRE}"\n]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+["/etc/foo.conf	"
+"/usr/bin/bar	"
+"/usr/bin/foo	"
+"/usr/share/doc/filedep	"
+"/usr/share/doc/filedep/README	"
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp --qf '["%{FILENAMES}\t%{FILEPROVIDE}"\n]' /build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+["/etc/foo.conf	"
+"/usr/bin/bar	"
+"/usr/bin/foo	"
+"/usr/share/doc/filedep	"
+"/usr/share/doc/filedep/README	"
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp \
+	--qf '[%{FILEDEPENDSN}\n]\n' \
+	--qf '[%{FILEDEPENDSX}\n]\n' \
+	/build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+[
+]
 [])
 RPMTEST_CLEANUP
 
