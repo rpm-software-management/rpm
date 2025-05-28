@@ -101,6 +101,7 @@ struct rpmts_s {
     int min_writes;             /*!< macro minimize_writes used */
 
     time_t overrideTime;	/*!< Time value used when overriding system clock. */
+    int scriptError;		/*!< scriptlet error tracking */
 };
 
 /** \ingroup rpmts
