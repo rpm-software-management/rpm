@@ -464,6 +464,7 @@ static PyObject *rpmfiles_archive(rpmfilesObject *s,
     } else {
 	archive = rpmfiNewArchiveReader(fd, s->files, RPMFI_ITER_READ_ARCHIVE);
     }
+    Py_DECREF(fdo);
 
     return rpmarchive_Wrap(rpmarchive_Type, s->files, archive);
 }
