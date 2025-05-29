@@ -138,12 +138,16 @@ static PyObject *rpmarchive_readto(rpmarchiveObject *s,
 	return NULL;
     }
 
-    if (s->archive == NULL)
+    if (s->archive == NULL) {
+	Py_DECREF(fdo);
 	return rpmarchive_closed();
+    }
+
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmfiArchiveReadToFile(s->archive, rpmfdGetFd(fdo), nodigest);
     Py_END_ALLOW_THREADS
+    Py_DECREF(fdo);
 
     if (rc)
 	return rpmarchive_error(rc);
@@ -163,12 +167,15 @@ static PyObject *rpmarchive_writeto(rpmarchiveObject *s,
 	return NULL;
     }
 
-    if (s->archive == NULL)
+    if (s->archive == NULL) {
+	Py_DECREF(fdo);
 	return rpmarchive_closed();
+    }
 
     Py_BEGIN_ALLOW_THREADS
     rc = rpmfiArchiveWriteFile(s->archive, rpmfdGetFd(fdo));
     Py_END_ALLOW_THREADS
+    Py_DECREF(fdo);
 
     if (rc)
 	return rpmarchive_error(rc);
