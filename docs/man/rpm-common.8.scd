@@ -50,10 +50,10 @@ options and operations documented in this manual:
 
 *-E* '_EXPR_',
 *--eval*='_EXPR_'
-	Prints macro expansion of _EXPR_.
+	Prints *rpm-macroproc*(7) expansion of _EXPR_.
 
 *--load* _FILE_
-	Load an individual macro file.
+	Load an individual *rpm-macrofile*(5).
 
 *--macros* _FILELIST_
 	Replace the list of macro files to be loaded with _FILELIST_.
@@ -170,4 +170,4 @@ On success, 0 is returned, a non-zero failure code otherwise.
 ```
 
 # SEE ALSO
-*popt*(3), *rpm*(8) *rpm-config*(5), *rpm-rpmrc*(5)
+*popt*(3), *rpm*(8) *rpm-config*(5), *rpm-rpmrc*(5), *rpm-macroproc*(7)
