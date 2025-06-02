@@ -18,9 +18,9 @@ _/etc/rpm/%{\_target}/macros_++
 _~/.config/rpm/macros_
 
 # DESCRIPTION
-The primary configuration mechanism in *rpm* is via macros. On startup,
-*rpm* reads a set of macro files (*rpm-macrofile*(5)) as defined
-in the _macro path_.
+The primary configuration mechanism in *rpm* is *rpm-macroproc*(7).
+On startup, *rpm* reads a set of *rpm-macrofile*(5) files determined
+by the _macro path_.
 
 Each file or *glob*(7) pattern in the colon-separated _macro path_ is
 read sequentially by *rpm* for macro definitions. *%{\_target}* is
@@ -235,4 +235,4 @@ If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
 in the _macro path_.
 
 # SEE ALSO
-*rpm*(8), *rpm-common*(8), *rpm-macrofile*(5), *rpm-rpmrc*(5)
+*rpm*(8), *rpm-common*(8), *rpm-macrofile*(5), *rpm-rpmrc*(5), *rpm-macroproc*(7)

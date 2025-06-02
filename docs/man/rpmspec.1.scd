@@ -124,7 +124,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	```
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpmbuild*(1), *rpm-queryformat*(7)
+*popt*(3), *rpm*(8), *rpmbuild*(1), *rpm-queryformat*(7), *rpm-macroproc*(7)
 
 *rpmspec --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
