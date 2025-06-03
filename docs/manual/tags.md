@@ -304,6 +304,7 @@ Tag Name          | Value| Type         | Description
 ------------------|------|--------------|------------
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
+Openpgp           | 278  | string array | OpenPGP signature(s) of the header, base64 encoded
 Payloaddigest     | 5092 | string array | Cryptographic digest of the compressed payload.
 Payloaddigestalgo | 5093 | int32        | ID of the payload digest algorithm.
 Payloaddigestalt  | 5097 | string array | Cryptographic digest of the uncompressed payload.
@@ -444,6 +445,7 @@ Longsigsize | Header+payload size in 64bit format
 
 Tag Name              | Value| Type         | Description
 ----------------------|------|--------------|------------
+Openpgp               |  278 | string array | All OpenPGP signature(s) in the header, including legacy ones (base64 encoded)
 Origfilenames         | 5007 | string array | Original Filenames in relocated packages.
 Providenevrs          | 5042 | string array | Formatted `name [op version]` provide dependency strings.
 Conflictnevrs         | 5044 | string array | Formatted `name [op version]` conflict dependency strings.
@@ -451,6 +453,7 @@ Obsoletenevrs         | 5043 | string array | Formatted `name [op version]` obso
 Enhancenevrs          | 5061 | string array | Formatted `name [op version]` enhance dependency strings.
 Recommendnevrs        | 5058 | string array | Formatted `name [op version]` recommend dependency strings.
 Requirenevrs          | 5041 | string array | Formatted `name [op version]` require dependency strings.
+Rpmformat             | 5114 | int32        | Detected rpm format version (3/4/6)
 Suggestnevrs          | 5059 | string array | Formatted `name [op version]` suggest dependency strings.
 Supplementnevrs       | 5060 | string array | Formatted `name [op version]` supplement dependency strings.
 Sysusers              | 5109 | string array | Formatted systemd-sysusers lines for the package. |

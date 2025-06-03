@@ -346,6 +346,7 @@ nohdrs
 0
 nosig
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
+    Header OpenPGP signature: NOTFOUND
     Header RSA signature: NOTFOUND
     Header DSA signature: NOTFOUND
     Header SHA256 digest: OK

@@ -96,7 +96,7 @@ Install Date: %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n\
 Group       : %{GROUP}\n\
 Size        : %{LONGSIZE}\n\
 %|LICENSE?{License     : %{LICENSE}}|\n\
-Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig}}:{%|SIGGPG?{%{SIGGPG:pgpsig}}:{%|SIGPGP?{%{SIGPGP:pgpsig}}:{(none)}|}|}|}|\n\
+Signature   :%|OPENPGP?{[\n              %{OPENPGP:pgpsig}]}:{ (none)}|\n\
 Source RPM  : %{SOURCERPM}\n\
 Build Date  : %{BUILDTIME:date}\n\
 Build Host  : %{BUILDHOST}\n\
