@@ -1664,13 +1664,14 @@ AT_SKIP_IF([test x$PGP = xdummy])
 RPMDB_INIT
 
 RPMTEST_CHECK([
-cat << EOF > ${HOME}/.config/rpm/macros
-%_openpgp_sign sq
-%_openpgp_sign_id 036824F0AC60AED6F1A3256F88190469F6D7255E3D8E41C577233AA03E0BB9D3
+RPM_DOCDIR=$(runroot rpm --eval '%_defaultdocdir')
+cat "${RPMTEST}${RPM_DOCDIR}/rpm/macros.rpmsign-sequoia" >> ${HOME}/.rpmmacros
+cat << EOF >> ${HOME}/.rpmmacros
+%_gpg_name 036824F0AC60AED6F1A3256F88190469F6D7255E3D8E41C577233AA03E0BB9D3
 %_sq_path ${HOME}/.config/rpm/sq
 EOF
 
-runroot sq --home ${HOME}/.config/rpm/sq key import /data/keys/*v6*.secret
+runroot_other sq key import /data/keys/*v6*.secret
 ],
 [0],
 [ignore],
@@ -1681,7 +1682,8 @@ cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
 runroot rpmsign --addsign /tmp/hello-2.0-1.x86_64.rpm
 ],
 [1],
-[],
+[/tmp/hello-2.0-1.x86_64.rpm:
+],
 [error: Unsupported OpenPGP pubkey algorithm 27 for rpm v3/v4 signatures
 ])
 
@@ -1689,7 +1691,8 @@ RPMTEST_CHECK([
 runroot rpmsign --addsign --rpmv6 /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
-[],
+[/tmp/hello-2.0-1.x86_64.rpm:
+],
 [])
 
 # The test reflects what I *assume* this should return as v6 key ids are the
