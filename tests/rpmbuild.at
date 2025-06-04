@@ -1529,9 +1529,9 @@ AT_KEYWORDS([build])
 RPMTEST_CHECK([
 runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/libhello.so
-runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/libhello.so
 runroot chmod a+x /data/misc/libhello.so
-runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/libhello.so
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1544,11 +1544,10 @@ rtld(GNU_HASH)
 [])
 
 RPMTEST_CHECK([
-runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/libhello.so.1.0.0
-runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P --full-name-version-fallback /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P --provide-version-fallback=1.0.0 /data/misc/libhello.so
 runroot chmod a+x /data/misc/libhello.so.1.0.0
-runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P --full-name-version-fallback /data/misc/libhello.so
+runroot ${RPM_CONFIGDIR_PATH}/elfdeps -P --provide-version-fallback=1.0.0 /data/misc/libhello.so
 ],
 [0],
 [libhello.so()(64bit) = 1.0.0
@@ -1560,9 +1559,9 @@ RPMTEST_SKIP_IF([! $HAVE_GNU_DLFCN])
 RPMTEST_CHECK([
 runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/helloexe
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/helloexe
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/helloexe
 runroot chmod a+x /data/misc/helloexe
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/helloexe
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/helloexe
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1576,9 +1575,9 @@ RPMTEST_SKIP_IF([! $HAVE_GNU_DLFCN])
 RPMTEST_CHECK([
 runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/hellopie
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/hellopie
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/hellopie
 runroot chmod a+x /data/misc/hellopie
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/hellopie
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/hellopie
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1592,9 +1591,9 @@ RPMTEST_SKIP_IF([$HAVE_GNU_DLFCN])
 RPMTEST_CHECK([
 runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/helloexe
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/helloexe
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/helloexe
 runroot chmod a+x /data/misc/helloexe
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/helloexe
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/helloexe
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)
@@ -1608,9 +1607,9 @@ RPMTEST_SKIP_IF([$HAVE_GNU_DLFCN])
 RPMTEST_CHECK([
 runroot setfattr -n user.rpm_elf_so_version -v 1.0.0 /data/misc/libhello.so.1.0.0
 runroot chmod a-x /data/misc/hellopie
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/hellopie
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/hellopie
 runroot chmod a+x /data/misc/hellopie
-runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --full-name-version-fallback /data/misc/hellopie
+runroot env LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}/data/misc ${RPM_CONFIGDIR_PATH}/elfdeps -R --require-version-fallback /data/misc/hellopie
 ],
 [0],
 [libc.so.6(GLIBC_2.2.5)(64bit)

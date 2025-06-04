@@ -554,8 +554,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #
 # Generate minimum versions for ELF libraries that don't provide
 # versioned symbol?
-#%_elf_provide_fallback_versions   --full-name-version-fallback
-#%_elf_require_fallback_versions   --full-name-version-fallback
+#%_elf_provide_fallback_versions   --provide-version-fallback=%{_elf_so_version}
+#%_elf_require_fallback_versions   --require-version-fallback
 
 #
 # ELF libraries will usually inherit a version from their package,

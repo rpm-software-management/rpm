@@ -22,7 +22,8 @@
 
 #define XATTR_NAME_SOVERS "user.rpm_elf_so_version"
 
-int full_name_version_fallback = 0;
+char *provide_version_fallback = NULL;
+int require_version_fallback = 0;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
@@ -358,18 +359,18 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s) {
-			char *full_name_ver = NULL;
+			char *require_ver = NULL;
 			/*
 			 * If soname matches an item already in the deps, then
 			 * it had versioned symbols and doesn't require fallback.
 			 */
-			if (full_name_version_fallback &&
+			if (require_version_fallback &&
 			      !findSonameInDeps(ei->requires_, s)) {
-			    full_name_ver = getFullNameVerFromShLink(s);
+			    require_ver = getFullNameVerFromShLink(s);
 			}
-			if (full_name_ver) {
-			    addSoDep(ei->requires_, s, "", ei->marker, ">=", full_name_ver);
-			    free(full_name_ver);
+			if (require_ver) {
+			    addSoDep(ei->requires_, s, "", ei->marker, ">=", require_ver);
+			    free(require_ver);
 			} else {
 			    addSoDep(ei->requires_, s, "", ei->marker, "", "");
 			}
@@ -474,13 +475,8 @@ static int processFile(const char *fn, int dtype)
 	    ei->soname = bn ? bn + 1 : fn;
 	}
 	if (ei->soname.empty() == false) {
-	    char *full_name_ver = NULL;
-	    if (full_name_version_fallback) {
-		full_name_ver = getFullNameVer(fn);
-	    }
-	    if (full_name_ver) {
-		addSoDep(ei->provides, ei->soname, "", ei->marker, "=", full_name_ver);
-		free(full_name_ver);
+	    if (provide_version_fallback) {
+		addSoDep(ei->provides, ei->soname, "", ei->marker, "=", provide_version_fallback);
 	    } else {
 		addSoDep(ei->provides, ei->soname, "", ei->marker, "", "");
 	    }
@@ -519,7 +515,8 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires_, -1, NULL, NULL },
-	{ "full-name-version-fallback", 0, POPT_ARG_VAL, &full_name_version_fallback, -1, NULL, NULL },
+	{ "require-version-fallback", 0, POPT_ARG_VAL, &require_version_fallback, -1, NULL, NULL },
+	{ "provide-version-fallback", 0, POPT_ARG_STRING, &provide_version_fallback, 0, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
