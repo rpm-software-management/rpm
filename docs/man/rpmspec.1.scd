@@ -44,7 +44,8 @@ See *rpm-common*(8) for the options common to all operations.
 # QUERY OPTIONS
 *--qf* _QUERYFMT_,
 *--queryformat* _QUERYFMT_
-	Specify output format for spec queries. See *rpm*(8) for details.
+	Specify output format for spec queries. See *rpm-queryformat*(7) for
+	details.
 
 *--rpms*
 	Operate on the all binary package headers generated from spec.
@@ -123,7 +124,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	```
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpmbuild*(1)
+*popt*(3), *rpm*(8), *rpmbuild*(1), *rpm-queryformat*(7)
 
 *rpmspec --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

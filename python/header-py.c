@@ -272,7 +272,7 @@ static struct PyMethodDef hdr_methods[] = {
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
      "hdr.convert(op=-1) -- Convert header - See HEADERCONV_*\nfor possible values of op."},
     {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
-     "hdr.format(format) -- Expand a query string with the header data.\n\nSee rpm -q for syntax." },
+     "hdr.format(format) -- Expand an rpm-queryformat(7) string with the header data." },
     {"sprintf",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
      "Alias for .format()." },
     {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
