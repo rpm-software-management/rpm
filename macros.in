@@ -637,7 +637,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	The output binary package file name template used when building
 #	binary packages.
 #
-# XXX	Note: escaped %% for use in headerSprintf()
+# XXX	Note: escaped %% for use in headerFormat()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	Verify digest/signature flags for various rpm modes:
