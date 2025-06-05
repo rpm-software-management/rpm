@@ -61,6 +61,7 @@ install(FILES ${manuals} TYPE DOC)
 # Configure the Jekyll site to build
 set(site_files
 	_layouts/default.html
+	_layouts/redirected.html
 	_layouts/favicon.ico
 	assets/css/manpage.css
 	man/index.md
