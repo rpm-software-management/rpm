@@ -139,8 +139,9 @@ opposed opposed to just package building) parts:
 	Transaction plugin directory.
 
 *%\_query_all_fmt* _FORMAT_
-	Default output format string for rpm -qa.
-	*%* signs need to be escaped, eg. *%%{nevra}*.
+	Default output format for *rpm*(8) query operations, as described by
+	*rpm-queryformat*(7). Percent signs need to be escaped, for example
+	*%%{nevra}*.
 
 *%\_rpmlock_path* _FILE_
 	The path of the file used for transaction fcntl lock.

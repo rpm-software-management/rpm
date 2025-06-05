@@ -171,7 +171,7 @@ struct rpmQVKArguments_s {
 
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
-    char * qva_queryFormat;	/*!< Format for headerFormat(). */
+    char * qva_queryFormat;	/*!< String in rpm-queryformat(7). */
     char	qva_mode;
 		/*!<
 		- 'q'	from --query, -q

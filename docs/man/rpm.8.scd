@@ -253,108 +253,9 @@ The transaction options are common to *--install*, *--upgrade*,
 # QUERY OPTIONS
 *--qf* _QUERYFMT_,
 *--queryformat* _QUERYFMT_
-	Specify the format that package information should be printed in.
-	See *QUERY FORMAT* for the format description.
-
-## QUERY FORMAT
-The rpm queryformat is modeled after the standard *printf*(3) formatting.
-The format is made up of static strings (which may include standard C
-character escapes for newlines, tabs, and other special characters
-(not including 0)) and *printf*(3) type formatters.
-As *rpm* already knows the type to print, the type specifier must be
-omitted however, and replaced by the name of the header tag to be printed,
-enclosed by *{}* characters. Tag names are case insensitive, and the
-leading *RPMTAG_* portion of the tag name may be omitted as well.
-
-Alternate output formats may be requested by following the tag with
-*:typetag*. Currently, the following types are supported:
-
-*:armor*
-	Wrap a public key in ASCII armor.
-
-*:arraysize*
-	Display number of elements in array tags.
-
-*:base64*
-	Encode binary data using base64.
-
-*:date*
-	Use *strftime*(3) "%c" format.
-
-*:day*
-	Use *strftime*(3) "%a %b %d %Y" format.
-
-*:depflags*
-	Format dependency comparison operator.
-
-*:deptype*
-	Format dependency type.
-
-*:expand*
-	Perform macro expansion.
-
-*:fflags*
-	Format file flags.
-
-*:fstate*
-	Format file state.
-
-*:fstatus*
-	Format file verify status.
-
-*:hashalgo*
-	Display hash algorithm name.
-
-*:hex*
-	Format in hexadecimal.
-
-*:octal*
-	Format in octal.
-
-*:humaniec*
-	Human readable number (in IEC 80000). The suffix K = 1024, M =
-	1048576, ...
-
-*:humansi*
-	Human readable number (in SI). The suffix K = 1000, M = 1000000,
-	...
-
-*:json*
-	Wrap data in JSON.
-
-*:perms*
-	Format file permissions.
-
-*:pgpsig*
-	Display signature fingerprint and time.
-
-*:shescape*
-	Escape single quotes for use in a script.
-
-*:string*
-	Display string format. (default)
-
-*:tagname*
-	Display tag name.
-
-*:tagnum*
-	Display tag number.
-
-*:triggertype*
-	Display trigger suffix.
-
-*:vflags*
-	File verification flags.
-
-*:xml*
-	Wrap data in simple xml markup.
-
-For example, to print only the names of the packages queried, you could
-use *%{NAME}* as the format string. To print the packages name and
-distribution information in two columns, you could use
-*%-30{NAME}%{DISTRIBUTION}*. *rpm* will print a list of all of the
-tags it knows about when it is invoked with the *--querytags*
-argument.
+	Output format of each queried package, as described by
+	*rpm-queryformat*(7). If omitted, uses the format defined by
+	*%\_query\_all\_fmt* in *rpm-config*(5).
 
 There are three subsets of options for querying: package selection, file
 selection and information selection.
@@ -661,7 +562,7 @@ See *rpm-common*(8), *rpm-config*(5) and *rpm-rpmrc*(5).
 
 # SEE ALSO
 *rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
-*rpmkeys*(8), *rpmsign*(1), *rpmspec*(1)
+*rpmkeys*(8), *rpmsign*(1), *rpmspec*(1), *rpm-queryformat*(7)
 
 *rpm --help* - as *rpm* supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

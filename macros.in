@@ -635,9 +635,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Macro(s) used to parameterize transactions.
 #
 #	The output binary package file name template used when building
-#	binary packages.
+#	binary packages, as described by rpm-queryformat(7). Percent signs need
+#	to be escaped.
 #
-# XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	Verify digest/signature flags for various rpm modes:
@@ -710,9 +710,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #%_fsverity_sign_config_files	0
 
 #
-# Default output format string for rpm -qa
-#
-# XXX	Note: escaped %% for use in headerFormat()
+# Default output format for query operations, as described by
+# rpm-queryformat(7). Percent signs need to be escaped.
 %_query_all_fmt		%%{nvr}%%{archsuffix}
 
 #

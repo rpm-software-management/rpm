@@ -29,9 +29,9 @@ typically invoked through the *rpmbuild* command.
 	The directory where newly built binary packages will be written.
 
 *%\_rpmfilename* _TEMPLATE_
-	The output binary package filename template used when building
-	binary packages. The template is macro expanded, and the result
-	is considered a filename relative to *%\_rpmdir*.
+	The output binary package filename query format used when building
+	binary packages, as described by *rpm-queryformat*(7). The filename is
+	considered relative to *%\_rpmdir*.
 
 *%\_sourcedir* _DIRECTORY_
 	The directory where the sources and patches are found when building.
