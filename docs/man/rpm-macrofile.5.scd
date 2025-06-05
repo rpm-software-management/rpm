@@ -7,11 +7,11 @@ RPM-MACROFILE(5)
 %_NAME_[([_OPTS_]) _BODY_
 
 # DESCRIPTION
-Rpm macro files are used to define macros in the global macro context.
-The two primary uses are assisting packaging work, and configuring rpm
+Rpm macro files are used to define *rpm-macros*(7) in the global macro context.
+The two primary uses of macros are assisting packaging work, and configuring rpm
 behavior. A pre-determined set of macro files is read upon *rpm* library
-initialization (see *rpm-common*(8)) but they can also be loaded via
-*%load* macro separately.
+initialization as described in *rpm-config*(5) but they can also be loaded via
+the *%load* macro separately.
 
 The format of a macro file is: the macro _NAME_ prefixed with *%*, followed
 by whitespace and then the macro body, each new definition separated with
@@ -28,12 +28,12 @@ Reading a macro file is always fully declarative: no macros are ever
 expanded when reading a macro file.
 
 # EXAMPLES
-*Define macro named mytool to /usr/bin/mytool-with-annoying-name*
+Define macro named mytool to /usr/bin/mytool-with-annoying-name:
 ```
 %mytool	/usr/bin/mytool-with-annoying-name
 ```
 
-*Multiline macro with preceding comment*
+Multiline macro with preceding comment:
 ```
 # Trailing %{nil} is handy for ensuring a newline at the end
 %mycmd %{mytool} \\
@@ -44,7 +44,7 @@ expanded when reading a macro file.
 %{nil}
 ```
 
-*Multiline parametric Lua macro*
+Multiline parametric Lua macro:
 ```
 %myhelper() %{lua:
     function dostuff(arg)
@@ -55,6 +55,7 @@ expanded when reading a macro file.
 ```
 
 # SEE ALSO
-*rpm-common*(8)
+*rpm-config*(5) *rpmbuild-config*(5)
+*rpm-macros*(7)
 
 *https://rpm-software-management.github.io/rpm/manual/macros.html*

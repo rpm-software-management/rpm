@@ -1,7 +1,8 @@
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded.
 #
-# See rpm-macrofile(5) and rpm-config(5) for more information.
+# See rpm-macros(7), rpm-macrofile(5) and rpm-config(5) rpmbuild-config(5)
+# for more information.
 
 #==============================================================================
 # ---- A macro that expands to nothing.

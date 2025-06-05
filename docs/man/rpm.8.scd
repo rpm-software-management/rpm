@@ -291,7 +291,7 @@ Alternate output formats may be requested by following the tag with
 	Format dependency type.
 
 *:expand*
-	Perform macro expansion.
+	Perform *rpm-macros*(7) expansion.
 
 *:fflags*
 	Format file flags.
