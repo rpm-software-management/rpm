@@ -37,6 +37,7 @@ get_type() {
     case $2 in
         1) echo program ;;
         5) echo config ;;
+        7) echo misc ;;
         8) echo tool ;;
     esac
 }

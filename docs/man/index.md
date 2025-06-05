@@ -7,6 +7,7 @@ title: rpm.org - RPM Manual Pages
 {% assign tools = manpages      | where: 'type', 'tool' %}
 {% assign progs = manpages      | where: 'type', 'program' %}
 {% assign configs = manpages    | where: 'type', 'config' %}
+{% assign misc = manpages       | where: 'type', 'misc' %}
 {% assign plugins = manpages    | where: 'type', 'plugin' %}
 
 # RPM Manual Pages
@@ -26,6 +27,12 @@ title: rpm.org - RPM Manual Pages
 ## Configuration & File Formats
 
 {% for page in configs -%}
+- [{{ page.title }}]({{ page.slug }}) - {{ page.summary }}
+{% endfor %}
+
+## Overview & Conventions
+
+{% for page in misc -%}
 - [{{ page.title }}]({{ page.slug }}) - {{ page.summary }}
 {% endfor %}
 
