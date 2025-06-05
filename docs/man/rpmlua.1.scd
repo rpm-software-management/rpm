@@ -51,6 +51,6 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	Run an interactive session.
 
 # SEE ALSO
-*lua*(1), *popt*(3), *getopt*(3), *rpm*(8)
+*lua*(1), *popt*(3), *getopt*(3), *rpm*(8) *rpm-lua*(7)
 
 *http://www.rpm.org/*
