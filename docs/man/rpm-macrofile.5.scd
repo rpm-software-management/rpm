@@ -28,12 +28,12 @@ Reading a macro file is always fully declarative: no macros are ever
 expanded when reading a macro file.
 
 # EXAMPLES
-*Define macro named mytool to /usr/bin/mytool-with-annoying-name*
+Define macro named mytool to /usr/bin/mytool-with-annoying-name:
 ```
 %mytool	/usr/bin/mytool-with-annoying-name
 ```
 
-*Multiline macro with preceding comment*
+Multiline macro with preceding comment:
 ```
 # Trailing %{nil} is handy for ensuring a newline at the end
 %mycmd %{mytool} \\
@@ -44,7 +44,7 @@ expanded when reading a macro file.
 %{nil}
 ```
 
-*Multiline parametric Lua macro*
+Multiline parametric Lua macro:
 ```
 %myhelper() %{lua:
     function dostuff(arg)
