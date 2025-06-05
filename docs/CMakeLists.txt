@@ -58,6 +58,11 @@ set(manuals
 )
 install(FILES ${manuals} TYPE DOC)
 
+# Temporary redirects for future man pages
+set(redirects
+  	man/rpm-spec.5.md
+)
+
 # Configure the Jekyll site to build
 set(site_files
 	_layouts/default.html
@@ -67,6 +72,7 @@ set(site_files
 	man/index.md
 	Gemfile
 	${manuals}
+	${redirects}
 )
 file(MAKE_DIRECTORY ${site_dir})
 configure_file(index.md.in ${site_dir}/index.md @ONLY)
