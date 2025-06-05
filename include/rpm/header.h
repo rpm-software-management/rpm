@@ -252,7 +252,7 @@ int headerMod(Header h, rpmtd td);
 int headerDel(Header h, rpmTagVal tag);
 
 /** \ingroup header
- * Return formatted output string from header tags.
+ * Return formatted output string from header tags in rpm-queryformat(7).
  * The returned string must be free()d.
  *
  * @param h		header

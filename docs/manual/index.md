@@ -12,7 +12,6 @@ title: rpm.org - RPM Reference Manual
 ### Queries and RPM Meta Data
 * [RPM Tags](tags.md)
 * [Large File support](large_files.md)
-* [Query formatting](queryformat.md)
 
 ## Macro subsystem
 * [Macro syntax](macros.md)
