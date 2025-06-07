@@ -81,7 +81,8 @@ enum rpmVerifyAttrs_e {
     RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
     RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
     RPMVERIFY_CAPS	= (1 << 8),	/*!< from %verify(caps) */
-	/* bits 9-14 unused, reserved for rpmVerifyAttrs */
+    RPMVERIFY_XATTRS	= (1 << 9),	/*!< from %verify(xattrs) */
+	/* bits 10-14 unused, reserved for rpmVerifyAttrs */
     RPMVERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
 	/* bits 16-22 used in rpmVerifyFlags */
 	/* bits 23-27 used in rpmQueryFlags */

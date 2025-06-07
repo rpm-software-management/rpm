@@ -50,6 +50,7 @@ enum rpmfilesErrorCodes {
 	RPMERR_LSETFCON_FAILED	= -32786,
 	RPMERR_SETCAP_FAILED	= -32787,
 	RPMERR_CLOSE_FAILED	= -32788,
+	RPMERR_SETXATTR_FAILED  = -32789,
 };
 
 #ifdef __cplusplus

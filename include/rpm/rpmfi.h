@@ -307,6 +307,15 @@ const char * rpmfiFGroup(rpmfi fi);
 const char * rpmfiFCaps(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return textual representation of current file extended attributes
+ * from file info set iterator.
+ * @param fi		file info set iterator
+ * @return		file extended attribute description, "" for no attributes
+ * 			and NULL on invalid
+ */
+const char * rpmfiFXattrs(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return current file language(s) from file info set iterator.
  * @param fi		file info set iterator
  * @return		current file language(s), NULL on invalid
