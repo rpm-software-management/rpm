@@ -12,6 +12,7 @@
 #ifdef WITH_CAP
 #include <sys/capability.h>
 #endif
+#include <sys/xattr.h>
 
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
@@ -108,6 +109,17 @@ static int cap_set_fileat(int dirfd, const char *path, cap_t fcaps)
 }
 #endif
 
+static int xattr_set_fileat(int dirfd, const char *path, const char *name, const char *val, size_t size, int flags)
+{
+    int fd = -1;
+    int rc = fsmOpenat(&fd, dirfd, path, O_RDONLY|O_NOFOLLOW, 0);
+    if (!rc) {
+	rc = fsetxattr(fd, name, val, size, flags);
+	fsmClose(&fd);
+    }
+    return rc;
+}
+
 static int fsmSetFCaps(int fd, int dirfd, const char *path, const char *captxt)
 {
     int rc = 0;
@@ -131,6 +143,39 @@ static int fsmSetFCaps(int fd, int dirfd, const char *path, const char *captxt)
 	cap_free(fcaps);
     } 
 #endif
+    return rc;
+}
+
+static int fsmSetFXattrs(int fd, int dirfd, const char *path, const char *xattrstxt)
+{
+    int rc = 0;
+
+    if (xattrstxt && *xattrstxt != '\0') {
+	char *eqidx, *xattrname, *xattrval = NULL;
+
+	xattrname = xstrdup(xattrstxt);
+	eqidx = (char *) strchr(xattrstxt, '=');
+	if (eqidx == NULL)
+	    rc = RPMERR_SETXATTR_FAILED;
+	else {
+	    *eqidx = '\0';
+	    xattrval = xstrdup(eqidx+1);
+
+	    if (fd >= 0) {
+		if (xattrval == NULL || fsetxattr(fd, xattrname, xattrval, strlen(xattrval), 0))
+		    rc = RPMERR_SETXATTR_FAILED;
+	    } else {
+		if (xattrval == NULL || xattr_set_fileat(dirfd, path, xattrname, xattrval, strlen(xattrval), 0))
+		    rc = RPMERR_SETXATTR_FAILED;
+	    }
+	}
+	if (_fsm_debug) {
+	    rpmlog(RPMLOG_DEBUG, " %8s (%d - %d %s, %s) %s\n", __func__,
+		   fd, dirfd, path, xattrstxt, (rc < 0 ? strerror(errno) : ""));
+	}
+	free(xattrname);
+	free(xattrval);
+    } 
     return rc;
 }
 
@@ -753,6 +798,10 @@ static int fsmSetmeta(int fd, int dirfd, const char *path,
     /* Set file capabilities (if enabled) */
     if (!rc && !nofcaps && S_ISREG(st->st_mode) && !getuid()) {
 	rc = fsmSetFCaps(fd, dirfd, path, rpmfiFCaps(fi));
+    }
+    /* Set file extended attributes (if enabled) */
+    if (!rc && S_ISREG(st->st_mode)) {
+	rc = fsmSetFXattrs(fd, dirfd, path, rpmfiFXattrs(fi));
     }
     if (!rc) {
 	rc = fsmUtime(fd, dirfd, path, st->st_mode, rpmfiFMtime(fi));
