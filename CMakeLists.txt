@@ -433,11 +433,10 @@ endif()
 
 # try to ensure some compiler sanity and hardening options where supported
 foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened)
-	check_c_compiler_flag(${flag} found)
-	if (found)
+	check_c_compiler_flag(${flag} compiler-supports${flag})
+	if (compiler-supports${flag})
 		add_compile_options(${flag})
 	endif()
-	unset(found CACHE)
 endforeach()
 
 # generated sources
