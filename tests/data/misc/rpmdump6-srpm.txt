@@ -42,24 +42,24 @@ Tag #2 [region]
 
 Header:
 Header magic: 1e8ad8e (reserved: 0)
-Index entries: 54 (864 bytes)
-Data size: 1788 bytes
-Header size: 2652 bytes
+Index entries: 56 (896 bytes)
+Data size: 1918 bytes
+Header size: 2814 bytes
 
-Region entries 54
-Region size 880
+Region entries 56
+Region size 912
 Dribbles: 0
 
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 1772
+	offset: 1902
 	count:    16
 
 	region trailer
 		tagno:    63 (Headerimmutable)
 		type:      7 (blob)
-		offset: -864
+		offset: -896
 		count:    16
 
 Tag #1 [region]
@@ -378,5 +378,17 @@ Tag #53 [region]
 	tagno:  5114 (Rpmformat)
 	type:      4 (int32)
 	offset: 1768
+	count:     1
+
+Tag #54 [region]
+	tagno:  5123 (Payloadsha3_256)
+	type:      6 (string)
+	offset: 1772
+	count:     1
+
+Tag #55 [region]
+	tagno:  5124 (Payloadsha3_256alt)
+	type:      6 (string)
+	offset: 1837
 	count:     1
 

@@ -73,7 +73,7 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
  * @todo Create transaction set *much* earlier.
  */
 static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
-			rpm_loff_t *archiveSize, char ** pldig)
+			rpm_loff_t *archiveSize, char ** pld, char ** pld3)
 {
     char *failedFile = NULL;
     FD_t cfd;
@@ -86,10 +86,12 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
 
     /* Calculate alternative (uncompressed) payload digest while writing */
     fdInitDigestID(cfd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
+    fdInitDigestID(cfd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
 				   cfd, pkg->dpaths,
 				   archiveSize, &failedFile);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pldig, NULL, 1);
+    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pld, NULL, 1);
+    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA3_256ALT, (void **)pld3, NULL, 1);
 
     if (fsmrc) {
 	char *emsg = rpmfileStrerror(fsmrc);
@@ -459,6 +461,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     uint8_t * MD5 = NULL;
     char * pld = NULL;
     char * upld = NULL;
+    char * pld3 = NULL;
+    char * upld3 = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0; /* uncompressed */
     rpm_loff_t payloadSize = 0; /* compressed */
@@ -494,6 +498,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256ALT, pld);
     pld = _free(pld);
+    if (rpmformat >= 6) {
+	pld3 = (char *)nullDigest(RPM_HASH_SHA3_256, 1);
+	headerPutString(pkg->header, RPMTAG_PAYLOADSHA3_256, pld3);
+	headerPutString(pkg->header, RPMTAG_PAYLOADSHA3_256ALT, pld3);
+	pld3 = _free(pld3);
+    }
 
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
     if (checkForEncoding(pkg->header, 1))
@@ -535,7 +545,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write payload section (cpio archive) */
     payloadStart = Ftell(fd);
-    if (cpio_doio(fd, pkg, rpmio_flags, &archiveSize, &upld))
+    if (cpio_doio(fd, pkg, rpmio_flags, &archiveSize, &upld, &upld3))
 	goto exit;
     payloadEnd = Ftell(fd);
     payloadSize = payloadEnd - payloadStart;
@@ -546,23 +556,30 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (rpmformat >= 6) {
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZE);
 	headerDel(pkg->header, RPMTAG_PAYLOADSIZEALT);
+	headerDel(pkg->header, RPMTAG_PAYLOADSHA3_256);
+	headerDel(pkg->header, RPMTAG_PAYLOADSHA3_256ALT);
     }
 
     /* Re-read payload to calculate compressed digest */
     fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256, 0);
+    fdInitDigestID(fd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256, 0);
     if (fdConsume(fd, payloadStart, payloadSize))
 	goto exit;
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA256, (void **)&pld, NULL, 1);
+    fdFiniDigest(fd, RPMTAG_PAYLOADSHA3_256, (void **)&pld3, NULL, 1);
 
     /* Insert the payload digests + size in main header */
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256ALT, upld);
-    pld = _free(pld);
 
     if (rpmformat >= 6) {
+	headerPutString(pkg->header, RPMTAG_PAYLOADSHA3_256, pld3);
+	headerPutString(pkg->header, RPMTAG_PAYLOADSHA3_256ALT, upld3);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
     }
+    pld = _free(pld);
+    pld3 = _free(pld3);
 
     /* Write the final header */
     if (fdJump(fd, hdrStart))
@@ -602,6 +619,7 @@ exit:
     free(SHA1);
     free(SHA256);
     free(upld);
+    free(upld3);
 
     /* XXX Fish the pkgid out of the signature header. */
     if (pkgidp != NULL) {

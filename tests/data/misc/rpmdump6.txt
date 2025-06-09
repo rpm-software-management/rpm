@@ -42,24 +42,24 @@ Tag #2 [region]
 
 Header:
 Header magic: 1e8ad8e (reserved: 0)
-Index entries: 57 (912 bytes)
-Data size: 2742 bytes
-Header size: 3654 bytes
+Index entries: 59 (944 bytes)
+Data size: 2872 bytes
+Header size: 3816 bytes
 
-Region entries 57
-Region size 928
+Region entries 59
+Region size 960
 Dribbles: 0
 
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2726
+	offset: 2856
 	count:    16
 
 	region trailer
 		tagno:    63 (Headerimmutable)
 		type:      7 (blob)
-		offset: -912
+		offset: -944
 		count:    16
 
 Tag #1 [region]
@@ -396,5 +396,17 @@ Tag #56 [region]
 	tagno:  5120 (Sourcenevr)
 	type:      6 (string)
 	offset: 2711
+	count:     1
+
+Tag #57 [region]
+	tagno:  5123 (Payloadsha3_256)
+	type:      6 (string)
+	offset: 2726
+	count:     1
+
+Tag #58 [region]
+	tagno:  5124 (Payloadsha3_256alt)
+	type:      6 (string)
+	offset: 2791
 	count:     1
 
