@@ -680,7 +680,7 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a subkey
-RPMTEST_SETUP_RW([rpmkeys --import, signed with a good subkey])
+RPMTEST_SETUP_RW([rpmkeys --import signed with a good subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -738,7 +738,7 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with an expired subkey
-RPMTEST_SETUP_RW([rpmkeys --import, signed with an expired subkey])
+RPMTEST_SETUP_RW([rpmkeys --import signed with an expired subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
@@ -810,7 +810,7 @@ RPMTEST_CLEANUP
 
 # -----------------------------------------
 # Check a package signed with a revoked subkey
-RPMTEST_SETUP_RW([rpmkeys --import, signed with a revoked subkey])
+RPMTEST_SETUP_RW([rpmkeys --import signed with a revoked subkey])
 AT_KEYWORDS([rpmkeys digest signature])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
