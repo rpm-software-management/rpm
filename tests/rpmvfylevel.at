@@ -112,6 +112,8 @@ nopl
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
+    Payload SHA3-256 digest: NOTFOUND
+    Payload SHA3-256 ALT digest: NOTFOUND
     Legacy MD5 digest: NOTFOUND
 1
 nosha1
@@ -327,6 +329,8 @@ noplds
     Header SHA1 digest: OK
     Payload SHA256 digest: NOTFOUND
     Payload SHA256 ALT digest: NOTFOUND
+    Payload SHA3-256 digest: NOTFOUND
+    Payload SHA3-256 ALT digest: NOTFOUND
     Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: OK

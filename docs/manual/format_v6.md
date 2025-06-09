@@ -106,17 +106,20 @@ for v6:
 - RPMTAG_ENCODING is required to be present and contain "utf-8"
 - RPMTAG_LONGFILESIZES are always used to represent file sizes
 - RPMTAG_FILEDIGESTALGO is always present and at least SHA256 in strength
-- RPMTAG_PAYLOADSHA256 and RPMTAG_PAYLOADSHA256ALT are always present
-  and contain SHA256 hashes of the Payload (compressed and
-  uncompressed). Thus a header signature is sufficient to establish
-  cryptographic provenance of the package, without having to separately
-  calculate the payload signature. The alternatives allow freely switching
-  between a compressed and uncompressed payload for a package.
+- RPMTAG_PAYLOADSHA256 and RPMTAG_PAYLOADSHA256ALT (optional in v4),
+  containing SHA256 hashes of the Payload (compressed and uncompressed).
+- New RPMTAG_PAYLOADSHA3_256 and RPMTAG_PAYLOADSHA3_256ALT tags, containing
+  SHA3-256 hashes of the Payload (compressed and uncompressed).
 - Similarly, there are two alternative size tags on the Payload (compressed
   and uncompressed): RPMTAG_PAYLOADSIZE and RPMTAG_PAYLOADSIZEALT
 - File type information is stored as MIME types instead of libmagic
   strings in RPMTAG_MIMEDICT and RPMTAG_FILEMIMEINDEX, retrievable
   with RPMTAG_FILEMIMES extension.
+
+The Payload hashes in a signed Header are sufficient to establish
+cryptographic provenance of the package, without having to separately
+calculate the payload signature. The alternatives allow freely switching
+between a compressed and uncompressed payload for a package.
 
 ## Payload
 

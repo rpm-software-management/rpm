@@ -312,6 +312,8 @@ Openpgp           | 278  | string array | OpenPGP signature(s) of the header, ba
 Payloadsha256     | 5092 | string array | SHA256 digest of the compressed payload.
 Payloadsha256algo | 5093 | int32        | ID of the SHA256 algorithm (obsolete)
 Payloadsha256alt  | 5097 | string array | SHA256 digest of the uncompressed payload.
+Payloadsha3_256   | 5123 | string       | SHA3-256 digest of the compressed payload.
+Payloadsha3_256alt| 5124 | string       | SHA3-256 digest of the uncompressed payload.
 Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
 Sha1header        | 269  | string       | SHA1 digest of the header.
 Sha256header      | 273  | string       | SHA256 digest of the header.

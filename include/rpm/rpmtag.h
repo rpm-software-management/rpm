@@ -400,6 +400,8 @@ typedef enum rpmTag_e {
     RPMTAG_PACKAGEDIGESTS	= 5118, /* s[] */
     RPMTAG_PACKAGEDIGESTALGOS	= 5119, /* i[] */
     RPMTAG_SOURCENEVR		= 5120,	/* s */
+    RPMTAG_PAYLOADSHA3_256	= 5123, /* s */
+    RPMTAG_PAYLOADSHA3_256ALT	= 5124, /* s */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
