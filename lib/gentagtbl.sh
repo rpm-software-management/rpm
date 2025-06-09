@@ -4,7 +4,7 @@ cat << EOF
 static const struct headerTagTableEntry_s rpmTagTable[] = {
 EOF
 
-${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && /(\/\* [chilsx](\[\] )?.*\*\/)$/ && !/internal/ && !/unimplemented/ {
+${AWK} '/[\t ](RPMTAG_[A-Z0-9_]*)[ \t]+([0-9]*)/ && /(\/\* [chilsx](\[\] )?.*\*\/)$/ && !/internal/ && !/unimplemented/ {
 	tt = "NULL"
 	ta = "ANY"
 	ext = "0"
