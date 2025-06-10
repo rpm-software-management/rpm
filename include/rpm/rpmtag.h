@@ -371,12 +371,12 @@ typedef enum rpmTag_e {
     RPMTAG_TRANSFILETRIGGERTYPE		= 5089, /* s[] extension */
     RPMTAG_FILESIGNATURES	= 5090, /* s[] */
     RPMTAG_FILESIGNATURELENGTH  = 5091, /* i */
-    RPMTAG_PAYLOADDIGEST	= 5092, /* s[] */
-    RPMTAG_PAYLOADDIGESTALGO	= 5093, /* i */
+    RPMTAG_PAYLOADSHA256	= 5092, /* s[] */
+    RPMTAG_PAYLOADSHA256ALGO	= 5093, /* i (obsolete) */
     RPMTAG_AUTOINSTALLED	= 5094, /* i reservation (unimplemented) */
     RPMTAG_IDENTITY		= 5095, /* s reservation (unimplemented) */
     RPMTAG_MODULARITYLABEL	= 5096, /* s */
-    RPMTAG_PAYLOADDIGESTALT	= 5097, /* s[] */
+    RPMTAG_PAYLOADSHA256ALT	= 5097, /* s[] */
     RPMTAG_ARCHSUFFIX		= 5098, /* s extension */
     RPMTAG_SPEC			= 5099, /* s */
     RPMTAG_TRANSLATIONURL	= 5100, /* s */

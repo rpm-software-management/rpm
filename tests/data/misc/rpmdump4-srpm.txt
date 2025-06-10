@@ -369,19 +369,19 @@ Tag #47 [region]
 	count:     1
 
 Tag #48 [region]
-	tagno:  5092 (Payloaddigest)
+	tagno:  5092 (Payloadsha256)
 	type:      8 (argv)
 	offset:  470
 	count:     1
 
 Tag #49 [region]
-	tagno:  5093 (Payloaddigestalgo)
+	tagno:  5093 (Payloadsha256algo)
 	type:      4 (int32)
 	offset:  536
 	count:     1
 
 Tag #50 [region]
-	tagno:  5097 (Payloaddigestalt)
+	tagno:  5097 (Payloadsha256alt)
 	type:      8 (argv)
 	offset:  540
 	count:     1
