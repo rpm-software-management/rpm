@@ -540,6 +540,14 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     payloadEnd = Ftell(fd);
     payloadSize = payloadEnd - payloadStart;
 
+    /* Delete dummies from the main header */
+    headerDel(pkg->header, RPMTAG_PAYLOADSHA256);
+    headerDel(pkg->header, RPMTAG_PAYLOADSHA256ALT);
+    if (rpmformat >= 6) {
+	headerDel(pkg->header, RPMTAG_PAYLOADSIZE);
+	headerDel(pkg->header, RPMTAG_PAYLOADSIZEALT);
+    }
+
     /* Re-read payload to calculate compressed digest */
     fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256, 0);
     if (fdConsume(fd, payloadStart, payloadSize))
@@ -547,16 +555,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA256, (void **)&pld, NULL, 1);
 
     /* Insert the payload digests + size in main header */
-    headerDel(pkg->header, RPMTAG_PAYLOADSHA256);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256, pld);
-    headerDel(pkg->header, RPMTAG_PAYLOADSHA256ALT);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256ALT, upld);
     pld = _free(pld);
 
     if (rpmformat >= 6) {
-	headerDel(pkg->header, RPMTAG_PAYLOADSIZE);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
-	headerDel(pkg->header, RPMTAG_PAYLOADSIZEALT);
 	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
     }
 
