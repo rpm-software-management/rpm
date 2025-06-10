@@ -459,7 +459,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     uint8_t * MD5 = NULL;
     char * pld = NULL;
     char * upld = NULL;
-    uint32_t pld_algo = RPM_HASH_SHA256;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0; /* uncompressed */
     rpm_loff_t payloadSize = 0; /* compressed */
@@ -481,19 +480,20 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerPutString(pkg->header, RPMTAG_COOKIE, *cookie);
     }
 
-    if (rpmformat >= 6)
+    if (rpmformat >= 6) {
 	headerPutUint32(pkg->header, RPMTAG_RPMFORMAT, &rpmformat, 1);
+	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
+	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
+    } else {
+	uint32_t pld_algo = RPM_HASH_SHA256;
+	headerPutUint32(pkg->header, RPMTAG_PAYLOADSHA256ALGO, &pld_algo, 1);
+    }
 
     /* Create a dummy payload digests to get the header size right */
     pld = (char *)nullDigest(RPM_HASH_SHA256, 1);
-    headerPutUint32(pkg->header, RPMTAG_PAYLOADSHA256ALGO, &pld_algo, 1);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256ALT, pld);
     pld = _free(pld);
-    if (rpmformat >= 6) {
-	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZE, &payloadSize, 1);
-	headerPutUint64(pkg->header, RPMTAG_PAYLOADSIZEALT, &archiveSize, 1);
-    }
 
     /* Check for UTF-8 encoding of string tags, add encoding tag if all good */
     if (checkForEncoding(pkg->header, 1))
