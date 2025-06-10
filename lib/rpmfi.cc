@@ -124,6 +124,8 @@ struct rpmfiles_s {
     rpm_loff_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
     std::atomic_int nrefs;	/*!< Reference count. */
+
+    char ** fxattrs;		/*!< File extended attribute strings (header) */
 };
 
 static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd);
@@ -783,6 +785,15 @@ const char * rpmfilesFCaps(rpmfiles fi, int ix)
 	fcaps = fi->fcaps ? fi->fcaps[ix] : "";
     }
     return fcaps;
+}
+
+const char * rpmfilesFXattrs(rpmfiles fi, int ix)
+{
+    const char *fxattrs = NULL;
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
+	fxattrs = fi->fxattrs ? fi->fxattrs[ix] : "";
+    }
+    return fxattrs;
 }
 
 const char * rpmfilesFLangs(rpmfiles fi, int ix)
@@ -1874,6 +1885,7 @@ RPMFI_ITERFUNC(const char *, FLink, i)
 RPMFI_ITERFUNC(const char *, FUser, i)
 RPMFI_ITERFUNC(const char *, FGroup, i)
 RPMFI_ITERFUNC(const char *, FCaps, i)
+RPMFI_ITERFUNC(const char *, FXattrs, i)
 RPMFI_ITERFUNC(const char *, FLangs, i)
 RPMFI_ITERFUNC(const char *, FClass, i)
 RPMFI_ITERFUNC(const char *, FMime, i)
