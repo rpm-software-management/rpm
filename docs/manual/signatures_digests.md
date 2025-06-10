@@ -17,8 +17,8 @@ contents:
 |       DSA      |    DSAHEADER      |   4.0   | OpenPGP/DSA    |    S     |   H     |
 |      SHA256    |  SHA256HEADER     |  4.14   | SHA256         |    S     |   H     |
 |      OPENPGP   |  OPENPGPHEADER    |   6.0   | any (***)      |    S     |   H     |
-|        -       |  PAYLOADDIGEST    |  4.14   | SHA256 (*)     |    H     |   Pc    |
-|        -       |  PAYLOADDIGESTALT |  4.16   | SHA256 (*)     |    H     |   P     |
+|        -       |  PAYLOADSHA256    |  4.14   | SHA256 (*)     |    H     |   Pc    |
+|        -       |  PAYLOADSHA256ALT |  4.16   | SHA256 (*)     |    H     |   P     |
 |        -       |     FILEMD5       |   3.0   | MD5            |    H     |   F     |
 |        -       |   FILEDIGESTS     |   4.6   | SHA256 (**)    |    H     |   F     |
 
@@ -27,6 +27,6 @@ contents:
 * P = Payload
 * F = Files in the payload (uncompressed)
 * c = compressed content
-* (*) = Configurable, defaults to SHA256
+* (*) = Known as PAYLOADDIGEST in rpm 4.x
 * (**) = Configurable, defaults to SHA256 in rpm >= 4.14, MD5 in older
 * (***) = Depends on the signing key, anything allowed by the OpenPGP standard

@@ -106,7 +106,7 @@ for v6:
 - RPMTAG_ENCODING is required to be present and contain "utf-8"
 - RPMTAG_LONGFILESIZES are always used to represent file sizes
 - RPMTAG_FILEDIGESTALGO is always present and at least SHA256 in strength
-- RPMTAG_PAYLOADDIGEST and RPMTAG_PAYLOADDIGESTALT are always present
+- RPMTAG_PAYLOADSHA256 and RPMTAG_PAYLOADSHA256ALT are always present
   and contain SHA256 hashes of the Payload (compressed and
   uncompressed). Thus a header signature is sufficient to establish
   cryptographic provenance of the package, without having to separately

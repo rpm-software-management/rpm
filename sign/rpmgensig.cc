@@ -689,8 +689,8 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     }
 
     /* Always add V3 signatures if no payload digest present */
-    if (!(headerIsEntry(h, RPMTAG_PAYLOADDIGEST) ||
-	  headerIsEntry(h, RPMTAG_PAYLOADDIGESTALT))) {
+    if (!(headerIsEntry(h, RPMTAG_PAYLOADSHA256) ||
+	  headerIsEntry(h, RPMTAG_PAYLOADSHA256ALT))) {
 	flags |= RPMSIGN_FLAG_RPMV3;
     }
 

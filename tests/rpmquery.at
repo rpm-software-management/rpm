@@ -925,10 +925,10 @@ rpm -qp --xml  /data/RPMS/hello-2.0-1.x86_64.rpm
   <rpmTag name="Encoding">
 	<string>utf-8</string>
   </rpmTag>
-  <rpmTag name="Payloaddigest">
+  <rpmTag name="Payloadsha256">
 	<string>84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c</string>
   </rpmTag>
-  <rpmTag name="Payloaddigestalgo">
+  <rpmTag name="Payloadsha256algo">
 	<integer>8</integer>
   </rpmTag>
 </rpmHeader>
@@ -1167,8 +1167,8 @@ rpm -qp --json  /data/RPMS/hello-2.0-1.x86_64.rpm
     ],
     "Filedigestalgo": 	8,
     "Encoding": 	"utf-8",
-    "Payloaddigest": 	"84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c",
-    "Payloaddigestalgo": 	8
+    "Payloadsha256": 	"84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c",
+    "Payloadsha256algo": 	8
 }
 ]],
 [])

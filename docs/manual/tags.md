@@ -309,9 +309,9 @@ Tag Name          | Value| Type         | Description
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
 Openpgp           | 278  | string array | OpenPGP signature(s) of the header, base64 encoded
-Payloaddigest     | 5092 | string array | Cryptographic digest of the compressed payload.
-Payloaddigestalgo | 5093 | int32        | ID of the payload digest algorithm.
-Payloaddigestalt  | 5097 | string array | Cryptographic digest of the uncompressed payload.
+Payloadsha256     | 5092 | string array | SHA256 digest of the compressed payload.
+Payloadsha256algo | 5093 | int32        | ID of the SHA256 algorithm (obsolete)
+Payloadsha256alt  | 5097 | string array | SHA256 digest of the uncompressed payload.
 Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
 Sha1header        | 269  | string       | SHA1 digest of the header.
 Sha256header      | 273  | string       | SHA256 digest of the header.
