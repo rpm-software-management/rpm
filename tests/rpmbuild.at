@@ -2684,6 +2684,21 @@ No hello.debug
 [ignore])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmbuild debuginfo subpackages sourcerpm])
+AT_KEYWORDS([build] [sourcerpm])
+RPMTEST_CHECK([[
+runroot rpmbuild -bb --quiet \
+		--define "_debuginfo_subpackages 1" \
+		 /data/SPECS/test-subpackages.spec
+runroot rpm -q --qf "%{nevr} %{sourcerpm}\n" /build/RPMS/*/test-*-debuginfo-1.0-1.*.rpm
+]],
+[0],
+[test-test2-debuginfo-1.0-1 test-1.0-1.src.rpm
+test-test3-debuginfo-1.0-1 test-1.0-1.src.rpm
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmbuild multiple subpackages source_nevr])
 AT_KEYWORDS([build] [source_nevr])
 RPMTEST_CHECK([
