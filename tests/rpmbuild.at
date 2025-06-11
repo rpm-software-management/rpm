@@ -3140,10 +3140,7 @@ runroot rpm \
 	--eval "%{with both_features}"
 ],
 [0],
-[
-
-
-1
+[1
 0
 0
 ],
@@ -3212,11 +3209,7 @@ runroot rpm \
 	--eval "%{with normally_off}" \
 ],
 [0],
-[
-
-
-
-0
+[0
 1
 ],
 [])
@@ -3232,9 +3225,7 @@ runroot rpm \
 	--eval "%{with normally_off}" \
 ],
 [0],
-[
-
-0
+[0
 1
 ],
 [])

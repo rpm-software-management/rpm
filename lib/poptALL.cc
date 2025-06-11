@@ -130,6 +130,9 @@ static void rpmcliAllArgCallback( poptContext con,
 	{   char *val = NULL;
 	    if (rpmExpandMacros(NULL, arg, &val, 0) < 0)
 		exit(EXIT_FAILURE);
+	    /* macro expanded to an empty string (eg, %{nil}) */
+	    if (strlen(val) == 0)
+		goto free;
 	    if (fprintf(stdout, "%s\n", val) < 0 ||
 		fflush(stdout) == EOF ||
 		ferror(stdout)) {
@@ -137,6 +140,7 @@ static void rpmcliAllArgCallback( poptContext con,
 		free(val);
 	        exit(EXIT_FAILURE);
 	    }
+free:
 	    free(val);
 	}
 	break;

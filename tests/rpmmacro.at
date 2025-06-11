@@ -147,8 +147,7 @@ RPMTEST_CHECK([
 rpm --define "this that" --eval '%{?that}'
 ],
 [0],
-[
-])
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([nested macro in name])
@@ -328,8 +327,7 @@ rpm \
     --eval '%bar'
 ],
 [0],
-[
-arg
+[arg
 ])
 RPMTEST_CLEANUP
 
@@ -663,7 +661,6 @@ foobar
 foobar
 foobar
 /hello/%%
-
 bar
 bar baz\baz
 %%
@@ -795,7 +792,6 @@ foo
 bar
 0
 3
-
 foo
 ],
 [])
@@ -1059,9 +1055,7 @@ rpm \
 [0],
 [0	1
 nil
-
 bbb	zzz
-
 nil
  1:a 2:c
  1:a 2: 3:c
@@ -1088,8 +1082,7 @@ rpm \
 	--eval "%recurse"
 ]],
 [0],
-[ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
-])
+[ 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua rpm extensions 1])
@@ -1313,8 +1306,7 @@ RPMTEST_CHECK([
 rpm --define "aa 0" --define "my() %{define:aa 1}%{define:aa 2}" --eval "%my" --eval "%aa"
 ],
 [0],
-[
-0
+[0
 ],
 [ignore])
 RPMTEST_CLEANUP
@@ -1370,7 +1362,6 @@ rpm -v --eval '%{verbose:zzz}'
 [0],
 [0
 1
-
 zzz
 ])
 RPMTEST_CLEANUP
