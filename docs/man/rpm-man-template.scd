@@ -40,6 +40,9 @@ Typographic conventions:
 - Put text immediately below a section/option/etc (ie without an empty line)
 - Put optional elements into [] brackets
 - Do not emphasize separators like ",", "=", "[]", "<>", "|" etc
+- Use "Added: X.Y.Z." to indicate the version where a feature was added.
+  Either in parentheses at the end of a line (inline variant) or on a
+  line of it's own, surrounded by empty lines (standalone variant).
 
 When in doubt, consult *man-pages*(7).
 
@@ -96,7 +99,9 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	- *gzip*: zlib/gzip compression
 	- *xz*: xz compression is a more complicated topic, requiring
 	  multiline explanation
-	- *zstd*: zstd compression
+	- *zstd*: zstd compression (Added: 3.1.2)
+
+	Added: 2.1.3
 
 # BARDIZE OPTIONS
 Put operation specific options into a top-level section of their own,
