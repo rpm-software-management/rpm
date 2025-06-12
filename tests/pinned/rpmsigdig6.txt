@@ -1,3 +1,4 @@
+SHA3_256HEADER: 4047bf2349d37c3331fdfd289586cfbf468b0f7252f18916f1d1dd49e453a64b
 SHA256HEADER: cec467ddd3b4acd9baf89f97f4ecebd732767da2d0f988a6d4f458e915671557
 SHA1HEADER: (none)
 SIGMD5: (none)
@@ -8,6 +9,7 @@ PAYLOADSHA3_256ALT: 15b03fdcdab667c77a371f8b06e5b11f97003d9bca532b6d775a6148b378
 PAYLOADSIZE: 604
 PAYLOADSIZEALT: 604
 /build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm:
+    Header SHA3-256 digest: OK
     Header SHA256 digest: OK
     Payload SHA3-256 ALT digest: OK
     Payload SHA3-256 digest: OK

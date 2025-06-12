@@ -456,6 +456,7 @@ static Header makeImmutable(Header h)
     if (h != NULL) {
 	char *sha1 = NULL;
 	char *sha256 = NULL;
+	char *sha3_256 = NULL;
 	unsigned int blen = 0;
 	void *blob = headerExport(h, &blen);
 
@@ -463,21 +464,25 @@ static Header makeImmutable(Header h)
 	rpmDigestBundle bundle = rpmDigestBundleNew();
 	rpmDigestBundleAdd(bundle, RPM_HASH_SHA1, RPMDIGEST_NONE);
 	rpmDigestBundleAdd(bundle, RPM_HASH_SHA256, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(bundle, RPM_HASH_SHA3_256, RPMDIGEST_NONE);
 
 	rpmDigestBundleUpdate(bundle, rpm_header_magic, sizeof(rpm_header_magic));
 	rpmDigestBundleUpdate(bundle, blob, blen);
 
 	rpmDigestBundleFinal(bundle, RPM_HASH_SHA1, (void **)&sha1, NULL, 1);
 	rpmDigestBundleFinal(bundle, RPM_HASH_SHA256, (void **)&sha256, NULL, 1);
+	rpmDigestBundleFinal(bundle, RPM_HASH_SHA3_256, (void **)&sha3_256, NULL, 1);
 
-	if (sha1 && sha256) {
+	if (sha1 && sha256 && sha3_256) {
 	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
 	    headerPutString(h, RPMTAG_SHA256HEADER, sha256);
+	    headerPutString(h, RPMTAG_SHA3_256HEADER, sha3_256);
 	} else {
 	    h = headerFree(h);
 	}
 	free(sha1);
 	free(sha256);
+	free(sha3_256);
 	free(blob);
 	rpmDigestBundleFree(bundle);
     }

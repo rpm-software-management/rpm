@@ -317,6 +317,7 @@ Payloadsha3_256alt| 5124 | string       | SHA3-256 digest of the uncompressed pa
 Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
 Sha1header        | 269  | string       | SHA1 digest of the header.
 Sha256header      | 273  | string       | SHA256 digest of the header.
+Sha3_256_header   | 279  | string       | SHA3-256 digest of the header.
 Siggpg            | 262  | bin          | OpenPGP DSA signature of the header+payload (if thus signed).
 Sigmd5            | 261  | bin          | MD5 digest of the header+payload.
 Sigpgp            | 259  | bin          | OpenPGP RSA signature of the header+payload (if thus signed).

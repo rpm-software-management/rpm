@@ -1,23 +1,23 @@
 Signature:
 Header magic: 1e8ad8e (reserved: 0)
-Index entries: 4 (64 bytes)
-Data size: 4722 bytes
-Header size: 4786 bytes
-Padding: 6 bytes
-Region entries 4
-Region size 80
+Index entries: 5 (80 bytes)
+Data size: 4787 bytes
+Header size: 4867 bytes
+Padding: 5 bytes
+Region entries 5
+Region size 96
 Dribbles: 0
 
 Tag #0 [region]
 	tagno:    62 (Headersignatures)
 	type:      7 (blob)
-	offset: 4706
+	offset: 4771
 	count:    16
 
 	region trailer
 		tagno:    62 (Headersignatures)
 		type:      7 (blob)
-		offset:  -64
+		offset:  -80
 		count:    16
 
 Tag #1 [region]
@@ -33,9 +33,15 @@ Tag #2 [region]
 	count:     1
 
 Tag #3 [region]
+	tagno:   279 (Sha3_256)
+	type:      6 (string)
+	offset:  578
+	count:     1
+
+Tag #4 [region]
 	tagno:   999 (Reserved)
 	type:      7 (blob)
-	offset:  578
+	offset:  643
 	count:  4128
 
 Header:
