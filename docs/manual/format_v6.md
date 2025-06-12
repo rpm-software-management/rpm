@@ -57,9 +57,11 @@ FILESIGNATURES      |  274  | STRING_ARRAY
 VERITYSIGNATURES    |  276  | STRING_ARRAY
 VERITYSIGNATUREALGO |  277  | INT_32
 OPENPGP             |  278  | STRING_ARRAY
+SHA3_256            |  279  | STRING
 RESERVED            |  999  | BIN
 
-All packages carry at least HEADERSIGNATURES, SHA256 and RESERVED tags.
+All packages carry at least HEADERSIGNATURES, SHA256, SHA3_256 and
+RESERVED tags.
 
 On digitally signed packages, the OPENPGP tag will contain one or more
 base64-encoded OpenPGP signatures on the Header. The number of signatures
