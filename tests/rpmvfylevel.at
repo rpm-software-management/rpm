@@ -71,7 +71,7 @@ LEVEL all
 [])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP([rpmkeys -K <unsigned 2> verifylevel])
+RPMTEST_SETUP([rpmkeys -K <unsigned 2.1> verifylevel])
 AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
 
@@ -135,8 +135,57 @@ nosha
 0
 nohdr
 /data/RPMS/hello-2.0-1.x86_64.rpm:
+    Header SHA3-256 digest: NOTFOUND
     Header SHA256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
+    Payload SHA256 digest: OK
+    Legacy MD5 digest: NOTFOUND
+1
+],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmkeys -K <unsigned 2.2> verifylevel])
+AT_KEYWORDS([rpmkeys digest])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_openpgp_autosign_id %{nil}" \
+	--define "_rpmformat 6" \
+	/data/SPECS/attrtest.spec
+
+nosha2="0x200"
+nosha3="0x2000"
+nosha="0x2300"
+
+lvl="digest"
+for dis in nosha2 nosha3 nosha; do
+    vsf="$(eval echo \$${dis})"
+    echo ${dis}
+    runroot rpmkeys -Kv \
+	--define "_pkgverify_level ${lvl}" \
+	--define "_pkgverify_flags ${vsf}" \
+	/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm; echo $?
+done
+],
+[0],
+[nosha2
+/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
+    Header SHA3-256 digest: OK
+    Payload SHA3-256 digest: OK
+    Payload SHA256 digest: OK
+0
+nosha3
+/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
+    Header SHA256 digest: OK
+    Payload SHA3-256 digest: OK
+    Payload SHA256 digest: OK
+0
+nosha
+/build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
+    Header SHA3-256 digest: NOTFOUND
+    Header SHA256 digest: NOTFOUND
+    Header SHA1 digest: NOTFOUND
+    Payload SHA3-256 digest: OK
     Payload SHA256 digest: OK
     Legacy MD5 digest: NOTFOUND
 1

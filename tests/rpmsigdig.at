@@ -65,6 +65,7 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [1],
 [/data/RPMS/hello-1.0-1.i386.rpm:
+    Header SHA3-256 digest: NOTFOUND
     Header SHA256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: NOTFOUND
@@ -510,6 +511,7 @@ runroot rpmkeys -Kv --nosignature /tmp/${pkg}
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Header SHA3-256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     Legacy MD5 digest: NOTFOUND
@@ -1158,6 +1160,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header OpenPGP signature: NOTFOUND
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 63a0502eb7f5eaa07d43fe8fa805665b86e58d53db38ccf625bbbf01e3cd67ab)
+    Header SHA3-256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     Legacy OpenPGP V3 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
@@ -1168,6 +1171,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header OpenPGP signature: NOTFOUND
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 63a0502eb7f5eaa07d43fe8fa805665b86e58d53db38ccf625bbbf01e3cd67ab)
+    Header SHA3-256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     Legacy OpenPGP V3 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
@@ -1198,6 +1202,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header OpenPGP signature: NOTFOUND
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Header SHA3-256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
@@ -1208,6 +1213,7 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Header OpenPGP signature: NOTFOUND
     Header OpenPGP DSA signature: NOTFOUND
     Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+    Header SHA3-256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
     Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD

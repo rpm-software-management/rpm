@@ -50,6 +50,7 @@ static const char *sigTagName(uint32_t tag)
     case RPMSIGTAG_VERITYSIGNATUREALGO: return "Veritysignaturealgo";
     case RPMSIGTAG_OPENPGP: return "Openpgp";
     case RPMSIGTAG_RESERVED: return "Reserved";
+    case RPMSIGTAG_SHA3_256: return "Sha3_256";
     default:
 	break;
     }
