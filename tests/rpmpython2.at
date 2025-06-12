@@ -4,7 +4,7 @@ AT_KEYWORDS([install python])
 AT_SKIP_IF([$PYTHON_DISABLED])
 
 RPMTEST_CHECK([
-runpython prpm.py --nodeps --nosignature \
+runpython ${PYTHON} $(which prpm.py) --nodeps --nosignature \
 		-i /data/RPMS/hello-2.0-1.x86_64.rpm
 ],
 [0],
@@ -21,7 +21,7 @@ SHA512 5e0a11bf9c4f353b9197446d722e66cc322030e164929356e3fb669201597be77f3a44b4b
 [])
 
 RPMTEST_CHECK([
-runpython prpm.py --nodeps --nosignature \
+runpython ${PYTHON} $(which prpm.py) --nodeps --nosignature \
 		-i /data/RPMS/hlinktest-1.0-1.noarch.rpm \
 		-e hello
 ],
@@ -39,7 +39,7 @@ runroot rpm -qa
 
 RPMTEST_CHECK([
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
-runpython prpm.py --nodeps --skip-signature=foo \
+runpython ${PYTHON} $(which prpm.py) --nodeps --skip-signature=foo \
 		-i /data/RPMS/foo-1.0-1.noarch.rpm \
 		-u /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ],
