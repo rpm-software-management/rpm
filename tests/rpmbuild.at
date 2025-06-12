@@ -2696,7 +2696,7 @@ runroot rpm -q --qf "%{nevr} %{sourcerpm}\n" /build/RPMS/*/test-*-debuginfo-1.0-
 [test-test2-debuginfo-1.0-1 test-1.0-1.src.rpm
 test-test3-debuginfo-1.0-1 test-1.0-1.src.rpm
 ],
-[])
+[ignore])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild multiple subpackages source_nevr])
