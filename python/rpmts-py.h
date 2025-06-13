@@ -4,11 +4,16 @@
 #include <rpm/rpmts.h>
 
 typedef struct rpmtsObject_s rpmtsObject;
-
-extern PyTypeObject* rpmts_Type;
 extern PyType_Spec rpmts_Type_Spec;
 
-#define rpmtsObject_Check(v)	((v)->ob_type == rpmts_Type)
+static inline int rpmtsObject_Check(PyObject *v) {
+	rpmmodule_state_t *modstate = rpmModState_FromObject(v);
+    if (!modstate) {
+        PyErr_Clear();
+        return 0;
+    }
+    return (v)->ob_type == modstate->rpmts_Type;
+}
 
 int rpmtsFromPyObject(PyObject *item, rpmts *ts);
 

@@ -61,7 +61,6 @@
 
 struct rpmmiObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     PyObject *ref;		/* for db/ts refcounting */
     rpmdbMatchIterator mi;
 } ;
@@ -70,13 +69,17 @@ static PyObject *
 rpmmi_iternext(rpmmiObject * s)
 {
     Header h;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+        return NULL;
+    }
 
     if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
     }
     headerLink(h);
-    return hdr_Wrap(hdr_Type, h);
+    return hdr_Wrap(modstate->hdr_Type, h);
 }
 
 static PyObject *
@@ -127,10 +130,22 @@ static struct PyMethodDef rpmmi_methods[] = {
 
 static void rpmmi_dealloc(rpmmiObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->mi = rpmdbFreeIterator(s->mi);
     Py_DECREF(s->ref);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmmi_traverse(rpmmiObject * s, visitproc visit, void *arg)
+{
+    Py_VISIT(s->ref);
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static Py_ssize_t rpmmi_length(rpmmiObject * s)
@@ -192,6 +207,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmmi_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmmi_dealloc},
+    {Py_tp_traverse, rpmmi_traverse},
     {Py_nb_bool, rpmmi_bool},
     {Py_mp_length, rpmmi_length},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -202,12 +218,10 @@ static PyType_Slot rpmmi_Type_Slots[] = {
     {Py_tp_methods, rpmmi_methods},
     {0, NULL},
 };
-
-PyTypeObject* rpmmi_Type;
 PyType_Spec rpmmi_Type_Spec = {
     .name = "rpm.mi",
     .basicsize = sizeof(rpmmiObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmmi_Type_Slots,
 };
 

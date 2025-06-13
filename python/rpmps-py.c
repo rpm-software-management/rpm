@@ -4,7 +4,6 @@
 
 struct rpmProblemObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmProblem	prob;
 };
 
@@ -66,9 +65,20 @@ static PyObject *rpmprob_str(rpmProblemObject *s)
 
 static void rpmprob_dealloc(rpmProblemObject *s)
 {
+    PyObject_GC_UnTrack(s);
     s->prob = rpmProblemFree(s->prob);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmprob_traverse(rpmProblemObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *disabled_new(PyTypeObject *type,
@@ -82,6 +92,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmProblem_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmprob_dealloc},
+    {Py_tp_traverse, rpmprob_traverse},
     {Py_tp_str, rpmprob_str},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -89,12 +100,10 @@ static PyType_Slot rpmProblem_Type_Slots[] = {
     {Py_tp_getset, rpmprob_getseters},
     {0, NULL},
 };
-
-PyTypeObject* rpmProblem_Type;
 PyType_Spec rpmProblem_Type_Spec = {
     .name = "rpm.prob",
     .basicsize = sizeof(rpmProblemObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmProblem_Type_Slots,
 };
 
@@ -108,7 +117,7 @@ PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
     return (PyObject *) s;
 }
 
-PyObject *rpmps_AsList(rpmps ps)
+PyObject *rpmps_AsList(rpmmodule_state_t *modstate, rpmps ps)
 {
     PyObject *problems;
     rpmpsi psi;
@@ -122,7 +131,7 @@ PyObject *rpmps_AsList(rpmps ps)
     psi = rpmpsInitIterator(ps);
 
     while ((prob = rpmpsiNext(psi))) {
-        PyObject *pyprob = rpmprob_Wrap(rpmProblem_Type, prob);
+        PyObject *pyprob = rpmprob_Wrap(modstate->rpmProblem_Type, prob);
         if (!pyprob) {
             Py_DECREF(problems);
             rpmpsFreeIterator(psi);

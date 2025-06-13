@@ -29,7 +29,7 @@
  * \name Module: rpm
  */
 
-PyObject * pyrpmError;
+unsigned long python_version = 0;
 
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
@@ -229,58 +229,82 @@ static void addRpmTags(PyObject *module)
 static int initModule(PyObject *m);
 
 static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
-    Py_VISIT(pyrpmError);
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    Py_VISIT(modstate->hdr_Type);
+    Py_VISIT(modstate->rpmarchive_Type);
+    Py_VISIT(modstate->rpmds_Type);
+    Py_VISIT(modstate->rpmfd_Type);
+    Py_VISIT(modstate->rpmfile_Type);
+    Py_VISIT(modstate->rpmfiles_Type);
+    Py_VISIT(modstate->rpmii_Type);
+    Py_VISIT(modstate->rpmKeyring_Type);
+    Py_VISIT(modstate->rpmPubkey_Type);
+    Py_VISIT(modstate->rpmmi_Type);
+    Py_VISIT(modstate->rpmProblem_Type);
+    Py_VISIT(modstate->rpmstrPool_Type);
+    Py_VISIT(modstate->rpmte_Type);
+    Py_VISIT(modstate->rpmts_Type);
+    Py_VISIT(modstate->rpmver_Type);
+    Py_VISIT(modstate->spec_Type);
+    Py_VISIT(modstate->specPkg_Type);
+    Py_VISIT(modstate->pyrpmError);
     return 0;
 }
 
 static int rpmModuleClear(PyObject *m) {
-    Py_CLEAR(pyrpmError);
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    Py_CLEAR(modstate->hdr_Type);
+    Py_CLEAR(modstate->rpmarchive_Type);
+    Py_CLEAR(modstate->rpmds_Type);
+    Py_CLEAR(modstate->rpmfd_Type);
+    Py_CLEAR(modstate->rpmfile_Type);
+    Py_CLEAR(modstate->rpmfiles_Type);
+    Py_CLEAR(modstate->rpmii_Type);
+    Py_CLEAR(modstate->rpmKeyring_Type);
+    Py_CLEAR(modstate->rpmPubkey_Type);
+    Py_CLEAR(modstate->rpmmi_Type);
+    Py_CLEAR(modstate->rpmProblem_Type);
+    Py_CLEAR(modstate->rpmstrPool_Type);
+    Py_CLEAR(modstate->rpmte_Type);
+    Py_CLEAR(modstate->rpmts_Type);
+    Py_CLEAR(modstate->rpmver_Type);
+    Py_CLEAR(modstate->spec_Type);
+    Py_CLEAR(modstate->specPkg_Type);
+    Py_CLEAR(modstate->pyrpmError);
     return 0;
 }
 
-static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "_rpm",            /* m_name */
-    rpm__doc__,        /* m_doc */
-    0,                 /* m_size */
-    rpmModuleMethods,
-    NULL,              /* m_reload */
-    rpmModuleTraverse,
-    rpmModuleClear,
-    NULL               /* m_free */
+static void rpmModuleFree(void *m) {
+    (void)rpmModuleClear(m);
+}
+
+static PyModuleDef_Slot module_slots[] = {
+    {Py_mod_exec, initModule},
+    {0}
 };
 
-PyObject *
-PyInit__rpm(void);
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_rpm",			/* m_name */
+    rpm__doc__,			/* m_doc */
+    sizeof(rpmmodule_state_t),	/* m_size */
+    rpmModuleMethods,
+    module_slots,      /* m_slots */
+    rpmModuleTraverse,
+    rpmModuleClear,
+    rpmModuleFree
+};
 
-static int moduleInitialized = 0;
+/* The init function must be exported as it's called by Python, but it doesn't
+ * need a declaration in a header file.
+ * Provide a declaration to avoid -Wmissing-prototypes warnings.
+ */
+PyObject *PyInit__rpm(void);
 
 PyObject *
 PyInit__rpm(void)
 {
-    /* We store pointers to our Python type objects in global variables,
-     * which would get clobbered if the initialization code could run
-     * several times. Explicitly disallow that.
-     *
-     * This means the extension cannot be unloaded and reloaded, nor used
-     * in multiple Python interpreters. The limitation could be lifted
-     * in the future by:
-     * - storing *_Type in module state rather than C static variables.
-     * - implementing traverse, clear & dealloc slots for proper reference
-     *   counting (right now the types are treated as immortal).
-     */
-
-    if (moduleInitialized) {
-        PyErr_SetString(PyExc_ImportError,
-                        "cannot load rpm module more than once per process");
-        return NULL;
-    }
-    moduleInitialized = 1;
-
-    PyObject * m;
-    m = PyModule_Create(&moduledef);
-    initModule(m);
-    return m;
+    return PyModuleDef_Init(&moduledef);
 }
 
 /* Create a type object based on a Spec, and add it to the module. */
@@ -288,7 +312,7 @@ static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
                           char *name)
 {
     if (!*type) {
-        *type = (PyTypeObject *)PyType_FromSpec(spec);
+        *type = (PyTypeObject *)PyType_FromModuleAndSpec(m, spec, NULL);
         if (!*type) return 0;
     }
     /* We intentionally leak a reference to `type` (only once per type per
@@ -307,6 +331,22 @@ static int initAndAddType(PyObject *m, PyTypeObject **type, PyType_Spec *spec,
     return 1;
 }
 
+static unsigned long _get_python_version(void) {
+    PyObject *python_version_tuple = PySys_GetObject("version_info");
+    if (python_version_tuple == NULL) {
+        PyErr_SetString(PyExc_SystemError, "could not get Python version");
+	return 0;
+    }
+    unsigned int major, minor, micro, serial;
+    PyObject *releaselevel;
+    if (!PyArg_ParseTuple(
+	    python_version_tuple, "IIIOI",
+	    &major, &minor, &micro, &releaselevel, &serial)) {
+	return 0;
+    }
+    return (major << 24) | (minor << 16) | (micro << 8);
+}
+
 /* Module initialization: */
 static int initModule(PyObject *m)
 {
@@ -314,79 +354,91 @@ static int initModule(PyObject *m)
 
     /* failure to initialize rpm (crypto and all) is rather fatal too... */
     if (rpmReadConfigFiles(NULL, NULL) == -1)
-	return 0;
+	return -1;
 
     d = PyModule_GetDict(m);
 
-    pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
-    if (pyrpmError != NULL)
-	PyDict_SetItemString(d, "error", pyrpmError);
-
-    if (!initAndAddType(m, &hdr_Type, &hdr_Type_Spec, "hdr")) {
-	return 0;
+    if (python_version == 0) {
+	python_version = _get_python_version();
+	if (python_version == 0) {
+	    return -1;
+	}
     }
 
-    if (!initAndAddType(m, &rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
-	return 0;
+    rpmmodule_state_t *modstate = PyModule_GetState(m);
+    if (!modstate) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmds_Type, &rpmds_Type_Spec, "ds")) {
-	return 0;
+    modstate->pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
+    if (modstate->pyrpmError != NULL)
+	PyDict_SetItemString(d, "error", modstate->pyrpmError);
+
+    if (!initAndAddType(m, &modstate->hdr_Type, &hdr_Type_Spec, "hdr")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmarchive_Type, &rpmarchive_Type_Spec, "archive")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfile_Type, &rpmfile_Type_Spec, "file")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmds_Type, &rpmds_Type_Spec, "ds")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmfd_Type, &rpmfd_Type_Spec, "fd")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmfile_Type, &rpmfile_Type_Spec, "file")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmfiles_Type, &rpmfiles_Type_Spec, "files")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmii_Type, &rpmii_Type_Spec, "ii")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmKeyring_Type, &rpmKeyring_Type_Spec, "keyring")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmmi_Type, &rpmmi_Type_Spec, "mi")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmii_Type, &rpmii_Type_Spec, "ii")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmProblem_Type, &rpmProblem_Type_Spec, "prob")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmte_Type, &rpmte_Type_Spec, "te")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmPubkey_Type, &rpmPubkey_Type_Spec, "pubkey")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmts_Type, &rpmts_Type_Spec, "ts")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmstrPool_Type, &rpmstrPool_Type_Spec, "strpool")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &rpmver_Type, &rpmver_Type_Spec, "ver")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmte_Type, &rpmte_Type_Spec, "te")) {
+	return -1;
     }
 
-    if (!initAndAddType(m, &spec_Type, &spec_Type_Spec, "spec")) {
-	return 0;
+    if (!initAndAddType(m, &modstate->rpmts_Type, &rpmts_Type_Spec, "ts")) {
+	return -1;
     }
-    if (!initAndAddType(m, &specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
-	return 0;
+
+    if (!initAndAddType(m, &modstate->rpmver_Type, &rpmver_Type_Spec, "ver")) {
+	return -1;
+    }
+
+    if (!initAndAddType(m, &modstate->spec_Type, &spec_Type_Spec, "spec")) {
+	return -1;
+    }
+    if (!initAndAddType(m, &modstate->specPkg_Type, &specPkg_Type_Spec, "specPkg")) {
+	return -1;
     }
 
     addRpmTags(m);
@@ -649,6 +701,74 @@ static int initModule(PyObject *m)
     REGISTER_ENUM(RPMSPEC_FORCE);
     REGISTER_ENUM(RPMSPEC_NOLANG);
 
-    return 1;
+    return 0;
 }
 
+rpmmodule_state_t *rpmModState_FromModule(PyObject *m) {
+    assert(PyModule_GetDef(m) == &moduledef);
+    rpmmodule_state_t *state = PyModule_GetState(m);
+    if (state == NULL && !PyErr_Occurred()) {
+	PyErr_SetString(PyExc_SystemError, "could not get _rpm module state");
+    }
+    return state;
+}
+
+/* PyType_GetModuleByDef is only in Python 3.11+ */
+static PyObject *
+MyType_GetModuleByDef(PyTypeObject *type, PyModuleDef *def)
+{
+    assert(PyType_Check(type));
+    PyObject *m = PyType_GetModule(type);
+    if (m && PyModule_GetDef(m) == def) {
+	return m;
+    }
+    if (!m && PyErr_Occurred()) {
+	if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+	    PyErr_Clear();
+	} else {
+	    return NULL;
+	}
+    }
+
+    PyObject *mro = PyObject_CallMethod((PyObject*)type, "mro", "");
+    if (!mro) {
+	return NULL;
+    }
+    size_t size = PyList_Size(mro);
+    for (Py_ssize_t i = 1; i < size; i++) {
+        PyObject *super = PyList_GetItem(mro, i); // borrowed reference
+	if (!super) {
+	    Py_DECREF(mro);
+	    return NULL;
+	}
+	m = PyType_GetModule((PyTypeObject*)super);
+	if (m && PyModule_GetDef(m) == def) {
+	    Py_DECREF(mro);
+	    return m;
+	}
+	if (!m && PyErr_Occurred()) {
+	    if (PyErr_ExceptionMatches(PyExc_TypeError)) {
+		PyErr_Clear();
+	    } else {
+		Py_DECREF(mro);
+		return NULL;
+	    }
+	}
+    }
+
+    PyErr_SetString(PyExc_SystemError, "could not get _rpm module state");
+    Py_DECREF(mro);
+    return NULL;
+}
+
+rpmmodule_state_t *rpmModState_FromType(PyTypeObject *t) {
+    PyObject *mod = MyType_GetModuleByDef(t, &moduledef);
+    if (!mod) {
+	return NULL;
+    }
+    return rpmModState_FromModule(mod);
+}
+
+rpmmodule_state_t *rpmModState_FromObject(PyObject *s) {
+    return rpmModState_FromType(Py_TYPE(s));
+}

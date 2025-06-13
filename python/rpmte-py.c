@@ -41,9 +41,16 @@
 
 struct rpmteObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmte	te;
 };
+
+static int rpmte_traverse(rpmteObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
+}
 
 static PyObject *
 rpmte_TEType(rpmteObject * s, PyObject * unused)
@@ -114,9 +121,13 @@ rpmte_PkgFileSize(rpmteObject * s, PyObject * unused)
 static PyObject *
 rpmte_Parent(rpmteObject * s, PyObject * unused)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmte parent = rpmteParent(s->te);
     if (parent)
-	return rpmte_Wrap(rpmte_Type, parent);
+	return rpmte_Wrap(modstate->rpmte_Type, parent);
 
     Py_RETURN_NONE;
 }
@@ -128,8 +139,12 @@ static PyObject * rpmte_Failed(rpmteObject * s, PyObject * unused)
 
 static PyObject * rpmte_Problems(rpmteObject * s, PyObject * unused)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmps ps = rpmteProblems(s->te);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }
@@ -181,6 +196,10 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
     rpmds ds;
     rpmTagVal tag;
     char * kwlist[] = {"tag", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:DS", kwlist,
 				tagNumFromPyObject, &tag))
@@ -190,17 +209,21 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (ds == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmds_Wrap(rpmds_Type, rpmdsLink(ds));
+    return rpmds_Wrap(modstate->rpmds_Type, rpmdsLink(ds));
 }
 
 static PyObject *
 rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmfiles files = rpmteFiles(s->te);
     if (files == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmfiles_Wrap(rpmfiles_Type, files);
+    return rpmfiles_Wrap(modstate->rpmfiles_Type, files);
 }
 
 static PyObject *
@@ -293,18 +316,17 @@ static PyObject *disabled_new(PyTypeObject *type,
 
 static PyType_Slot rpmte_Type_Slots[] = {
     {Py_tp_new, disabled_new},
+    {Py_tp_traverse, rpmte_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmte_doc},
     {Py_tp_methods, rpmte_methods},
     {0, NULL},
 };
-
-PyTypeObject* rpmte_Type;
 PyType_Spec rpmte_Type_Spec = {
     .name = "rpm.te",
     .basicsize = sizeof(rpmteObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmte_Type_Slots,
 };
 
