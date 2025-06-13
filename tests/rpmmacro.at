@@ -64,33 +64,17 @@ runroot_user bash -c "echo %foo bar > /home/$RPMUSER/.rpmmacros"
 runroot_user touch "/home/$RPMUSER/.rpmrc"
 
 RPMTEST_CHECK([[
-runroot_user chmod 000 /home/$RPMUSER/.rpmmacros
+runroot_user mkdir /home/$RPMUSER/.config
+runroot_user chmod 000 /home/$RPMUSER/.config
 runroot_user rpm -E "%{foo}"
-runroot_user chmod 644 /home/$RPMUSER/.rpmmacros
-runroot_user ls /home/$RPMUSER/.rpmrc_conversion_lock
+runroot_user chmod 755 /home/$RPMUSER/.config
+runroot_user ls /home/$RPMUSER/.rpmconfig_migration_lock
 runroot_user rpm -E "%{foo}"
-runroot_user rm /home/$RPMUSER/.rpmrc_conversion_lock
-]],
-[0],
-[%{foo}
-/home/klang/.rpmrc_conversion_lock
-bar
-],
-[error: Could not migrate /home/klang/.rpmmacros to /home/klang/.config/rpm/macros: Permission denied
-error: Could not migrate /home/klang/.rpmrc to /home/klang/.config/rpm/rpmrc: Permission denied
-])
-
-RPMTEST_CHECK([[
-runroot_user chmod 000 /home/$RPMUSER/.rpmrc
-runroot_user rpm -E "%{foo}"
-runroot_user chmod 644 /home/$RPMUSER/.rpmrc
-runroot_user ls /home/$RPMUSER/.rpmrc_conversion_lock
-runroot_user rpm -E "%{foo}"
-runroot_user rm /home/$RPMUSER/.rpmrc_conversion_lock
+runroot_user rm /home/$RPMUSER/.rpmconfig_migration_lock
 ]],
 [0],
 [bar
-/home/klang/.rpmrc_conversion_lock
+/home/klang/.rpmconfig_migration_lock
 bar
 ],
 [error: Could not migrate /home/klang/.rpmmacros to /home/klang/.config/rpm/macros: Permission denied

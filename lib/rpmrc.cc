@@ -363,12 +363,15 @@ const char * lookupInDefaultTable(const char * name,
 
 static int moveConfigFiles(std::string userdir)
 {
+    if (!isatty(STDIN_FILENO))
+	return -1;
+
     fs::path home = std::getenv("HOME");
     std::error_code ec;
     std::error_code ec2;
     fs::path oldmacros = home / ".rpmmacros";
     fs::path oldrpmrc = home / ".rpmrc";
-    fs::path lockfile = home / ".rpmrc_conversion_lock";
+    fs::path lockfile = home / ".rpmconfig_migration_lock";
     fs::path macros_target = "";
     fs::path rpmrc_target = "";
 
@@ -379,10 +382,7 @@ static int moveConfigFiles(std::string userdir)
     fs::path newmacros = userdir_path / "macros";
     fs::path newrpmrc = userdir_path / "rpmrc";
 
-    if (!isatty(0)) /* only on interactive runs */
-	return -1;
-
-    if (!fs::is_regular_file(oldmacros) && !fs::is_regular_file(oldrpmrc))
+    if (!fs::is_regular_file(oldmacros, ec) && !fs::is_regular_file(oldrpmrc, ec))
 	return -1;
 
     int fd = open(lockfile.c_str(), O_CREAT|O_EXCL|O_WRONLY, 0644);
@@ -391,8 +391,8 @@ static int moveConfigFiles(std::string userdir)
     close(fd);
 
     /* recheck after acquiring lock */
-    if ((!fs::is_regular_file(oldmacros) && !fs::is_regular_file(oldrpmrc)) ||
-	fs::exists(userdir_path)) {
+    if ((!fs::is_regular_file(oldmacros, ec) && !fs::is_regular_file(oldrpmrc, ec)) ||
+	fs::exists(userdir_path, ec)) {
 	fs::remove(lockfile, ec);
 	return -1;
     }
@@ -401,56 +401,49 @@ static int moveConfigFiles(std::string userdir)
     if (ec) goto err2;
 
     if (fs::is_regular_file(oldmacros)) {
-	fs::copy(oldmacros, newmacros, ec);
+	fs::rename(oldmacros, newmacros, ec);
 	if (ec) goto err;
 	macros_target = fs::relative(newmacros, home, ec);
 	if (ec) goto err;
-    }
-    if (fs::is_regular_file(oldrpmrc)) {
-	fs::copy(oldrpmrc, newrpmrc, ec);
-	if (ec) goto err;
-	rpmrc_target = fs::relative(newrpmrc, home, ec);
-	if (ec) goto err;
-    }
-
-    if (fs::is_regular_file(oldmacros)) {
-	fs::remove(oldmacros, ec);
-	if (ec) goto undo_remove;
 	fs::create_symlink(macros_target , oldmacros, ec);
 	if (ec) goto undo_remove;
     }
     if (fs::is_regular_file(oldrpmrc)) {
-	fs::remove(oldrpmrc, ec);
-	if (ec) goto undo_remove;
+	fs::rename(oldrpmrc, newrpmrc, ec);
+	if (ec) goto err;
+	rpmrc_target = fs::relative(newrpmrc, home, ec);
+	if (ec) goto err;
 	fs::create_symlink(rpmrc_target , oldrpmrc, ec);
 	if (ec) goto undo_remove;
     }
 
-    if (fs::is_symlink(oldmacros))
+    if (fs::is_symlink(oldmacros, ec)) {
 	rpmlog(RPMLOG_WARNING, "Migrated %s to %s (leaving a symlink)\n",
 	       oldmacros.c_str(), newmacros.c_str());
-    if (fs::is_symlink(oldrpmrc))
+    }
+    if (fs::is_symlink(oldrpmrc, ec)) {
 	rpmlog(RPMLOG_WARNING, "Migrated %s to %s (leaving a symlink)\n",
 	       oldrpmrc.c_str(), newrpmrc.c_str());
+    }
 
     fs::remove(lockfile, ec);
 
     return 0;
 undo_remove:
-    if (fs::is_symlink(oldmacros))
+    if (fs::is_symlink(oldmacros, ec2))
 	fs::remove(oldmacros, ec2);
     if (fs::is_symlink(oldrpmrc))
 	fs::remove(oldrpmrc, ec2);
 
-    if (fs::is_regular_file(newmacros))
-	fs::copy(oldmacros, newmacros, ec2);
+    if (fs::is_regular_file(newmacros, ec2))
+	fs::rename(newmacros, oldmacros, ec2);
     if (fs::is_regular_file(newrpmrc))
-	fs::copy(oldrpmrc, newrpmrc, ec2);
+	fs::rename(newrpmrc, oldrpmrc, ec2);
 err:
     /* userdir_path did not exist at the beginning */
     fs::remove_all(userdir_path, ec2);
 err2:
-    if (fs::exists(oldmacros))
+    if (fs::exists(oldmacros, ec2))
 	rpmlog(RPMLOG_ERR, "Could not migrate %s to %s: %s\n",
 	       oldmacros.c_str(), newmacros.c_str(), ec.message().c_str());
     if (fs::exists(oldrpmrc))
@@ -481,7 +474,7 @@ static void setDefaults(void)
     if (rpmGlob(userdir, NULL, NULL)) {
 	const char *oldmacros = "~/.rpmmacros";
 	const char *oldrc = "~/.rpmrc";
-	if (rpmGlob(oldmacros, NULL, NULL) == 0 || rpmGlob(oldrc, NULL, NULL) == 0) {
+	if ((rpmGlob(oldmacros, NULL, NULL) == 0 || rpmGlob(oldrc, NULL, NULL) == 0)) {
 	    if (moveConfigFiles(userdir)) {
 		free(usermacros);
 		free(userrc);
