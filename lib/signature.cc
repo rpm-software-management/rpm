@@ -109,7 +109,8 @@ int rpmWriteSignature(FD_t fd, Header sigh)
     return rc;
 }
 
-rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
+rpmRC rpmGenerateSignature(char *SHA3_256, char *SHA256,
+			char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,
 			int rpmver)
 {
@@ -124,6 +125,15 @@ rpmRC rpmGenerateSignature(char *SHA256, char *SHA1, uint8_t *MD5,
     rpmTagVal reserveTag = RPMSIGTAG_RESERVEDSPACE;
 
     /* Prepare signature */
+    if (SHA3_256) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_SHA3_256;
+	td.count = 1;
+	td.type = RPM_STRING_TYPE;
+	td.data = SHA3_256;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
+    }
+
     if (SHA256) {
 	rpmtdReset(&td);
 	td.tag = RPMSIGTAG_SHA256;

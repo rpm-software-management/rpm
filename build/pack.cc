@@ -458,6 +458,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     char * rpmio_flags = NULL;
     char * SHA1 = NULL;
     char * SHA256 = NULL;
+    char * SHA3_256 = NULL;
     uint8_t * MD5 = NULL;
     char * pld = NULL;
     char * upld = NULL;
@@ -530,12 +531,15 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     if (rpmformat < 6) {
 	SHA1 = (char *)nullDigest(RPM_HASH_SHA1, 1);
 	MD5 = (uint8_t *)nullDigest(RPM_HASH_MD5, 0);
+    } else {
+	SHA3_256 = (char *)nullDigest(RPM_HASH_SHA3_256, 1);
     }
     SHA256 = (char *)nullDigest(RPM_HASH_SHA256, 1);
-    if (rpmGenerateSignature(SHA256, SHA1, MD5, 0, 0, fd, rpmformat))
+    if (rpmGenerateSignature(SHA3_256, SHA256, SHA1, MD5, 0, 0, fd, rpmformat))
 	goto exit;
     SHA1 = _free(SHA1);
     SHA256 = _free(SHA256);
+    SHA3_256 = _free(SHA3_256);
     MD5 = _free(MD5);
 
     /* Write a placeholder header. */
@@ -592,12 +596,15 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	/* SHA1 and legacy MD5 on header + payload only in v4 */
 	fdInitDigestID(fd, RPM_HASH_MD5, RPMTAG_SIGMD5, 0);
 	fdInitDigestID(fd, RPM_HASH_SHA1, RPMTAG_SHA1HEADER, 0);
+    } else {
+	fdInitDigestID(fd, RPM_HASH_SHA3_256, RPMTAG_SHA3_256HEADER, 0);
     }
     fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_SHA256HEADER, 0);
     if (fdConsume(fd, hdrStart, payloadStart - hdrStart))
 	goto exit;
     fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
     fdFiniDigest(fd, RPMTAG_SHA256HEADER, (void **)&SHA256, NULL, 1);
+    fdFiniDigest(fd, RPMTAG_SHA3_256HEADER, (void **)&SHA3_256, NULL, 1);
 
     if (fdConsume(fd, 0, payloadSize))
 	goto exit;
@@ -607,8 +614,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
 
     /* Generate the signature. Now with right values */
-    if (rpmGenerateSignature(SHA256, SHA1, MD5, payloadEnd - hdrStart,
-				archiveSize, fd, rpmformat)) {
+    if (rpmGenerateSignature(SHA3_256, SHA256, SHA1, MD5,
+			payloadEnd - hdrStart, archiveSize, fd, rpmformat)) {
 	goto exit;
     }
 
@@ -618,6 +625,7 @@ exit:
     free(rpmio_flags);
     free(SHA1);
     free(SHA256);
+    free(SHA3_256);
     free(upld);
     free(upld3);
 
