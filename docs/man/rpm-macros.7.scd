@@ -107,7 +107,7 @@ Macro expansion can be escaped by placing a second *%* in front of the
 macro, for example *%%{name}* would be expanded to *%{name}*.
 
 Attempting to expand an undefined macro expands to the
-literal invocation, eg. *%\_undefined* expands to *%\_undefined*.
+literal invocation, e.g. *%\_undefined* expands to *%\_undefined*.
 If this is not desired, use conditionals.
 
 Macro expansions can recurse up to 64 levels.
@@ -140,7 +140,7 @@ For more complex tests, use *expressions* or embedded *Lua*.
 Note that *%if*, *%ifarch* and the like are not macros, they are spec
 directives and only usable in that context.
 
-Note that in rpm >= 4.17, conditionals on built-in macros simply test for
+Note that in RPM >= 4.17, conditionals on built-in macros simply test for
 existence of that built-in, just like with any other macros.
 In older versions, the behavior of conditionals on built-ins is undefined.
 
@@ -149,12 +149,12 @@ Expression expansion can be performed using *%[expression]*.  An
 expression consists of terms that can be combined using
 operators.
 
-Rpm supports three kinds of terms:
+RPM supports three kinds of terms:
 - numbers made up from digits
-- strings enclosed in double quotes (eg *"somestring"*)
-- versions enclosed in double quotes preceded by *v* (eg *v"3:1.2-1"*).
+- strings enclosed in double quotes (e.g *"somestring"*)
+- versions enclosed in double quotes preceded by *v* (e.g *v"3:1.2-1"*)
 
-Rpm will expand macros when evaluating terms.
+RPM will expand macros when evaluating terms.
 
 You can use the standard operators to combine terms:
 - logical operators *&&*, *||*, *!*
@@ -165,7 +165,7 @@ You can use the standard operators to combine terms:
 
 For example, *%[ 3 + 4 \* (1 + %two) ]* will expand
 to *15* if *%two* expands to *2*. Version terms are compared using
-rpm version ([_epoch_:]_version_[-_release_]) comparison algorithm,
+RPM version ([_epoch_:]_version_[-_release_]) comparison algorithm,
 rather than regular string comparison.
 
 Note that the *%[expression]* expansion is different to the
@@ -181,8 +181,8 @@ will print *3*.  Using *%[%foo]* instead will result in the
 error that "1 + 2" is not a number.
 
 Doing the macro expansion when evaluating the terms has two
-advantages.  First, it allows rpm to do correct short-circuit
-processing when evaluation logical operators.  Second, the
+advantages.  First, it allows RPM to do correct short-circuit
+processing when evaluating logical operators.  Second, the
 expansion result does not influence the expression parsing,
 e.g. *%["%file"]* will even work if the *%file* macro expands
 to a string that contains a double quote.
@@ -205,11 +205,11 @@ utility macros with option processing and accepting a variable number of
 arguments, much like common shell tools.
 
 If present, the _OPTIONS_ (i.e. the string between parentheses) are passed
-exactly as is to to *getopt*(3) for argc/argv processing at the beginning of
+exactly as is to *getopt*(3) for argc/argv processing at the beginning of
 a macro invocation. Only short options are supported.
 
 *-* as the sole _OPTIONS_ field disables RPM's option processing.
-This allows macros to fully decide how to handle their input, eg.
+This allows macros to fully decide how to handle their input, e.g.
 if the arguments of the macro only/mostly consist of items starting
 with *-*, the default processing only gets in the way.
 
@@ -361,7 +361,7 @@ the preceding *%*-character.
 
 	Example:
 	```
-	*%{expand:%{foo_prefix}%{foo_suffix}}*
+	%{expand:%{foo_prefix}%{foo_suffix}}
 	```
 
 *%{expr:*_EXPRESSION_}
@@ -378,7 +378,7 @@ the preceding *%*-character.
 
 	Example:
 	```
-	*%{lua:for i=65,90 do print(string.char(i)) end}*
+	%{lua:for i=65,90 do print(string.char(i)) end}
 	```
 
 *%{macrobody:*_NAME_*}*
@@ -434,7 +434,7 @@ the preceding *%*-character.
 
 	Example:
 	```
-	*%myzip -x %{quote:empty spaces.zip}*
+	%myzip -x %{quote:empty spaces.zip}
 	```
 
 *%{rep *_STRING_, _N_ [,_SEP_]*}*
@@ -512,7 +512,7 @@ the preceding *%*-character.
 
 	Example:
 	```
-	*%{basename:/some/dir/file.suf}*
+	%{basename:/some/dir/file.suf}
 	```
 
 *%{dirname:*_PATH_*}*
@@ -528,7 +528,7 @@ the preceding *%*-character.
 
 	Example:
 	```
-	*%{exists:%{builddir}/myflag.txt}*
+	%{exists:%{builddir}/myflag.txt}
 	```
 
 *%{suffix:*_PATH_*}*
@@ -591,7 +591,7 @@ the preceding *%*-character.
 	```
 
 *%getconfdir*
-	Expand to rpm "home" directory (typically /usr/lib/rpm).
+	Expand to RPM "home" directory (typically /usr/lib/rpm).
 
 *%{getenv:*_NAME_*}*
 	*getenv*(3) macro analogue.
@@ -602,7 +602,7 @@ the preceding *%*-character.
 	```
 
 *%rpmversion*
-	Expand to running rpm version.
+	Expand to running RPM version.
 
 ## Output
 *%{echo:*_STRING_*}*
@@ -634,7 +634,7 @@ the preceding *%*-character.
 	Expand to 1/0 whether RPM is in verbose mode or not. (Added: 4.17.1)
 
 *%{verbose:*_STRING_*}*
-	Expand to _STRING_ if rpm is in verbose mode, the empty string if not.
+	Expand to _STRING_ if RPM is in verbose mode, the empty string if not.
 	(Added: 4.17.1)
 
 	Example:
@@ -739,7 +739,7 @@ Some useful tools for working with and troubleshooting macros:
 	Expand macro _EXPRESSION_ on the command line.
 
 *rpm --define "aa 11" --eval "%aa"*
-	Define and evalue a macro on the command line.
+	Define and evaluate a macro on the command line.
 
 *rpmlua*
 	Run an interactive shell in the embedded Lua environment.
