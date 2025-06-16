@@ -741,8 +741,8 @@ Expands to *1* if *%aa* expands to *5*, otherwise expands to *2*:
 # DEBUGGING
 Some useful tools for working with and troubleshooting macros:
 
-*rpm --eval "*_EXPRESSION_*"*
-	Expand macro _EXPRESSION_ on the command line.
+*rpm --eval "*_VALUE_*"*
+	Expand _VALUE_ on the command line.
 
 *rpm --define "aa 11" --eval "%aa"*
 	Define and evaluate a macro on the command line.
