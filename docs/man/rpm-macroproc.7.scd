@@ -1,4 +1,4 @@
-RPM-MACROS(7)
+RPM-MACROPROC(7)
 
 # NAME
 rpm-macroproc - RPM macro processor
