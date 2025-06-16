@@ -28,6 +28,7 @@ Typographic conventions:
 - Use UPPERCASE for first level sections, and Mixed case
   for second level sections (if present)
 - Use matching case and bold when referring to section names
+- Use uppercase RPM when referring to the RPM project
 - Use bold when referring to other man page names, eg *rpm*(8)
 - Use underline uppercase for user arguments placeholders: _ARGUMENT_
 - Use surrounding `<>` for multi-value placeholders to differentiate
