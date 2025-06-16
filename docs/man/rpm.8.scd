@@ -490,50 +490,20 @@ unique to verify mode are:
 
 # OUTPUT
 *--verify*
-	The format of the output is a string of 9 characters, a possible
-	attribute marker:
+	The format of the output is a string of 9 _result_ characters
+	a possible _attribute_ from the package, followed by the file name.
 
-[[ *Marker*
-:- *%files attribute*
-:< *Description*
-|  *a*
-:  %*a*rtifact
-:  a build side-effect file (such as buildid links)
-|  *c*
-:  %*c*onfig
-:  configuration file
-|  *d*
-:  %*d*oc
-:  documentation file
-|  *g*
-:  %*g*host
-:  ghost file (i.e. the file contents are not included in the package payload)
-|  *l*
-:  %*l*icense
-:  license file
-|  *m*
-:  %*m*issingok
-:  file missing is not a verify failure
-|  *n*
-:   %config(*n*oreplace)
-:  do not replace config file
-|  *r*
-:   %*r*eadme
-:  readme file
-|  *s*
-:  N/A
-:  *s*pec file in source package
+	Each of the 9 characters denotes the result of a comparison of
+	attribute(s) of the file to the value of those attribute(s)
+	recorded in the database.
 
-	from the package header, followed by the file name. Each of the 9
-	characters denotes the result of a comparison of attribute(s) of the
-	file to the value of those attribute(s) recorded in the database. A
-	single "*.*" (period) means the test passed, while a single
+	A single "*.*" (period) means the test passed, while a single
 	"*?*" (question mark) indicates the test could not be performed
 	(e.g. file permissions prevent reading). Otherwise, the (mnemonically
 	em*B*oldened) character denotes failure of the corresponding
 	*--verify* test:
 
-[[ *Character*
+|[ *Result*
 :< *Description*
 |  *S*
 :  file *S*ize differs
@@ -553,6 +523,28 @@ unique to verify mode are:
 :  m*T*ime differs
 |  *P*
 :  ca*P*abilities differ
+
+|[ *Attribute*
+:< *Description*
+|  *a*
+:  *%artifact* - an implicit side-effect file (eg. build-id links)
+|  *c*
+:  *%config*uration file
+|  *d*
+:  *%doc*umentation file
+|  *g*
+:  *%ghost* file
+|  *l*
+:  *%license* file
+|  *m*
+:  *%missingok* - file missing is not a verify failure
+|  *n*
+:  %config(*noreplace*) - do not replace (a %config file)
+|  *r*
+:  *%readme* file
+|  *s*
+:  *rpm-spec*(5) file in a source package
+
 
 # EXIT STATUS
 On success, 0 is returned, a non-zero failure code otherwise.
