@@ -12,15 +12,19 @@ BuildArch:	noarch
 %files
 %defattr(-,root,root,-)
 
-%triggerprein -- %{trigpkg}
+%triggerprein -e -- %{trigpkg}
 echo %{name}-%{version}-%{release} TRIGGERPREIN $*
+%%{?failtriggerprein:exit 1}
 
-%triggerin -- %{trigpkg}
+%triggerin -e -- %{trigpkg}
 echo %{name}-%{version}-%{release} TRIGGERIN $*
+%%{?failtriggerin:exit 1}
 
-%triggerun -- %{trigpkg}
+%triggerun -e -- %{trigpkg}
 echo %{name}-%{version}-%{release} TRIGGERUN $*
+%%{?failtriggerun:exit 1}
 
-%triggerpostun -- %{trigpkg}
+%triggerpostun -e -- %{trigpkg}
 echo %{name}-%{version}-%{release} TRIGGERPOSTUN $*
+%%{?failtriggerpostun:exit 1}
 
