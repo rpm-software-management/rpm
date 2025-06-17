@@ -427,21 +427,9 @@ runroot rpm -U \
 ],
 [1],
 [triggers-1.0-1 TRIGGERPREIN 1 0
-triggers-1.0-1 TRIGGERIN 1 1
 ],
-[warning: %triggerprein(triggers-1.0-1.noarch) scriptlet failed, exit status 1
-])
-
-RPMTEST_CHECK([
-runroot rpm -e \
-	--define "failtriggerun 1" \
-	foo
-],
-[1],
-[triggers-1.0-1 TRIGGERUN 1 0
-triggers-1.0-1 TRIGGERPOSTUN 1 0
-],
-[warning: %triggerun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+[error: %triggerprein(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+error: foo-1.0-1.noarch: install failed
 ])
 
 RPMTEST_CHECK([
@@ -455,6 +443,18 @@ runroot rpm -U \
 triggers-1.0-1 TRIGGERIN 1 1
 ],
 [warning: %triggerin(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+])
+
+RPMTEST_CHECK([
+runroot rpm -e \
+	--define "failtriggerun 1" \
+	foo
+],
+[1],
+[triggers-1.0-1 TRIGGERUN 1 0
+],
+[error: %triggerun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+error: foo-1.0-1.noarch: erase failed
 ])
 
 RPMTEST_CHECK([
