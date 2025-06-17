@@ -78,10 +78,10 @@ static const struct scriptInfo_s scriptInfo[] = {
 	0, },
     { RPMSCRIPT_TRIGGERPREIN, "triggerprein", RPMSENSE_TRIGGERPREIN,
 	RPMTAG_TRIGGERPREIN, 0, 0,
-	0, },
+	RPMSCRIPT_FLAG_CRITICAL, },
     { RPMSCRIPT_TRIGGERUN, "triggerun", RPMSENSE_TRIGGERUN,
 	RPMTAG_TRIGGERUN, 0, 0,
-	0, },
+	RPMSCRIPT_FLAG_CRITICAL, },
     { RPMSCRIPT_TRIGGERIN, "triggerin", RPMSENSE_TRIGGERIN,
 	RPMTAG_TRIGGERIN, 0, 0,
 	0, },
@@ -669,6 +669,9 @@ rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 	script->args[0] = (char *)(script->args + 2);
 	script->args[1] = NULL;
 	strcpy(script->args[0], prog);
+	/* XXX File triggers never fail the transaction element */
+	if (tm == RPMSCRIPT_TRANSFILETRIGGER || tm == RPMSCRIPT_FILETRIGGER)
+	    script->flags &= ~RPMSCRIPT_FLAG_CRITICAL;
     }
 
     rpmtdFreeData(&tscripts);
