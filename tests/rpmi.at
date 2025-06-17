@@ -1509,7 +1509,7 @@ deptest-test-obsoletes-1.0-1.noarch
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i create user])
-AT_KEYWORDS([install])
+AT_KEYWORDS([install sysusers])
 RPMTEST_CHECK([
 
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser u myuser 876 - /home/myuser /bin/sh}"\
@@ -1526,7 +1526,7 @@ runroot rpm -V --root /alt ${VERIFYOPTS} deptest-user
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i create group])
-AT_KEYWORDS([install])
+AT_KEYWORDS([install sysusers])
 RPMTEST_CHECK([
 
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser g mygroup 678}"\
