@@ -1515,6 +1515,19 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser u myuser 876 - /home/myuser /bin/sh}"\
   /data/SPECS/deptest.spec
 runroot rpmkeys --import --root /alt /root/.config/rpm/*.asc
+# --root produces a warning from unshare plugin, disable
+runroot rpm -U --define "__systemd_sysusers /bin/false" \
+		--define "__transaction_unshare %{nil}" \
+		--root /alt \
+		/build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: %sysusers(deptest-user-1.0-1.noarch) scriptlet failed, exit status 1
+error: deptest-user-1.0-1.noarch: install failed
+])
+
+RPMTEST_CHECK([
 runroot rpm -U --root /alt /build/RPMS/noarch/deptest-user-1.0-1.noarch.rpm 2> /dev/null
 runroot tail -1 /alt/etc/passwd
 runroot rpm -V --root /alt ${VERIFYOPTS} deptest-user
