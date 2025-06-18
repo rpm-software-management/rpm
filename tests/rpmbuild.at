@@ -1614,6 +1614,50 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([Dependency generation 6])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([[
+
+cat << EOF > ${RPMTEST}/$(rpm --eval '%_fileattrsdir')/foo.attr
+%__foo_requires	    /tmp/foo.req
+%__foo_path	    .*
+EOF
+
+cat << EOF > ${RPMTEST}/$(rpm --eval '%_fileattrsdir')/bar.attr
+%__bar_requires	    /tmp/bar.req
+%__bar_path	    .*
+%__bar_protocol	    multifile
+EOF
+
+cat << EOF > "${RPMTEST}"/tmp/foo.req
+#!/bin/sh
+[ -f /tmp/foo.done ] && exit
+echo "foo(\$(cat | xargs basename))"
+touch /tmp/foo.done
+EOF
+chmod a+x "${RPMTEST}"/tmp/foo.req
+
+cat << EOF > "${RPMTEST}"/tmp/bar.req
+#!/bin/sh
+fname=\$(head -n1)
+echo ";\$fname"
+echo "bar(\$(echo \$fname | xargs basename))"
+EOF
+chmod a+x "${RPMTEST}"/tmp/bar.req
+
+for i in $(seq 1 10); do
+    touch $RPMTEST/file$i
+    runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --requires /file{1..5}
+    echo "bar(file1)" >> expout
+    echo "foo(file1)" >> expout
+    rm -f $RPMTEST/tmp/foo.done
+done
+]],
+[0],
+[expout],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([Local dependency generator])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
