@@ -97,4 +97,4 @@ If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
 in the _rpmrc path_.
 
 # SEE ALSO
-*rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-macroproc*(7)
+*rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-macros*(7)

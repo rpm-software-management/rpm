@@ -18,7 +18,7 @@ _/etc/rpm/%{\_target}/macros_++
 _~/.config/rpm/macros_
 
 # DESCRIPTION
-The primary configuration mechanism in *rpm* is *rpm-macroproc*(7).
+The primary configuration mechanism in *rpm* is *rpm-macros*(7).
 On startup, *rpm* reads a set of *rpm-macrofile*(5) files determined
 by the _macro path_.
 
@@ -236,4 +236,4 @@ If *XDG_CONFIG_HOME* environment variable is set, it replaces _~/.config_
 in the _macro path_.
 
 # SEE ALSO
-*rpm*(8), *rpm-common*(8), *rpm-macrofile*(5), *rpm-rpmrc*(5), *rpm-macroproc*(7)
+*rpm*(8), *rpm-common*(8), *rpm-macrofile*(5), *rpm-rpmrc*(5), *rpm-macros*(7)

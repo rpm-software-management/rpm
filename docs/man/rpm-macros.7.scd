@@ -1,7 +1,7 @@
-RPM-MACROPROC(7)
+RPM-MACROS(7)
 
 # NAME
-rpm-macroproc - RPM macro processor
+rpm-macros - RPM macro processor
 
 # SYNOPSIS
 ## Defining

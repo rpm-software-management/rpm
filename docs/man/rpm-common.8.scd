@@ -50,7 +50,7 @@ options and operations documented in this manual:
 
 *-E* '_EXPR_',
 *--eval*='_EXPR_'
-	Prints *rpm-macroproc*(7) expansion of _EXPR_.
+	Prints *rpm-macros*(7) expansion of _EXPR_.
 
 *--load* _FILE_
 	Load an individual *rpm-macrofile*(5).
@@ -170,4 +170,4 @@ On success, 0 is returned, a non-zero failure code otherwise.
 ```
 
 # SEE ALSO
-*popt*(3), *rpm*(8) *rpm-config*(5), *rpm-rpmrc*(5), *rpm-macroproc*(7)
+*popt*(3), *rpm*(8) *rpm-config*(5), *rpm-rpmrc*(5), *rpm-macros*(7)
