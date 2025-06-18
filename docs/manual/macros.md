@@ -1,5 +1,5 @@
 ---
 layout: redirected
 sitemap: false
-redirect_to: /man/rpm-macroproc.7
+redirect_to: /man/rpm-macros.7
 ---

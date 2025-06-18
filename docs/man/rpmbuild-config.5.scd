@@ -7,7 +7,7 @@ RPMBUILD-CONFIG(5)
 _NAME_ _VALUE_
 
 # DESCRIPTION
-The primary configuration mechanism in *rpmbuild* is *rpm-macroproc*(7).
+The primary configuration mechanism in *rpmbuild* is *rpm-macros*(7).
 See *rpm-config*(5) for the description of the general mechanism,
 this manual only describes the configurables affecting *rpmbuild*
 operation.
@@ -302,4 +302,4 @@ Sometimes also useful for temporarily working around issues while packaging.
 # SEE ALSO
 *rpmbuild*(1), *rpm-common*(8), *rpm-macrofile*(5),
 *rpm-rpmrc*(5), *rpm-config*(5), *rpm-payloadflags*(5)
-*rpm-macroproc*(7)
+*rpm-macros*(7)

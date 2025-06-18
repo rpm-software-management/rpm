@@ -7,7 +7,7 @@ RPM-MACROFILE(5)
 %_NAME_[([_OPTS_]) _BODY_
 
 # DESCRIPTION
-Rpm macro files are used to define *rpm-macroproc*(7) in the global macro context.
+Rpm macro files are used to define *rpm-macros*(7) in the global macro context.
 The two primary uses of macros are assisting packaging work, and configuring rpm
 behavior. A pre-determined set of macro files is read upon *rpm* library
 initialization as described in *rpm-config*(5) but they can also be loaded via
@@ -56,6 +56,6 @@ Multiline parametric Lua macro:
 
 # SEE ALSO
 *rpm-config*(5) *rpmbuild-config*(5)
-*rpm-macroproc*(7)
+*rpm-macros*(7)
 
 *https://rpm-software-management.github.io/rpm/manual/macros.html*
