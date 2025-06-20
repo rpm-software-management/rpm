@@ -19,9 +19,20 @@ struct rpmfileObject_s {
 
 static void rpmfile_dealloc(rpmfileObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->files = rpmfilesFree(s->files);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmfile_traverse(rpmfileObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static char rpmfile_doc[] =
@@ -196,6 +207,10 @@ static PyObject *rpmfile_links(rpmfileObject *s)
     const int * links = NULL;
     uint32_t nlinks = rpmfilesFLinks(s->files, s->ix, &links);
     int res;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (nlinks == 0)
 	Py_RETURN_NONE;
@@ -213,7 +228,7 @@ static PyObject *rpmfile_links(rpmfileObject *s)
 		Py_INCREF(s);
 		o = (PyObject *) s;
 	    } else {
-		o = rpmfile_Wrap(s->files, lix);
+		o = rpmfile_Wrap(modstate, s->files, lix);
 	    }
 
 	    res = PyTuple_SetItem(result, i, o);
@@ -332,6 +347,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmfile_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmfile_dealloc},
+    {Py_tp_traverse, rpmfile_traverse},
     {Py_tp_str, rpmfile_name},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
@@ -340,18 +356,18 @@ static PyType_Slot rpmfile_Type_Slots[] = {
     {Py_tp_getset, rpmfile_getseters},
     {0, NULL},
 };
-
-PyTypeObject* rpmfile_Type;
 PyType_Spec rpmfile_Type_Spec = {
     .name = "rpm.file",
     .basicsize = sizeof(rpmfileObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfile_Type_Slots,
 };
 
-PyObject * rpmfile_Wrap(rpmfiles files, int ix)
+PyObject * rpmfile_Wrap(rpmmodule_state_t *modstate, rpmfiles files, int ix)
 {
-    rpmfileObject *s = PyObject_New(rpmfileObject, rpmfile_Type);
+    PyTypeObject *type = modstate->rpmfile_Type;
+    allocfunc alloc = (allocfunc)PyType_GetSlot(type, Py_tp_alloc);
+    rpmfileObject *s = (rpmfileObject*)alloc(type, 0);
     if (s == NULL) return NULL;
 
     s->files = rpmfilesLink(files);
@@ -368,9 +384,20 @@ struct rpmfilesObject_s {
 
 static void rpmfiles_dealloc(rpmfilesObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->files = rpmfilesFree(s->files);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmfiles_traverse(rpmfilesObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * rpmfiles_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
@@ -405,8 +432,13 @@ static Py_ssize_t rpmfiles_length(rpmfilesObject *s)
 
 static PyObject * rpmfiles_getitem(rpmfilesObject *s, Py_ssize_t ix)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
+
     if (ix >= 0 && ix < rpmfilesFC(s->files))
-	return rpmfile_Wrap(s->files, ix);
+	return rpmfile_Wrap(modstate, s->files, ix);
 
     PyErr_SetObject(PyExc_IndexError, Py_BuildValue("i", ix));
     return NULL;
@@ -429,6 +461,10 @@ static PyObject * rpmfiles_find(rpmfileObject *s,
     const char *fn = NULL;
     int fx, orig = 0;
     char * kwlist[] = {"filename", "orig", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i", kwlist, &fn, &orig))
 	return NULL;
@@ -439,7 +475,7 @@ static PyObject * rpmfiles_find(rpmfileObject *s,
 	fx = rpmfilesFindFN(s->files, fn);
 
     if (fx >= 0)
-	return rpmfile_Wrap(s->files, fx);
+	return rpmfile_Wrap(modstate, s->files, fx);
 
     Py_RETURN_NONE;
 }
@@ -452,10 +488,18 @@ static PyObject *rpmfiles_archive(rpmfilesObject *s,
     FD_t fd = NULL;
     rpmfi archive = NULL;
     int writer = 0;
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				     rpmfdFromPyObject, &fdo, &writer)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist,
+				     &fdo_source, &writer)) {
 	return NULL;
+    }
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+        return NULL;
     }
 
     fd = rpmfdGetFd(fdo);
@@ -466,13 +510,17 @@ static PyObject *rpmfiles_archive(rpmfilesObject *s,
     }
     Py_DECREF(fdo);
 
-    return rpmarchive_Wrap(rpmarchive_Type, s->files, archive);
+    return rpmarchive_Wrap(modstate->rpmarchive_Type, s->files, archive);
 }
 
 static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 {
     PyObject *str = NULL;
     int res;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     /* treat numbers as sequence accesses */
     if (PyLong_Check(item)) {
@@ -513,7 +561,7 @@ static PyObject *rpmfiles_subscript(rpmfilesObject *s, PyObject *item)
 	Py_DECREF(str);
 
 	if (fx >= 0) {
-	    return rpmfile_Wrap(s->files, fx);
+	    return rpmfile_Wrap(modstate, s->files, fx);
 	} else {
 	    PyErr_SetObject(PyExc_KeyError, item);
 	}
@@ -550,6 +598,7 @@ static char rpmfiles_doc[] =
 
 static PyType_Slot rpmfiles_Type_Slots[] = {
     {Py_tp_dealloc, rpmfiles_dealloc},
+    {Py_tp_traverse, rpmfiles_traverse},
     {Py_sq_length, rpmfiles_length},
     {Py_sq_item, rpmfiles_getitem},
     {Py_sq_contains, rpmfiles_contains},
@@ -562,12 +611,10 @@ static PyType_Slot rpmfiles_Type_Slots[] = {
     {Py_tp_new, rpmfiles_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmfiles_Type;
 PyType_Spec rpmfiles_Type_Spec = {
     .name = "rpm.files",
     .basicsize = sizeof(rpmfilesObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmfiles_Type_Slots,
 };
 

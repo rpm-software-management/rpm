@@ -409,9 +409,17 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     rpmfdObject *fdo = NULL;
     Header h;
     rpmRC rpmrc;
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
-    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmfdFromPyObject, &fdo))
+    if (!PyArg_Parse(arg, "O:HdrFromFdno", &fdo_source))
     	return NULL;
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	return NULL;
+    }
 
     Py_BEGIN_ALLOW_THREADS;
     rpmrc = rpmReadPackageFile(s->ts, rpmfdGetFd(fdo), NULL, &h);
@@ -419,7 +427,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     Py_XDECREF(fdo);
 
     if (rpmrc == RPMRC_OK) {
-	ho = hdr_Wrap(hdr_Type, h);
+	ho = hdr_Wrap(modstate->hdr_Type, h);
     } else {
 	Py_INCREF(Py_None);
 	ho = Py_None;
@@ -472,8 +480,12 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
 static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmKeyring keyring = NULL;
-    if (arg == Py_None || rpmKeyringFromPyObject(arg, &keyring)) {
+    if (arg == Py_None || rpmKeyringFromPyObject(modstate, arg, &keyring)) {
 	return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
     } else {
 	PyErr_SetString(PyExc_TypeError, "rpm.keyring or None expected");
@@ -483,6 +495,10 @@ static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 
 static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmKeyring keyring = NULL;
     int autoload = 1;
     char * kwlist[] = { "autoload", NULL };
@@ -493,7 +509,7 @@ static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds
 
     keyring = rpmtsGetKeyring(s->ts, autoload);
     if (keyring) {
-	return rpmKeyring_Wrap(rpmKeyring_Type, keyring);
+	return rpmKeyring_Wrap(modstate->rpmKeyring_Type, keyring);
     } else {
 	Py_RETURN_NONE;
     }
@@ -513,6 +529,14 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
 
     PyEval_RestoreThread(cbInfo->_save);
 
+    if (cbInfo->tso == NULL) {
+	PyErr_SetString(PyExc_SystemError, "callback tso not set");
+	return NULL;
+    }
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)cbInfo->tso);
+    if (!modstate) {
+	return NULL;
+    }
 
     if (cbInfo->style == 0) {
 	/* Synthesize a python object for callback (if necessary). */
@@ -533,7 +557,7 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
     } else {
 	PyObject *o;
 	if (arg) {
-	    o = rpmte_Wrap(rpmte_Type, (rpmte) arg);
+	    o = rpmte_Wrap(modstate->rpmte_Type, (rpmte) arg);
 	} else {
 	    o = Py_None;
 	    Py_INCREF(o);
@@ -576,8 +600,12 @@ rpmtsCallback(const void * arg, const rpmCallbackType what,
 static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
     rpmps ps = rpmtsProblems(s->ts);
-    PyObject *problems = rpmps_AsList(ps);
+    PyObject *problems = rpmps_AsList(modstate, ps);
     rpmpsFree(ps);
     return problems;
 }
@@ -621,6 +649,10 @@ rpmts_iternext(rpmtsObject * s)
 {
     PyObject * result = NULL;
     rpmte te;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     /* Reset iterator on 1st entry. */
     if (s->tsi == NULL) {
@@ -631,7 +663,7 @@ rpmts_iternext(rpmtsObject * s)
 
     te = rpmtsiNext(s->tsi, 0);
     if (te != NULL) {
-	result = rpmte_Wrap(rpmte_Type, te);
+	result = rpmte_Wrap(modstate->rpmte_Type, te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
     }
@@ -651,6 +683,10 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int len = 0;
     rpmDbiTagVal tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&O:Match", kwlist,
 	    tagNumFromPyObject, &tag, &Key))
@@ -677,12 +713,13 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
+	    PyErr_SetString(modstate->pyrpmError, "rpmdb open failed");
 	    goto exit;
 	}
     }
 
-    mio = rpmmi_Wrap(rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+    mio = rpmmi_Wrap(modstate->rpmmi_Type,
+                     rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
 
 exit:
     Py_XDECREF(str);
@@ -694,6 +731,10 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmDbiTagVal tag;
     PyObject *mio = NULL;
     char * kwlist[] = {"tag", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:Keys", kwlist,
               tagNumFromPyObject, &tag))
@@ -703,7 +744,7 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(pyrpmError, "rpmdb open failed");
+	    PyErr_SetString(modstate->pyrpmError, "rpmdb open failed");
 	    goto exit;
 	}
     }
@@ -713,7 +754,7 @@ rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
         PyErr_SetString(PyExc_KeyError, "No index for this tag");
         return NULL;
     }
-    mio = rpmii_Wrap(rpmii_Type, ii, (PyObject*)s);
+    mio = rpmii_Wrap(modstate->rpmii_Type, ii, (PyObject*)s);
 
 exit:
     return mio;
@@ -833,12 +874,25 @@ Remove all elements from the transaction set\n" },
 
 static void rpmts_dealloc(rpmtsObject * s)
 {
+    PyObject_GC_UnTrack(s);
 
     s->ts = rpmtsFree(s->ts);
     Py_XDECREF(s->scriptFd);
     Py_XDECREF(s->keyList);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmts_traverse(rpmtsObject * s, visitproc visit, void *arg)
+{
+    Py_VISIT(s->scriptFd);
+    Py_VISIT(s->keyList);
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
@@ -898,9 +952,17 @@ static int rpmts_set_cbstyle(rpmtsObject *s, PyObject *value, void *closure)
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
+    PyObject *fdo_source;
     rpmfdObject *fdo = NULL;
     int rc = 0;
-    if (PyArg_Parse(value, "O&", rpmfdFromPyObject, &fdo)) {
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return -1;
+    }
+    if (PyArg_Parse(value, "O", &fdo_source)) {
+	if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+	    return -1;
+	}
 	Py_XDECREF(s->scriptFd);
 	s->scriptFd = fdo;
 	rpmtsSetScriptFd(s->ts, rpmfdGetFd(s->scriptFd));
@@ -1048,6 +1110,7 @@ static PyGetSetDef rpmts_getseters[] = {
 
 static PyType_Slot rpmts_Type_Slots[] = {
     {Py_tp_dealloc, rpmts_dealloc},
+    {Py_tp_traverse, rpmts_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmts_doc},
@@ -1059,11 +1122,9 @@ static PyType_Slot rpmts_Type_Slots[] = {
     {Py_tp_new, rpmts_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmts_Type;
 PyType_Spec rpmts_Type_Spec = {
     .name = "rpm.ts",
     .basicsize = sizeof(rpmtsObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmts_Type_Slots,
 };

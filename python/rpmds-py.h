@@ -4,11 +4,7 @@
 #include <rpm/rpmds.h>
 
 typedef struct rpmdsObject_s rpmdsObject;
-
-extern PyTypeObject* rpmds_Type;
 extern PyType_Spec rpmds_Type_Spec;
-
-#define rpmdsObject_Check(v)	((v)->ob_type == rpmds_Type)
 
 rpmds dsFromDs(rpmdsObject * ds);
 

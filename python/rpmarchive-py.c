@@ -18,11 +18,22 @@ struct rpmarchiveObject_s {
 
 static void rpmarchive_dealloc(rpmarchiveObject * s)
 {
+    PyObject_GC_UnTrack(s);
     rpmfilesFree(s->files);
     rpmfiArchiveClose(s->archive);
     rpmfiFree(s->archive);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmarchive_traverse(hdrObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static PyObject *rpmarchive_error(int rc)
@@ -132,10 +143,18 @@ static PyObject *rpmarchive_readto(rpmarchiveObject *s,
     int nodigest = 0;
     int rc;
     char *kwlist[] = { "fd", "nodigest", NULL };
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+        return NULL;
+    }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				 rpmfdFromPyObject, &fdo, &nodigest)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist,
+				 &fdo_source, &nodigest)) {
 	return NULL;
+    }
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+        return NULL;
     }
 
     if (s->archive == NULL) {
@@ -161,10 +180,18 @@ static PyObject *rpmarchive_writeto(rpmarchiveObject *s,
     rpmfdObject *fdo = NULL;
     int rc;
     char *kwlist[] = { "fd", NULL };
+    PyObject *fdo_source;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+        return NULL;
+    }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&", kwlist,
-				 rpmfdFromPyObject, &fdo)) {
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist,
+				 &fdo_source)) {
 	return NULL;
+    }
+    if(!rpmfdFromPyObject(modstate, fdo_source, &fdo)) {
+        return NULL;
     }
 
     if (s->archive == NULL) {
@@ -212,10 +239,15 @@ static char rpmarchive_doc[] =
 static PyObject *rpmarchive_iternext(rpmarchiveObject *s)
 {
     PyObject *next = NULL;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	    return NULL;
+    }
+
     int fx = rpmfiNext(s->archive);
 
     if (fx >= 0) {
-	next = rpmfile_Wrap(s->files, fx);
+	next = rpmfile_Wrap(modstate, s->files, fx);
     } else if (fx < -1) {
 	next = rpmarchive_error(fx);
     } else {
@@ -236,6 +268,7 @@ static PyObject *disabled_new(PyTypeObject *type,
 static PyType_Slot rpmarchive_Type_Slots[] = {
     {Py_tp_new, disabled_new},
     {Py_tp_dealloc, rpmarchive_dealloc},
+    {Py_tp_traverse, rpmarchive_traverse},
     {Py_tp_getattro, PyObject_GenericGetAttr},
     {Py_tp_setattro, PyObject_GenericSetAttr},
     {Py_tp_doc, rpmarchive_doc},
@@ -244,12 +277,10 @@ static PyType_Slot rpmarchive_Type_Slots[] = {
     {Py_tp_methods, rpmarchive_methods},
     {0, NULL},
 };
-
-PyTypeObject* rpmarchive_Type;
 PyType_Spec rpmarchive_Type_Spec = {
     .name = "rpm.archive",
     .basicsize = sizeof(rpmarchiveObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT| Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmarchive_Type_Slots,
 };
 

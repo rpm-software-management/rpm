@@ -120,8 +120,12 @@ static PyObject *
 rpmds_Find(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
-    if (!PyArg_Parse(arg, "O!:Find", rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Find", modstate->rpmds_Type, &o))
 	return NULL;
 
     /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
@@ -134,8 +138,12 @@ static PyObject *
 rpmds_Merge(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
-    if (!PyArg_Parse(arg, "O!:Merge", rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Merge", modstate->rpmds_Type, &o))
 	return NULL;
 
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
@@ -144,8 +152,12 @@ static PyObject *
 rpmds_Search(rpmdsObject * s, PyObject * arg)
 {
     rpmdsObject * o;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
-    if (!PyArg_Parse(arg, "O!:Merge", rpmds_Type, &o))
+    if (!PyArg_Parse(arg, "O!:Merge", modstate->rpmds_Type, &o))
         return NULL;
 
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
@@ -154,8 +166,12 @@ rpmds_Search(rpmdsObject * s, PyObject * arg)
 static PyObject *rpmds_Compare(rpmdsObject * s, PyObject * o)
 {
     rpmdsObject * ods;
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
+	return NULL;
+    }
 
-    if (!PyArg_Parse(o, "O!:Compare", rpmds_Type, &ods))
+    if (!PyArg_Parse(o, "O!:Compare", modstate->rpmds_Type, &ods))
 	return NULL;
 
     return PyBool_FromLong(rpmdsCompare(s->ds, ods->ds));
@@ -168,18 +184,27 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
 
 static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     rpmds ds = NULL;
     char * kwlist[] = {"pool", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&:rpmds_Rpmlib", kwlist, 
-		 &poolFromPyObject, &pool))
+    rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:rpmds_Rpmlib", kwlist,
+		 &pool_source))
+	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	    return NULL;
+    }
 
     /* XXX check return code, permit arg (NULL uses system default). */
     rpmdsRpmlibPool(pool, &ds, NULL);
 
-    return rpmds_Wrap(rpmds_Type, ds);
+    return rpmds_Wrap(modstate->rpmds_Type, ds);
 }
 
 static struct PyMethodDef rpmds_methods[] = {
@@ -232,9 +257,20 @@ The current index in ds is positioned at overlapping member." },
 static void
 rpmds_dealloc(rpmdsObject * s)
 {
+    PyObject_GC_UnTrack(s);
     s->ds = rpmdsFree(s->ds);
-    freefunc free = PyType_GetSlot(Py_TYPE(s), Py_tp_free);
+    PyTypeObject *type = Py_TYPE(s);
+    freefunc free = PyType_GetSlot(type, Py_tp_free);
     free(s);
+    Py_DECREF(type);
+}
+
+static int rpmds_traverse(hdrObject * s, visitproc visit, void *arg)
+{
+    if (python_version >= 0x03090000) {
+        Py_VISIT(Py_TYPE(s));
+    }
+    return 0;
 }
 
 static Py_ssize_t rpmds_length(rpmdsObject * s)
@@ -309,13 +345,22 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmTagVal tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     Header h = NULL;
+    PyObject *pool_source = NULL;
     rpmstrPool pool = NULL;
     char * kwlist[] = {"obj", "tag", "pool", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O&:rpmds_new", kwlist, 
-	    	 &obj, tagNumFromPyObject, &tagN,
-		 &poolFromPyObject, &pool))
+    rpmmodule_state_t *modstate = rpmModState_FromType(subtype);
+    if (!modstate) {
 	return NULL;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O:rpmds_new", kwlist,
+	    	 &obj, tagNumFromPyObject, &tagN,
+		 &pool_source))
+	return NULL;
+
+    if(pool_source && !poolFromPyObject(modstate, pool_source, &pool)) {
+	return NULL;
+    }
 
     if (PyTuple_Check(obj)) {
 	const char *name = NULL;
@@ -358,6 +403,7 @@ static char rpmds_doc[] =
 
 static PyType_Slot rpmds_Type_Slots[] = {
     {Py_tp_dealloc, rpmds_dealloc},
+    {Py_tp_traverse, rpmds_traverse},
     {Py_mp_length, rpmds_length},
     {Py_mp_subscript, rpmds_subscript},
     {Py_tp_getattro, PyObject_GenericGetAttr},
@@ -370,12 +416,10 @@ static PyType_Slot rpmds_Type_Slots[] = {
     {Py_tp_new, rpmds_new},
     {0, NULL},
 };
-
-PyTypeObject* rpmds_Type;
 PyType_Spec rpmds_Type_Spec = {
     .name = "rpm.ds",
     .basicsize = sizeof(rpmdsObject),
-    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_IMMUTABLETYPE,
     .slots = rpmds_Type_Slots,
 };
 

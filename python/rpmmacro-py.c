@@ -35,12 +35,16 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 }
 
 PyObject * 
-rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
+rpmmacro_ExpandMacro(PyObject *mod, PyObject * args, PyObject * kwds)
 {
     const char *macro;
     PyObject *res = NULL;
     int num = 0;
     char * kwlist[] = {"macro", "numeric", NULL};
+    rpmmodule_state_t *modstate = rpmModState_FromModule(mod);
+    if (!modstate) {
+	    return NULL;
+    }
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i", kwlist, &macro, &num))
         return NULL;
@@ -50,7 +54,7 @@ rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
     } else {
 	char *str = NULL;
 	if (rpmExpandMacros(NULL, macro, &str, 0) < 0)
-	    PyErr_SetString(pyrpmError, "error expanding macro");
+	    PyErr_SetString(modstate->pyrpmError, "error expanding macro");
 	else
 	    res = utf8FromString(str);
 	free(str);

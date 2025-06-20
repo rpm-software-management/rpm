@@ -269,7 +269,7 @@ endif()
 list(APPEND db_backends dummy)
 
 if (ENABLE_PYTHON)
-	find_package(Python3 3.7 COMPONENTS Interpreter Development REQUIRED)
+	find_package(Python3 3.10 COMPONENTS Interpreter Development REQUIRED)
 endif()
 
 if (WITH_CAP)
