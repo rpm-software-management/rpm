@@ -93,7 +93,7 @@ user() {
 	fi
 
 	if [[ $expire ]]; then
-	    usermod -e 1 "${user}"
+	    usermod -R "$ROOT" -e 1 "${user}"
 	fi
 }
 
