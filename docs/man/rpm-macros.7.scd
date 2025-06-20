@@ -768,5 +768,5 @@ Some useful tools for working with and troubleshooting macros:
 	*telnet.spec*.
 
 # SEE ALSO
-*rpm*(8) *rpm-common*(8) *rpm-macrofile*(5) *rpm-config*(5)
+*rpm*(8) *rpm-common*(8) *rpm-macrofile*(5) *rpm-config*(5) *rpm-lua*(7)
 *rpmspec*(1) *rpmlua*(1)
