@@ -5,7 +5,6 @@
 
 struct rpmverObject_s {
     PyObject_HEAD
-    PyObject *md_dict;
     rpmver ver;
 };
 
