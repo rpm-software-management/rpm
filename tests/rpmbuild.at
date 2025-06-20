@@ -1614,6 +1614,34 @@ runroot rpm -qp --requires /build/RPMS/noarch/shebang-0.1-1.noarch.rpm|grep -v ^
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([Dependency generation 6])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+
+cat << EOF > ${RPMTEST}/$(rpm --eval '%_fileattrsdir')/foobar.attr
+%__foobar_requires  /tmp/foobar.req
+%__foobar_path	    .*
+%__foobar_protocol  multifile
+EOF
+
+cat << EOF > "${RPMTEST}"/tmp/foobar.req
+#!/bin/sh
+echo "foobar(\$(head -n1 | xargs basename))"
+EOF
+chmod a+x "${RPMTEST}"/tmp/foobar.req
+
+rm -f expout
+for i in $(seq 1 10); do
+    touch $RPMTEST/file$i
+    runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --requires /file{1..5}
+    echo "foobar(file1)" >> expout
+done
+],
+[0],
+[expout],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([Local dependency generator])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
