@@ -783,7 +783,7 @@ static rpmRC packageBinary(rpmSpec spec, Package pkg, const char *cookie, int ch
     headerPutUint32(pkg->header, RPMTAG_BUILDTIME, &(spec->buildTime), 1);
 
     if (spec->sourcePkgId != NULL) {
-	headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
+	headerPutBin(pkg->header, RPMTAG_SOURCESIGMD5, spec->sourcePkgId,16);
     }
 
     if (cheating) {

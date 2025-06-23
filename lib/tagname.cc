@@ -167,9 +167,6 @@ const char * rpmTagGetName(rpmTagVal tag)
     case RPMTAG_CONFLICTS:
 	name = "Conflictname";
 	break;
-    case RPMTAG_HDRID:
-	name = "Sha1header";
-	break;
 
     default:
 	t = tags.getEntry(tag);

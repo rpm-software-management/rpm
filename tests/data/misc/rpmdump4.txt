@@ -375,7 +375,7 @@ Tag #48 [region]
 	count:     2
 
 Tag #49 [region]
-	tagno:  1146 (Sourcepkgid)
+	tagno:  1146 (Sourcesigmd5)
 	type:      7 (blob)
 	offset: 2429
 	count:    16

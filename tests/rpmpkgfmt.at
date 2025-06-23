@@ -22,11 +22,11 @@ rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noar
 [])
 
 RPMTEST_CHECK([[
-sid=$(rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
-pid=$(rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
-spid=$(rpm -qp --qf "%{sourcepkgid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.*.rpm)
-hid=$(rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
-shid=$(rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
+sid=$(rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
+pid=$(rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
+spid=$(rpm -qp --qf "%{sourcesigmd5}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.*.rpm)
+hid=$(rpm -qp --qf "%{sha1header}\n" ${RPMTEST}/build/RPMS/4/noarch/attrtest-1.0-1.noarch.rpm)
+shid=$(rpm -qp --qf "%{sha1header}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm)
 
 # only validate the general characteristics here to avoid pinning
 echo -n ${sid} | wc -c
@@ -81,11 +81,11 @@ rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noar
 [])
 
 RPMTEST_CHECK([
-rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
-rpm -qp --qf "%{pkgid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
-rpm -qp --qf "%{sourcepkgid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
-rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
-rpm -qp --qf "%{hdrid}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
+rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
+rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{sourcesigmd5}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{sha1header}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+rpm -qp --qf "%{sha1header}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
 ],
 [0],
 [(none)
