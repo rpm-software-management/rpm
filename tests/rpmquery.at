@@ -379,7 +379,7 @@ RPMTEST_SETUP([base64 extension query])
 AT_KEYWORDS([query])
 RPMTEST_CHECK([
 runroot rpm \
-  --queryformat="%{pkgid:base64}" \
+  --queryformat="%{sigmd5:base64}" \
   -qp /data/RPMS/foo-1.0-1.noarch.rpm
 ],
 [0],

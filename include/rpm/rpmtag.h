@@ -49,7 +49,6 @@ typedef enum rpmTag_e {
     RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,	/* x */
     RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/* x internal - obsolete */
     RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,	/* x */
-#define	RPMTAG_PKGID	RPMTAG_SIGMD5			/* x */
     RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,	/* x */
     RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/* internal - obsolete */
 
@@ -59,7 +58,6 @@ typedef enum rpmTag_e {
     RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,	/* x */
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
-#define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
     RPMTAG_LONGSIGSIZE		= RPMTAG_SIG_BASE+14,	/* l */
     RPMTAG_LONGARCHIVESIZE	= RPMTAG_SIG_BASE+15,	/* l */
     /* RPMTAG_SIG_BASE+16 reserved */
@@ -221,7 +219,7 @@ typedef enum rpmTag_e {
     RPMTAG_FILEDEPENDSX		= 1143,	/* i[] */
     RPMTAG_FILEDEPENDSN		= 1144,	/* i[] */
     RPMTAG_DEPENDSDICT		= 1145,	/* i[] */
-    RPMTAG_SOURCEPKGID		= 1146,	/* x */
+    RPMTAG_SOURCESIGMD5		= 1146,	/* x */
     RPMTAG_FILECONTEXTS		= 1147,	/* s[] - obsolete */
     RPMTAG_FSCONTEXTS		= 1148,	/* s[] extension */
     RPMTAG_RECONTEXTS		= 1149,	/* s[] extension */
