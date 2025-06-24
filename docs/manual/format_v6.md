@@ -105,6 +105,8 @@ Strict tag sorting is required, and no duplicate tags are permitted.
 The complete list of tags is documented [here](tags.md), but in particular
 for v6:
 - New numeric tag RPMTAG_RPMFORMAT for the rpm package format version
+- New string tag RPMTAG_SOURCENEVR in binary packages, identifying the
+  name-[epoch:]-version-release of the package source
 - RPMTAG_ENCODING is required to be present and contain "utf-8"
 - RPMTAG_LONGFILESIZES are always used to represent file sizes
 - RPMTAG_FILEDIGESTALGO is always present and at least SHA256 in strength

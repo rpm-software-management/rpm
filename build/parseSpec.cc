@@ -1360,9 +1360,6 @@ static rpmRC finalizeSpec(rpmSpec spec)
     if (!headerIsEntry(spec->packages->header, RPMTAG_GROUP)) {
 	headerPutString(spec->packages->header, RPMTAG_GROUP, "Unspecified");
     }
-    char *nevr = headerGetAsString(spec->sourcePackage->header, RPMTAG_NEVR);
-    headerPutString(spec->packages->header, RPMTAG_SOURCENEVR, nevr);
-    free(nevr);
 
     spec->rpmformat = rpmExpandNumeric("%{?_rpmformat}");
 
@@ -1372,6 +1369,13 @@ static rpmRC finalizeSpec(rpmSpec spec)
 		   _("invalid rpm format %d requested, using %d\n"),
 		   spec->rpmformat, default_rpmformat);
 	spec->rpmformat = 4;
+    }
+
+    if (spec->rpmformat >= 6) {
+	char *nevr = headerGetAsString(spec->sourcePackage->header,
+					RPMTAG_NEVR);
+	headerPutString(spec->packages->header, RPMTAG_SOURCENEVR, nevr);
+	free(nevr);
     }
 
     for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
