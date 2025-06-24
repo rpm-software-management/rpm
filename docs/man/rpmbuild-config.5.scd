@@ -150,7 +150,7 @@ packages.
 
 *%\_binary_payload* _IOFLAGS_
 	The IO method and compression to use for generating the payload
-	of binary packages. See *rpm-payloadflags*(5).
+	of binary packages. See *rpm-payloadflags*(7).
 
 *%\_buildhost* _HOSTNAME_
 	Use _HOSTNAME_ as the package buildhost instead of acquiring
@@ -193,7 +193,7 @@ packages.
 
 *%\_source_payload*
 	The IO method and compression to use for generating the payload
-	of source packages. See *rpm-payloadflags*(5).
+	of source packages. See *rpm-payloadflags*(7).
 
 *%\_\_gpg_reserved_space* _NUMBER_
 	The number of bytes to reserve for signatures in the signature header.
@@ -301,5 +301,5 @@ Sometimes also useful for temporarily working around issues while packaging.
 
 # SEE ALSO
 *rpmbuild*(1), *rpm-common*(8), *rpm-macrofile*(5),
-*rpm-rpmrc*(5), *rpm-config*(5), *rpm-payloadflags*(5)
+*rpm-rpmrc*(5), *rpm-config*(5), *rpm-payloadflags*(7)
 *rpm-macros*(7)

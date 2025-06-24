@@ -364,7 +364,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #%packager
 
 #	Compression type and level for source/binary package payloads.
-#	See rpm-payloadflags(5).
+#	See rpm-payloadflags(7).
 #
 #%_source_payload	w9.gzdio
 %_binary_payload	%[ %_rpmformat >=6 ? "w19.zstdio" : "w9.gzdio" ]

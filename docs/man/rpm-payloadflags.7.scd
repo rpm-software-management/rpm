@@ -1,4 +1,4 @@
-RPM-PAYLOADFLAGS(5)
+RPM-PAYLOADFLAGS(7)
 
 # NAME
 *rpm-payloadflags* - RPM payload flags

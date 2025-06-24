@@ -93,8 +93,8 @@ Filedigestalgo    | 5011 | int32        | ID of file digest algorithm. If missin
 Longarchivesize   | 271  | int64        | (Uncompressed) payload size when > 4GB.
 Longsize          | 5009 | int64        | Installed package size when > 4GB.
 Mimedict          | 5116 | int32        | Dictionary of MIME types, only >= v6.
-Payloadcompressor | 1125 | string       | Payload compressor name (see `rpm-payloadflags`(5))
-Payloadflags      | 1126 | string       | Payload compressor level (see `rpm-payloadflags`(5))
+Payloadcompressor | 1125 | string       | Payload compressor name (see `rpm-payloadflags`(7))
+Payloadflags      | 1126 | string       | Payload compressor level (see `rpm-payloadflags`(7))
 Payloadformat     | 1124 | string       | Payload format (`cpio`)
 Prefixes          | 1098 | string array | Relocatable prefixes (on relocatable packages).
 Size              | 1009 | int32        | Installed package size.
