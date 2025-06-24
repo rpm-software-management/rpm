@@ -66,7 +66,7 @@ FD_t	Fdopen(FD_t ofd, const char * fmode);
  *
  * The `fmode` parameter is based on that of `fopen(3)`, but may also include a
  * compression method (`type` and `flags`) to use when opening the stream.
- * See `rpm-payloadflags`(5) manual for details.
+ * See `rpm-payloadflags`(7) manual for details.
  */
 FD_t	Fopen(const char * path,
 			const char * fmode);
