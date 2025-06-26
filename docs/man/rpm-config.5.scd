@@ -44,7 +44,7 @@ does not exist.
 
 # CONFIGURATION
 The following configurables are supported for the *rpm* runtime (as
-opposed opposed to just package building) parts:
+opposed to just package building) parts:
 
 *%\_color_output* _MODE_
 	Output coloring mode. Valid values are *never* and *auto*.
