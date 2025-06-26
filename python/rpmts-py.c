@@ -406,7 +406,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
 {
     PyObject *ho = NULL;
     rpmfdObject *fdo = NULL;
-    Header h;
+    Header h = NULL;
     rpmRC rpmrc;
     PyObject *fdo_source;
     rpmmodule_state_t *modstate = rpmModState_FromObject((PyObject*)s);
@@ -425,7 +425,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     Py_END_ALLOW_THREADS;
     Py_XDECREF(fdo);
 
-    if (rpmrc == RPMRC_OK) {
+    if (h) {
 	ho = hdr_Wrap(modstate->hdr_Type, h);
     } else {
 	Py_INCREF(Py_None);
