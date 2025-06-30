@@ -1,4 +1,5 @@
 Signature:
+File offset: 96
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 7 (112 bytes)
 Data size: 4276 bytes

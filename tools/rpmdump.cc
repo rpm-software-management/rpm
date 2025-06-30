@@ -116,6 +116,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
     struct entryInfo *pe;
     struct entryInfo * entry = NULL;
     int rc = 1, i;
+    off_t foffset = lseek(fd, 0, SEEK_CUR);
 
     if (read(fd, intro, sizeof(intro)) != sizeof(intro)) {
 	fprintf(stderr, "header intro fail");
@@ -124,6 +125,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
 
     printf("%s:\n", msg);
     
+    printf("File offset: %lu\n", foffset);
     printf("Header magic: %x (reserved: %x)\n", intro[0], intro[1]);
 
     numEntries = ntohl(intro[2]);
@@ -204,6 +206,13 @@ exit:
     return rc;
 }
 
+static int readpayload(int fd)
+{
+    printf("Payload:\n");
+    printf("File offset: %lu\n", lseek(fd, 0, SEEK_CUR));
+    return 0;
+}
+
 static int readpkg(int fd)
 {
     int rc = 1;
@@ -220,6 +229,8 @@ static int readpkg(int fd)
 	return rc;
 
     /* payload ... */
+    if (readpayload(fd))
+	return rc;
 
     return 0;
 }
