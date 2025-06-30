@@ -7,6 +7,7 @@ OS: 0
 Sigtype: 5
 
 Signature:
+File offset: 96
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 4 (64 bytes)
 Data size: 4274 bytes
@@ -47,6 +48,7 @@ Tag #3 [region]
 	count:  4128
 
 Header:
+File offset: 4456
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 56 (896 bytes)
 Data size: 1918 bytes
@@ -398,3 +400,5 @@ Tag #55 [region]
 	offset: 1837
 	count:     1
 
+Payload:
+File offset: 7286
