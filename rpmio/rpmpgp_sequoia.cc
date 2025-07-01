@@ -37,6 +37,9 @@ W(const uint8_t *, pgpDigParamsSignID, (pgpDigParams digp), (digp))
 W(const char *, pgpDigParamsUserID, (pgpDigParams digp), (digp))
 W(int, pgpDigParamsVersion, (pgpDigParams digp), (digp))
 W(uint32_t, pgpDigParamsCreationTime, (pgpDigParams digp), (digp))
+W(int, pgpDigParamsSalt,
+  (pgpDigParams digp, const uint8_t **datap, size_t *lenp),
+  (digp, datap, lenp))
 W(rpmRC, pgpVerifySignature,
   (pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx),
   (key, sig, hashctx))
