@@ -66,8 +66,19 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
     return rc;
 }
 
+int rpmDigestBundleUpdateID(rpmDigestBundle bundle, int id,
+			    const void *data, size_t len)
+{
+    int rc = -1;
+    if (bundle && data && len > 0 && id > 0) {
+	auto it = bundle->digs.find(id);
+	if (it != bundle->digs.end())
+	    rc = rpmDigestUpdate(it->second, data, len);
+    }
+    return rc;
+}
 int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
-			 void ** datap, size_t * lenp, int asAscii)
+			void ** datap, size_t * lenp, int asAscii)
 {
     int rc = -1;
     if (bundle) {
