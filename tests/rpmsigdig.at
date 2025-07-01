@@ -7,6 +7,20 @@ m4_define([RPMOUTPUT_SEQUOIA], [m4_if(RPM_PGP, [sequoia], [$1
 m4_define([RPMOUTPUT_LEGACY], [m4_if(RPM_PGP, [legacy], [$1
 ])])
 
+RPMTEST_SETUP([Digest bundle])
+AT_KEYWORDS([digest])
+RPMTEST_CHECK([
+rpmdig
+],
+[0],
+[1: cb1ad2119d8fafb69566510ee712661f9f14b83385006ef92aec47f523a38358
+2: e6c9f16ad216ab08c2511d9e67b450dbef6e0522a735ae2b0a61cef453fbcaa2
+3: cb1ad2119d8fafb69566510ee712661f9f14b83385006ef92aec47f523a38358
+4: 8d708d18b54df3962d696f069ad42dad7762b5d4d3c97ee5fa2dae0673ed46545164c078b8db3d59c4b96020e4316f17bb3d91bf1f6bc0896bbe75416eb8c385
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([seen signer id tracking])
 AT_KEYWORDS([query signature])
 RPMTEST_CHECK([
@@ -2455,3 +2469,4 @@ runroot rpmkeys --delete 036824f0ac60aed6f1a3256f88190469f6d7255e3d8e41c577233aa
 [],
 [])
 RPMTEST_CLEANUP
+
