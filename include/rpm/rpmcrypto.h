@@ -145,6 +145,17 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
 
 /** \ingroup rpmcrypto
+ * Update context of an individual ID within bundle with next plain text buffer.
+ * @param bundle	digest bundle
+ * @param id		id of digest (arbitrary, must be > 0)
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ * @return		0 on success
+ */
+int rpmDigestBundleUpdateID(rpmDigestBundle bundle, int id,
+			const void *data, size_t len);
+
+/** \ingroup rpmcrypto
  * Return digest from a bundle and destroy context, see rpmDigestFinal().
  *
  * @param bundle	digest bundle
