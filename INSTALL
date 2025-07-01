@@ -42,7 +42,7 @@ The scdoc manual page generator, available from
     https://git.sr.ht/~sircmpwn/scdoc
 
 You will need a cryptographic library to support digests and an OpenPGP
-implementation to support signatures. rpm-sequoia (>= 1.3.0 required) is
+implementation to support signatures. rpm-sequoia (>= 1.9.0 required) is
 the most complete option, covering both, and also the default:
     https://github.com/rpm-software-management/rpm-sequoia
 
