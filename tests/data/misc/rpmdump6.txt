@@ -51,8 +51,8 @@ Header:
 File offset: 4456
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 59 (944 bytes)
-Data size: 2872 bytes
-Header size: 3816 bytes
+Data size: 2760 bytes
+Header size: 3704 bytes
 
 Region entries 59
 Region size 960
@@ -61,7 +61,7 @@ Dribbles: 0
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2856
+	offset: 2744
 	count:    16
 
 	region trailer
@@ -212,211 +212,211 @@ Tag #24 [region]
 	tagno:  1048 (Requireflags)
 	type:      4 (int32)
 	offset: 1336
-	count:    16
+	count:    13
 
 Tag #25 [region]
 	tagno:  1049 (Requirename)
 	type:      8 (argv)
-	offset: 1400
-	count:    16
+	offset: 1388
+	count:    13
 
 Tag #26 [region]
 	tagno:  1050 (Requireversion)
 	type:      8 (argv)
-	offset: 1632
-	count:    16
+	offset: 1541
+	count:    13
 
 Tag #27 [region]
 	tagno:  1064 (Rpmversion)
 	type:      6 (string)
-	offset: 1675
+	offset: 1562
 	count:     1
 
 Tag #28 [region]
 	tagno:  1080 (Changelogtime)
 	type:      4 (int32)
-	offset: 1684
+	offset: 1572
 	count:     1
 
 Tag #29 [region]
 	tagno:  1081 (Changelogname)
 	type:      8 (argv)
-	offset: 1688
+	offset: 1576
 	count:     1
 
 Tag #30 [region]
 	tagno:  1082 (Changelogtext)
 	type:      8 (argv)
-	offset: 1726
+	offset: 1614
 	count:     1
 
 Tag #31 [region]
 	tagno:  1094 (Cookie)
 	type:      6 (string)
-	offset: 1744
+	offset: 1632
 	count:     1
 
 Tag #32 [region]
 	tagno:  1095 (Filedevices)
 	type:      4 (int32)
-	offset: 1764
+	offset: 1652
 	count:    20
 
 Tag #33 [region]
 	tagno:  1096 (Fileinodes)
 	type:      4 (int32)
-	offset: 1844
+	offset: 1732
 	count:    20
 
 Tag #34 [region]
 	tagno:  1097 (Filelangs)
 	type:      8 (argv)
-	offset: 1924
+	offset: 1812
 	count:    20
 
 Tag #35 [region]
 	tagno:  1112 (Provideflags)
 	type:      4 (int32)
-	offset: 1944
+	offset: 1832
 	count:     1
 
 Tag #36 [region]
 	tagno:  1113 (Provideversion)
 	type:      8 (argv)
-	offset: 1948
+	offset: 1836
 	count:     1
 
 Tag #37 [region]
 	tagno:  1116 (Dirindexes)
 	type:      4 (int32)
-	offset: 1956
+	offset: 1844
 	count:    20
 
 Tag #38 [region]
 	tagno:  1117 (Basenames)
 	type:      8 (argv)
-	offset: 2036
+	offset: 1924
 	count:    20
 
 Tag #39 [region]
 	tagno:  1118 (Dirnames)
 	type:      8 (argv)
-	offset: 2126
+	offset: 2014
 	count:    10
 
 Tag #40 [region]
 	tagno:  1122 (Optflags)
 	type:      6 (string)
-	offset: 2166
+	offset: 2054
 	count:     1
 
 Tag #41 [region]
 	tagno:  1124 (Payloadformat)
 	type:      6 (string)
-	offset: 2173
+	offset: 2061
 	count:     1
 
 Tag #42 [region]
 	tagno:  1126 (Payloadflags)
 	type:      6 (string)
-	offset: 2178
+	offset: 2066
 	count:     1
 
 Tag #43 [region]
 	tagno:  1132 (Platform)
 	type:      6 (string)
-	offset: 2179
+	offset: 2067
 	count:     1
 
 Tag #44 [region]
 	tagno:  1140 (Filecolors)
 	type:      4 (int32)
-	offset: 2192
+	offset: 2080
 	count:    20
 
 Tag #45 [region]
 	tagno:  5008 (Longfilesizes)
 	type:      5 (int64)
-	offset: 2272
+	offset: 2160
 	count:    20
 
 Tag #46 [region]
 	tagno:  5009 (Longsize)
 	type:      5 (int64)
-	offset: 2432
+	offset: 2320
 	count:     1
 
 Tag #47 [region]
 	tagno:  5011 (Filedigestalgo)
 	type:      4 (int32)
-	offset: 2440
+	offset: 2328
 	count:     1
 
 Tag #48 [region]
 	tagno:  5062 (Encoding)
 	type:      6 (string)
-	offset: 2444
+	offset: 2332
 	count:     1
 
 Tag #49 [region]
 	tagno:  5092 (Payloadsha256)
 	type:      8 (argv)
-	offset: 2450
+	offset: 2338
 	count:     1
 
 Tag #50 [region]
 	tagno:  5097 (Payloadsha256alt)
 	type:      8 (argv)
-	offset: 2515
+	offset: 2403
 	count:     1
 
 Tag #51 [region]
 	tagno:  5112 (Payloadsize)
 	type:      5 (int64)
-	offset: 2584
+	offset: 2472
 	count:     1
 
 Tag #52 [region]
 	tagno:  5113 (Payloadsizealt)
 	type:      5 (int64)
-	offset: 2592
+	offset: 2480
 	count:     1
 
 Tag #53 [region]
 	tagno:  5114 (Rpmformat)
 	type:      4 (int32)
-	offset: 2600
+	offset: 2488
 	count:     1
 
 Tag #54 [region]
 	tagno:  5115 (Filemimeindex)
 	type:      4 (int32)
-	offset: 2604
+	offset: 2492
 	count:    20
 
 Tag #55 [region]
 	tagno:  5116 (Mimedict)
 	type:      8 (argv)
-	offset: 2684
+	offset: 2572
 	count:     2
 
 Tag #56 [region]
 	tagno:  5120 (Sourcenevr)
 	type:      6 (string)
-	offset: 2711
+	offset: 2599
 	count:     1
 
 Tag #57 [region]
 	tagno:  5123 (Payloadsha3_256)
 	type:      6 (string)
-	offset: 2726
+	offset: 2614
 	count:     1
 
 Tag #58 [region]
 	tagno:  5124 (Payloadsha3_256alt)
 	type:      6 (string)
-	offset: 2791
+	offset: 2679
 	count:     1
 
 Payload:
-File offset: 8288
+File offset: 8176
