@@ -169,6 +169,11 @@ While scriptlets shouldn't be allowed to fail normally, you can signal
 scriptlet failure status by using Lua's *error(*_msg_, [_level_]*)*
 function if you need to.
 
+## File triggers
+Other file triggers receive the triggering paths via standard input, but
+Lua scriplets need to call the *rpm.next_line()* function in a loop. This
+function only exists inside the file trigger running environment.
+
 # SPEC FILES
 In the context of a *rpm-spec*(5) file parse with *rpmbuild*(1) or
 *rpmspec*(1), the RPM Lua environment contains the following spec specific

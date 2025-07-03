@@ -746,43 +746,8 @@ specific `%clean` section generally suggests flaws in the spec.
 
 ## Runtime scriptlets
 
-Runtime scriptlets are executed at the time of install and erase of the
-package. By default, scriptlets are executed with `/bin/sh` shell, but
-this can be overridden with `-p <path>` as an argument to the scriptlet
-for each scriptlet individually. Other supported operations include
-[scriptlet expansion](scriptlet_expansion.md).
-
-### Basic scriptlets
-
- * `%pre`
- * `%post`
- * `%preun`
- * `%postun`
- * `%pretrans`
- * `%posttrans`
- * `%preuntrans`
- * `%postuntrans`
- * `%verify`
-
-### Triggers
-
- * `%triggerprein`
- * `%triggerin`
- * `%triggerun`
- * `%triggerpostun`
-
-More information is available in [trigger chapter](triggers.md).
-
-### File triggers (since rpm >= 4.13)
-
- * `%filetriggerin`
- * `%filetriggerun`
- * `%filetriggerpostun`
- * `%transfiletriggerin`
- * `%transfiletriggerun`
- * `%transfiletriggerpostun`
-
-More information is available in [file trigger chapter](file_triggers.md).
+Runtime scriptlets are executed at various stages of a package's lifetime,
+such as install or erase. For more information, see `rpm-scriptlets`(7).
 
 ## %files section
 
