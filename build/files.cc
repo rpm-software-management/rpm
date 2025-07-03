@@ -1291,15 +1291,18 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 
     if (digestalgo != RPM_HASH_MD5) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
-	rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
+	if (spec->rpmformat < 6)
+	    rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
     }
 
     if (fl->haveCaps) {
 	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }
 
-    if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}"))
-	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
+    if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
+	if (spec->rpmformat < 6)
+	    (void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
+    }
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
@@ -1314,7 +1317,8 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	headerConvert(h, HEADERCONV_EXPANDFILELIST);
     } else {
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
+	if (spec->rpmformat < 6)
+	    (void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
     }
 }
 
@@ -2609,7 +2613,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 #endif
 
     /* Verify that file attributes scope over hardlinks correctly. */
-    if (checkHardLinks(fl.files))
+    if (checkHardLinks(fl.files) && spec->rpmformat < 6)
 	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets", "4.0.4-1");
 
     genCpioListAndHeader(&fl, spec, pkg, 0);
