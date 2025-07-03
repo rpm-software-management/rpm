@@ -81,7 +81,7 @@ opposed to just package building) parts:
 	*all* means install all locale specific files.
 
 *%\_install_script_path* _PATH_
-	The PATH put into the environment before running %pre/%post et al.
+	The PATH used in *rpm-scriptlet*(7) execution environment.
 
 *%\_keyring* _BACKEND_
 	The keyring type to use. Possible values for _BACKEND_ are:
