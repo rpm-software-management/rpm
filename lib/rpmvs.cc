@@ -457,8 +457,18 @@ void rpmvsInitRange(struct rpmvs_s *sis, int range)
     for (int i = 0; i < sis->nsigs; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	if (sinfo->range & range) {
-	    if (sinfo->rc == RPMRC_OK)
-		rpmDigestBundleAddID(sis->bundle, sinfo->hashalgo, sinfo->id, 0);
+	    if (sinfo->rc != RPMRC_OK)
+		continue;
+
+	    rpmDigestBundleAddID(sis->bundle, sinfo->hashalgo, sinfo->id, 0);
+	    /* OpenPGP v6 signatures need a grain of salt to go */
+	    if (sinfo->sig) {
+		const uint8_t *salt = NULL;
+		size_t slen = 0;
+		if (pgpDigParamsSalt(sinfo->sig, &salt, &slen) == 0 && salt) {
+		    rpmDigestBundleUpdateID(sis->bundle, sinfo->id, salt, slen);
+		}
+	    }
 	}
     }
 }
