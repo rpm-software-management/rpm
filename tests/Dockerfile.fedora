@@ -1,5 +1,6 @@
 # Supported Fedora releases: 41 42
 FROM registry.fedoraproject.org/fedora:42 AS base
+LABEL com.github.containers.toolbox="true"
 MAINTAINER rpm-maint@lists.rpm.org
 
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
@@ -61,7 +62,22 @@ RUN dnf -y install \
 RUN rm -f /usr/lib/rpm/macros.d/macros.transaction_ima
 # If updates to specific packages are needed, do it here
 RUN dnf -y --enablerepo=rawhide install "sequoia-sq >= 1.3" "rpm-sequoia >= 1.8" "crypto-policies >= 20250402"
+
+# Install some development tools
+RUN dnf -y install \
+    flatpak-spawn \
+    gdb \
+    strace \
+    valgrind
+
 RUN dnf clean all
+
+# Install podman shim for use in toolbox containers
+RUN cat <<EOF > /usr/local/bin/podman
+#!/bin/bash
+exec flatpak-spawn --host podman "\$@"
+EOF
+RUN chmod +x /usr/local/bin/podman
 
 # Workaround for pkgconf(1)'s unlisted dependency on rpm.
 # This is needed for cmake to work without an rpm installation.
