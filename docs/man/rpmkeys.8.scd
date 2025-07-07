@@ -37,6 +37,7 @@ For all available operations, see *OPERATIONS*.
 *-e*,
 *--erase*
 	Erase the key(s) designated by _FINGERPRINT_.
+	The *--delete* and *-d* options are deprecated.
 
 *-x*,
 *--export*
