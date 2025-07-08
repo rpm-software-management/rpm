@@ -25,6 +25,7 @@ else
     FROM=
 fi
 
+DEST_DIR="$PWD/mktree.destdir"
 CACHE_DIR="mktree.cache"
 IID_FILE="$CACHE_DIR/image-id"
 IMAGE_ID=$(cat $IID_FILE 2>/dev/null || echo "")
@@ -68,15 +69,8 @@ clean()
     $PODMAN rmi $IMAGE_ID >/dev/null
 }
 
-unshared()
-{
-    [ $(id -u) != 0 ] && [ $NATIVE == yes ] || return 0
-    $PODMAN unshare $0 $CMD "$@"
-    exit
-}
-
 case $CMD in
-    build) unshared
+    build)
         # Build base image
         $PODMAN build --target base -t $BASE_TAG $ARGS
 
@@ -87,7 +81,9 @@ case $CMD in
             id=$($PODMAN create -t $BASE_TAG)
             trap "$PODMAN kill $id >/dev/null; $PODMAN rm $id > /dev/null" EXIT
             $PODMAN start $id
-            make_install $($PODMAN mount $id)
+            rm -rf "$DEST_DIR"
+            make_install $DEST_DIR
+            $PODMAN cp $DEST_DIR/. $id:/
             $PODMAN exec $id /usr/share/mktree/setup.sh
             $PODMAN commit -q $id --iidfile=$IID_FILE
         else
