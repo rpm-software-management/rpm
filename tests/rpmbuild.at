@@ -2728,17 +2728,23 @@ No hello.debug
 [ignore])
 RPMTEST_CLEANUP
 
-RPMTEST_SETUP_RW([rpmbuild debuginfo subpackages sourcerpm])
+RPMTEST_SETUP_RW([rpmbuild subpackages sourcerpm])
 AT_KEYWORDS([build] [sourcerpm])
 RPMTEST_CHECK([[
 runroot rpmbuild -bb --quiet \
 		--define "_debuginfo_subpackages 1" \
 		 /data/SPECS/test-subpackages.spec
-runroot rpm -q --qf "%{nevr} %{sourcerpm}\n" /build/RPMS/*/test-*-debuginfo-1.0-1.*.rpm
+runroot rpmbuild -bb --quiet \
+		--define "_prefix /usr/local" \
+		/data/SPECS/dynamic.spec
+runroot rpm -q --qf "%{nevr} %{sourcerpm}\n" \
+		/build/RPMS/*/test-*-debuginfo-1.0-1.*.rpm \
+		/build/RPMS/noarch/dynamic-docs-1.0-1.noarch.rpm
 ]],
 [0],
 [test-test2-debuginfo-1.0-1 test-1.0-1.src.rpm
 test-test3-debuginfo-1.0-1 test-1.0-1.src.rpm
+dynamic-docs-1.0-1 dynamic-1.0-1.src.rpm
 ],
 [ignore])
 RPMTEST_CLEANUP
