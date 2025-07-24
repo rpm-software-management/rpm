@@ -15,7 +15,7 @@ esac
 
 # Strip .comment and .note sections (the latter only if it is not allocated)
 # for already stripped elf files in the build root
-for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -print0 | xargs -0 -r -P$NCPUS -n32 sh -c "file \"\\$@\" | grep -v \"^${RPM_BUILD_ROOT}/\?usr/lib/debug\" | sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped.*/\1/p'" ARG0`; do
+for f in `find "$RPM_BUILD_ROOT" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -print0 | xargs -0 -r -P$NCPUS -n32 sh -c ' entries=$(file $@ | grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug" | sed -n -e "s/^\(.*\):[ 	]*ELF.*, stripped.*/\1/p"); flock /tmp/brp-strip-comment-note.lock echo ${entries} ' ARG0`; do
 	note="-R .note"
 	if $OBJDUMP -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
 		grep ALLOC >/dev/null; then
