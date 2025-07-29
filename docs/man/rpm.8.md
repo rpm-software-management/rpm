@@ -929,15 +929,15 @@ unique to verify mode are:
 The format of the output is a string of 9 characters, a possible
 attribute marker:
 
-    **a** %**a**rtifact a build side-effect file (such as buildid links).
-    **c** %**c**onfig configuration file.
-    **d** %**d**oc documentation file.
-    **g** %**g**host file (i.e. the file contents are not included in the package payload).
-    **l** %**l**icense license file.
-    **m** %**m**issingok file missing is not a verify failure.
-    **n** %%config(**n**oreplace) (do not replace file).
-    **r** %**r**eadme readme file.
-    **s** **s**pecfile in source package.
+> **a** %**a**rtifact a build side-effect file (such as buildid links).\
+> **c** %**c**onfig configuration file.\
+> **d** %**d**oc documentation file.\
+> **g** %**g**host file (i.e. the file contents are not included in the package payload).\
+> **l** %**l**icense license file.\
+> **m** %**m**issingok file missing is not a verify failure.\
+> **n** %%config(**n**oreplace) (do not replace file).\
+> **r** %**r**eadme readme file.\
+> **s** **s**pecfile in source package.
 
 from the package header, followed by the file name. Each of the 9
 characters denotes the result of a comparison of attribute(s) of the
@@ -948,15 +948,15 @@ single \"**.**\" (period) means the test passed, while a single
 em**B**oldened) character denotes failure of the corresponding
 **\--verify** test:
 
-    **S** file **S**ize differs
-    **M** **M**ode differs (includes permissions and file type)
-    **5** digest (formerly MD**5** sum) differs
-    **D** **D**evice major/minor number mismatch
-    **L** read**L**ink(2) path mismatch
-    **U** **U**ser ownership differs
-    **G** **G**roup ownership differs
-    **T** m**T**ime differs
-    **P** ca**P**abilities differ
+> **S** file **S**ize differs\
+> **M** **M**ode differs (includes permissions and file type)\
+> **5** digest (formerly MD**5** sum) differs\
+> **D** **D**evice major/minor number mismatch\
+> **L** read**L**ink(2) path mismatch\
+> **U** **U**ser ownership differs\
+> **G** **G**roup ownership differs\
+> **T** m**T**ime differs\
+> **P** ca**P**abilities differ
 
 MISCELLANEOUS COMMANDS
 ----------------------
