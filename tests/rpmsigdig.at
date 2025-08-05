@@ -89,6 +89,13 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-1.0-1.i386.rpm
     Legacy MD5 digest: NOTFOUND
 ],
 [])
+
+RPMTEST_CHECK([
+RPM_TRACE=1 rpmkeys -K --nosignature /data/RPMS/hello-2.0-1.x86_64.rpm 2>&1 | grep -q pgpDigParamsSalt
+],
+[1],
+[],
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmkeys key update and delete (rpmdb)])

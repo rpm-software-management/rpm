@@ -462,7 +462,7 @@ void rpmvsInitRange(struct rpmvs_s *sis, int range)
 
 	    rpmDigestBundleAddID(sis->bundle, sinfo->hashalgo, sinfo->id, 0);
 	    /* OpenPGP v6 signatures need a grain of salt to go */
-	    if (sinfo->sig) {
+	    if (sinfo->type == RPMSIG_SIGNATURE_TYPE && sinfo->sig) {
 		const uint8_t *salt = NULL;
 		size_t slen = 0;
 		if (pgpDigParamsSalt(sinfo->sig, &salt, &slen) == 0 && salt) {
