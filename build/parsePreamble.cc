@@ -137,6 +137,7 @@ static inline int parseYesNo(const char * s)
 static struct Source *newSource(uint32_t num, const char *path, int flags)
 {
     struct Source *p = new Source {};
+    p->next = NULL;
     p->num = num;
     p->fullSource = xstrdup(path);
     p->flags = flags;
@@ -320,10 +321,16 @@ int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag)
 	return RPMRC_FAIL;
     }
 
-    /* Create the entry and link it in */
+    /* Create the entry and link it at the end */
     p = newSource(num, srcname, flag);
-    p->next = spec->sources;
-    spec->sources = p;
+    if (!spec->sources) {
+	spec->sources = p;
+    } else {
+	Source * s = spec->sources;
+	while (s->next)
+	    s = s->next;
+	s->next = p;
+    }
     spec->numSources++;
 
     rasprintf(&buf, "%s%d",

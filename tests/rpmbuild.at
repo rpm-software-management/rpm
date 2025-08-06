@@ -3014,8 +3014,8 @@ runroot rpmbuild \
 ],
 [1],
 [],
-[error: Bad file: /notthere/hello-1.0-modernize.patch: No such file or directory
-error: Bad file: /notthere/hello-1.0.tar.gz: No such file or directory
+[error: Bad file: /notthere/hello-1.0.tar.gz: No such file or directory
+error: Bad file: /notthere/hello-1.0-modernize.patch: No such file or directory
 ])
 RPMTEST_CLEANUP
 
