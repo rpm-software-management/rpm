@@ -1653,6 +1653,44 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [])
 
+# corrupt each of the signatures and verify it does not pass
+RPMTEST_CHECK([
+pkg="hello-corrupt-2.0-1.x86_64.rpm"
+runroot cp /tmp/hello-2.0-1.x86_64.rpm /tmp/${pkg}
+runroot python3 /data/misc/rpmsig-corruptor.py /tmp/${pkg} 0
+runroot rpmkeys -Kv /tmp/hello-corrupt-2.0-1.x86_64.rpm; echo $?
+runroot cp /tmp/hello-2.0-1.x86_64.rpm /tmp/${pkg}
+runroot python3 /data/misc/rpmsig-corruptor.py /tmp/${pkg} 1
+runroot rpmkeys -Kv /tmp/hello-corrupt-2.0-1.x86_64.rpm; echo $?
+runroot cp /tmp/hello-2.0-1.x86_64.rpm /tmp/${pkg}
+runroot python3 /data/misc/rpmsig-corruptor.py /tmp/${pkg} 2
+runroot rpmkeys -Kv /tmp/hello-corrupt-2.0-1.x86_64.rpm; echo $?
+],
+[0],
+[/tmp/hello-corrupt-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+1
+/tmp/hello-corrupt-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: BAD
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+1
+/tmp/hello-corrupt-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: BAD
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+1
+],
+[])
+
 RPMTEST_CHECK([
 runroot rpmkeys --delete 152bb32fd9ca982797e835cfb0645aec757bf69e
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
