@@ -577,8 +577,8 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	int strength = (sinfo->type | sinfo->strength);
 	int required = 0;
 
-	/* Ignore failure if an alternative exists and verifies ok */
-	if (sinfo->rc == RPMRC_FAIL) {
+	/* Ignore a digest failure if an alternative exists and verifies ok */
+	if (sinfo->type == RPMSIG_DIGEST_TYPE && sinfo->rc == RPMRC_FAIL) {
 	    const struct rpmsinfo_s * alt = getAlt(sis, sinfo);
 	    if (alt && alt->rc == RPMRC_OK)
 		sinfo->rc = RPMRC_NOTFOUND;
