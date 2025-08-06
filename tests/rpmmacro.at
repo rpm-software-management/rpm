@@ -1009,6 +1009,7 @@ RPMTEST_SETUP([lua glob])
 RPMTEST_CHECK([
 mkdir -p aaa/{123,223,323,322,321}
 rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/3*')) do print(p..'\\n') end}"
+rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/b*')) do print(p..'\\n') end}"
 rpm --eval "%{lua:for i,p in ipairs(rpm.glob('aaa/b*', 'c')) do print(p..'\\n') end}"
 ],
 [0],

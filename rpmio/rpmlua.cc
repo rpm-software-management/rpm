@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <glob.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmmacro.h>
@@ -937,19 +938,21 @@ static int rpm_glob(lua_State *L)
     const char *pat = luaL_checkstring(L, 1);
     rpmglobFlags flags = RPMGLOB_NONE;
     int argc = 0;
+    int rc = 0;
     ARGV_t argv = NULL;
 
-    if (luaL_optstring(L, 2, "c"))
+    if (strchr(luaL_optstring(L, 2, ""), 'c'))
 	flags |= RPMGLOB_NOCHECK;
 
-    if (rpmGlobPath(pat, flags, &argc, &argv) == 0) {
+    rc = rpmGlobPath(pat, flags, &argc, &argv);
+    if (rc == 0) {
 	lua_createtable(L, 0, argc);
 	for (int i = 0; i < argc; i++) {
 	    lua_pushstring(L, argv[i]);
 	    lua_rawseti(L, -2, i + 1);
 	}
 	argvFree(argv);
-    } else {
+    } else if (rc != GLOB_NOMATCH) {
 	luaL_error(L, "glob %s failed: %s", pat, strerror(errno));
     }
 
