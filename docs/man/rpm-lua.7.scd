@@ -454,6 +454,7 @@ The following RPM specific functions are available:
 *vercmp(*_v1_, _v2_*)*
 	Perform RPM version comparison on argument strings.
 	Returns -1, 0 or 1 if _v1_ is smaller, equal or larger than _v2_.
+	See *rpm-version*(7).
 
 	Note: in RPM < 4.16 this operated on version segments only, which
 	does not produce correct results on full _EVR_ strings.
@@ -972,6 +973,6 @@ primarily searched from *%{getconfdir}/lua/*. *%\_rpmluadir* is a shorthand
 for this path.
 
 # SEE ALSO
-*rpm-macros*(7) *rpm-payloadflags*(7) *rpmlua*(1)
+*rpm-macros*(7) *rpm-payloadflags*(7) *rpmlua*(1) *rpm-version*(7)
 
 *https://www.lua.org/*
