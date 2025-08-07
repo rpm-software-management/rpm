@@ -18,6 +18,9 @@ enum rpmSignFlags_e {
     RPMSIGN_FLAG_IMA		= (1 << 0),
     RPMSIGN_FLAG_RPMV3		= (1 << 1),
     RPMSIGN_FLAG_FSVERITY	= (1 << 2),
+    RPMSIGN_FLAG_RESIGN		= (1 << 3),
+    RPMSIGN_FLAG_RPMV4		= (1 << 4),
+    RPMSIGN_FLAG_RPMV6		= (1 << 5),
 };
 typedef rpmFlags rpmSignFlags;
 
