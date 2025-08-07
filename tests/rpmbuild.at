@@ -1653,6 +1653,19 @@ done
 [0],
 [expout],
 [])
+
+RPMTEST_CHECK([[
+cat << EOF > "${RPMTEST}"/tmp/bar.req
+#!/bin/sh
+echo ";foobar"
+EOF
+
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --requires /file{1..5}
+]],
+[1],
+[],
+[error: invalid or out of order path from generator: ;foobar
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([Local dependency generator])
