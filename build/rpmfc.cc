@@ -632,7 +632,7 @@ static int genDeps(const char *mname, int multifile, rpmTagVal tagN,
 		fx++;
 		if (rstreq(pav[px]+1, paths[fx]))
 		    found = 1;
-	    } while (!found && fx < nfn);
+	    } while (!found && fx < nfn-1);
 
 	    if (!found) {
 		rpmlog(RPMLOG_ERR,
