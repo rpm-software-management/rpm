@@ -717,7 +717,8 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	flags &= ~(RPMSIGN_FLAG_IMA | RPMSIGN_FLAG_FSVERITY);
     }
 
-    origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+    /* Adjust for the region index entry + data getting stripped: 32 bytes */
+    origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES) - 32;
     unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
 
     if (flags & RPMSIGN_FLAG_IMA) {
@@ -770,18 +771,16 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     /* Adjust reserved size for added/removed signatures */
     if (headerGet(sigh, reserveTag, &utd, HEADERGET_MINMEM)) {
 	unsigned newSize = headerSizeof(sigh, HEADER_MAGIC_YES);
-	int diff = newSize - origSigSize;
+	int diff = origSigSize - newSize;
 
-	/* diff can be zero if nothing was added or removed */
-	if (diff) {
-	    utd.count -= diff;
-	    if (utd.count > 0 && newSize + utd.count <= origSigSize) {
-		uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
-		utd.data = zeros;
-		headerMod(sigh, &utd);
-		insSig = 1;
-		free(zeros);
-	    }
+	/* The header doesn't support zero-sized data */
+	if ((diff < 0 && abs(diff) < utd.count) || diff > 0) {
+	    utd.count += diff;
+	    uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
+	    utd.data = zeros;
+	    headerMod(sigh, &utd);
+	    free(zeros);
+	    insSig = 1;
 	}
     }
 
