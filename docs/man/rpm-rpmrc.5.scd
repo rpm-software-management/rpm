@@ -33,8 +33,11 @@ configuration:
 . User specific configuration
 
 In older rpm versions the path of per-user rpmrc was _~/.rpmrc_.
-This is still processed if it exists and the new configuration directory
-does not exist.
+RPM will try to move this file to the new locations. If this is not
+possible it will create _~/.rpmconfig_migration_lock_ to prevent
+attempting the migration over and over again. In this case the file is
+still processed if it exists and the new configuration directory does
+not exist.
 
 # CONFIGURATION
 _ARCH_ and _OS_ relate to *uname*(2) machine and operating system
