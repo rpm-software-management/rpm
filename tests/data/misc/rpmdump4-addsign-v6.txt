@@ -2,8 +2,8 @@ Signature:
 File offset: 96
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 9 (144 bytes)
-Data size: 5172 bytes
-Header size: 5316 bytes
+Data size: 4244 bytes
+Header size: 4388 bytes
 Padding: 4 bytes
 Region entries 9
 Region size 160
@@ -12,7 +12,7 @@ Dribbles: 0
 Tag #0 [region]
 	tagno:    62 (Headersignatures)
 	type:      7 (blob)
-	offset: 5156
+	offset: 4228
 	count:    16
 
 	region trailer
@@ -67,6 +67,6 @@ Tag #8 [region]
 	tagno:  1008 (Reservedspace)
 	type:      7 (blob)
 	offset: 1028
-	count:  4128
+	count:  3200
 
 Header:
