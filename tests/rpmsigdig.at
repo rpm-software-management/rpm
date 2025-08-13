@@ -1879,11 +1879,12 @@ runroot rpm -qp --qf '%{dsaheader:pgpsig}\n' test.rpm | sed 's/, .\+,/,/'
 runroot ${RPM_CONFIGDIR_PATH}/rpmdump test.rpm | grep 'Dsa' | xargs -n3
 exit $rc
 ],
-[0],
+[1],
 [EdDSA/SHA512, Key ID b0645aec757bf69e
 tagno: 267 (Dsa)
 ],
-[])
+[error: test.rpm already contains a legacy signature
+])
 
 # Add native v4 signature to package with native v4 signature (different algo)
 RPMTEST_CHECK([
@@ -1894,12 +1895,13 @@ runroot rpm -qp --qf '%{rsaheader:pgpsig}\n%{dsaheader:pgpsig}\n' test.rpm | sed
 runroot ${RPM_CONFIGDIR_PATH}/rpmdump test.rpm | grep '(Rsa\|Dsa)' | xargs -n3
 exit $rc
 ],
-[0],
+[1],
 [RSA/SHA512, Key ID 4344591e1964c5fc
 (none)
 tagno: 268 (Rsa)
 ],
-[])
+[error: test.rpm already contains a legacy signature
+])
 
 # Add compat v4 signature to package with native v4 signature (identical)
 RPMTEST_CHECK([
