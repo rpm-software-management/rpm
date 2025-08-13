@@ -441,7 +441,7 @@ static int putSignature(Header sigh, uint8_t *pkt, size_t pktlen,
 	    if (haveSignature(&sigtd, sigh)) {
 		rc = (flags & RPMSIGN_FLAG_RPMV6) ? 0 : 1;
 	    } else if (haveLegacySig(sigh, ishdr)) {
-		rc = 0;
+		rc = (flags & RPMSIGN_FLAG_RPMV6) ? 0 : 2;
 	    } else {
 		rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0) ? -1 : 0;
 	    }
@@ -764,6 +764,13 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 		   rpm);
 		/* Identical signature is not an error */
 		res = 0;
+	    }
+	    if (res == 2) {
+		rpmlog(RPMLOG_ERR,
+		   _("%s already contains a legacy signature\n"),
+		   rpm);
+		/* Existing signature is an error */
+		res = -1;
 	    }
 	    goto exit;
 	}
