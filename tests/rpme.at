@@ -24,6 +24,36 @@ missing   d /usr/share/doc/hello-2.0/README
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpm -e shared directories])
+AT_KEYWORDS([install erase rpmdb])
+
+rpmbuild -bb --quiet /data/SPECS/sharedir.spec
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/sharedir*.rpm
+runroot find /opt | sort
+],
+[0],
+[/opt
+/opt/sharedir
+/opt/sharedir/sub
+/opt/sharedir/sub/a
+/opt/sharedir/sub/b
+/opt/sharedir/sub/c
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e sharedir-b sharedir sharedir-c sharedir-a
+runroot find /opt | sort
+],
+[0],
+[/opt
+],
+[])
+RPMTEST_CLEANUP
+
+
 RPMTEST_SETUP_RW([rpm -e suid hardlink])
 AT_KEYWORDS([install erase])
 
