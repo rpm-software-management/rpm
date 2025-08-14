@@ -26,7 +26,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -e shared directories])
 AT_KEYWORDS([install erase rpmdb])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 rpmbuild -bb --quiet /data/SPECS/sharedir.spec
 
