@@ -86,8 +86,7 @@ See *rpm-common*(8) for the operations common to all rpm executables.
 
 # ARGUMENTS
 _PACKAGE_FILE_
-	Either *rpm* binary file or ASCII package manifest
-	(see *PACKAGE SELECTION OPTIONS*), and may be
+	Either an *rpm* package or an *rpm-manifest*(5) file. May also be
 	specified as an *ftp* or *http* URL, in which case the package will
 	be downloaded before being installed. See *FTP/HTTP OPTIONS* for
 	information on *rpm*'s *ftp* and *http* client support.
@@ -297,21 +296,10 @@ selection and information selection.
 	Do not glob arguments when installing package files.
 
 *--nomanifest*
-	Don't process non-package files as manifests.
+	Don't process non-package files as *rpm-manifest*(5) files.
 
 *-p*, *--package* _PACKAGE_FILE_
-	Query an (uninstalled) package _PACKAGE_FILE_. The _PACKAGE_FILE_
-	may be specified as an *ftp* or *http* style URL, in which case
-	the package header will be downloaded and queried. See *FTP/HTTP
-	OPTIONS* for information on *rpm*'s *ftp* and *http* client
-	support. The _PACKAGE_FILE_ argument(s), if not a binary package,
-	will be interpreted as an ASCII package manifest unless
-	*--nomanifest* option is used. In manifests, comments are
-	permitted, starting with a '*#*', and each line of a package
-	manifest file may include white space separated glob expressions,
-	including URL's, that will be expanded to paths that are
-	substituted in place of the package manifest as additional
-	_PACKAGE_FILE_ arguments to the query.
+	Query an (uninstalled) package _PACKAGE_FILE_.
 
 *--path* _PATH_
 	Query package(s) owning _PATH_, whether the file is installed or not.
@@ -454,8 +442,8 @@ selection and information selection.
 # VERIFY OPTIONS
 
 The package and file selection options are the same as for package
-querying (including package manifest files as arguments). Other options
-unique to verify mode are:
+querying (including *rpm-manifest*(5) files as arguments).
+Other options unique to verify mode are:
 
 *--nodeps*
 	Don't verify dependencies of packages.
@@ -555,6 +543,7 @@ See *rpm-common*(8), *rpm-config*(5) and *rpm-rpmrc*(5).
 # SEE ALSO
 *rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
 *rpmkeys*(8), *rpmsign*(1), *rpmspec*(1), *rpm-queryformat*(7)
+*rpm-manifest*(5)
 
 *rpm --help* - as *rpm* supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
