@@ -194,6 +194,12 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2` ${RPM_CUSTOM_ARCH:+cu
 	CANONARCH=loongarch64
 	CANONCOLOR=3
 	;;
+    e2k*)
+	ISANAME=e2k
+	ISABITS=64
+	CANONARCH=e2k
+	CANONCOLOR=0
+	;;
     noarch)
 	CANONARCH=noarch
 	CANONCOLOR=0

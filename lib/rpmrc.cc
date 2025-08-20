@@ -1347,6 +1347,19 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	}
 #endif
 
+#	if defined(__e2k__)
+	{
+	    if (__builtin_cpu_is("elbrus-v4") || __builtin_cpu_is("elbrus-8c") || __builtin_cpu_is("elbrus-1c+"))
+		strcpy(un.machine, "e2kv4");
+	    else if (__builtin_cpu_is("elbrus-v5") || __builtin_cpu_is("elbrus-8c2"))
+		strcpy(un.machine, "e2kv5");
+	    else if (__builtin_cpu_is("elbrus-v6") || __builtin_cpu_is("elbrus-12c") || __builtin_cpu_is("elbrus-16c") || __builtin_cpu_is("elbrus-2c3"))
+		strcpy(un.machine, "e2kv6");
+	    else // always fallback to e2k
+		strcpy(un.machine, "e2k");
+	}
+#	endif
+
 	/* the uname() result goes through the arch_canon table */
 	const canonEntry * canon = lookupInCanonTable(un.machine,
 			   ctx->tables[RPM_MACHTABLE_INSTARCH].canons);
