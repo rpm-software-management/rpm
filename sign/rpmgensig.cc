@@ -450,6 +450,12 @@ static int putSignature(Header sigh, uint8_t *pkt, size_t pktlen,
 		    pubkey_algo);
 		goto exit;
 	    }
+	    if (ver > 4) {
+		rpmlog(RPMLOG_ERR,
+		    ("Unsupported OpenPGP version %u for rpm v3/v4 signatures\n"),
+		    ver);
+		goto exit;
+	    }
 	}
     }
 
