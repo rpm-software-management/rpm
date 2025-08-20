@@ -694,12 +694,6 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	goto exit;
     }
 
-    /* Always add V3 signatures if no payload digest present */
-    if (!(headerIsEntry(h, RPMTAG_PAYLOADSHA256) ||
-	  headerIsEntry(h, RPMTAG_PAYLOADSHA256ALT))) {
-	flags |= RPMSIGN_FLAG_RPMV3;
-    }
-
     if (rpmformat >= 6) {
 	flags |= RPMSIGN_FLAG_RPMV6;
 	reserveTag = RPMSIGTAG_RESERVED;
@@ -712,6 +706,11 @@ static int rpmSign(const char *rpm, int deleting, int flags)
     } else {
 	flags |= RPMSIGN_FLAG_RPMV4;
 	reserveTag = RPMSIGTAG_RESERVEDSPACE;
+	/* Always add V3 signatures if no payload digest present */
+	if (!(headerIsEntry(h, RPMTAG_PAYLOADSHA256) ||
+	      headerIsEntry(h, RPMTAG_PAYLOADSHA256ALT))) {
+	    flags |= RPMSIGN_FLAG_RPMV3;
+	}
     }
 
     if (headerIsSource(h)) {
