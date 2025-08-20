@@ -19,6 +19,8 @@ contents:
 |      OPENPGP   |  OPENPGPHEADER    |   6.0   | any (***)      |    S     |   H     |
 |        -       |  PAYLOADSHA256    |  4.14   | SHA256 (*)     |    H     |   Pc    |
 |        -       |  PAYLOADSHA256ALT |  4.16   | SHA256 (*)     |    H     |   P     |
+|        -       |  PAYLOADSHA512    |  6.0    | SHA512      |    H     |   Pc    |
+|        -       |  PAYLOADSHA512ALT |  6.0    | SHA512      |    H     |   P     |
 |        -       |  PAYLOADSHA3_256    |  6.0   | SHA3_256      |    H     |   Pc    |
 |        -       |  PAYLOADSHA3_256ALT |  6.0   | SHA3_256      |    H     |   P     |
 |        -       |     FILEMD5       |   3.0   | MD5            |    H     |   F     |

@@ -114,6 +114,8 @@ nopl
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy MD5 digest: NOTFOUND
 1
 nosha1
@@ -172,12 +174,14 @@ done
 /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
     Header SHA3-256 digest: OK
     Payload SHA3-256 digest: OK
+    Payload SHA512 digest: OK
     Payload SHA256 digest: OK
 0
 nosha3
 /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
     Header SHA256 digest: OK
     Payload SHA3-256 digest: OK
+    Payload SHA512 digest: OK
     Payload SHA256 digest: OK
 0
 nosha
@@ -186,6 +190,7 @@ nosha
     Header SHA256 digest: NOTFOUND
     Header SHA1 digest: NOTFOUND
     Payload SHA3-256 digest: OK
+    Payload SHA512 digest: OK
     Payload SHA256 digest: OK
     Legacy MD5 digest: NOTFOUND
 1
@@ -380,6 +385,8 @@ noplds
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: OK
