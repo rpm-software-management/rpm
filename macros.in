@@ -1177,6 +1177,11 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # arch macro for 64-bit LOONGARCH processors
 %loongarch64	loongarch64
 
+#------------------------------------------------------------------------------
+# arch macro for all E2K processors
+#
+%e2k		e2k e2kv4 e2kv5 e2kv6 e2k4c e2k8c e2k1cp e2k8c2 e2k12c e2k16c e2k2c3
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
