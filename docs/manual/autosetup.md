@@ -47,7 +47,7 @@ natural than with gendiff.
 
 ## %autosetup options
 
-Generally `%autosetup` accepts the same arguments as [`%setup`](spec.md#setup)
+Generally `%autosetup` accepts the same arguments as [%setup](spec.md#setup)
 does. The notable exceptions are
 
 * `%autosetup` defaults to quiet operation, so `-q` is not needed or accepted.
