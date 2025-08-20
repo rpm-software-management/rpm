@@ -2504,7 +2504,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([openpgp v6 keys and signatures rsa])
 AT_KEYWORDS([rpmsign sequoia signature v6])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 cat << EOF > ${HOME}/.config/rpm/macros
