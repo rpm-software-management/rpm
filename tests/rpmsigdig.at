@@ -86,6 +86,8 @@ runroot rpmkeys -Kv --nosignature /data/RPMS/hello-1.0-1.i386.rpm
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy MD5 digest: NOTFOUND
 ],
 [])
@@ -559,6 +561,8 @@ runroot rpmkeys -Kv --nosignature /tmp/${pkg}
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy MD5 digest: NOTFOUND
 ],
 [])
@@ -753,6 +757,8 @@ Checking package after importing key, no digest:
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
 1
@@ -1270,6 +1276,8 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: NOTFOUND
@@ -1280,6 +1288,8 @@ runroot rpmkeys -Kv /tmp/${pkg}
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: NOTFOUND
@@ -1321,6 +1331,8 @@ dorpm -Kv
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: OK
@@ -1501,6 +1513,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
+    Payload SHA512 digest: NOTFOUND
+    Payload SHA512 ALT digest: NOTFOUND
     Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
     Legacy MD5 digest: NOTFOUND

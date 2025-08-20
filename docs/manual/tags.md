@@ -1,4 +1,3 @@
----
 layout: default
 title: rpm.org - RPM Tags
 ---
@@ -312,6 +311,8 @@ Openpgp           | 278  | string array | OpenPGP signature(s) of the header, ba
 Payloadsha256     | 5092 | string array | SHA256 digest of the compressed payload.
 Payloadsha256algo | 5093 | int32        | ID of the SHA256 algorithm (obsolete)
 Payloadsha256alt  | 5097 | string array | SHA256 digest of the uncompressed payload.
+Payloadsha512     | 5121 | string       | SHA512 digest of the compressed payload.
+Payloadsha512alt  | 5122 | string       | SHA512 digest of the uncompressed payload.
 Payloadsha3_256   | 5123 | string       | SHA3-256 digest of the compressed payload.
 Payloadsha3_256alt| 5124 | string       | SHA3-256 digest of the uncompressed payload.
 Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).

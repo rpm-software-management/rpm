@@ -112,8 +112,9 @@ for v6:
 - RPMTAG_FILEDIGESTALGO is always present and at least SHA256 in strength
 - RPMTAG_PAYLOADSHA256 and RPMTAG_PAYLOADSHA256ALT (optional in v4),
   containing SHA256 hashes of the Payload (compressed and uncompressed).
-- New RPMTAG_PAYLOADSHA3_256 and RPMTAG_PAYLOADSHA3_256ALT tags, containing
-  SHA3-256 hashes of the Payload (compressed and uncompressed).
+- New RPMTAG_PAYLOADSHA512, RPMTAG_PAYLOADSHA512ALT,
+- RPMTAG_PAYLOADSHA3_256 and RPMTAG_PAYLOADSHA3_256ALT tags, containing
+  SHA512 and SHA3-256 hashes of the Payload (compressed and uncompressed).
 - Similarly, there are two alternative size tags on the Payload (compressed
   and uncompressed): RPMTAG_PAYLOADSIZE and RPMTAG_PAYLOADSIZEALT
 - File type information is stored as MIME types instead of libmagic
