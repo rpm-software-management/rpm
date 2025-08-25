@@ -1932,40 +1932,6 @@ tagno: 268 (Rsa)
 ],
 [])
 
-# Add native v3 signature to package with native v4 signature (different algo)
-RPMTEST_CHECK([
-cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/test.rpm
-runroot rpmsign --addsign --key-id 771B18D3D7BAA28734333C424344591E1964C5FC test.rpm
-runroot rpmsign --addsign --rpmv3 --key-id E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 test.rpm; rc=$?
-runroot rpm -qp --qf '%{rsaheader:pgpsig}\n%{siggpg:pgpsig}\n' test.rpm | sed 's/, .\+,/,/'
-runroot ${RPM_CONFIGDIR_PATH}/rpmdump test.rpm | grep '(Rsa\|Gpg)' | xargs -n3
-exit $rc
-],
-[0],
-[RSA/SHA512, Key ID 4344591e1964c5fc
-ECDSA/SHA512, Key ID 7f1c21f95f65bbe8
-tagno: 268 (Rsa)
-tagno: 1005 (Gpg)
-],
-[])
-
-# Add compat v3 signature to package with native v4 signature (different algo)
-RPMTEST_CHECK([
-cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/test.rpm
-runroot rpmsign --addsign --key-id 771B18D3D7BAA28734333C424344591E1964C5FC test.rpm
-runroot rpmsign --addsign --rpmv6 --rpmv3 --key-id E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 test.rpm; rc=$?
-runroot rpm -qp --qf '%{rsaheader:pgpsig}\n%{siggpg:pgpsig}\n' test.rpm | sed 's/, .\+,/,/'
-runroot ${RPM_CONFIGDIR_PATH}/rpmdump test.rpm | grep '(Rsa\|Gpg)' | xargs -n3
-exit $rc
-],
-[0],
-[RSA/SHA512, Key ID 4344591e1964c5fc
-ECDSA/SHA512, Key ID 7f1c21f95f65bbe8
-tagno: 268 (Rsa)
-tagno: 1005 (Gpg)
-],
-[])
-
 # Resign with compat v4 signature
 RPMTEST_CHECK([
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/test.rpm
