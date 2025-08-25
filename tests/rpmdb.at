@@ -587,16 +587,21 @@ RPMTEST_SETUP_RW([rpmdb --rebuilddb and verify empty database])
 AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_RESET
+RPMTEST_USER
 runroot rpmdb --rebuilddb
 runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
 runroot rpmdb --verifydb
 runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
+runroot rm `rpm -E "%{_dbpath}/.rpm.lock"`
+runroot_user rpm -qa
 ],
 [0],
 [/var/lib/rpm-testsuite/.rpm.lock
 /var/lib/rpm-testsuite/.rpm.lock
 ],
-[])
+[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (No such file or directory)
+error: 	run rpm as root to create the lock file
+])
 RPMTEST_CLEANUP
 
 # ------------------------------
