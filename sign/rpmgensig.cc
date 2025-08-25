@@ -766,7 +766,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	if (res != 0) {
 	    if (res == 1) {
 		rpmlog(RPMLOG_WARNING,
-		   _("%s already contains identical signature, skipping\n"),
+		   _("%s already contains an identical signature, skipping\n"),
 		   rpm);
 		/* Identical signature is not an error */
 		res = 0;

@@ -1445,7 +1445,7 @@ RPMTEST_CHECK([
 RPMKEYRING_RESET
 
 cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64-signed.rpm "${RPMTEST}"/tmp/
-runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains identical signature, skipping"
+runroot rpmsign --key-id 4344591E1964C5FC --digest-algo sha256 --addsign /tmp/hello-2.0-1.x86_64-signed.rpm 2>&1 |grep -q "already contains an identical signature, skipping"
 ],
 [0],
 [],
@@ -1881,7 +1881,7 @@ exit $rc
 [RSA/SHA512, Key ID 4344591e1964c5fc
 tagno: 268 (Rsa)
 ],
-[warning: test.rpm already contains identical signature, skipping
+[warning: test.rpm already contains an identical signature, skipping
 ])
 
 # Add native v4 signature to package with native v4 signature (same algo)
