@@ -439,11 +439,17 @@ static int putSignature(Header sigh, uint8_t *pkt, size_t pktlen,
 	    };
 
 	    if (haveSignature(&sigtd, sigh)) {
-		rc = (flags & RPMSIGN_FLAG_RPMV6) ? 0 : 1;
+		rc = 1;
 	    } else if (haveLegacySig(sigh, ishdr)) {
-		rc = (flags & RPMSIGN_FLAG_RPMV6) ? 0 : 2;
+		rc = 2;
 	    } else {
 		rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0) ? -1 : 0;
+	    }
+
+	    /* Legacy signatures are best-effort in v6 mode */
+	    if ((flags & RPMSIGN_FLAG_RPMV6) && rc > 0) {
+		rc = 0;
+		goto exit;
 	    }
 	} else {
 	    /* If we did a v6 signature, we can ignore the error here */
