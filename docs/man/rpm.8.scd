@@ -542,8 +542,9 @@ See *rpm-common*(8), *rpm-config*(5) and *rpm-rpmrc*(5).
 
 # SEE ALSO
 *rpm-common*(8), *popt*(3), *rpm2cpio*(1), *rpmbuild*(1), *rpmdb*(8),
+<<<<<<< HEAD
 *rpmkeys*(8), *rpmsign*(1), *rpmspec*(1), *rpm-queryformat*(7)
-*rpm-manifest*(5)
+*rpm-manifest*(5) *rpm-version*(7)
 
 *rpm --help* - as *rpm* supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
