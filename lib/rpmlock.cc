@@ -124,6 +124,8 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
     if (!lock) {
 	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
 		descr, lock_path, strerror(errno));
+	if (errno == ENOENT && geteuid() != 0)
+	    rpmlog(RPMLOG_ERR, _("\trun rpm as root to create the lock file\n"));
     }
     return lock;
 }
