@@ -129,6 +129,8 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
     return rc;
 }
 
+static
+void rpmtsLockFree(rpmts ts);
 
 int rpmtsRebuildDB(rpmts ts)
 {
@@ -151,6 +153,12 @@ int rpmtsRebuildDB(rpmts ts)
 	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL, rebuildflags);
 	rpmtxnEnd(txn);
     }
+    /* Re-create lock file */
+    rpmtsLockFree(ts);
+    txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    if (txn)
+	rpmtxnEnd(txn);
+
     return rc;
 }
 
@@ -584,8 +592,7 @@ rpmts rpmtsFree(rpmts ts)
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
-    ts->lockPath = _free(ts->lockPath);
-    ts->lock = rpmlockFree(ts->lock);
+    rpmtsLockFree(ts);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -1063,15 +1070,11 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types)
 }
 
 #define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
-rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
+static
+void rpmtsLockInit(rpmts ts)
 {
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
-    rpmtxn txn = NULL;
-
-    if (ts == NULL)
-	return NULL;
-
-    if (ts->lockPath == NULL) {
+    if (ts && ts->lockPath == NULL) {
 	const char *rootDir = rpmtsRootDir(ts);
 	char *t;
 
@@ -1090,6 +1093,26 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 
     if (ts->lock == NULL)
 	ts->lock = rpmlockNew(ts->lockPath, _("transaction"));
+
+}
+
+static
+void rpmtsLockFree(rpmts ts)
+{
+    if (ts) {
+	ts->lockPath = _free(ts->lockPath);
+	ts->lock = rpmlockFree(ts->lock);
+    }
+}
+
+rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
+{
+    rpmtxn txn = NULL;
+
+    if (ts == NULL)
+	return NULL;
+
+    rpmtsLockInit(ts);
 
     int lockmode = (flags & RPMTXN_WRITE) ? RPMLOCK_WRITE : RPMLOCK_READ;
     if (rpmlockAcquire(ts->lock, lockmode)) {
