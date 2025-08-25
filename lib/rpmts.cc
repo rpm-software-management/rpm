@@ -151,6 +151,13 @@ int rpmtsRebuildDB(rpmts ts)
 	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL, rebuildflags);
 	rpmtxnEnd(txn);
     }
+    /* Re-create lock file */
+    ts->lockPath = _free(ts->lockPath);
+    ts->lock = rpmlockFree(ts->lock);
+    txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    if (txn)
+	rpmtxnEnd(txn);
+
     return rc;
 }
 
