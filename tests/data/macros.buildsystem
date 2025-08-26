@@ -8,3 +8,7 @@
 %buildsystem_cmake_conf() cmake %* -B __rpmbuild -S .
 %buildsystem_cmake_build() cmake --build __rpmbuild %{?smp_mflags} %{?verbose:-v} -- %*
 %buildsystem_cmake_install() DESTDIR=${RPM_BUILD_ROOT} cmake --install __rpmbuild %{?verbose:-v} %*
+
+%buildsystem_buildsubdir_conf() echo BSCONF %buildsubdir
+%buildsystem_buildsubdir_build() echo BSBUILD %buildsubdir
+%buildsystem_buildsubdir_install() echo BSINST %buildsubdir
