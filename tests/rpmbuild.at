@@ -440,6 +440,26 @@ runroot find /build/BUILD|sort
 [ignore])
 RPMTEST_CLEANUP
 
+# There might be workarounds that make build work while leaving parse broken
+# the way it is, but this is the proper outcome from #3890:
+RPMTEST_SETUP_RW([rpmbuild -b buildsystem wrt %buildsubdir])
+AT_KEYWORDS([build buildsystem])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+cp "${RPMTEST}/data/macros.buildsystem" "${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/"
+
+RPMTEST_CHECK([
+runroot rpmspec --parse /data/SPECS/reproducer-buildsubdir.spec | grep ^echo
+],
+[0],
+[echo CONF: reproducer-buildsubdir-0
+echo BSBUILD reproducer-buildsubdir-0
+echo BSINST reproducer-buildsubdir-0
+],
+[])
+
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmbuild -ba autosetup])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
