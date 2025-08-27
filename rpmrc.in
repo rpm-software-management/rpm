@@ -163,7 +163,6 @@ archcolor: aarch64 2
 
 archcolor: riscv64 2
 
-
 archcolor: loongarch64 2
 
 #############################################################
@@ -523,6 +522,8 @@ arch_compat: aarch64: noarch
 arch_compat: riscv: noarch
 arch_compat: riscv64: noarch
 
+arch_compat: loongarch64: noarch
+
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
@@ -551,8 +552,6 @@ os_compat: BSD_OS: bsdi
 os_compat: bsdi4.0: bsdi
 
 os_compat: Darwin: MacOSX
-
-arch_compat: loongarch64: noarch
 
 buildarch_compat: ia64: noarch
 
@@ -660,7 +659,6 @@ buildarch_compat: ia32e: x86_64
 buildarch_compat: sh3: noarch
 buildarch_compat: sh4: noarch
 buildarch_compat: sh4a: sh4
-
 
 buildarch_compat: loongarch64: noarch
 
