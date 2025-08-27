@@ -73,10 +73,8 @@ RUN dnf -y install \
 RUN dnf clean all
 
 # Install podman shim for use in toolbox containers
-RUN cat <<EOF > /usr/local/bin/podman
-#!/bin/bash
-exec flatpak-spawn --host podman "\$@"
-EOF
+RUN echo -e "#!/bin/bash\nexec flatpak-spawn --host podman \"\$@\"" \
+    > /usr/local/bin/podman
 RUN chmod +x /usr/local/bin/podman
 
 # Workaround for pkgconf(1)'s unlisted dependency on rpm.
