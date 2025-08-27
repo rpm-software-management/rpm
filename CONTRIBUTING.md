@@ -10,11 +10,15 @@ So while we invite contributions from all sides - especially from the
 multitude of RPM based distributions - RPM by its very nature is not an
 easy project to get into.
 
-**When planning on any non-trivial amount of work on RPM, please check with us
-first to avoid situations where efforts goes wasted because it's
-not in line with RPM design and goals.**
+To be included in RPM, contributions need to
+* solve a generic problem, not just for one user's special use-case
+* needs to have a future - the project does not add support for legacy
+  technologies
+* align with [RPM's philosophy](https://rpm-software-management.github.io/rpm/manual/philosophy.html) and design
+* be cleanly implemented, using the common style of RPM
 
-Also check if your idea aligns with [RPM's philosophy](https://rpm-software-management.github.io/rpm/manual/philosophy.html).
+**When planning on any non-trivial amount of work on RPM, please check with us
+first to avoid situations where efforts goes wasted!**
 
 ## Submitting Patches
 
