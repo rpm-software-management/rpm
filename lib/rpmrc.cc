@@ -489,6 +489,11 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		continue;
 	    }
 
+	    if (option->var == RPMVAR_MACROFILES) {
+		rpmlog(RPMLOG_WARNING, _("Ignoring %s at %s:%d\n"), option->name, fn, linenum);
+		continue;
+	    }
+
 	    if (option->archSpecific) {
 		arch = se;
 		while (*se && !risspace(*se)) se++;

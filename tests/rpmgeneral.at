@@ -110,6 +110,20 @@ RPMRC VALUES:
 archcolor             : 2
 optflags              : -O2 -g
 ])
+
+RPMTEST_CHECK([
+cat << EOF > ${RPMTEST}/root/.config/rpm/rpmrc
+macrofiles: /usr/lib/rpm/macros:/usr/lib/rpm/%{_target}/macros:/etc/rpm/macros.*:/etc/rpm/macros:/etc/rpm/%{_target}/macros:~/.rpmmacros
+EOF
+
+runroot rpm --showrc > /dev/null
+],
+[0],
+[],
+[warning: Ignoring macrofiles at /root/.config/rpm/rpmrc:1
+])
+
+
 RPMTEST_CLEANUP
 
 # ------------------------------
