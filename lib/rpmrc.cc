@@ -527,7 +527,6 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		free(name);
 	    }
 	    rpmSetVarArch(ctx, option->var, val, arch);
-	    fn = _free(fn);
 
 	} else {	/* For arch/os compatibility tables ... */
 	    int gotit;
