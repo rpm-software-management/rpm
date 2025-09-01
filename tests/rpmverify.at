@@ -601,12 +601,18 @@ runroot touch /usr/share/doc/hello-2.0/FAQ
 runroot chmod a-x /usr/bin/hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
 runroot rpm --restore hello
-runroot rpm -Va --nodeps ${VERIFYOPTS}
 ],
 [0],
 [.M.......    /usr/bin/hello
 .......T.  d /usr/share/doc/hello-2.0/FAQ
 ],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -Va --nodeps ${VERIFYOPTS}
+],
+[0],
+[],
 [])
 
 RPMTEST_CHECK([
