@@ -773,7 +773,19 @@ exit:
 
 static int handleRestorePackage(QVA_t qva, rpmts ts, Header h)
 {
-    return rpmtsAddRestoreElement(ts, h);
+    /* filter out gpg-pubkey headers, there's nothing to restore */
+    if (rstreq(headerGetString(h, RPMTAG_NAME), "gpg-pubkey"))
+	return 0;
+
+    int rc = rpmtsAddRestoreElement(ts, h);
+    if (rc) {
+	/* shouldn't happen, corrupted package in the rpmdb? */
+	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
+	rpmlog(RPMLOG_ERR,
+		_("failed to add restore element to transaction: %s\n"), nevra);
+	free(nevra);
+    }
+    return rc;
 }
 
 int rpmRestore(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
