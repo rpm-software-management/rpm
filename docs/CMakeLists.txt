@@ -58,23 +58,42 @@ set(manuals
 )
 install(FILES ${manuals} TYPE DOC)
 
-# Configure the Jekyll site to build
-set(site_files
+# Base files to fetch from rpm-web
+set(base_files
 	_layouts/default.html
 	_layouts/redirected.html
-	_layouts/favicon.ico
-	assets/css/manpage.css
+)
+
+# Local files to build with Jekyll
+set(site_files
+	_config.yml
 	man/index.md
+	man/style.css
 	Gemfile
 	${manuals}
 )
+
+# Configure local files
 file(MAKE_DIRECTORY ${site_dir})
 configure_file(index.md.in ${site_dir}/index.md @ONLY)
 foreach(file ${site_files})
 	configure_file(${file} ${site_dir}/${file} COPYONLY)
 endforeach()
 
-if (PODMAN)
+# Prepare a deployable, standalone website (if requested)
+if (WITH_WEBSITE)
+	# Fetch base files
+	include(FetchContent)
+	FetchContent_Declare(base_repo GIT_REPOSITORY
+		https://github.com/rpm-software-management/rpm-web.git)
+	FetchContent_MakeAvailable(base_repo)
+	foreach(file ${base_files})
+		configure_file(${base_repo_SOURCE_DIR}/${file}
+			       ${site_dir}/${file} COPYONLY)
+	endforeach()
+endif()
+
+if (WITH_WEBSITE AND PODMAN)
 	option(JEKYLL_SERVE "Serve site locally when built" ON)
 	set(JEKYLL_SOURCE_DIR ${site_dir} CACHE PATH "Directory to build from")
 

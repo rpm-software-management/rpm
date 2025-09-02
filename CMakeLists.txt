@@ -39,6 +39,7 @@ option(WITH_LIBDW "Build with libdw support" ON)
 option(WITH_LIBELF "Build with libelf support" ON)
 option(WITH_LIBLZMA "Build with liblzma support" ON)
 option(WITH_DOXYGEN "Build API docs with doxygen" OFF)
+option(WITH_WEBSITE "Build standalone website" OFF)
 
 set(RPM_CONFIGDIR "${CMAKE_INSTALL_PREFIX}/lib/rpm" CACHE PATH "rpm home")
 set(RPM_MACROSDIR "${RPM_CONFIGDIR}/macros.d")
