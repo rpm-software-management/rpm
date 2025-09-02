@@ -31,8 +31,12 @@ The reference manual in the *manual/* dir is an GitHub Pages site. It is rendere
 
 The Reference Manual is currently not shipped in rendered form in the tarball.
 
-To render the site locally, run the following command from your CMake build
-directory (requires Podman):
+To render the site locally, make sure you have Podman installed and that your
+build is configured as follows:
+
+    cmake -DWITH_WEBSITE=ON [...]
+
+Then, from the build directory, run:
 
     make site
 

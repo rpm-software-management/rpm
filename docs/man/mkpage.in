@@ -50,7 +50,7 @@ title: $MAN_NAME
 slug: $OUT_BASE
 type: $(get_type $MAN_NAME $MAN_SECN)
 summary: $(get_summary $SCD_FILE)
-css: manpage.css
+css: style.css
 ---
 "
 
