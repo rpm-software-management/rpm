@@ -27,6 +27,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Jekyll
+        run: |
+          sudo apt update
+          sudo apt install jekyll
+
       - name: Build image
         run: |
           podman build --target base --tag rpm -f tests/Dockerfile .
@@ -38,16 +43,20 @@ jobs:
             "cmake -DWITH_WEBSITE=ON -DWITH_DOXYGEN=ON .. && make pages"
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
 
       - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./_build/site
-          destination: ./_site
+        # Outputs to the './_site' directory by default
+        run: jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+        working-directory: _build/site
+        env:
+          JEKYLL_ENV: production
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/site/_site
 
   # Deployment job
   deploy:

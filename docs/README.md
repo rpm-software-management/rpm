@@ -31,7 +31,7 @@ The reference manual in the *manual/* dir is an GitHub Pages site. It is rendere
 
 The Reference Manual is currently not shipped in rendered form in the tarball.
 
-To render the site locally, make sure you have Podman installed and that your
+To render the site locally, make sure you have Jekyll installed and that your
 build is configured as follows:
 
     cmake -DWITH_WEBSITE=ON [...]
@@ -40,18 +40,10 @@ Then, from the build directory, run:
 
     make site
 
-This builds the site in a container and then serves it locally at
-`http://0.0.0.0:4000` for preview.  You can further tweak this behavior with
-the following CMake options:
+This builds the site and then serves it locally at `http://0.0.0.0:4000` for
+preview.
 
-- `JEKYLL_SERVE`: Set to `OFF` to just build the site, not serve it.  Default:
-  `ON`.
-- `JEKYLL_SOURCE_DIR`: The source path to build, useful for building the
-  [rpm-web](https://github.com/rpm-software-management/rpm-web) site locally
-  (e.g. in a dedicated CMake build directory).  Default:
-  `${CMAKE_BINARY_DIR}/site`.
-
-If you wish to render the site manually, prepare the source pages by running
-`make pages` and then follow the steps in [this
-article](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll)
-(the source directory to build is located at `${CMAKE_BINARY_DIR}/site`).
+> [!NOTE]
+> The API documentation isn't built by default and so the link on the index
+> page won't work. To build it, make sure you have Doxygen installed and then
+> (re)configure your build using `-DWITH_DOXYGEN=ON`.
