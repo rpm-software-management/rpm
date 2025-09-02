@@ -537,6 +537,70 @@ Other options unique to verify mode are:
 # EXIT STATUS
 On success, 0 is returned, a non-zero failure code otherwise.
 
+# EXAMPLES
+*rpm -Uvh hello-2.0-1.noarch.rpm*
+	Install or upgrade _hello-2.0-1.noarch.rpm_ package with verbose output
+	and progress meters. *-Uvh* is probably the most common of all
+	the *rpm* operations.
+
+*rpm -Uvh --excludedocs --root /srv/test mydist-23.mft*
+	Install packages described by the _mydist-23.mft_ *rpm-manifest*(5)
+	file into the alternative system root at _/srv/test_, excluding
+	all documentation files.
+
+*rpm -Fvh \*.rpm*
+	Freshen installed packages from a local directory, with verbose
+	output and progress meters.
+
+*rpm -i kernel-6.15.4-200.x86_64.rpm*
+	Install _kernel-6.15.4-200.x86_64.rpm_ package quietly. On some
+	Linux distributions, different kernel versions are intended to be
+	installed in parallel like this, _without_ erasing older ones to
+	ensure there's a bootable kernel in case of problems. It's one
+	of the few cases where *-i* is the right thing to use.
+
+*rpm -evh --allmatches libhello*
+	Erase all versions of package *libhello* on the system, with
+	verbose output and progress meters. Typically there is only one
+	version of a package installed at a time, but in some cases it's
+	possible to have different versions or different architectures
+	of a package installed in parallel, in which case *--allmatches*
+	can be handy.
+
+*rpm -vh --reinstall hello-2.0-1.noarch.rpm*
+	Reinstall previously installed _hello-2.0-1.noarch.rpm_ package,
+	with verbose output and progress labels.
+	Useful if eg. the files of a package get corrupted or
+	erased accidentally.
+
+*rpm -v --restore --all*
+	Restore permissions of files in all installed packages to their
+	packaged specifications, with verbose output.
+
+*rpm --verify --noconfig openssh-server*
+	Verify the integrity of the installed *openssh-server* package,
+	ignoring changes in configuration.
+
+*rpm -qa*
+	List all installed packages, using the default formatting.
+
+*rpm -qlv --noartifact glibc*
+	List the files of the *glibc* package in style similar to
+	*ls*(1) command output with *ls -l*, omitting "artifact" files
+	such as build-id's which are not usually the main interest.
+
+*rpm -q --qf "[%{filenames} %{filedigests}\\n]" openssh-server*
+	List file names and their corresponding digests of installed
+	*openssh-server* package.
+
+*rpm -qp --scripts --triggers --filetriggers myserver-1.0-1.x86_64.rpm*
+	Show all scriptlets and triggers from the _myserver-1.0-1.x86_64.rpm_
+	package file. Before installing unknown packages, at least do this!
+
+*rpm --target ppc64le --eval "%optflags"*
+	Print the expansion of the *%optflags* macro for the *ppc64le*
+	architecture.
+
 # FILES
 See *rpm-common*(8), *rpm-config*(5) and *rpm-rpmrc*(5).
 
