@@ -62,6 +62,9 @@ install(FILES ${manuals} TYPE DOC)
 set(base_files
 	_layouts/default.html
 	_layouts/redirected.html
+	_plugins/jekyll-relative-links.rb
+	_plugins/jekyll-relative-links/context.rb
+	_plugins/jekyll-relative-links/generator.rb
 )
 
 # Local files to build with Jekyll
@@ -69,7 +72,6 @@ set(site_files
 	_config.yml
 	man/index.md
 	man/style.css
-	Gemfile
 	${manuals}
 )
 
@@ -93,25 +95,13 @@ if (WITH_WEBSITE)
 	endforeach()
 
 	# Add local preview target
-	option(JEKYLL_SERVE "Serve site locally when built" ON)
-	set(JEKYLL_SOURCE_DIR ${site_dir} CACHE PATH "Directory to build from")
-	find_program(PODMAN podman)
-	mark_as_advanced(PODMAN)
-	if (PODMAN)
-		set(image rpm/jekyll)
-		set(JEKYLL ${PODMAN} run -v ${JEKYLL_SOURCE_DIR}:/srv:z
-					 -it --rm -p 4000:4000 ${image})
-		if (JEKYLL_SERVE)
-			set(JEKYLL ${JEKYLL} serve --host 0.0.0.0)
-		else()
-			set(JEKYLL ${JEKYLL} build)
-		endif()
-		add_custom_command(OUTPUT image
-			COMMAND ${PODMAN} build -t ${image} ${CMAKE_CURRENT_SOURCE_DIR}
-			COMMAND touch image
-			DEPENDS Containerfile
-		)
-		add_custom_target(site COMMAND ${JEKYLL} DEPENDS pages image)
+	find_program(JEKYLL jekyll)
+	mark_as_advanced(JEKYLL)
+	if (JEKYLL)
+		add_custom_target(site
+			COMMAND ${JEKYLL} serve --host 0.0.0.0
+			WORKING_DIRECTORY ${site_dir}
+			DEPENDS pages)
 	endif()
 endif()
 
