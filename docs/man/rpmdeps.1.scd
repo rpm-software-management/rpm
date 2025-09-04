@@ -1,50 +1,76 @@
 RPMDEPS(1)
 
 # NAME
-
 rpmdeps - Generate RPM Package Dependencies
 
 # SYNOPSIS
+*rpmdeps* [options]
 
-*rpmdeps* [options] {*-P*|*--provides*} {*-R*|*--requires*} [_FILE_ ...]
+*rpmdeps* [options] _FILE_ ...
 
 # DESCRIPTION
+*rpmdeps* generates package dependencies for one or more files, received
+either as a list of filenames on the standard input, or command line
+arguments.
 
-*rpmdeps* generates package dependencies for the set of _FILE_
-arguments. Each _FILE_ argument is searched for Elf32/Elf64, script
-interpreter, or per-script dependencies, and the dependencies are
-printed to stdout.
+*rpmdeps* is mainly useful for troubleshooting dependency generation
+and developing new dependency generators.
+
+Note that it is not actually used by *rpmbuild*(1) for automatic
+dependency generation except in a legacy compatibility mode.
+
+# ARGUMENTS
+_FILE_
+	Any regular file.
 
 # OPTIONS
 See *rpm-common*(8) for the options common to all operations.
 
-*-P, --provides*
-	Print the provides
-
-*-R, --requires*
-	Print the requires
-
-*--recommends*
-	Print the recommends
-
-*--suggests*
-	Print the suggests
-
-*--supplements*
-	Print the supplements
-
-*--enhances*
-	Print the enhances
+*--alldeps*
+	Print all the dependencies.
 
 *--conflicts*
-	Print the conflicts
+	Print the conflicts dependencies.
+
+*--enhances*
+	Print the enhances dependencies.
 
 *--obsoletes*
-	Print the obsoletes
+	Print the obsoletes dependencies.
 
-*--alldeps*
-	Print all the dependencies
+*--orderwithrequires*
+	Print the orderwithrequires dependencies.
+
+*-P, --provides*
+	Print the provides dependencies.
+
+*--recommends*
+	Print the recommends dependencies.
+
+*-R, --requires*
+	Print the requires dependencies.
+
+*--suggests*
+	Print the suggests dependencies.
+
+*--supplements*
+	Print the supplements dependencies.
+
+# ENVIRONMENT
+*RPM_BUILD_ROOT*
+	The prefix path to strip out when generating dependencies
+	based on actual paths.
+
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
+
+# EXAMPLES
+*rpmdeps --requires /bin/ls*
+	Output the automatic requires dependencies of the *ls*(1) binary.
+
+*find popt-1.19-build/BUILDROOT -type f | /usr/lib/rpm/rpmdeps -P*
+	Output the automatic provides of all files in the
+	_popt-1.19-build/BUILDROOT_ directory
 
 # SEE ALSO
-
 *rpm*(8), *rpmbuild*(1), *rpm-common*(8)
