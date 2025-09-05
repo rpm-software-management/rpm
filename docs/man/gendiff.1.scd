@@ -11,11 +11,11 @@ gendiff - Utility to aid in error-free diff file generation
 The generated _diff_ can be applied with the *patch*(1) program to recreate
 the changes.
 
-*gendiff* looks for any files with _DIFF-EXTENSION_ as their extension in
-the specified _DIRECTORY_, and runs *diff*(1) on the files with
-_DIFF-EXTENSION_ and the counterpart without it. This allow generating
-diffs from a source code without full copy of the directory, as you'd
-otherwise need with the *diff*(1) utility.
+*gendiff* looks for any files with _DIFF-EXTENSION_ as their extension in the
+specified _DIRECTORY_, and runs *diff*(1) on the files with _DIFF-EXTENSION_ and
+the counterpart without it, in that order. This allows for generating diffs from
+source code without making a full copy of the directory, which you'd otherwise
+need when using the *diff*(1) utility directly.
 
 *gendiff* is commonly used to creating patches for the purposes of
 packaging software with *rpmbuild*(1).
@@ -40,7 +40,7 @@ directory one level above where the source code resides, and run
 *gendiff* on it:
 
 ```
-$ gendiff myproject-1.0 .fix > myproject-1.0-fix.patch
+gendiff myproject-1.0 .fix > myproject-1.0-fix.patch
 ```
 
 # SEE ALSO
