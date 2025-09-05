@@ -449,12 +449,12 @@ AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 cp "${RPMTEST}/data/macros.buildsystem" "${RPMTEST}/${RPM_CONFIGDIR_PATH}/macros.d/"
 
 RPMTEST_CHECK([
-runroot rpmspec --parse /data/SPECS/reproducer-buildsubdir.spec | grep ^echo
+runroot rpmbuild -bi /data/SPECS/reproducer-buildsubdir.spec 2>&1| grep "^+ echo"
 ],
 [0],
-[echo CONF: reproducer-buildsubdir-0
-echo BSBUILD reproducer-buildsubdir-0
-echo BSINST reproducer-buildsubdir-0
+[+ echo CONF: reproducer-buildsubdir-0
++ echo BSBUILD reproducer-buildsubdir-0
++ echo BSINST reproducer-buildsubdir-0
 ],
 [])
 
