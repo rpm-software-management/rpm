@@ -1,44 +1,47 @@
 GENDIFF(1)
 
 # NAME
-
 gendiff - Utility to aid in error-free diff file generation
 
 # SYNOPSIS
-
-*gendiff* <_directory_> <_diff-extension_>
+*gendiff* _DIRECTORY_ _DIFF-EXTENSION_
 
 # DESCRIPTION
+*gendiff* is a tool for generating a _diff_ file from a single directory.
+The generated _diff_ can be applied with the *patch*(1) program to recreate
+the changes.
 
-*gendiff* is a rather simple script which aids in generating a diff
-file from a single directory. It takes a directory name and a
-"diff-extension" as its only arguments. The diff extension should be a
-unique sequence of characters added to the end of all original,
-unmodified files. The output of the program is a diff file which may be
-applied with the *patch* program to recreate the changes.
+*gendiff* looks for any files with _DIFF-EXTENSION_ as their extension in the
+specified _DIRECTORY_, and runs *diff*(1) on the files with _DIFF-EXTENSION_ and
+the counterpart without it, in that order. This allows for generating diffs from
+source code without making a full copy of the directory, which you'd otherwise
+need when using the *diff*(1) utility directly.
 
-The usual sequence of events for creating a diff is to create two
-identical directories, make changes in one directory, and then use the
-*diff* utility to create a list of differences between the two. Using
-gendiff eliminates the need for the extra, original and unmodified
-directory copy. Instead, only the individual files that are modified
-need to be saved.
+*gendiff* is commonly used to creating patches for the purposes of
+packaging software with *rpmbuild*(1).
 
-Before editing a file, copy the file, appending the extension you have
-chosen to the filename. I.e. if you were going to edit somefile.cpp and
-have chosen the extension "fix", copy it to _somefile.cpp.fix_ before
-editing it. Then edit the first copy (_somefile.cpp_).
+# ARGUMENTS
+_DIRECTORY_
+	The directory to generate a diff from.
+
+_DIFF-EXTENSION_
+	The diff extension to look for.
+
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
+
+# EXAMPLES
+Assuming you need to modify a source file called _somefile.cpp_ and
+have chosen the extension _fix_, copy it to _somefile.cpp.fix_ before
+editing it. Then edit the original file (_somefile.cpp_).
 
 After editing all the files you need to edit in this fashion, enter the
-directory one level above where your source code resides, and then type
+directory one level above where the source code resides, and run
+*gendiff* on it:
 
 ```
-$ gendiff somedirectory .fix > mydiff-fix.patch
+gendiff myproject-1.0 .fix > myproject-1.0-fix.patch
 ```
-
-You should redirect the output to a file (as illustrated) unless you
-want to see the results on stdout.
 
 # SEE ALSO
-
 *diff*(1), *patch*(1)

@@ -1,45 +1,63 @@
 RPM2ARCHIVE(1)
 
 # NAME
-
 rpm2archive - Create tar archive from RPM Package Manager (RPM) package
 
 # SYNOPSIS
+*rpm2archive* [options] _PACKAGE_FILE_ ...
 
-*rpm2archive* *{-n*|*--nocompression*} {*-f*|*--format=pax|cpio*} _FILES_
+*rpm2archive* [options] -
 
 # DESCRIPTION
+*rpm2archive* converts RPM package files to other archive formats.
 
-*rpm2archive* converts the .rpm files specified as arguments to tar archives
-on standard out.
+If the standard output is a regular file or a pipe, the archive is written
+to the standard output. If the standard output is a terminal, the output
+is written to a file by the same name, appended with a _.tgz_ suffix.
+In both cases, the output is compressed in the *gzip*(1) format by default.
 
-If a '-' argument is given, an rpm stream is read from standard in.
+*rpm2archive* does not verify package-level signatures or checksums, but
+it does verify the per-file checksums.
 
-If standard out is connected to a terminal, the output is written to tar files
-with a ".tgz" suffix, *gzip*(1) compressed by default.
+Supports RPM package formats 3, 4 and 6.
 
-In opposite to *rpm2cpio*(1) *rpm2archive* also works with RPM packages
-containing files greater than 4GB which are not supported by *cpio*(1).
+# ARGUMENTS
+_PACKAGE_FILE_
+	A binary or source RPM package.
+
+If dash (*-*) is given as the argument, data is read from the standard input.
 
 # OPTIONS
-
 *-n*, *--nocompression*
-	Generate uncompressed tar archive and use ".tar" as postfix of the
-	file name.
+	Generate an uncompressed archive. If in the file creation mode,
+	use _.tar_ as postfix of the file name.
 
-*-f*, *--format=pax|cpio*
-	Generate archive in specified format: *pax* (the default format)
-	or *cpio*. Note that the cpio format cannot host files over
-	4GB in size and is only supported here for backwards compatibility.
+*-f*, *--format*=<_FORMAT_>
+	Generate archive in specified _FORMAT_:
+	- *pax*: Restricted Portable Archive Exchange as used by *tar*(1)
+	  (default)
+	- *cpio*: The "new" ASCII *cpio*(5) format. Note that this format
+	  has a 4GB limit on the individual file size.
+
+# EXIT STATUS
+On success, 0 is returned, a non-zero failure code otherwise.
 
 # EXAMPLES
+*rpm2archive glint-1.0-1.i386.rpm | tar -xvz*
+	Extract _glint-1.0-1.i386.rpm_ package contents with *tar*(1).
 
-```
-rpm2archive glint-1.0-1.i386.rpm | tar -xvz
-rpm2archive glint-1.0-1.i386.rpm ; tar -xvz glint-1.0-1.i386.rpm.tgz
-cat glint-1.0-1.i386.rpm | rpm2archive - | tar -tvz
-```
+*rpm2archive --nocompression --format=cpio glint-1.0-1.i386.rpm | cpio -idv*
+	Extract _glint-1.0-1.i386.rpm_ package contents as an uncompressed
+	*cpio*(5), compatible with *rpm2cpio*(1) output.
+
+*rpm2archive glint-1.0-1.i386.rpm ; tar -xvz glint-1.0-1.i386.rpm.tgz*
+	Extract _glint-1.0-1.i386.rpm_ package contents into an
+	archive named _glint-1.0-1.i386.rpm.tgz_ and extract the written
+	archive with *tar*(1).
+
+*cat glint-1.0-1.i386.rpm | rpm2archive - | tar -tvz*
+	Feed _glint-1.0-1.i386.rpm_ package into *rpm2archive* via standard
+	input, and list contents with *tar*(1).
 
 # SEE ALSO
-
 *rpm2cpio*(1), *rpm*(8)
