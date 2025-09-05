@@ -32,11 +32,11 @@ If dash (*-*) is given as the argument, data is read from the standard input.
 	Generate an uncompressed archive. If in the file creation mode,
 	use _.tar_ as postfix of the file name.
 
-*-f*, *--format=<FORMAT>*
-	Generate archive in specified format:
-	- *pax* Restricted Portable Archive Exchange as used by *tar*(1)
+*-f*, *--format*=<_FORMAT_>
+	Generate archive in specified _FORMAT_:
+	- *pax*: Restricted Portable Archive Exchange as used by *tar*(1)
 	  (default)
-	- *cpio* The "new" ASCII *cpio*(5) format. Note that this format
+	- *cpio*: The "new" ASCII *cpio*(5) format. Note that this format
 	  has a 4GB limit on the individual file size.
 
 # EXIT STATUS
