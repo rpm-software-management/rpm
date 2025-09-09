@@ -241,6 +241,7 @@ main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
 
     ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(ts, NULL);
     vsflags |= rpmcliVSFlags;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
