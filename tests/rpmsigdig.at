@@ -2734,3 +2734,32 @@ runroot rpmkeys --delete b0c818335157193717c146bc4092292808d5c705710509340033080
 [],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([v3 signature in v6 package])
+AT_KEYWORDS([signature v6])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([[
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpm -qp --qf "[%{openpgp:pgpsig}\n]" /data/RPMS/hlinktest-1.0-1.noarch-v3sig.rpm
+]],
+[0],
+[RSA/SHA512, Tue Sep  9 12:41:21 2025, Key ID 4344591e1964c5fc
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hlinktest-1.0-1.noarch-v3sig.rpm
+],
+[0],
+[/data/RPMS/hlinktest-1.0-1.noarch-v3sig.rpm:
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA3-256 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA3-256 digest: OK
+    Payload SHA512 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CLEANUP
