@@ -25,7 +25,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 {
     char ** pkgURL = NULL;
     char * pkgState = NULL;
-    const char ** fnp;
     int numPkgs = 0;
     int numFailed = 0;
     int prevx = 0;
@@ -44,18 +43,16 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 	return 0;
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    for (fnp = fileArgv; *fnp; fnp++) {
-	av = _free(av);
+    for (const char ** fnp = fileArgv; *fnp; fnp++) {
+	av = argvFree(av);
 	ac = 0;
 	rc = rpmGlobPath(*fnp, RPMGLOB_NOCHECK, &ac, &av);
 	if (rc || ac == 0) continue;
 
-	argv = xrealloc(argv, (argc+2) * sizeof(*argv));
-	memcpy(argv+argc, av, ac * sizeof(*av));
+	argvAppend(&argv, av);
 	argc += ac;
-	argv[argc] = NULL;
     }
-    av = _free(av);	ac = 0;
+    av = argvFree(av);	ac = 0;
 
 restart:
     /* Allocate sufficient storage for next set of args. */
@@ -75,7 +72,7 @@ restart:
     }
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = (const char **) pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
+    for (char ** fnp = pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
 	const char * fileName;
 	FD_t fd;
 
@@ -207,7 +204,7 @@ exit:
         pkgURL[i] = _free(pkgURL[i]);
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
-    argv = _free(argv);
+    argv = argvFree(argv);
 
     return rc;
 }
