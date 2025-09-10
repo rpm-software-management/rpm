@@ -437,10 +437,21 @@ void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle)
 {
     const struct vfyinfo_s *si = &rpmvfyitems[0];
     const struct vfytag_s *ti = &rpmvfytags[0];
+    int ignore_legacy = 0;
+
+    /* Heuristics for rpm v6 and newer */
+    if (hdrblobIsEntry(blob, RPMSIGTAG_RESERVED) &&
+	hdrblobIsEntry(blob, RPMSIGTAG_SHA3_256))
+    {
+	ignore_legacy = 1;
+    }
 
     for (; si->tag && ti->tag; si++, ti++) {
 	/* Ignore non-signature tags initially */
 	if (!si->sigh)
+	    continue;
+	/* Ignore legacy tags in the conflicting range? */
+	if (ignore_legacy && ti->tag >= HEADER_TAGBASE)
 	    continue;
 	rpmvsAppend(vs, blob, si, ti);
     }

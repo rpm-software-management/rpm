@@ -74,12 +74,13 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
 {
     const struct taglate_s *xl;
     struct rpmtd_s td;
+    int rpmformat = headerGetNumber(h, RPMTAG_RPMFORMAT);
 
     for (xl = xlateTags; xl->stag; xl++) {
 	/* There mustn't be one in the main header */
 	if (headerIsEntry(h, xl->xtag)) {
-	    /* Some tags may exist in either header, but never both */
-	    if (xl->quirk && !headerIsEntry(sigh, xl->stag))
+	    /* In v3/v4 some tags may exist in either header, but never both */
+	    if (rpmformat < 6 && xl->quirk && !headerIsEntry(sigh, xl->stag))
 		continue;
 	    goto exit;
 	}
@@ -87,6 +88,9 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
 
     rpmtdReset(&td);
     for (xl = xlateTags; xl->stag; xl++) {
+	/* Completely ignore legacy signature tags on v6 packages */
+	if (rpmformat >= 6 && xl->stag >= HEADER_TAGBASE)
+	    continue;
 	if (headerGet(sigh, xl->stag, &td, HEADERGET_RAW|HEADERGET_MINMEM)) {
 	    /* Translate legacy tags */
 	    if (xl->stag != xl->xtag)
