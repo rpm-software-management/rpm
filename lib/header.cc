@@ -2088,6 +2088,11 @@ static struct entryInfo_s * hdrblobFindEntry(hdrblob blob, uint32_t tag)
     return NULL;
 }
 
+int hdrblobIsEntry(hdrblob blob, uint32_t tag)
+{
+    return hdrblobFindEntry(blob, tag) != NULL;
+}
+
 rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td)
 {
     rpmRC rc = RPMRC_NOTFOUND;
