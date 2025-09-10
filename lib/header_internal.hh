@@ -42,6 +42,9 @@ RPM_GNUC_INTERNAL
 rpmRC hdrblobImport(hdrblob blob, int fast, Header *hdrp, char **emsg);
 
 RPM_GNUC_INTERNAL
+int hdrblobIsEntry(hdrblob blob, uint32_t tag);
+
+RPM_GNUC_INTERNAL
 rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td);
 
 RPM_GNUC_INTERNAL
