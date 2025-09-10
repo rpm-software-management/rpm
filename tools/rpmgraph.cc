@@ -26,7 +26,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
-    char * fileURL = NULL;
     int numPkgs = 0;
     int numFailed = 0;
     int prevx = 0;
@@ -70,15 +69,10 @@ restart:
 
     /* Copy next set of args. */
     for (i = 0; i < argc; i++) {
-	fileURL = _free(fileURL);
-	fileURL = argv[i];
+	pkgURL[pkgx] = argv[i];
 	argv[i] = NULL;
-
-	pkgURL[pkgx] = fileURL;
-	fileURL = NULL;
 	pkgx++;
     }
-    fileURL = _free(fileURL);
 
     /* Continue processing file arguments, building transaction set. */
     for (fnp = (const char **) pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
@@ -144,7 +138,7 @@ maybe_manifest:
 	rc = rpmReadPackageManifest(fd, &argc, &argv);
 	if (rc)
 	    rpmlog(RPMLOG_NOTICE, _("%s: read manifest failed: %s\n"),
-			fileURL, Fstrerror(fd));
+			*fnp, Fstrerror(fd));
 	Fclose(fd);
 	fd = NULL;
 
