@@ -96,7 +96,8 @@ restart:
 		Fclose(fd);
 		fd = NULL;
 	    }
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    continue;
 	}
 
@@ -111,7 +112,8 @@ restart:
 	case RPMRC_FAIL:
 	default:
 	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *fnp);
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    break;
 	case RPMRC_OK:
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
@@ -133,7 +135,8 @@ maybe_manifest:
 		Fclose(fd);
 		fd = NULL;
 	    }
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    break;
 	}
 
@@ -151,7 +154,8 @@ maybe_manifest:
 	    goto restart;
 	}
 
-	numFailed++; *fnp = NULL;
+	numFailed++;
+	*fnp = _free(*fnp);
 	break;
     }
 
