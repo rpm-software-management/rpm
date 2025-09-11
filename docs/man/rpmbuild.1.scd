@@ -13,7 +13,8 @@ rpmbuild - Build RPM Package(s)
 *rpmbuild* {*--rebuild*|*--recompile*} [options] _SOURCE_PACKAGE_ ...
 
 # DESCRIPTION
-*rpmbuild* is used to build software packages in the RPM format.
+*rpmbuild* is used to build software packages in the RPM format, in
+an automated and repeateple manner.
 
 A _package_ consists of an archive of files and meta-data used to
 install and erase the archive files. The meta-data includes helper
@@ -41,41 +42,40 @@ code and recipe necessary to produce binary packages.
 *--recompile*
 	Compatibility aliases for *-ra*.
 
-There are two types of _STAGE_\s - ones that produce packages, and those
-that don't. The latter are mainly of interest to developers packaging new
-software as RPM packages, and troubleshooting.
+Packages are built in a number of _stages_ that can be further divided
+into categories: parse, build, assembly and cleanup. Assembly stages are
+those that produce packages, the others are mainly of interest to developers
+packaging new software in the RPM format, and troubleshooting. Build stages
+generally correspond to sections like *%prep* and *%build* in a spec file,
+but others are implicit in the build process.
 
-## Package assembly stages
+Building a _STAGE_ involves building all the preceding stages before it.
+
+## Assembly
 *a*
 	Build both source and binary packages.
 	This is not an actual stage but a combination of *b* and *s*,
 	with the difference that packages built this way carry a "cookie" to
 	indicate they came from the same build.
+
 	On success, the build directory is removed.
 
-	In most cases, this is the option to choose.
-
 *b*
-	Build just the binary packages - executes up to and including the
-	assembly stage, but without creating the source package.
+	Build just the binary packages, executing all the preceding stages.
+
 	On success, the build directory is removed.
 
 *r*
-	Build just the source package, but also parse and include dynamic
-	build dependencies - executes up to and including the
-	*%generate_buildrequires* stage and then skips straight to the
-	assembly stage, without creating binary packages. This option can
-	be used to fully resolve dynamic build dependencies. See the
-	*DYNAMIC BUILD DEPENDENCIES* section for details.
+	Build just the source package, checking for dynamic build dependencies.
+	Executes *%prep* and *%generate_buildrequires* stages before creating
+	a package. See the *DYNAMIC BUILD DEPENDENCIES* section for details.
 
 *s*
-	Build just the source package - skips straight to the assembly
-	stage, without executing any of the build stages or creating
-	binary packages.
+	Build just the source package. No build stages are executed.
 
 ## Build stages
 The build stages are listed here in the order of execution, with
-the corresponding spec section in parenthesis if applicable.
+the corresponding spec section in parenthesis where applicable.
 
 *p* (%prep)
 	Unpack the sources and apply any patches - executes the *%prep* stage
