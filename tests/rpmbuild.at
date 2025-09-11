@@ -1572,6 +1572,7 @@ RPMTEST_CHECK([
 
 cat << EOF > "${RPMTEST}"/tmp/bad.req
 #!/bin/sh
+cat > /dev/null
 echo 'bad = *'
 EOF
 chmod a+x "${RPMTEST}"/tmp/bad.req
@@ -1648,7 +1649,10 @@ EOF
 
 cat << EOF > "${RPMTEST}"/tmp/foo.req
 #!/bin/sh
-[ -f /tmp/foo.done ] && exit
+if [ -f /tmp/foo.done ]; then
+    cat > /dev/null
+    exit 0
+fi
 echo "foo(\$(cat | xargs basename))"
 touch /tmp/foo.done
 EOF
@@ -1677,6 +1681,7 @@ done
 RPMTEST_CHECK([[
 cat << EOF > "${RPMTEST}"/tmp/bar.req
 #!/bin/sh
+cat > /dev/null
 echo ";foobar"
 EOF
 
