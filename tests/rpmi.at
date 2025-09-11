@@ -500,7 +500,7 @@ runroot rpm -qa
 ],
 [0],
 [hello-2.0-1.x86_64
-Install Date: Fri Jan  2 03:04:05 1970
+Install Date : Fri Jan  2 03:04:05 1970
 foo-1.0-1.noarch
 hello-2.0-1.x86_64
 ],
@@ -526,8 +526,8 @@ done
 [0],
 [hello-2.0-1.x86_64
 foo-1.0-1.noarch
-Install Date: Wed Oct 21 07:28:55 2015
-Install Date: Wed Oct 21 07:28:56 2015
+Install Date : Wed Oct 21 07:28:55 2015
+Install Date : Wed Oct 21 07:28:56 2015
 ],
 [])
 RPMTEST_CLEANUP
