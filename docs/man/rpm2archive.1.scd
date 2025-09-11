@@ -1,7 +1,7 @@
 RPM2ARCHIVE(1)
 
 # NAME
-rpm2archive - Create tar archive from RPM Package Manager (RPM) package
+rpm2archive - Create tar or cpio archive from RPM Package Manager (RPM) package
 
 # SYNOPSIS
 *rpm2archive* [options] _PACKAGE_FILE_ ...
@@ -13,8 +13,9 @@ rpm2archive - Create tar archive from RPM Package Manager (RPM) package
 
 If the standard output is a regular file or a pipe, the archive is written
 to the standard output. If the standard output is a terminal, the output
-is written to a file by the same name, appended with a _.tgz_ suffix.
-In both cases, the output is compressed in the *gzip*(1) format by default.
+is written to a file by the same name, appended with a _.tgz_ or _.cpio.gz_
+suffix when compressed or _.tar_ or _.cpio_ otherwise depending on the format.
+The output is compressed in the *gzip*(1) format by default.
 
 *rpm2archive* does not verify package-level signatures or checksums, but
 it does verify the per-file checksums.
