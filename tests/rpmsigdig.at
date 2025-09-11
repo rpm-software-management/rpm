@@ -614,19 +614,19 @@ runroot rpmkeys \
 runroot rpm -qi gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918|grep -v Date|grep -v Version:
 runroot rpm -q --provides gpg-pubkey-771b18d3d7baa28734333c424344591e1964c5fc-58e63918],
 [0],
-[Name        : gpg-pubkey
-Version     : 771b18d3d7baa28734333c424344591e1964c5fc
-Release     : 58e63918
-Architecture: (none)
-Group       : Public Keys
-Size        : 0
-License     : pubkey
-Signature   : (none)
-Source RPM  : (none)
-Build Host  : localhost
-Packager    : rpm.org RSA testkey <rsa@rpm.org>
-Summary     : rpm.org RSA testkey <rsa@rpm.org> public key
-Description :
+[Name         : gpg-pubkey
+Version      : 771b18d3d7baa28734333c424344591e1964c5fc
+Release      : 58e63918
+Architecture : (none)
+Group        : Public Keys
+Size         : 0
+License      : pubkey
+Signature    : (none)
+Source RPM   : (none)
+Build Host   : localhost
+Packager     : rpm.org RSA testkey <rsa@rpm.org>
+Summary      : rpm.org RSA testkey <rsa@rpm.org> public key
+Description  :
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQENBFjmORgBCAC7TMEk6wnjSs8Dr4yqSScWdU2pjcqrkTxuzdWvowcIUPZI0w/g
@@ -976,19 +976,19 @@ runroot rpm -qi gpg-pubkey-2f38916f5e77cf307b338596a72b7d4f62837bea-62553e62|gre
 runroot rpm -q --provides gpg-pubkey
 ],
 [0],
-[[Name        : gpg-pubkey
-Version     : 2f38916f5e77cf307b338596a72b7d4f62837bea
-Release     : 62553e62
-Architecture: (none)
-Group       : Public Keys
-Size        : 0
-License     : pubkey
-Signature   : (none)
-Source RPM  : (none)
-Build Host  : localhost
-Packager    : Alice Lovelace <alice@example.org>
-Summary     : Alice Lovelace <alice@example.org> public key
-Description :
+[[Name         : gpg-pubkey
+Version      : 2f38916f5e77cf307b338596a72b7d4f62837bea
+Release      : 62553e62
+Architecture : (none)
+Group        : Public Keys
+Size         : 0
+License      : pubkey
+Signature    : (none)
+Source RPM   : (none)
+Build Host   : localhost
+Packager     : Alice Lovelace <alice@example.org>
+Summary      : Alice Lovelace <alice@example.org> public key
+Description  :
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQGNBGJVPmIBDADbcjK3GTdWRlzChFeT0NPjQCrKJrKwNfUWRQjgi5x1nhh+N0aG

@@ -86,28 +86,28 @@ rpm	alias --enhances	--qf \
 	--POPTdesc=$"list capabilities enhanced by package(s)"
 
 rpm	alias --info --qf '\
-Name        : %{NAME}\n\
-%|EPOCH?{Epoch       : %{EPOCH}\n}|\
-Version     : %{VERSION}\n\
-Release     : %{RELEASE}\n\
-%|DISTTAG?{DistTag     : %{DISTTAG}\n}|\
-Architecture: %{ARCH}\n\
-Install Date: %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n\
-Group       : %{GROUP}\n\
-Size        : %{LONGSIZE}\n\
-%|LICENSE?{License     : %{LICENSE}}|\n\
-Signature   :%|OPENPGP?{[\n              %{OPENPGP:pgpsig}]}:{ (none)}|\n\
-Source RPM  : %{SOURCERPM}\n\
-Build Date  : %{BUILDTIME:date}\n\
-Build Host  : %{BUILDHOST}\n\
-%|PREFIXES?{Relocations :[ %{PREFIXES}]\n}|\
-%|PACKAGER?{Packager    : %{PACKAGER}\n}|\
-%|VENDOR?{Vendor      : %{VENDOR}\n}|\
-%|VCS?{VCS         : %{VCS}\n}|\
-%|URL?{URL         : %{URL}\n}|\
-%|BUGURL?{Bug URL     : %{BUGURL}\n}|\
-Summary     : %{SUMMARY}\n\
-Description :\n%{DESCRIPTION}\n' \
+Name         : %{NAME}\n\
+%|EPOCH?{Epoch        : %{EPOCH}\n}|\
+Version      : %{VERSION}\n\
+Release      : %{RELEASE}\n\
+%|DISTTAG?{DistTag      : %{DISTTAG}\n}|\
+Architecture : %{ARCH}\n\
+Install Date : %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n\
+Group        : %{GROUP}\n\
+Size         : %{LONGSIZE}\n\
+%|LICENSE?{License      : %{LICENSE}}|\n\
+Signature    :%|OPENPGP?{[\n              %{OPENPGP:pgpsig}]}:{ (none)}|\n\
+Source RPM   : %{SOURCERPM}\n\
+Build Date   : %{BUILDTIME:date}\n\
+Build Host   : %{BUILDHOST}\n\
+%|PREFIXES?{Relocations  :[ %{PREFIXES}]\n}|\
+%|PACKAGER?{Packager     : %{PACKAGER}\n}|\
+%|VENDOR?{Vendor       : %{VENDOR}\n}|\
+%|VCS?{VCS          : %{VCS}\n}|\
+%|URL?{URL          : %{URL}\n}|\
+%|BUGURL?{Bug URL      : %{BUGURL}\n}|\
+Summary      : %{SUMMARY}\n\
+Description  :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
 rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
