@@ -50,7 +50,7 @@ typedef rpmFlags rpmBuildFlags;
  */
 enum rpmBuildPkgFlags_e {
     RPMBUILD_PKG_NONE		= 0,
-    RPMBUILD_PKG_NODIRTOKENS	= (1 << 0), /*!< Legacy filename layout */
+    /* RPMBUILD_PKG_NODIRTOKENS	= (1 << 0), !< Legacy filename layout */
 };
 
 typedef rpmFlags rpmBuildPkgFlags;

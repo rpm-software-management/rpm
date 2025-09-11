@@ -308,24 +308,6 @@ exit:
     headerDel(h, RPMTAG_OLDFILENAMES);
 }
 
-static void expandFilelist(Header h)
-{
-    struct rpmtd_s filenames;
-
-    if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	(void) headerGet(h, RPMTAG_FILENAMES, &filenames, HEADERGET_EXT);
-	if (rpmtdCount(&filenames) < 1)
-	    return;
-	rpmtdSetTag(&filenames, RPMTAG_OLDFILENAMES);
-	headerPut(h, &filenames, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&filenames);
-    }
-
-    (void) headerDel(h, RPMTAG_DIRNAMES);
-    (void) headerDel(h, RPMTAG_BASENAMES);
-    (void) headerDel(h, RPMTAG_DIRINDEXES);
-}
-
 static void legacyRetrofit(Header h)
 {
     /*
@@ -345,9 +327,6 @@ int headerConvert(Header h, int op)
 	return 0;
 
     switch (op) {
-    case HEADERCONV_EXPANDFILELIST:
-	expandFilelist(h);
-	break;
     case HEADERCONV_COMPRESSFILELIST:
 	compressFilelist(h);
 	break;
