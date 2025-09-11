@@ -287,6 +287,8 @@ int main(int argc, char *argv[])
     int rc = 0;
     poptContext optCon;
     const char *fn;
+    int arg_stdin = 0;
+    int args = 0;
 
     xsetprogname(argv[0]);	/* Portability call -- see system.h */
     rpmReadConfigFiles(NULL, NULL);
@@ -322,6 +324,18 @@ int main(int argc, char *argv[])
 	rc = process_package(ts, "-");
 	if (rc != 0)
 	    goto exit;
+    }
+
+    /* Make sure - is given as a lone argument */
+    for (const char ** arg = poptGetArgs(optCon); *arg; arg++){
+	if (!strcmp(*arg, "-"))
+	    arg_stdin = 1;
+	args++;
+    }
+    if (arg_stdin && args > 1) {
+	fprintf(stderr, "No other arguments allowed beside of -\n");
+	rc = 1;
+	goto exit;
     }
 
     while ((fn = poptGetArg(optCon)) != NULL) {

@@ -457,6 +457,13 @@ runroot rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm | tar tzf -
 [./hello-1.0.tar.gz
 ./hello.spec
 ])
+RPMTEST_CHECK([
+runroot rpm2archive "${RPMTEST}"/data/SRPMS/hello-1.0-1.src.rpm -
+],
+[1],
+[],
+[No other arguments allowed beside of -
+])
 
 RPMTEST_CLEANUP
 
