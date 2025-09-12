@@ -3,6 +3,7 @@
  */
 #include "system.h"
 #include <atomic>
+#include <vector>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmvercmp */
@@ -15,6 +16,8 @@
 
 #include "debug.h"
 
+using std::vector;
+
 /**
  * A package dependency set.
  */
@@ -25,7 +28,7 @@ struct rpmds_s {
     rpmsid * N;			/*!< Dependency name id's (pool) */
     rpmsid * EVR;		/*!< Dependency EVR id's (pool) */
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
-    rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
+    vector<rpm_color_t> Color;	/*!< Bit(s) calculated from file color(s). */
     rpmTagVal tagN;		/*!< Header tag. */
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
@@ -199,7 +202,7 @@ int rpmdsTiIndex(rpmds ds, int i)
 rpm_color_t rpmdsColorIndex(rpmds ds, int i)
 {
     rpm_color_t Color = 0;
-    if (ds != NULL && i >= 0 && i < ds->Count && ds->Color != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Color.size())
 	Color = ds->Color[i];
     return Color;
 }
@@ -230,7 +233,6 @@ rpmds rpmdsFree(rpmds ds)
 
     ds->pool = rpmstrPoolFree(ds->pool);
     ds->DNEVR = _free(ds->DNEVR);
-    ds->Color = _free(ds->Color);
 
     delete ds;
     return NULL;
@@ -653,8 +655,9 @@ rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
     rpm_color_t ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Color == NULL) {
-	    ds->Color = (uint32_t *)xcalloc(ds->Count, sizeof(*ds->Color));
+	if (ds->Color.empty()) {
+	    ds->Color.resize(ds->Count);
+	    ds->Color.assign(ds->Count, 0);
 	}
 	ocolor = ds->Color[ds->i];
 	ds->Color[ds->i] = color;
