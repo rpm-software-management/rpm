@@ -1312,13 +1312,9 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	fl->processingFailed = 1;
     }
 
-    if (fl->pkgFlags & RPMBUILD_PKG_NODIRTOKENS) {
-	/* Uncompress filelist if legacy format requested */
-	headerConvert(h, HEADERCONV_EXPANDFILELIST);
-    } else {
-	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	if (spec->rpmformat < 6)
-	    (void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
+    /* Binary packages with dirNames cannot be installed by legacy rpm. */
+    if (spec->rpmformat < 6) {
+	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
     }
 }
 

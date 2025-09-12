@@ -339,7 +339,7 @@ int headerIsSource(Header h);
 unsigned int headerGetInstance(Header h);
 
 typedef enum headerConvOps_e {
-    HEADERCONV_EXPANDFILELIST	= 0,
+    /* HEADERCONV_EXPANDFILELIST	= 0, no longer suppoprted */
     HEADERCONV_COMPRESSFILELIST = 1,
     HEADERCONV_RETROFIT_V3	= 2,
 } headerConvOps;

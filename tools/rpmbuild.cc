@@ -25,7 +25,6 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_TARGETPLATFORM	-1016
 #define	POPT_NOBUILD		-1017
 #define	POPT_RMSPEC		-1019
-#define POPT_NODIRTOKENS	-1020
 
 #define	POPT_REBUILD		0x4262 /* Bb */
 #define	POPT_RECOMPILE		0x4369 /* Ci */
@@ -120,7 +119,6 @@ static void buildArgCallback( poptContext con,
 	}
 	break;
 
-    case POPT_NODIRTOKENS: rba->pkgFlags |= RPMBUILD_PKG_NODIRTOKENS; break;
     case POPT_NOBUILD: rba->buildAmount |= RPMBUILD_NOBUILD; break;
     case POPT_NOLANG: spec_flags |= RPMSPEC_NOLANG; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
@@ -258,9 +256,6 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', POPT_ARG_VAL, &noDeps, 1,
 	N_("do not verify build dependencies"), NULL },
- { "nodirtokens", '\0', 0, 0, POPT_NODIRTOKENS,
-	N_("generate package header(s) compatible with (legacy) rpm v3 packaging"),
-	NULL},
 
  { "noclean", '\0', POPT_BIT_SET, &nobuildAmount, RPMBUILD_CLEAN|RPMBUILD_RMBUILD,
 	N_("do not execute %clean stage of the build"), NULL },
