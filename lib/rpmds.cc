@@ -34,7 +34,7 @@ struct rpmds_s {
     unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
     std::atomic_int nrefs;	/*!< Reference count. */
-    int *ti;			/*!< Trigger index. */
+    vector<int> ti;		/*!< Trigger index. */
 };
 
 struct depinfo_s {
@@ -194,7 +194,7 @@ rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
 int rpmdsTiIndex(rpmds ds, int i)
 {
     int ti = -1;
-    if (ds != NULL && i >= 0 && i < ds->Count && ds->ti != NULL)
+    if (ds != NULL && i >= 0 && i < ds->ti.size())
 	ti = ds->ti[i];
     return ti;
 }
@@ -228,7 +228,6 @@ rpmds rpmdsFree(rpmds ds)
 	ds->N = _free(ds->N);
 	ds->EVR = _free(ds->EVR);
 	ds->Flags = _free(ds->Flags);
-	ds->ti = _free(ds->ti);
     }
 
     ds->pool = rpmstrPoolFree(ds->pool);
@@ -274,7 +273,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	    err = true;
 
 	if (tagTi) {
-	    headerGet(h, tagTi, &tindices, HEADERGET_ALLOC);
+	    headerGet(h, tagTi, &tindices, HEADERGET_MINMEM);
 	    if (tindices.count != count) {
 		rpmtdFreeData(&tindices);
 		err = true;
@@ -294,7 +293,9 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	ds->EVR = evr.count ? rpmtdToPool(&evr, ds->pool): NULL;
 	ds->Flags = (uint32_t *)dflags.data;
 	if (tagTi) {
-	    ds->ti = (int *)tindices.data;
+	    uint32_t *indices = (uint32_t *)tindices.data;
+	    ds->ti.assign(indices, indices+tindices.count);
+	    rpmtdFreeData(&tindices);
 	}
 
 	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
@@ -391,10 +392,8 @@ static rpmds singleDSPool(rpmstrPool pool, rpmTagVal tagN,
     ds->EVR[0] = EVR;
     ds->Flags = (uint32_t *)xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
-    if (tagTi && triggerIndex != -1) {
-	ds->ti = (int *)xmalloc(sizeof(*ds->ti));
-	ds->ti[0] = triggerIndex;
-    }
+    if (tagTi && triggerIndex != -1)
+	ds->ti.assign(1, triggerIndex);
     ds->i = 0;
     if (Color)
 	rpmdsSetColor(ds, Color);
@@ -459,7 +458,7 @@ rpmds rpmdsCurrent(rpmds ds)
     rpmds cds = NULL;
     int ti = -1;
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->ti)
+	if (ds->ti.empty() == false)
 	    ti = ds->ti[ds->i];
 	/* Using parent's pool so we can just use the same id's */
 	cds = singleDSPool(ds->pool, ds->tagN, ds->N[ds->i], ds->EVR[ds->i],
@@ -473,10 +472,10 @@ rpmds rpmdsFilterTi(rpmds ds, int ti)
     int i, i2, tiCount = 0;
     rpmds fds;
 
-    if (ds == NULL || !ds->ti || !ds->Count)
+    if (ds == NULL || ds->ti.empty() || !ds->Count)
 	return NULL;
 
-    for (i = 0; i < ds->Count; i++) {
+    for (i = 0; i < ds->ti.size(); i++) {
 	if (ds->ti[i] == ti)
 	    tiCount++;
     }
@@ -489,7 +488,7 @@ rpmds rpmdsFilterTi(rpmds ds, int ti)
     fds->N = (rpmsid *)xmalloc(tiCount * sizeof(*fds->N));
     fds->EVR = (rpmsid *)xmalloc(tiCount * sizeof(*fds->EVR));
     fds->Flags = (uint32_t *)xmalloc(tiCount * sizeof(*fds->Flags));
-    fds->ti = (int *)xmalloc(tiCount * sizeof(*fds->ti));
+    fds->ti.resize(tiCount);
     fds->i = -1;
 
     i2 = 0;
@@ -723,10 +722,7 @@ static rpmds rpmdsDup(const rpmds ods)
 	ds->Flags = (uint32_t *)memcpy(xmalloc(nb), ods->Flags, nb);
     }
 
-    if (ods->ti) {
-	nb = ds->Count * sizeof(*ds->ti);
-	ds->ti = (int *)memcpy(xmalloc(nb), ods->ti, nb);
-    }
+    ds->ti = ods->ti;
 
     return ds;
 
@@ -810,12 +806,8 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	ds->EVR = (rpmsid *)xcalloc(ds->Count, sizeof(*ds->EVR));
     if (ds->Flags == NULL)
 	ds->Flags = (uint32_t *)xcalloc(ds->Count, sizeof(*ds->Flags));
-    if (ds->ti == NULL && ods->ti) {
-	int i;
-	ds->ti = (int *)xcalloc(ds->Count, sizeof(*ds->ti));
-	for (i = 0; i < ds->Count; i++)
-	    ds->ti[i] = -1;
-    }
+    if (ds->ti.empty() && ods->ti.empty() == false)
+	ds->ti.assign(ds->Count, -1);
 
     /*
      * Add new entries.
@@ -857,14 +849,8 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	}
 	ds->Flags[u] = rpmdsFlags(ods);
 
-	if (ds->ti || ods->ti) {
-	    ds->ti = xrealloc(ds->ti, (ds->Count+1) * sizeof(*ds->ti));
-	    if (u < ds->Count) {
-		memmove(ds->ti + u + 1, ds->ti + u,
-			(ds->Count - u) * sizeof(*ds->ti));
-	    }
-	    ds->ti[u] = rpmdsTi(ods);
-	}
+	if (ds->ti.empty() == false || ods->ti.empty() == false)
+	    ds->ti.insert(ds->ti.begin() + u, rpmdsTi(ods));
 
 	ds->i = ds->Count;
 	ds->Count++;
