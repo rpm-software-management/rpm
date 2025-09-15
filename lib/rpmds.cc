@@ -277,7 +277,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	    return NULL;
 	}
 
-	if (tagTi != RPMTAG_NOT_FOUND) {
+	if (tagTi) {
 	    headerGet(h, tagTi, &tindices, HEADERGET_ALLOC);
 	    if (tindices.count && tindices.count != count) {
 		rpmtdFreeData(&tindices);
@@ -290,7 +290,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	ds->N = names.count ? rpmtdToPool(&names, ds->pool) : NULL;
 	ds->EVR = evr.count ? rpmtdToPool(&evr, ds->pool): NULL;
 	ds->Flags = (uint32_t *)dflags.data;
-	if (tagTi != RPMTAG_NOT_FOUND) {
+	if (tagTi) {
 	    ds->ti = (int *)tindices.data;
 	}
 
@@ -388,7 +388,7 @@ static rpmds singleDSPool(rpmstrPool pool, rpmTagVal tagN,
     ds->EVR[0] = EVR;
     ds->Flags = (uint32_t *)xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
-    if (tagTi != RPMTAG_NOT_FOUND) {
+    if (tagTi && triggerIndex != -1) {
 	ds->ti = (int *)xmalloc(sizeof(*ds->ti));
 	ds->ti[0] = triggerIndex;
     }
@@ -519,7 +519,7 @@ int rpmdsPutToHeader(rpmds ds, Header h)
 	headerPutString(h, tagN, rpmdsN(pi));
 	headerPutString(h, tagEVR, rpmdsEVR(pi));
 	headerPutUint32(h, tagF, &flags, 1);
-	if (tagTi != RPMTAG_NOT_FOUND) {
+	if (tagTi) {
 	    headerPutUint32(h, tagTi, &index, 1);
 	}
     }
