@@ -259,7 +259,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
 error: unpacking of archive failed: cpio: Bad magic
 error: hello-2.0-1.x86_64: install failed
 INSTALL 2
-	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+	package hello-2.0-1.x86_64 does not verify: no digest
 INSTALL 3
 	package hello-2.0-1.x86_64 does not verify: no digest
 INSTALL 4
@@ -296,7 +296,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [1],
 [],
 [warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+	package hello-2.0-1.x86_64 does not verify: no signature
 ])
 RPMTEST_CLEANUP
 
@@ -424,7 +424,7 @@ error: unpacking of archive failed: cpio: Bad magic
 error: hello-2.0-1.x86_64: install failed
 INSTALL 3
 warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+	package hello-2.0-1.x86_64 does not verify: no signature
 INSTALL 4
 	package hello-2.0-1.x86_64 does not verify: no signature
 INSTALL 5
