@@ -147,7 +147,6 @@ static rpmRC addFileToTag(rpmSpec spec, const char * file,
 
 static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 {
-    int addflags = 0;
     rpmRC rc = RPMRC_FAIL;
     Header h = pkg->header;
     std::vector<std::vector<TriggerFileEntry>*> tfa {
@@ -186,14 +185,10 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 
     /* we need the index number for accessing the other associated arrays */
     for (size_t i = 0; i < tfa.size(); ++i) {
-	addflags = 0;
 	/* if any trigger has flags, we need to add flags entry for all of them */
-	for (auto const & p : *tfa[i]) {
-	    if (p.flags) {
-		addflags = 1;
-		break;
-	    }
-	}
+	const bool addflags = std::any_of(
+		tfa[i]->begin(), tfa[i]->end(),
+		[](const auto& p) {return p.flags;});
 
 	for (auto const & p : *tfa[i]) {
 	    headerPutString(h, progTags[i], p.prog);
