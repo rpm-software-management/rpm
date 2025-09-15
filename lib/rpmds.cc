@@ -146,7 +146,7 @@ static char tagNToChar(rpmTagVal tagN)
 rpmTagVal rpmdsDToTagN(char deptype)
 {
     const struct depinfo_s *di = depinfoByAbrev(deptype);
-    return (di != NULL) ? di->typeTag : RPMTAG_NOT_FOUND;
+    return (di != NULL) ? di->typeTag : 0;
 }
 
 rpmsid rpmdsNIdIndex(rpmds ds, int i)
@@ -603,7 +603,7 @@ int rpmdsTi(const rpmds ds)
 
 rpmTagVal rpmdsTagN(const rpmds ds)
 {
-    rpmTagVal tagN = RPMTAG_NOT_FOUND;
+    rpmTagVal tagN = 0;
 
     if (ds != NULL)
 	tagN = ds->tagN;
@@ -612,7 +612,7 @@ rpmTagVal rpmdsTagN(const rpmds ds)
 
 rpmTagVal rpmdsTagEVR(const rpmds ds)
 {
-    rpmTagVal tagEVR = RPMTAG_NOT_FOUND;
+    rpmTagVal tagEVR = 0;
 
     if (ds != NULL)
 	dsType(ds->tagN, NULL, &tagEVR, NULL, NULL);
@@ -621,7 +621,7 @@ rpmTagVal rpmdsTagEVR(const rpmds ds)
 
 rpmTagVal rpmdsTagF(const rpmds ds)
 {
-    rpmTagVal tagF = RPMTAG_NOT_FOUND;
+    rpmTagVal tagF = 0;
 
     if (ds != NULL)
 	dsType(ds->tagN, NULL, NULL, &tagF, NULL);
@@ -630,7 +630,7 @@ rpmTagVal rpmdsTagF(const rpmds ds)
 
 rpmTagVal rpmdsTagTi(const rpmds ds)
 {
-    rpmTagVal tagTi = RPMTAG_NOT_FOUND;
+    rpmTagVal tagTi = 0;
 
     if (ds != NULL)
 	dsType(ds->tagN, NULL, NULL, NULL, &tagTi);
