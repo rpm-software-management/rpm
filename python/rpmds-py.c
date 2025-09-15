@@ -52,6 +52,12 @@ rpmds_Flags(rpmdsObject * s)
 }
 
 static PyObject *
+rpmds_Ti(rpmdsObject * s)
+{
+    return Py_BuildValue("i", rpmdsTi(s->ds));
+}
+
+static PyObject *
 rpmds_TagN(rpmdsObject * s)
 {
     return Py_BuildValue("i", rpmdsTagN(s->ds));
@@ -219,6 +225,8 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.EVR -> EVR -- Return current EVR.\n" },
  {"Flags",	(PyCFunction)rpmds_Flags,	METH_NOARGS,
 	"ds.Flags -> Flags -- Return current Flags.\n" },
+ {"Ti",		(PyCFunction)rpmds_Ti,		METH_NOARGS,
+	"ds.Ti -> Ti -- Return current trigger index.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_NOARGS,
   "ds.TagN -> TagN -- Return TagN (RPMTAG_*NAME)\n\n"
   "the type of all dependencies in this set.\n" },

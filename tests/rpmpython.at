@@ -686,6 +686,24 @@ rpmlib(PayloadFilesHavePrefix) 0
 rtld(GNU_HASH) 1
 ])
 
+RPMPY_TEST([dependency sets 5],[
+rpm.addMacro('rel', '1')
+rpm.addMacro('trigpkg', 'aabb')
+spec = rpm.spec('${RPMDATA}/SPECS/triggers.spec')
+p = spec.packages[0]
+for d in rpm.ds(p.header, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), hex(d.Flags()), d.Ti())
+for d in rpm.ds(p.header, rpm.RPMTAG_TRIGGERNAME):
+    print(d.N(), hex(d.Flags()), d.Ti())
+],
+[/bin/sh 0x100 -1
+rpmlib(ScriptletExpansion) 0x100000a -1
+aabb 0x10000 1
+aabb 0x20000 2
+aabb 0x40000 3
+aabb 0x2000000 0
+])
+
 RPMPY_TEST([file info sets 1],[
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
 fi = rpm.files(h)
