@@ -238,7 +238,7 @@ const char * rpmdsEVR(const rpmds ds);
 /** \ingroup rpmds
  * Return current dependency triggerindex.
  * @param ds		dependency set
- * @return		current dependency trigger index, 0 on invalid
+ * @return		current dependency trigger index, -1 on invalid
  */
 int rpmdsTi(const rpmds ds);
 

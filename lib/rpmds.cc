@@ -598,7 +598,7 @@ rpmsenseFlags rpmdsFlags(const rpmds ds)
 
 int rpmdsTi(const rpmds ds)
 {
-    return (ds != NULL) ? rpmdsTiIndex(ds, ds->i) : 0;
+    return (ds != NULL) ? rpmdsTiIndex(ds, ds->i) : -1;
 }
 
 rpmTagVal rpmdsTagN(const rpmds ds)
