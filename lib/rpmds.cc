@@ -264,25 +264,26 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
     if (headerGet(h, tagN, &names, HEADERGET_MINMEM)) {
 	struct rpmtd_s evr, dflags, tindices;
 	rpm_count_t count = rpmtdCount(&names);
+	bool err = false;
 
 	headerGet(h, tagEVR, &evr, HEADERGET_MINMEM);
-	if (evr.count && evr.count != count) {
-	    rpmtdFreeData(&evr);
-	    return NULL;
-	}
-
 	headerGet(h, tagF, &dflags, HEADERGET_ALLOC);
-	if (dflags.count && dflags.count != count) {
-	    rpmtdFreeData(&dflags);
-	    return NULL;
-	}
+	if (evr.count != count || dflags.count != count)
+	    err = true;
 
 	if (tagTi) {
 	    headerGet(h, tagTi, &tindices, HEADERGET_ALLOC);
-	    if (tindices.count && tindices.count != count) {
+	    if (tindices.count != count) {
 		rpmtdFreeData(&tindices);
-		return NULL;
+		err = true;
 	    }
+	}
+
+	if (err) {
+	    rpmtdFreeData(&names);
+	    rpmtdFreeData(&evr);
+	    rpmtdFreeData(&dflags);
+	    goto exit;
 	}
 
 	ds = rpmdsCreate(pool, tagN, Type, count, headerGetInstance(h));

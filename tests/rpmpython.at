@@ -704,6 +704,44 @@ aabb 0x40000 3
 aabb 0x2000000 0
 ])
 
+RPMPY_TEST([dependency sets 6.1],[
+h = rpm.hdr()
+h['requirename'] = ['aa', 'bb', 'cc']
+h['requireversion'] = ['1', '2', '3']
+h['requireflags'] = [0, 1, 2]
+for d in rpm.ds(h, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), d.EVR(), d.Flags())
+],
+[aa 1 0
+bb 2 1
+cc 3 2
+])
+
+# insufficient/malformed header data, must not print anything
+RPMPY_TEST([dependency sets 6.2],[
+h = rpm.hdr()
+h['requirename'] = ['aa', 'bb', 'cc']
+for d in rpm.ds(h, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), d.EVR(), d.Flags())
+h = rpm.hdr()
+h['requirename'] = ['aa', 'bb', 'cc']
+h['requireflags'] = [0, 1, 2]
+for d in rpm.ds(h, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), d.EVR(), d.Flags())
+h = rpm.hdr()
+h['requirename'] = ['aa', 'bb', 'cc']
+h['requireversion'] = ['1', '2', '3']
+for d in rpm.ds(h, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), d.EVR(), d.Flags())
+h = rpm.hdr()
+h['requirename'] = ['aa', 'bb', 'cc']
+h['requireversion'] = ['1', '2']
+h['requireflags'] = [0, 1, 2, 4]
+for d in rpm.ds(h, rpm.RPMTAG_REQUIRENAME):
+    print(d.N(), d.EVR(), d.Flags())
+],
+[])
+
 RPMPY_TEST([file info sets 1],[
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
 fi = rpm.files(h)
