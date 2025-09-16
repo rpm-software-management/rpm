@@ -4,9 +4,7 @@ RPM2ARCHIVE(1)
 rpm2archive - Create tar or cpio archive from RPM Package Manager (RPM) package
 
 # SYNOPSIS
-*rpm2archive* [options] _PACKAGE_FILE_ ...
-
-*rpm2archive* [options] -
+*rpm2archive* [options] [_PACKAGE_FILE_] ...
 
 # DESCRIPTION
 *rpm2archive* converts RPM package files to other archive formats.
@@ -26,7 +24,8 @@ Supports RPM package formats 3, 4 and 6.
 _PACKAGE_FILE_
 	A binary or source RPM package.
 
-If dash (*-*) is given as the argument, data is read from the standard input.
+If no arguments are present, or a dash (*-*) is given as an argument,
+data is read from the standard input.
 
 # OPTIONS
 *-n*, *--nocompression*
