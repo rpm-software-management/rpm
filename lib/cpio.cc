@@ -460,7 +460,7 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio)
     if (cpio) {
 	if (cpio->fd)
 	    (void) rpmcpioClose(cpio);
-	delete cpio;
     }
+    delete cpio;
     return NULL;
 }
