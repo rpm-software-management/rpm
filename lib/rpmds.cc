@@ -26,7 +26,7 @@ using std::string;
 struct rpmds_s {
     rpmstrPool pool;		/*!< String pool. */
     const char * Type;		/*!< Tag name. */
-    char * DNEVR;		/*!< Formatted dependency string. */
+    string DNEVR;		/*!< Formatted dependency string. */
     vector<rpmsid> N;		/*!< Dependency name id's (pool) */
     vector<rpmsid> EVR;		/*!< Dependency EVR id's (pool) */
     vector<rpmsenseFlags> Flags;/*!< Bit(s) identifying context/comparison. */
@@ -227,7 +227,6 @@ rpmds rpmdsFree(rpmds ds)
 	return NULL;
 
     ds->pool = rpmstrPoolFree(ds->pool);
-    ds->DNEVR = _free(ds->DNEVR);
 
     delete ds;
     return NULL;
@@ -515,7 +514,7 @@ int rpmdsSetIx(rpmds ds, int ix)
 
     if (ds != NULL && ix >= 0 && ix < ds->Count) {
 	ds->i = ix;
-	ds->DNEVR = _free(ds->DNEVR);
+	ds->DNEVR.clear();
 	i = ds->i;
     }
     return i;
@@ -535,11 +534,11 @@ const char * rpmdsDNEVR(const rpmds ds)
     const char * DNEVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->DNEVR == NULL) {
+	if (ds->DNEVR.empty()) {
 	    char t[2] = { tagNToChar(ds->tagN), '\0' };
-	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
+	    ds->DNEVR = rpmdsNewDNEVRStr(t, ds);
 	}
-	DNEVR = ds->DNEVR;
+	DNEVR = ds->DNEVR.c_str();
     }
     return DNEVR;
 }
@@ -666,7 +665,7 @@ rpmds rpmdsInit(rpmds ds)
 {
     if (ds != NULL) {
 	ds->i = -1;
-	ds->DNEVR = _free(ds->DNEVR);
+	ds->DNEVR.clear();
     }
     return ds;
 }
