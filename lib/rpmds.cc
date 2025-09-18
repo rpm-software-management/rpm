@@ -3,6 +3,7 @@
  */
 #include "system.h"
 #include <atomic>
+#include <string>
 #include <vector>
 
 #include <rpm/rpmtypes.h>
@@ -17,6 +18,7 @@
 #include "debug.h"
 
 using std::vector;
+using std::string;
 
 /**
  * A package dependency set.
@@ -328,51 +330,36 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
     return rpmdsNewPool(NULL, h, tagN, flags);
 }
 
-char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
+static string rpmdsNewDNEVRStr(const char * dspfx, const rpmds ds)
 {
     const char * N = rpmdsN(ds);
     const char * EVR = rpmdsEVR(ds);
     rpmsenseFlags Flags = rpmdsFlags(ds);
-    char * tbuf, * t;
-    size_t nb;
+    string s;
 
-    nb = 0;
-    if (dspfx)	nb += strlen(dspfx) + 1;
-    if (N)	nb += strlen(N);
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (Flags & RPMSENSE_SENSEMASK) {
-	if (nb)	nb++;
-	if (Flags & RPMSENSE_LESS)	nb++;
-	if (Flags & RPMSENSE_GREATER) nb++;
-	if (Flags & RPMSENSE_EQUAL)	nb++;
-    }
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (EVR && *EVR) {
-	if (nb)	nb++;
-	nb += strlen(EVR);
-    }
-
-    t = tbuf = (char *)xmalloc(nb + 1);
     if (dspfx) {
-	t = stpcpy(t, dspfx);
-	*t++ = ' ';
+	s += dspfx;
+	s += ' ';
     }
     if (N)
-	t = stpcpy(t, N);
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+	s += N;
     if (Flags & RPMSENSE_SENSEMASK) {
-	if (t != tbuf)	*t++ = ' ';
-	if (Flags & RPMSENSE_LESS)	*t++ = '<';
-	if (Flags & RPMSENSE_GREATER) *t++ = '>';
-	if (Flags & RPMSENSE_EQUAL)	*t++ = '=';
+	if (!s.empty()) s += ' ';
+	if (Flags & RPMSENSE_LESS)	s += '<';
+	if (Flags & RPMSENSE_GREATER)	s += '>';
+	if (Flags & RPMSENSE_EQUAL)	s += '=';
     }
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
     if (EVR && *EVR) {
-	if (t != tbuf)	*t++ = ' ';
-	t = stpcpy(t, EVR);
+	if (!s.empty())	s += ' ';
+	s += EVR;
     }
-    *t = '\0';
-    return tbuf;
+    return s;
+}
+
+char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
+{
+    string DNEVR = rpmdsNewDNEVRStr(dspfx, ds);
+    return xstrdup(DNEVR.c_str());
 }
 
 static rpmds singleDSPool(rpmstrPool pool, rpmTagVal tagN,
