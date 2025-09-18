@@ -1446,16 +1446,13 @@ static rpmRC rpmdsParseRichDepCB(void *cbdata, rpmrichParseType type,
     else if (type == RPMRICH_PARSE_LEAVE) {
 	if (--data->depth == 0 && data->dochain && data->rightstart) {
 	    /* chain op hack, construct a sub-ds from the right side of the chain */
-	    char *right = (char *)xmalloc(n + nl - data->rightstart + 2);
-	    right[0] = '(';
-	    strncpy(right + 1, data->rightstart, n + nl - data->rightstart);
-	    right[n + nl - data->rightstart + 1] = 0;
+	    string right = "(";
+	    right.append(data->rightstart, n + nl - data->rightstart);
 	    data->rightds = rpmdsFree(data->rightds);
 	    ds = singleDS(data->dep->pool, data->dep->tagN, 0, 0, data->depflags, 0, 0, 0);
-	    ds->N[0] = rpmstrPoolId(ds->pool, right, 1);
+	    ds->N[0] = rpmstrPoolId(ds->pool, right.c_str(), 1);
 	    ds->EVR[0] = rpmstrPoolId(ds->pool, "", 1);
 	    data->rightds = ds;
-	    free(right);
 	}
     }
     if (data->depth != 1)
