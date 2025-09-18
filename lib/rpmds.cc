@@ -469,39 +469,23 @@ rpmds rpmdsCurrent(rpmds ds)
 
 rpmds rpmdsFilterTi(rpmds ds, int ti)
 {
-    int i, i2, tiCount = 0;
-    rpmds fds;
-
-    if (ds == NULL || ds->ti.empty() || !ds->Count)
+    if (ds == NULL)
 	return NULL;
 
-    for (i = 0; i < ds->ti.size(); i++) {
-	if (ds->ti[i] == ti)
-	    tiCount++;
+    rpmds fds = NULL;
+    for (size_t i = 0; i < ds->ti.size(); i++) {
+	if (ds->ti[i] != ti)
+	    continue;
+
+	if (fds == NULL)
+	    fds = rpmdsCreate(ds->pool, ds->tagN, ds->Type, 0, ds->instance);
+
+	fds->N.push_back(ds->N[i]);
+	fds->EVR.push_back(ds->EVR[i]);
+	fds->Flags.push_back(ds->Flags[i]);
+	fds->ti.push_back(ds->ti[i]);
+	fds->Count++;
     }
-
-    if (!tiCount)
-	return NULL;
-
-    fds = rpmdsCreate(ds->pool, ds->tagN, ds->Type, tiCount, ds->instance);
-
-    fds->N.resize(tiCount);
-    fds->EVR.resize(tiCount);
-    fds->Flags.resize(tiCount);
-    fds->ti.resize(tiCount);
-    fds->i = -1;
-
-    i2 = 0;
-    for (i = 0; i < ds->Count; i++) {
-	if (ds->ti[i] == ti) {
-	    fds->N[i2] = ds->N[i];
-	    fds->EVR[i2] = ds->EVR[i];
-	    fds->Flags[i2] = ds->Flags[i];
-	    fds->ti[i2] = ds->ti[i];
-	    i2++;
-	}
-    }
-
     return fds;
 }
 
