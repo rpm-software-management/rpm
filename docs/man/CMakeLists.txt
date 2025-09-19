@@ -4,7 +4,7 @@ set(core
 	rpmdeps.1 rpmgraph.1 rpmlua.1 rpm-common.8 rpmsort.1
 	rpm-macrofile.5 rpm-config.5 rpm-rpmrc.5 rpm-setup-autosign.1
 	rpm-payloadflags.7 rpmbuild-config.5 rpm-queryformat.7 rpm-macros.7
-	rpm-lua.7 rpm-manifest.5 rpm-version.7
+	rpm-lua.7 rpm-manifest.5 rpm-version.7 rpm-dependency-generators.7
 )
 set(extra
 	rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8
