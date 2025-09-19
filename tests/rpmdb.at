@@ -567,12 +567,16 @@ runroot rpm -U --noscripts --nodeps --ignorearch --nosignature \
   /data/RPMS/hello-2.0-1.i686.rpm
 runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
 runroot rpmdb --rebuilddb
+runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
 runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
+runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
 ],
 [],
 [hello-1.0-1.i386 1
 hello-2.0-1.i686 2
+/var/lib/rpm-testsuite/.rpm.lock
 hello-2.0-1.i686 1
+/var/lib/rpm-testsuite/.rpm.lock
 ],
 [])
 RPMTEST_CLEANUP
@@ -584,10 +588,14 @@ AT_KEYWORDS([rpmdb])
 RPMTEST_CHECK([
 RPMDB_RESET
 runroot rpmdb --rebuilddb
+runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
 runroot rpmdb --verifydb
+runroot ls `rpm -E "%{_dbpath}/.rpm.lock"`
 ],
 [0],
-[],
+[/var/lib/rpm-testsuite/.rpm.lock
+/var/lib/rpm-testsuite/.rpm.lock
+],
 [])
 RPMTEST_CLEANUP
 

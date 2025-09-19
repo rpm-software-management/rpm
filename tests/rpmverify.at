@@ -599,14 +599,49 @@ runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
 	/data/RPMS/hello-2.0-1.i686.rpm
 runroot touch /usr/share/doc/hello-2.0/FAQ
 runroot chmod a-x /usr/bin/hello
+runroot rpm --restore --percent --test hello
 runroot rpm -Va --nodeps ${VERIFYOPTS}
-runroot rpm --restore hello
+runroot rpm --restore --hash hello
+],
+[0],
+[%% 0.000000
+.M.......    /usr/bin/hello
+.......T.  d /usr/share/doc/hello-2.0/FAQ
+########################################
+Updating / installing...
+########################################
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpm -Va --nodeps ${VERIFYOPTS}
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+# same as above but with more content in the rpmdb, in particular gpg-pubkey's
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos --nosignature \
+	/data/RPMS/hlinktest-1.0-1.noarch.rpm
+runroot touch /usr/share/doc/hello-2.0/FAQ
+runroot chmod a-x /usr/bin/hello
+runroot rpm -Va --nodeps ${VERIFYOPTS}
+runroot rpm -a --restore
 ],
 [0],
 [.M.......    /usr/bin/hello
 .......T.  d /usr/share/doc/hello-2.0/FAQ
 ],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -Va --nodeps ${VERIFYOPTS}
+],
+[0],
+[],
 [])
 RPMTEST_CLEANUP
 

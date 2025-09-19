@@ -42,6 +42,7 @@ static int test(struct test *test)
     uint8_t *data = malloc(len);
     if (!data) {
 	fprintf(stderr, "out of memory\n");
+	fclose(f);
 	return 1;
     }
 
@@ -51,8 +52,10 @@ static int test(struct test *test)
 	fprintf(stderr, "%s: Read error: %s\n",
 		filename, strerror(err));
 	free(data);
+	fclose(f);
 	return 1;
     }
+    fclose(f);
 
     uint8_t *fp = NULL;
     size_t fplen = 0;

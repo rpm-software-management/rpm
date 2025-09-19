@@ -51,7 +51,7 @@ struct rpmfcFileDep {
     int fileIx;
     rpmds dep;
 
-    bool operator < (const rpmfcFileDep & other) {
+    bool operator < (const rpmfcFileDep & other) const {
 	return fileIx < other.fileIx;
     }
 };

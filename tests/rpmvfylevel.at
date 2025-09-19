@@ -192,7 +192,6 @@ nosha
     Payload SHA3-256 digest: OK
     Payload SHA512 digest: OK
     Payload SHA256 digest: OK
-    Legacy MD5 digest: NOTFOUND
 1
 ],
 [])

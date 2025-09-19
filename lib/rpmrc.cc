@@ -489,6 +489,11 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		continue;
 	    }
 
+	    if (option->var == RPMVAR_MACROFILES) {
+		rpmlog(RPMLOG_WARNING, _("Ignoring %s at %s:%d\n"), option->name, fn, linenum);
+		continue;
+	    }
+
 	    if (option->archSpecific) {
 		arch = se;
 		while (*se && !risspace(*se)) se++;
@@ -522,7 +527,6 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 		free(name);
 	    }
 	    rpmSetVarArch(ctx, option->var, val, arch);
-	    fn = _free(fn);
 
 	} else {	/* For arch/os compatibility tables ... */
 	    int gotit;
@@ -1346,6 +1350,19 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    }
 	}
 #endif
+
+#	if defined(__e2k__)
+	{
+	    if (__builtin_cpu_is("elbrus-v4") || __builtin_cpu_is("elbrus-8c") || __builtin_cpu_is("elbrus-1c+"))
+		strcpy(un.machine, "e2kv4");
+	    else if (__builtin_cpu_is("elbrus-v5") || __builtin_cpu_is("elbrus-8c2"))
+		strcpy(un.machine, "e2kv5");
+	    else if (__builtin_cpu_is("elbrus-v6") || __builtin_cpu_is("elbrus-12c") || __builtin_cpu_is("elbrus-16c") || __builtin_cpu_is("elbrus-2c3"))
+		strcpy(un.machine, "e2kv6");
+	    else // always fallback to e2k
+		strcpy(un.machine, "e2k");
+	}
+#	endif
 
 	/* the uname() result goes through the arch_canon table */
 	const canonEntry * canon = lookupInCanonTable(un.machine,

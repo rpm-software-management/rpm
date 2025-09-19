@@ -216,11 +216,21 @@ static int process_package(rpmts ts, const char * filename)
 	} else {
 	    outname = rstrscat(NULL, filename, NULL);
 	}
-	if (compress) {
-	    outname = rstrscat(&outname, ".tgz", NULL);
-	} else {
-	    outname = rstrscat(&outname, ".tar", NULL);
+
+	if (rstreq(format, "pax")) {
+	    if (compress) {
+		outname = rstrscat(&outname, ".tgz", NULL);
+	    } else {
+		outname = rstrscat(&outname, ".tar", NULL);
+	    }
+	} else if (rstreq(format, "cpio")) {
+	    if (compress) {
+		outname = rstrscat(&outname, ".cpio.gz", NULL);
+	    } else {
+		outname = rstrscat(&outname, ".cpio", NULL);
+	    }
 	}
+
 	if (archive_write_open_filename(a, outname) != ARCHIVE_OK) {
 	    fprintf(stderr, "Error: Can't open output file: %s\n", outname);
 	    exit(EXIT_FAILURE);

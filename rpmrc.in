@@ -109,6 +109,16 @@ optflags: riscv64 -O2 -g
 
 optflags: loongarch64 -O2 -g
 
+optflags: e2k -Wno-error -O3 -g -march=elbrus-v3
+optflags: e2kv4 -Wno-error -O3 -g -march=elbrus-v4
+optflags: e2kv5 -Wno-error -O3 -g -march=elbrus-v5
+optflags: e2kv6 -Wno-error -O3 -g -march=elbrus-v6
+optflags: e2k8c -Wno-error -O3 -g -mtune=elbrus-8c
+optflags: e2k1cp -Wno-error -O3 -g -mtune=elbrus-1c+
+optflags: e2k8c2 -Wno-error -O3 -g -mtune=elbrus-8c2
+optflags: e2k16c -Wno-error -O3 -g -mtune=elbrus-16c
+optflags: e2k2c3 -Wno-error -O3 -g -mtune=elbrus-2c3
+
 #############################################################
 # Architecture colors
 
@@ -163,8 +173,17 @@ archcolor: aarch64 2
 
 archcolor: riscv64 2
 
-
 archcolor: loongarch64 2
+
+archcolor: e2k 2
+archcolor: e2kv4 2
+archcolor: e2kv5 2
+archcolor: e2kv6 2
+archcolor: e2k8c 2
+archcolor: e2k1cp 2
+archcolor: e2k8c2 2
+archcolor: e2k16c 2
+archcolor: e2k2c3 2
 
 #############################################################
 # Canonical arch names and numbers
@@ -272,6 +291,16 @@ arch_canon:	riscv: riscv64	22
 arch_canon:	riscv64: riscv64	22
 
 arch_canon:	loongarch64:	loongarch64	23
+
+arch_canon:	e2k: e2k		24
+arch_canon:	e2kv4: e2kv4	24
+arch_canon:		e2k1cp: e2k1cp	24
+arch_canon:		e2k8c: e2k8c	24
+arch_canon:	e2kv5: e2kv5	24
+arch_canon:		e2k8c2: e2k8c2	24
+arch_canon:	e2kv6: e2kv6	24
+arch_canon:		e2k16c: e2k16c	24
+arch_canon:		e2k2c3: e2k2c3	24
 
 #############################################################
 # Canonical OS names and numbers
@@ -409,6 +438,16 @@ buildarchtranslate: riscv64: riscv64
 
 buildarchtranslate: loongarch64: loongarch64
 
+buildarchtranslate: e2k: e2k
+buildarchtranslate: e2kv4: e2kv4
+buildarchtranslate: e2kv5: e2kv5
+buildarchtranslate: e2kv6: e2kv6
+buildarchtranslate: e2k8c: e2kv4
+buildarchtranslate: e2k1cp: e2kv4
+buildarchtranslate: e2k8c2: e2kv5
+buildarchtranslate: e2k16c: e2kv6
+buildarchtranslate: e2k2c3: e2kv6
+
 #############################################################
 # Architecture compatibility
 
@@ -523,6 +562,18 @@ arch_compat: aarch64: noarch
 arch_compat: riscv: noarch
 arch_compat: riscv64: noarch
 
+arch_compat: loongarch64: noarch
+
+arch_compat: e2k16c: e2kv6
+arch_compat: e2k2c3: e2kv6
+arch_compat: e2k8c2: e2kv5
+arch_compat: e2k8c: e2kv4
+arch_compat: e2k1cp: e2kv4
+arch_compat: e2kv6: e2kv5
+arch_compat: e2kv5: e2kv4
+arch_compat: e2kv4: e2k
+arch_compat: e2k: noarch
+
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
@@ -551,8 +602,6 @@ os_compat: BSD_OS: bsdi
 os_compat: bsdi4.0: bsdi
 
 os_compat: Darwin: MacOSX
-
-arch_compat: loongarch64: noarch
 
 buildarch_compat: ia64: noarch
 
@@ -661,8 +710,17 @@ buildarch_compat: sh3: noarch
 buildarch_compat: sh4: noarch
 buildarch_compat: sh4a: sh4
 
-
 buildarch_compat: loongarch64: noarch
+
+buildarch_compat: e2k16c: e2kv6
+buildarch_compat: e2k2c3: e2kv6
+buildarch_compat: e2k8c2: e2kv5
+buildarch_compat: e2k8c: e2kv4
+buildarch_compat: e2k1cp: e2kv4
+buildarch_compat: e2kv6: e2kv5
+buildarch_compat: e2kv5: e2kv4
+buildarch_compat: e2kv4: e2k
+buildarch_compat: e2k: noarch
 
 # \endverbatim
 #*/

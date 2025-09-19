@@ -2077,25 +2077,38 @@ exit:
     return rc;
 }
 
+static struct entryInfo_s * hdrblobFindEntry(hdrblob blob, uint32_t tag)
+{
+    struct entryInfo_s *pe = blob->pe;
+    for (int i = 0; i < blob->il; i++, pe++) {
+	uint32_t ntag = ntohl(pe->tag);
+	if (ntag == tag)
+	    return pe;
+    }
+    return NULL;
+}
+
+int hdrblobIsEntry(hdrblob blob, uint32_t tag)
+{
+    return hdrblobFindEntry(blob, tag) != NULL;
+}
+
 rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td)
 {
     rpmRC rc = RPMRC_NOTFOUND;
-    struct indexEntry_s entry;
-    struct entryInfo_s einfo;
-    const struct entryInfo_s *pe = blob->pe;
-    uint32_t ntag = htonl(tag);
-    int tsize;
+    const struct entryInfo_s *pe = hdrblobFindEntry(blob, tag);
 
-    memset(&einfo, 0, sizeof(einfo));
     rpmtdReset(td);
 
-    for (int i = 0; i < blob->il; i++, pe++) {
-	if (pe->tag != ntag)
-	    continue;
+    if (pe != NULL) {
+	struct indexEntry_s entry;
+	struct entryInfo_s einfo;
+
+	memset(&einfo, 0, sizeof(einfo));
 	ei2h(pe, &einfo);
 
 	/* We can only handle non-byteswappable data */
-	tsize = typeSizes[einfo.type];
+	int tsize = typeSizes[einfo.type];
 	if (tsize != 1 && tsize != -1)
 	    return RPMRC_FAIL;
 
@@ -2108,7 +2121,6 @@ rpmRC hdrblobGet(hdrblob blob, uint32_t tag, rpmtd td)
 	entry.rdlen = 0;
 	td->tag = einfo.tag;
 	rc = copyTdEntry(&entry, td, HEADERGET_MINMEM) ? RPMRC_OK : RPMRC_FAIL;
-	break;
     }
     return rc;
 }

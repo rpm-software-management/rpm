@@ -25,8 +25,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 {
     char ** pkgURL = NULL;
     char * pkgState = NULL;
-    const char ** fnp;
-    char * fileURL = NULL;
     int numPkgs = 0;
     int numFailed = 0;
     int prevx = 0;
@@ -45,18 +43,16 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 	return 0;
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    for (fnp = fileArgv; *fnp; fnp++) {
-	av = _free(av);
+    for (const char ** fnp = fileArgv; *fnp; fnp++) {
+	av = argvFree(av);
 	ac = 0;
 	rc = rpmGlobPath(*fnp, RPMGLOB_NOCHECK, &ac, &av);
 	if (rc || ac == 0) continue;
 
-	argv = xrealloc(argv, (argc+2) * sizeof(*argv));
-	memcpy(argv+argc, av, ac * sizeof(*av));
+	argvAppend(&argv, av);
 	argc += ac;
-	argv[argc] = NULL;
     }
-    av = _free(av);	ac = 0;
+    av = argvFree(av);	ac = 0;
 
 restart:
     /* Allocate sufficient storage for next set of args. */
@@ -70,18 +66,13 @@ restart:
 
     /* Copy next set of args. */
     for (i = 0; i < argc; i++) {
-	fileURL = _free(fileURL);
-	fileURL = argv[i];
+	pkgURL[pkgx] = argv[i];
 	argv[i] = NULL;
-
-	pkgURL[pkgx] = fileURL;
-	fileURL = NULL;
 	pkgx++;
     }
-    fileURL = _free(fileURL);
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = (const char **) pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
+    for (char ** fnp = pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
 	const char * fileName;
 	FD_t fd;
 
@@ -96,7 +87,8 @@ restart:
 		Fclose(fd);
 		fd = NULL;
 	    }
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    continue;
 	}
 
@@ -111,7 +103,8 @@ restart:
 	case RPMRC_FAIL:
 	default:
 	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *fnp);
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    break;
 	case RPMRC_OK:
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
@@ -133,7 +126,8 @@ maybe_manifest:
 		Fclose(fd);
 		fd = NULL;
 	    }
-	    numFailed++; *fnp = NULL;
+	    numFailed++;
+	    *fnp = _free(*fnp);
 	    break;
 	}
 
@@ -141,7 +135,7 @@ maybe_manifest:
 	rc = rpmReadPackageManifest(fd, &argc, &argv);
 	if (rc)
 	    rpmlog(RPMLOG_NOTICE, _("%s: read manifest failed: %s\n"),
-			fileURL, Fstrerror(fd));
+			*fnp, Fstrerror(fd));
 	Fclose(fd);
 	fd = NULL;
 
@@ -151,7 +145,8 @@ maybe_manifest:
 	    goto restart;
 	}
 
-	numFailed++; *fnp = NULL;
+	numFailed++;
+	*fnp = _free(*fnp);
 	break;
     }
 
@@ -209,7 +204,7 @@ exit:
         pkgURL[i] = _free(pkgURL[i]);
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
-    argv = _free(argv);
+    argv = argvFree(argv);
 
     return rc;
 }
@@ -241,6 +236,7 @@ main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
 
     ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(ts, NULL);
     vsflags |= rpmcliVSFlags;
     (void) rpmtsSetVSFlags(ts, vsflags);
 

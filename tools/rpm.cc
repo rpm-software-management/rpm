@@ -21,12 +21,13 @@ enum modes {
     MODE_ERASE		= (1 <<  2),
     MODE_RESTORE	= (1 <<  4),
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
+#define	MODES_IER (MODE_INSTALL | MODE_ERASE | MODE_RESTORE)
 
     MODE_UNKNOWN	= 0
 };
 
 #define	MODES_FOR_NODEPS	(MODES_IE | MODE_VERIFY)
-#define	MODES_FOR_TEST		(MODES_IE)
+#define	MODES_FOR_TEST		(MODES_IER)
 
 static int quiet;
 
@@ -143,11 +144,11 @@ int main(int argc, char *argv[])
     if (ia->prefix && ia->prefix[0] != '/') 
 	argerror(_("arguments to --prefix must begin with a /"));
 
-    if (!(bigMode & MODES_IE) && (ia->installInterfaceFlags & INSTALL_HASH))
+    if (!(bigMode & MODES_IER) && (ia->installInterfaceFlags & INSTALL_HASH))
 	argerror(_("--hash (-h) may only be specified during package "
 			"installation and erasure"));
 
-    if (!(bigMode & MODES_IE) && (ia->installInterfaceFlags & INSTALL_PERCENT))
+    if (!(bigMode & MODES_IER) && (ia->installInterfaceFlags & INSTALL_PERCENT))
 	argerror(_("--percent may only be specified during package "
 			"installation and erasure"));
 
