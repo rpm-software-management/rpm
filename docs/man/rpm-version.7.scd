@@ -69,7 +69,7 @@ to *abc0123*, *abc.123* and *abc.000123* despite difference in appearance.
 
 Numeric segments are considered newer than alphabetic segments regardless
 of the actual content. When otherwise equal, the component with more
-segments is considered newer, and similarly an _EVR_ with more compoments
+segments is considered newer, and similarly an _EVR_ with more components
 is considered newer. For example, *0.0* is newer than *0* and *1.xyz* is
 older than *1.0* but newer than *1*.
 

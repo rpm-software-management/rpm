@@ -197,7 +197,7 @@ The most powerful of the macro expansion methods is using RPM's embedded Lua
 interpreter:
 
 *%{lua:*_LUA-CODE_*}*
-	Execute _LUA-CODE_ using RPM's embedded Lua interpeter, expanding
+	Execute _LUA-CODE_ using RPM's embedded Lua interpreter, expanding
 	to the code's *print()*'ed output.
 
 See *rpm-lua*(7) for the details.
@@ -235,9 +235,9 @@ automatic macros are available:
 |  *%#*
 :  the number of arguments
 |  *%{-f}*
-:  if present at invocation, the last occurence of flag *f* (flag and argument)
+:  if present at invocation, the last occurrence of flag *f* (flag and argument)
 |  *%{-f\*}*
-:  if present at invocation, the argument to the last occurence of flag *f*
+:  if present at invocation, the argument to the last occurrence of flag *f*
 |  *%1*, *%2*, ...
 :  the arguments themselves (after *getopt*(3) processing)
 

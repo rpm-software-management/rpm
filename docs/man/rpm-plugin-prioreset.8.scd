@@ -3,7 +3,7 @@ RPM-PLUGIN-PRIORESET(8)
 # NAME
 
 rpm-plugin-prioreset - Plugin for the RPM Package Manager to fix issues
-with priorities of deamons on SysV init
+with priorities of daemons on SysV init
 
 # DESCRIPTION
 

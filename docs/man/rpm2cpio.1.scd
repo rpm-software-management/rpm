@@ -10,7 +10,7 @@ rpm2cpio - Extract cpio archive from RPM Package Manager (RPM) package
 
 # DESCRIPTION
 *rpm2cpio* converts the specified *rpm* package to a *cpio*(1) archive
-on the standard ouput.
+on the standard output.
 
 *Note:* the *cpio*(5) format cannot host individual files over 4GB in size,
 and so this tool is considered obsolete.  Use *rpm2archive*(1) instead.
