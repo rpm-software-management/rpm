@@ -523,7 +523,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 
 *chmod(*_path_, _mode_*)*
 	Change file/directory mode. Mode can be either an octal number as for
-	*chmod*(2) system call, or a string presenation similar to *chmod*(1).
+	*chmod*(2) system call, or a string presentation similar to *chmod*(1).
 
 	Example:
 	```
