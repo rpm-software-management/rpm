@@ -83,7 +83,7 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 
 	This generally always succeeds as there can be arbitrary number of
 	V6 signatures on a package. A V3/V4 compatibility signatures are
-	added usign the same logic as *--rpmv4* on a V6 package.
+	added using the same logic as *--rpmv4* on a V6 package.
 
 	Has no effect when signing V6 packages.
 
