@@ -29,7 +29,7 @@ vary depending on how RPM was compiled.
 |  *xzdio*
 :  xz
 |  *lzdio*
-:  legazy lzma
+:  legacy lzma
 |  *zstdio*
 :  zstd
 
