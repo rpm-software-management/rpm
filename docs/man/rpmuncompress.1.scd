@@ -9,7 +9,7 @@ RPMUNCOMPRESS(1)
 *rpmuncompress* [options] [extract-options] {*-x*|*--extract*} _ARCHIVE_
 
 # DESCRIPTION
-*rpmuncompress* is a utility for transparently outputing compressed
+*rpmuncompress* is a utility for transparently outputting compressed
 and uncompressed files, and extracting archives.
 
 It's normally invoked internally by *rpmbuild*(1) to handle *%setup*

@@ -39,7 +39,7 @@ The *rpmdb* is used for *rpm* database maintenance operations.
 
 *--importdb*
 	Imports a database from a header-list format as created
-	by *--exportdb*. The data is reaad from standard input.
+	by *--exportdb*. The data is read from standard input.
 
 # OPTIONS
 See *rpm-common*(8) for the options common to all *rpm* executables.
