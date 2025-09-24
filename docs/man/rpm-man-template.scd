@@ -44,6 +44,7 @@ Typographic conventions:
 - Use "Added: X.Y.Z." to indicate the version where a feature was added.
   Either in parentheses at the end of a line (inline variant) or on a
   line of it's own, surrounded by empty lines (standalone variant).
+  Only use this for versions 4.11.0 and newer.
 
 When in doubt, consult *man-pages*(7).
 
