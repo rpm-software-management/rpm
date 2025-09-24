@@ -12,6 +12,7 @@
 #include "debug.h"
 
 static struct selabel_handle * sehandle = NULL;
+static const char *rootDir = NULL;
 
 static inline rpmlogLvl loglvl(int iserror)
 {
@@ -91,6 +92,13 @@ static rpmRC sehandle_init(int open_status)
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
+static rpmRC selinux_init(rpmPlugin plugin, rpmts ts)
+{
+    /* save rootDir to detect chroot */
+    rootDir = rpmtsRootDir(ts);
+    return RPMRC_OK;
+}
+
 static rpmRC selinux_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
@@ -150,6 +158,24 @@ static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
     return rc;
 }
 
+static rpmRC set_scon(int fd, char *scon, const char *path)
+{
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    int conrc;
+    if (fd >= 0)
+        conrc = fsetfilecon(fd, scon);
+    else
+        conrc = lsetfilecon(path, scon);
+
+    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
+        rc = RPMRC_OK;
+
+    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%d %s, %s) %s\n",
+               fd, path, scon, (conrc < 0 ? strerror(errno) : ""));
+
+    return rc;
+}
+
 static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 					const char *path, const char *dest,
 				        mode_t file_mode, rpmFsmOp op)
@@ -158,26 +184,34 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
     rpmFileAction action = XFO_ACTION(op);
 
     if (sehandle && !XFA_SKIPPING(action)) {
+	int use_rootDir_label = 1;
+
+	if (!rstreq(rootDir, "/")) {
+	    /* chroot handling:
+	     * if there is a label in the policy for the full non-chroot path, apply it.
+	     * if the policy specifies <<none>> for the full non-chroot-path, apply the
+	     * labels that are in the policy assuming the chroot is like the main root dir.
+	     */
+	    char *full_path = rstrscat(NULL, rootDir, dest, NULL);
+	    char *chroot_scon = NULL;
+	    if (selabel_lookup_raw(sehandle, &chroot_scon, full_path, file_mode) == 0) {
+	        rpmlog(RPMLOG_DEBUG, "chroot: found selinux label from policy for full path, applying: (%s, %s)\n",
+			full_path, chroot_scon);
+		rc = set_scon(fd, chroot_scon, path);
+		use_rootDir_label = 0;
+	    }
+	    freecon(chroot_scon);
+	    free(full_path);
+	}
 	char *scon = NULL;
-	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0) {
-	    int conrc;
-	    if (fd >= 0)
-		conrc = fsetfilecon(fd, scon);
-	    else
-		conrc = lsetfilecon(path, scon);
-
-	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
-		rc = RPMRC_OK;
-
-	    rpmlog(loglvl(rc != RPMRC_OK), "lsetfilecon: (%d %s, %s) %s\n",
-		       fd, path, scon, (conrc < 0 ? strerror(errno) : ""));
-
-	    freecon(scon);
+	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0 && use_rootDir_label) {
+	    rc = set_scon(fd, scon, path);
 	} else {
 	    /* No context for dest is not our headache */
 	    if (errno == ENOENT)
 		rc = RPMRC_OK;
 	}
+	freecon(scon);
     } else {
 	rc = RPMRC_OK;
     }
@@ -186,6 +220,7 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
 }
 
 struct rpmPluginHooks_s selinux_hooks = {
+    .init = selinux_init,
     .tsm_pre = selinux_tsm_pre,
     .tsm_post = selinux_tsm_post,
     .psm_pre = selinux_psm_pre,
