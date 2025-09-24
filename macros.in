@@ -148,8 +148,8 @@
 #	A spec file can %%define _find_debuginfo_opts to pass options to
 #	the script.  See the script for details.
 #
-#	Other macro files can %%define _find_debuginfo_extra_opts to pass
-#       options to the script.  See redhat-rpm-config/macros for an example.
+#	Other macro files can %%define _find_debuginfo_vendor_opts to pass
+#       options to the script.
 #
 %__debug_install_post   \
     %{__find_debuginfo} \\\
@@ -163,7 +163,7 @@
     %{?_unique_debug_srcs:--unique-debug-src-base "%{name}-%{VERSION}-%{RELEASE}.%{_arch}"} \\\
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
-    %{?_find_debuginfo_extra_opts} \\\
+    %{?_find_debuginfo_vendor_opts} \\\
     %{?_debugsource_packages:-S debugsourcefiles.list} \\\
     "%{builddir}/%{?buildsubdir}"\
 %{nil}
