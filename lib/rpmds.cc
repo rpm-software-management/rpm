@@ -710,7 +710,6 @@ static int doFind(rpmds ds, const rpmds ods, unsigned int *he)
 
 	comparison = strcmp(ON, N);
 
-	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 	if (comparison == 0 && OEVR && EVR)
 	    comparison = strcmp(OEVR, EVR);
 	if (comparison == 0)
