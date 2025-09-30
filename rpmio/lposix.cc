@@ -871,7 +871,7 @@ static const luaL_Reg R[] =
 	{NULL,			NULL}
 };
 
-LUALIB_API int luaopen_posix (lua_State *L)
+int luaopen_posix (lua_State *L)
 {
 	luaL_newlib(L, R);
 	lua_pushliteral(L,"version");		/** version */
