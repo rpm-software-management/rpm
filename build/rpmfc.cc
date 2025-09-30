@@ -175,7 +175,11 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
     struct matchRule *rules[] = { &attr->incl, &attr->excl, NULL };
 
     attr->name = xstrdup(name);
-    attr->proto = rpmfcAttrMacro(name, "protocol", NULL);
+    char *proto = rpmfcAttrMacro(name, "protocol", NULL);
+    if (proto == NULL)
+	proto = xstrdup("singlefile");
+    attr->proto = proto;
+
     for (struct matchRule **rule = rules; rule && *rule; rule++) {
 	const char *prefix = (*rule == &attr->incl) ? NULL : "exclude";
 	char *flags;
@@ -665,7 +669,7 @@ static int rpmfcHelper(rpmfc fc, int *fnx, int nfn, const char *proto,
     data.namespc = namespc;
     data.exclude = excl->exclude;
 
-    if (proto && rstreq(proto, "multifile")) {
+    if (rstreq(proto, "multifile")) {
 	const char **paths = (const char **)xcalloc(nfn + 1, sizeof(*paths));
 	for (int i = 0; i < nfn; i++)
 	    paths[i] = fc->fn[fnx[i]].c_str();
@@ -673,7 +677,7 @@ static int rpmfcHelper(rpmfc fc, int *fnx, int nfn, const char *proto,
 	rc = genDeps(mname, 1, tagN, dsContext, &data,
 			fnx, nfn, -1, (ARGV_t) paths);
 	free(paths);
-    } else {
+    } else if (rstreq(proto, "singlefile")) {
 	for (int i = 0; i < nfn; i++) {
 	    const char *fn = fc->fn[fnx[i]].c_str();
 	    const char *paths[] = { fn, NULL };
@@ -681,6 +685,10 @@ static int rpmfcHelper(rpmfc fc, int *fnx, int nfn, const char *proto,
 	    rc += genDeps(mname, 0, tagN, dsContext, &data,
 			fnx, nfn, i, (ARGV_t) paths);
 	}
+    } else {
+	rpmlog(RPMLOG_ERR, _("Unknown dependency generator protocol: %s\n"),
+	       proto);
+	rc = RPMRC_FAIL;
     }
 
     return rc;
