@@ -489,6 +489,13 @@ int pgpDigParamsVersion(pgpDigParams digp);
  */
 uint32_t pgpDigParamsCreationTime(pgpDigParams digp);
 
+/** \ingroup rpmpgp
+ * Return salt of a signature (OpenPGP v6 signatures)
+ * @param digp		parameter container
+ * @param[out] datap	salt data
+ * @param[out] lenp	length of the salt
+ * @return		0 on success
+ */
 int pgpDigParamsSalt(pgpDigParams digp, const uint8_t **datap, size_t *lenp);
 
 /** \ingroup rpmpgp
