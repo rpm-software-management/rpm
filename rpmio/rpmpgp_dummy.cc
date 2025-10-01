@@ -121,3 +121,8 @@ rpmRC pgpPubkeyMerge(const uint8_t *pkts1, size_t pkts1len, const uint8_t *pkts2
 {
     return RPMRC_FAIL;
 }
+
+int pgpDigParamsSalt(pgpDigParams digp, const uint8_t **datap, size_t *lenp)
+{
+    return -1;
+}
