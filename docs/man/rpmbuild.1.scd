@@ -151,6 +151,8 @@ _TAR_ARCHIVE_
 *--rmsource*
 	Remove the sources after the build (may also be used standalone,
 	e.g. *rpmbuild* *--rmsource foo.spec*).
+	Note that by definition, *NoSource* and *NoPatch* files are not
+	sources and so, are not affected by this option.
 
 *--rmspec*
 	Remove the spec file after the build (may also be used standalone,
