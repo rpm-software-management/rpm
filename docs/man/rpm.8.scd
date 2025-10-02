@@ -5,7 +5,6 @@ rpm - RPM Package Manager
 
 # SYNOPSIS
 ## Querying and verifying packages
-bbb
 *rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
 *rpm* {*-V*|*--verify*} [select-options] [verify-options] [_PACKAGE_NAME_ ...]
