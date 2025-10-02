@@ -1,0 +1,27 @@
+# Verifies that all *.scd files are valid scdoc files
+name: scdoc check
+
+on:
+  push:
+    paths:
+      - docs/**
+  pull_request:
+
+jobs:
+  scdoc_check:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create Fedora container
+        run: |
+          podman create -t --name fedora fedora:42
+          podman start fedora
+          podman exec fedora dnf install -y scdoc scd2html
+      - name: Build man pages
+        run: |
+          for file in docs/man/*.scd; do
+            [[ $file == *man-template* ]] && continue
+            podman exec fedora scdoc < $file > /dev/null || exit
+            podman exec fedora scd2html < $file > /dev/null || exit
+          done
