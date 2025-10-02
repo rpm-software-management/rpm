@@ -10,6 +10,7 @@ cmake -DCMAKE_CXX_COMPILER=g++-13
 Note that using a C++ compiler such as g++ is needed, gcc may seem to work but
 will not compile the code correctly.
 
+Test
 The cmake build system, version 3.18 or later.
 It is available from
     https://cmake.org/
