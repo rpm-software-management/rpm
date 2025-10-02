@@ -4,7 +4,6 @@ RPM(8)
 rpm - RPM Package Manager
 
 # SYNOPSIS
-aaa
 ## Querying and verifying packages
 *rpm* {*-q*|*--query*} [select-options] [query-options] [_PACKAGE_FILE_ ...] [_PACKAGE_NAME_ ...]
 
