@@ -1,0 +1,25 @@
+name: Man page linter
+
+on:
+  push:
+    paths:
+      - docs/man/**
+  pull_request:
+    paths:
+      - docs/man/**
+
+jobs:
+  scdoc_lint:
+    runs-on: ubuntu-24.04
+    container: fedora:42
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: dnf install -y scdoc scd2html
+      - name: Build man pages
+        run: |
+          for file in docs/man/*.scd; do
+            [[ $file == *man-template* ]] && continue
+            scdoc < $file > /dev/null
+            scd2html < $file > /dev/null
+          done
