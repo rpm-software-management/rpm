@@ -35,7 +35,7 @@ _ARG_
 	Execute a Lua statement before executing optional script.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpmlua test.lua*

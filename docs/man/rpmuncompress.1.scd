@@ -51,7 +51,7 @@ formats, similar to *zcat*(1).
 	Provide verbose extraction output.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpmuncompress /tmp/3911.patch.gz | patch -p1*
