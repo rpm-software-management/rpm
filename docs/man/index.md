@@ -3,7 +3,8 @@ layout: default
 title: rpm.org - RPM Manual Pages
 ---
 
-{% assign manpages = site.pages | where: 'topic', 'manpage' %}
+{% assign manpages = site.pages | where: 'topic', 'manpage'
+                                | where: 'dir', page.dir %}
 {% assign tools = manpages      | where: 'type', 'tool' %}
 {% assign progs = manpages      | where: 'type', 'program' %}
 {% assign configs = manpages    | where: 'type', 'config' %}
