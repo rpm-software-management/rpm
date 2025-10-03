@@ -301,7 +301,7 @@ The following RPM specific functions are available:
 	Open a file stream using RPM IO facilities, with support for
 	transparent compression and decompression.
 
-	_path_ is file name string, optionally followed with _mode_ string to
+	_path_ is filename string, optionally followed with _mode_ string to
 	specify open behavior:
 	- *a*: open for append
 	- *w*: open for writing, truncate
@@ -654,7 +654,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 
 *getpasswd*([_user_ [, _selector_]]*)*
 	Get *passwd*(5) information for a user account. _user_ may be either a
-	numeric id or user name. If omitted, current user is used.
+	numeric id or username. If omitted, current user is used.
 	The optional _selector_ argument may be one of:
 	- *name*
 	- *uid*
@@ -781,7 +781,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 
 *setuid(*_user_*)*
 	Set user identity. _user_ may be specified either as a numeric id or
-	user name. See also *setuid*(2).
+	username. See also *setuid*(2).
 
 	Note: This is a privileged operation.
 

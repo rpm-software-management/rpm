@@ -22,7 +22,7 @@ _PACKAGE_FILE_
 If dash (*-*) is given as the argument, data is read from the standard input.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpm2cpio glint-1.0-1.i386.rpm | cpio -dium*
