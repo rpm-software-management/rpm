@@ -107,7 +107,7 @@ verification, see *rpm-config*(5) for details:
 - *%\_pkgverify_level*
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 

@@ -539,7 +539,7 @@ the preceding *%*-character.
 	```
 
 *%{suffix:*_PATH_*}*
-	Expand to suffix part of a file name.
+	Expand to suffix part of a filename.
 
 	Example:
 	```
@@ -651,11 +651,11 @@ the preceding *%*-character.
 
 ## Spec specific macros
 *%{S:*_NUMBER_*}*
-	Expand to the file name of the specified Source _NUMBER_.
+	Expand to the filename of the specified Source _NUMBER_.
 	*%{S:n}* is equivalent to *%{SOURCEn}*.
 
 *%{P:*_NUMBER_*}*
-	Expand to the file name of the specified Patch _NUMBER_.
+	Expand to the filename of the specified Patch _NUMBER_.
 	*%{P:n}* is equivalent to *%{PATCHn}*.
 
 ## Diagnostics
@@ -666,7 +666,7 @@ the preceding *%*-character.
 	Print the active (i.e. non-covered) macro table.
 
 *%\_\_file_name*
-	Expand to current file name (if parsing a file). (Added: 4.15)
+	Expand to current filename (if parsing a file). (Added: 4.15)
 
 *%\_\_file_lineno*
 	Expand to current line number in current file (if parsing a file).
