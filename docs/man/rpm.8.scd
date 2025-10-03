@@ -130,7 +130,7 @@ See *rpm-common*(8) for the options common to all operations.
 	*--oldpackage*.
 
 *--ignoresize*
-	Don't check mount file systems for sufficient disk space before
+	Don't check mount filesystems for sufficient disk space before
 	installing this package.
 
 *--ignorearch*
@@ -274,20 +274,20 @@ selection and information selection.
 	Query package owning installed _FILE_.
 
 *--filecaps*
-	List file names with POSIX1.e capabilities.
+	List filenames with POSIX1.e capabilities.
 
 *--fileclass*
-	List file names with their classes (libmagic classification).
+	List filenames with their classes (libmagic classification).
 
 *--filecolor*
-	List file names with their colors (0 for noarch, 1 for 32bit, 2 for
+	List filenames with their colors (0 for noarch, 1 for 32bit, 2 for
 	64 bit).
 
 *--fileprovide*
-	List file names with their provides.
+	List filenames with their provides.
 
 *--filerequire*
-	List file names with their requires.
+	List filenames with their requires.
 
 *-g*, *--group* _GROUP_
 	Query packages with the group of _GROUP_.
@@ -315,7 +315,7 @@ selection and information selection.
 
 *--tid* _TID_
 	Query package(s) that have a given _TID_ transaction identifier. A
-	UNIX time stamp is currently used as a transaction identifier. All
+	UNIX timestamp is currently used as a transaction identifier. All
 	package(s) installed or erased within a single transaction have a
 	common identifier.
 
@@ -353,7 +353,7 @@ selection and information selection.
 	Display change information for the package.
 
 *--changes*
-	Display change information for the package with full time stamps.
+	Display change information for the package with full timestamps.
 
 *--conflicts*
 	List capabilities this package conflicts with.
@@ -479,7 +479,7 @@ Other options unique to verify mode are:
 # OUTPUT
 *--verify*
 	The format of the output is a string of 9 _result_ characters
-	a possible _attribute_ from the package, followed by the file name.
+	a possible _attribute_ from the package, followed by the filename.
 
 	Each of the 9 characters denotes the result of a comparison of
 	attribute(s) of the file to the value of those attribute(s)
@@ -535,7 +535,7 @@ Other options unique to verify mode are:
 
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpm -Uvh hello-2.0-1.noarch.rpm*
@@ -590,7 +590,7 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	such as build-id's which are not usually the main interest.
 
 *rpm -q --qf "[%{filenames} %{filedigests}\\n]" openssh-server*
-	List file names and their corresponding digests of installed
+	List filenames and their corresponding digests of installed
 	*openssh-server* package.
 
 *rpm -qp --scripts --triggers --filetriggers myserver-1.0-1.x86_64.rpm*

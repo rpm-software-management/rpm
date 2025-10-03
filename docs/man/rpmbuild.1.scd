@@ -210,7 +210,7 @@ always returned and a _buildreqs.nosrc.rpm_ package is always created.
 	parallelized sections of the build.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 Packages with a *%generate_buildrequires* section will return with code 11
 when there are unmet *DYNAMIC BUILD DEPENDENCIES*.

@@ -51,7 +51,7 @@ but in particular the following (see *rpm-config*(5) for details):
 - *%\_db_backend*
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpmdb --initdb --dbpath /tmp/testdb*
