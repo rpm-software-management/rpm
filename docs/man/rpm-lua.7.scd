@@ -46,7 +46,7 @@ for _, v in ipairs(v) do
 end
 ```
 
-All macros share the the same global Lua execution environment.
+All macros share the same global Lua execution environment.
 
 ## Calling parametric macros
 Parametric macros (including all built-in macros) can be called in a Lua
@@ -71,7 +71,7 @@ macros.dostuff({'one', 'two', 'three'})
 
 ## Returning data
 By definition, anything *print()*'ed in Lua will end up in the macro
-expansion. Lua macros can also also *return* their output, which makes
+expansion. Lua macros can also *return* their output, which makes
 programming helper macros look more natural.
 
 Example:

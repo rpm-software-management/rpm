@@ -111,7 +111,7 @@ opposed to just package building) parts:
 	A colon separated list of hash algorithms to calculate digests on the
 	entire package files during verification. The calculated digests
 	are stored in the *Packagedigests* tag of packages in the rpmdb,
-	and the corresponding algorithms in in the *Packagedigestalgos* tag.
+	and the corresponding algorithms in the *Packagedigestalgos* tag.
 	No package digests are calculated or stored if *--noverify* is
 	used during package installation.
 

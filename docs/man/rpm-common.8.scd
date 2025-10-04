@@ -78,7 +78,7 @@ options and operations documented in this manual:
 
 *--target* _PLATFORM_
 	Use _PLATFORM_ configuration instead of detecting automatically.
-	_PLATFORM_ is is formed as _arch_[-_os_].
+	_PLATFORM_ is formed as _arch_[-_os_].
 
 *--quiet*
 	Print as little as possible - normally only error messages will be
