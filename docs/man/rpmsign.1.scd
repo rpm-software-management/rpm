@@ -155,7 +155,7 @@ See *Macro Configuration* in *rpm-common*(8) for more details.
 	Delete all signatures from _hello-2.0-1.x64_rpm_ package.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # SEE ALSO
 *popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1)

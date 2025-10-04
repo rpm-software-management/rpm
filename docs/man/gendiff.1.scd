@@ -28,7 +28,7 @@ _DIFF-EXTENSION_
 	The diff extension to look for.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 Assuming you need to modify a source file called _somefile.cpp_ and

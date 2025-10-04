@@ -30,7 +30,7 @@ data is read from the standard input.
 # OPTIONS
 *-n*, *--nocompression*
 	Generate an uncompressed archive. If in the file creation mode,
-	use _.tar_ as postfix of the file name.
+	use _.tar_ as postfix of the filename.
 
 *-f*, *--format*=<_FORMAT_>
 	Generate archive in specified _FORMAT_:
@@ -40,7 +40,7 @@ data is read from the standard input.
 	  has a 4GB limit on the individual file size.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpm2archive glint-1.0-1.i386.rpm | tar -xvz*

@@ -65,7 +65,7 @@ See *rpm-common*(8) for the options common to all operations.
 	based on actual paths.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpmdeps --requires /bin/ls*

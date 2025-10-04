@@ -89,7 +89,7 @@ options and operations documented in this manual:
 	_FILELIST_.  See *rpmrc Configuration* for details.
 
 *--root* _DIRECTORY_
-	Use the file system tree rooted at _DIRECTORY_ for all operations.
+	Use the filesystem tree rooted at _DIRECTORY_ for all operations.
 	Note that this means the database within _DIRECTORY_ will be used
 	for dependency checks and any scriptlet(s) (e.g. *%post* if
 	installing, or *%prep* if building, a package) will be run after a
@@ -153,7 +153,7 @@ If both the user and password are omitted, anonymous *ftp* is used.
 	typically _/usr/lib/rpm_.
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # FILES
 

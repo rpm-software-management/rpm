@@ -102,7 +102,7 @@ opposed to just package building) parts:
 
 *%\_netsharedpath* _PATH_
 	A colon separated list of paths where files should *not* be installed.
-	Usually, these are network file system mount points.
+	Usually, these are network filesystem mount points.
 
 *%\_passwd_path* _PATH_
 	Location of passwd(5) files as : separated list

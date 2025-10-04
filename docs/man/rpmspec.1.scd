@@ -63,7 +63,7 @@ See *rpm-common*(8) for the options common to all operations.
 See *rpm-common*(8).
 
 # EXIT STATUS
-On success, 0 is returned, a non-zero failure code otherwise.
+On success, 0 is returned, a nonzero failure code otherwise.
 
 # EXAMPLES
 *rpmspec -q rpm.spec*
