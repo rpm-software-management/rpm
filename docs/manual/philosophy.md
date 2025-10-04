@@ -60,7 +60,7 @@ never actually interact with RPM directly.
 * Reproducibility of builds and installs
 * Verifiability of packages and installed software
 
-### Rolling out (security) updates quickly.
+### Rolling out (security) updates quickly
 
 Getting updates installed quickly is one of the main design
 goals. Many features and following design decisions are supporting
