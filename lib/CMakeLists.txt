@@ -79,7 +79,9 @@ add_custom_command(OUTPUT tagtbl.inc
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh
 )
 
+
 target_link_libraries(librpm PUBLIC librpmio)
 target_link_libraries(librpm PRIVATE PkgConfig::POPT LUA::LUA ${Intl_LIBRARIES})
+target_compile_options(librpm PRIVATE -Wno-sign-compare)
 
 install(TARGETS librpm EXPORT rpm-targets)

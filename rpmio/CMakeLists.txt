@@ -8,6 +8,7 @@ target_sources(librpmio PRIVATE
 	rpmstrpool.cc rpmmacro_internal.hh rpmlua.cc rpmlua.hh lposix.cc
 )
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
+target_compile_options(librpmio PRIVATE -Wno-sign-compare)
 target_include_directories(librpmio 
     PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}
