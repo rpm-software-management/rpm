@@ -77,8 +77,8 @@ const char *key, char *keypass, uint32_t *siglenp)
 rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
 {
     struct rpmtd_s td;
-    int algo;
-    int diglen;
+    unsigned algo;
+    unsigned diglen;
     uint32_t siglen = 0;
     const char *algoname;
     const uint8_t *digest;
