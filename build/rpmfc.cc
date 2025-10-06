@@ -61,9 +61,9 @@ using fattrHash = std::unordered_multimap<int,int>;
 
 struct rpmfc_s {
     Package pkg;
-    int nfiles;		/*!< no. of files */
-    int fknown;		/*!< no. of classified files */
-    int fwhite;		/*!< no. of "white" files */
+    unsigned nfiles;	/*!< no. of files */
+    unsigned fknown;	/*!< no. of classified files */
+    unsigned fwhite;	/*!< no. of "white" files */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     int rpmformat;	/*!< Rpm package format */
@@ -818,7 +818,7 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
     int ndx;
     int dx;
-    int fx;
+    unsigned fx;
 
     if (fp == NULL) fp = stderr;
 
@@ -878,7 +878,7 @@ rpmfc rpmfcFree(rpmfc fc)
     if (fc) {
 	for (auto const & attr : fc->atypes)
 	    rpmfcAttrFree(attr);
-	for (int i = 0; i < fc->nfiles; i++) {
+	for (unsigned i = 0; i < fc->nfiles; i++) {
 	    argvFree(fc->fattrs[i]);
 	}
 	free(fc->fattrs);
@@ -1286,7 +1286,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     }
 
     #pragma omp for reduction(+:nerrors)
-    for (int ix = 0; ix < fc->nfiles; ix++) {
+    for (unsigned ix = 0; ix < fc->nfiles; ix++) {
 	const char * fmime = NULL;
 	const char * ftype = NULL;
 	const char * s = argv[ix];
@@ -1384,7 +1384,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     } /* omp parallel */
 
     /* Add to file class dictionary and index array */
-    for (int ix = 0; ix < fc->nfiles; ix++) {
+    for (unsigned ix = 0; ix < fc->nfiles; ix++) {
 	const string & ftype = fc->ftype[ix];
 	const string & fmime = fc->fmime[ix];
 	/* Pool id's start from 1, for headers we want it from 0 */
@@ -1531,7 +1531,7 @@ static rpmRC rpmfcApplyExternal(rpmfc fc)
     rpmRC rc = RPMRC_OK;
 
     /* Create file manifest buffer to deliver to dependency finder. */
-    for (int i = 0; i < fc->nfiles; i++)
+    for (unsigned i = 0; i < fc->nfiles; i++)
 	appendLineStringBuf(sb_stdin, fc->fn[i]);
 
     for (DepMsg_t dm = DepMsgs; dm->msg != NULL; dm++) {
