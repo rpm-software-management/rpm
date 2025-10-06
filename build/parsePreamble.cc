@@ -619,7 +619,7 @@ static rpmRC addIcon(Package pkg, const char * file)
     FD_t fd = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     off_t size;
-    size_t nb, iconsize;
+    ssize_t nb, iconsize;
 
     p->next = pkg->icon;
     pkg->icon = p;

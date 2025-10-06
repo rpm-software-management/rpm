@@ -386,7 +386,7 @@ static rpmRC fdJump(FD_t fd, off_t offset)
 
 static rpmRC fdConsume(FD_t fd, off_t start, off_t nbytes)
 {
-    size_t bufsiz = 32*BUFSIZ;
+    ssize_t bufsiz = 32*BUFSIZ;
     unsigned char buf[bufsiz];
     off_t left = nbytes;
     ssize_t nb;
