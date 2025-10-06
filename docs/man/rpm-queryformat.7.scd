@@ -310,5 +310,5 @@ See the scriptlet expansion documentation in *SEE ALSO* for more details, and
 
 *rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-spec*(5), *popt*(3)
 
-*https://rpm.org/docs/stable/manual/tags*++
-*https://rpm.org/docs/stable/manual/scriptlet_expansion*
+*https://rpm.org/docs/latest/manual/tags*++
+*https://rpm.org/docs/latest/manual/scriptlet_expansion*
