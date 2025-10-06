@@ -46,7 +46,7 @@ For example, if your package contains /bin/vi, RPM will add dependencies for bot
 A similar process allows RPM to add Provides information automatically. Any shared library in the file list is examined for its soname (the part of the name which must match for two shared libraries to be considered equivalent) and that soname is automatically provided by the package. For example, the libc-5.3.12 package has provides information added for libm.so.5 and libc.so.5. We expect this automatic dependency generation to eliminate the need for most packages to use explicit Requires: lines.
 
 ## Custom Automatic Dependency
-Customizing automatic dependency generation is covered in [dependency generator documentation]().
+Customizing automatic dependency generation is covered in [dependency generator documentation](dependency_generators.html).
 
 ## Interpreters and Shells
 Modules for interpreted languages like perl and tcl impose additional dependency requirements on packages. A script written for an interpreter often requires language specific modules to be installed in order to execute correctly. In order to automatically detect language specific modules, each interpreter may have its own [generators](dependency_generators.html). To prevent module name collisions between interpreters, module names are enclosed within parentheses and a conventional interpreter specific identifier is prepended:
