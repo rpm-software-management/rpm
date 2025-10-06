@@ -277,13 +277,14 @@ static int makeGPGSignature(sigTarget sigt, uint8_t **pktp, size_t *lenp)
     pkt = (uint8_t *)xmalloc(pktlen);
 
     {	FD_t fd;
+	size_t nb = 0;
 
 	fd = Fopen(sigfile, "r.ufdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = Fread(pkt, sizeof(*pkt), pktlen, fd);
+	    nb = Fread(pkt, sizeof(*pkt), pktlen, fd);
 	    (void) Fclose(fd);
 	}
-	if (rc != pktlen) {
+	if (nb != pktlen) {
 	    rpmlog(RPMLOG_ERR, _("unable to read the signature: %s\n"),
 			sigfile);
 	    pkt = _free(pkt);
@@ -789,7 +790,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	int diff = origSigSize - newSize;
 
 	/* The header doesn't support zero-sized data */
-	if ((diff < 0 && abs(diff) < utd.count) || diff > 0) {
+	if ((diff < 0 && abs(diff) < static_cast<int>(utd.count)) || diff > 0) {
 	    utd.count += diff;
 	    uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
 	    utd.data = zeros;
