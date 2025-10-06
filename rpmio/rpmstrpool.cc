@@ -26,9 +26,9 @@ struct poolHashBucket_s {
 };
 
 struct poolHash_s {
-    int numBuckets;
+    unsigned numBuckets;
     poolHashBucket * buckets;
-    int keyCount;
+    unsigned keyCount;
 };
 
 struct rpmstrPool_s {
@@ -130,7 +130,7 @@ static void poolHashResize(rpmstrPool pool, int numBuckets)
     poolHash ht = pool->hash;
     poolHashBucket * buckets = (poolHashBucket *)xcalloc(numBuckets, sizeof(*ht->buckets));
 
-    for (int i=0; i<ht->numBuckets; i++) {
+    for (unsigned i=0; i<ht->numBuckets; i++) {
         if (!ht->buckets[i].keyid) continue;
         unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
         for (unsigned int j=0;;j++) {
@@ -198,11 +198,10 @@ static poolHash poolHashFree(poolHash ht)
 static void poolHashPrintStats(rpmstrPool pool)
 {
     poolHash ht = pool->hash;
-    int i;
-    int collisions = 0;
-    int maxcollisions = 0;
+    unsigned collisions = 0;
+    unsigned maxcollisions = 0;
 
-    for (i=0; i<ht->numBuckets; i++) {
+    for (unsigned i=0; i<ht->numBuckets; i++) {
         unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
         for (unsigned int j=0;;j++) {
             unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
@@ -232,7 +231,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 	pool->hash = poolHashFree(pool->hash);
 
     pool->hash = poolHashCreate(sizehint);
-    for (int i = 1; i <= pool->offs_size; i++)
+    for (unsigned i = 1; i <= pool->offs_size; i++)
 	poolHashAddEntry(pool, id2str(pool, i), i);
 }
 
@@ -264,7 +263,7 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 	poolHashPrintStats(pool);
     poolHashFree(pool->hash);
     free(pool->offs);
-    for (int i=1; i<=pool->chunks_size; i++) {
+    for (unsigned i=1; i<=pool->chunks_size; i++) {
 	pool->chunks[i] = _free(pool->chunks[i]);
     }
     free(pool->chunks);
