@@ -1007,7 +1007,7 @@ static rpmRC parseBuildsysSect(rpmSpec spec, const char *prefix,
 				       "%", mn, " ",
 				       args ? args : "",
 				       "\n", NULL);
-	    size_t blen = strlen(buf);
+	    ssize_t blen = strlen(buf);
 	    if (Fwrite(buf, blen, 1, fd) < blen) {
 		rc = RPMRC_FAIL;
 		rpmlog(RPMLOG_ERR,
