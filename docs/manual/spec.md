@@ -747,7 +747,7 @@ specific `%clean` section generally suggests flaws in the spec.
 ## Runtime scriptlets
 
 Runtime scriptlets are executed at various stages of a package's lifetime,
-such as install or erase. For more information, see `rpm-scriptlets`(7).
+such as install or erase. For more information, see *rpm-scriptlets*(7).
 
 ## %files section
 
