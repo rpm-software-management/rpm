@@ -60,11 +60,13 @@ install(FILES ${manuals} TYPE DOC)
 
 # Base files to fetch from rpm-web
 set(base_files
+	_data/projects.yml
 	_layouts/default.html
 	_layouts/redirected.html
 	_plugins/jekyll-relative-links.rb
 	_plugins/jekyll-relative-links/context.rb
 	_plugins/jekyll-relative-links/generator.rb
+	_plugins/manual.rb
 )
 
 # Local files to build with Jekyll
