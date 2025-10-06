@@ -49,7 +49,6 @@ foreach(exe ${executables})
 	target_link_libraries(${exe} PRIVATE librpmio librpm PkgConfig::POPT)
 	target_link_libraries(${exe} PRIVATE ${Intl_LIBRARIES})
 	target_include_directories(${exe} PRIVATE ${Intl_INCLUDE_DIRS})
-	target_compile_options(${exe} PRIVATE -Wno-sign-compare)
 endforeach()
 
 foreach(cmd rpmverify rpmquery)

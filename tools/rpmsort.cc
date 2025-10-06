@@ -204,7 +204,7 @@ int main(int argc, const char *argv[])
 	  package_version_compare);
 
     /* Send sorted list to stdout. */
-    for (int i = 0; i < n_package_names; i++) {
+    for (size_t i = 0; i < n_package_names; i++) {
 	fprintf(stdout, "%s\n", package_names[i]);
 	free(package_names[i]);
     }

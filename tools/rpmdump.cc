@@ -115,7 +115,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
     uint8_t *dataStart;
     struct entryInfo *pe;
     struct entryInfo * entry = NULL;
-    int rc = 1, i;
+    int rc = 1;
     off_t foffset = lseek(fd, 0, SEEK_CUR);
 
     if (read(fd, intro, sizeof(intro)) != sizeof(intro)) {
@@ -181,7 +181,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
 	printf("Dribbles: %d\n", numEntries-ril);
     }
 	    
-    for (i = 0; i < numEntries; i++, entry++) {
+    for (unsigned i = 0; i < numEntries; i++, entry++) {
 	int in_region = (ril > 0 && i < ril);
 	const char *marker = "";
 	if (in_region) {
