@@ -415,7 +415,6 @@ if (ENABLE_WERROR)
 	add_compile_options(-Werror)
 endif()
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes -Wstrict-prototypes")
 
 if (ENABLE_ASAN)

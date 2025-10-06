@@ -32,6 +32,7 @@ target_link_libraries(librpmbuild PRIVATE
 	MAGIC::MAGIC
 	${Intl_LIBRARIES}
 )
+target_compile_options(librpmbuild PRIVATE -Wno-sign-compare)
 
 if (LIBDW_FOUND)
 	target_link_libraries(librpmbuild PRIVATE PkgConfig::LIBDW)

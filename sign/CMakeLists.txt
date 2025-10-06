@@ -18,6 +18,7 @@ target_include_directories(librpmsign
 
 target_link_libraries(librpmsign PUBLIC librpmio librpm)
 target_link_libraries(librpmsign PRIVATE PkgConfig::POPT ${Intl_LIBRARIES})
+target_compile_options(librpmsign PRIVATE -Wno-sign-compare)
 if (WITH_IMAEVM)
 	target_sources(librpmsign PRIVATE rpmsignfiles.cc)
 	target_link_libraries(librpmsign PRIVATE IMA::IMA)
