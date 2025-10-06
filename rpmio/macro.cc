@@ -918,7 +918,7 @@ void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 
     while (start != NULL) {
 	if (!quoted && strchr(seps, *s)) {
-	    size_t slen = s - start;
+	    ptrdiff_t slen = s - start;
 	    /* quoted arguments are always kept, otherwise skip empty args */
 	    if (slen > 0) {
 		char *d, arg[slen + 1];

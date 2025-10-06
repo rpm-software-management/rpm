@@ -84,7 +84,7 @@ char *rpmBase64Encode(const void *data, size_t len, int linelen)
 		
 	outptr = output;	
 	while (len > 0) {
-		if (linelen > 0 && len > linelen * 3) {
+		if (linelen > 0 && len > static_cast<unsigned>(linelen) * 3) {
 			outptr = base64_encode_block(dataptr, linelen * 3, outptr);
 			len -= linelen * 3;
 			dataptr += linelen * 3;

@@ -118,7 +118,7 @@ int argiAdd(ARGI_t * argip, int ix, int val)
     argi = *argip;
     if (ix < 0)
 	ix = argi->nvals;
-    if (ix >= argi->nvals) {
+    if (static_cast<unsigned>(ix) >= argi->nvals) {
 	argi->vals = xrealloc(argi->vals, (ix + 1) * sizeof(*argi->vals));
 	memset(argi->vals + argi->nvals, 0,
 		(ix - argi->nvals) * sizeof(*argi->vals));
