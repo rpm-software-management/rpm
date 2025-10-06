@@ -308,4 +308,4 @@ See *rpm-scriptlets*(7) for more information on scriptlets in general.
 
 *rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-scriptlets*(7), *rpm-spec*(5), *popt*(3)
 
-*https://rpm.org/docs/stable/manual/tags*++
+*https://rpm.org/docs/latest/manual/tags*++
