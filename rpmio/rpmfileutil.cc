@@ -169,7 +169,7 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
     if (nb < 0) {
 	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	rc = 1;
-    } else if (nb < sizeof(magic)) {
+    } else if (static_cast<unsigned>(nb) < sizeof(magic)) {
 	rpmlog(RPMLOG_ERR, _("File %s is smaller than %u bytes\n"),
 		file, (unsigned)sizeof(magic));
 	rc = 0;
