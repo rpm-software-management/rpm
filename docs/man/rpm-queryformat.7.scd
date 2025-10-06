@@ -32,8 +32,7 @@ Query formats are currently accepted in the following places:
 
 . Query operations with *rpm*(8), as a way to control the output (see
   *--queryformat*)
-. Runtime scriptlets in *rpm-spec*(5) files, to access arbitrary header data at
-  runtime
+. *rpm-scriptlets*(7), to access arbitrary header data at runtime (see *-q*)
 . Configuration macros in *rpm-config*(5) and *rpmbuild-config*(5), such as
   *%\_query\_all\_fmt* or *%\_rpmfilename*
 
@@ -288,7 +287,7 @@ _/usr/lib/rpm/rpmpopt-VERSION_
 	shorthand options (such as *--scripts*) with the help of query formats.
 	Replace _VERSION_ with the version of RPM installed on your system.
 
-## Example 3. Runtime scriptlets
+## Example 3. Transaction scriptlets
 
 Print the exact file list of a package after its installation:
 
@@ -303,12 +302,10 @@ Note that the trailing space inside the square brackets is required in order for
 the query format to be expanded to separate words that the *for* statement can
 loop over.
 
-See the scriptlet expansion documentation in *SEE ALSO* for more details, and
-*rpm-spec*(5) for more information on scriptlets in general.
+See *rpm-scriptlets*(7) for more information on scriptlets in general.
 
 # SEE ALSO
 
-*rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-spec*(5), *popt*(3)
+*rpm*(8), *rpm-common*(8), *rpm-config*(5), *rpm-scriptlets*(7), *rpm-spec*(5), *popt*(3)
 
 *https://rpm.org/docs/stable/manual/tags*++
-*https://rpm.org/docs/stable/manual/scriptlet_expansion*
