@@ -337,7 +337,7 @@ static rpmRC parseForVerify(char * buf, int def, FileEntry entry)
     if ((p = strstr(buf, name)) == NULL)
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -416,7 +416,7 @@ static rpmRC parseForDev(char * buf, FileEntry cur)
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -518,7 +518,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
     if ((p = strstr(buf, name)) == NULL)
 	return RPMRC_OK;
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
 
     SKIPSPACE(pe);
@@ -658,7 +658,7 @@ static rpmRC parseForConfig(char * buf, FileEntry cur)
     cur->attrFlags |= RPMFILE_CONFIG;
 
     /* Erase "%config" token. */
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
     if (*pe != '(')
@@ -743,7 +743,7 @@ static rpmRC parseForLang(char * buf, FileEntry cur)
 
   while ((p = strstr(buf, (name = "%lang"))) != NULL) {
 
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
 
@@ -807,7 +807,7 @@ static rpmRC parseForCaps(char * buf, FileEntry cur)
 	return RPMRC_OK;
 
     /* Erase "%caps" token. */
-    for (pe = p; (pe-p) < strlen(name); pe++)
+    for (pe = p; ptrlen(p,pe) < strlen(name); pe++)
 	*pe = ' ';
     SKIPSPACE(pe);
     if (*pe != '(')

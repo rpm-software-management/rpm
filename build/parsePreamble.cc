@@ -396,8 +396,11 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    }
 	    for (tb = tokbits; tb->name; tb++) {
 		if (tb->name != NULL &&
-		    strlen(tb->name) == (se-s) && rstreqn(tb->name, s, (se-s)))
+		    strlen(tb->name) == ptrlen(s,se) &&
+		    rstreqn(tb->name, s, (se-s)))
+		{
 		    break;
+		}
 	    }
 	    if (tb->name == NULL) {
 		rc = RPMRC_FAIL;
