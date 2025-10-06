@@ -976,12 +976,12 @@ static int isHardLink(FileListRec flp, FileListRec tlp)
  */
 static int checkHardLinks(FileRecords & files)
 {
-    for (int i = 0;  i < files.size(); i++) {
+    for (unsigned int i = 0;  i < files.size(); i++) {
 	FileListRec ilp = &files[i];
 	if (!(isLinkable(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
-	for (int j = i + 1; j < files.size(); j++) {
+	for (unsigned int j = i + 1; j < files.size(); j++) {
 	    FileListRec jlp = &files[j];
 	    if (isHardLink(ilp, jlp)) {
 		return 1;
@@ -1014,7 +1014,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 {
     FileListRec flp;
     char buf[BUFSIZ];
-    int i, npaths = 0;
+    unsigned int i, npaths = 0;
     int fail_on_dupes = rpmExpandNumeric("%{?_duplicate_files_terminate_build}") > 0;
     uint32_t defaultalgo = RPM_HASH_SHA256, digestalgo;
     rpm_loff_t totalFileSize = 0;
