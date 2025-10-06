@@ -64,4 +64,9 @@ void appendStringBufAux(StringBuf sb, const std::string & s, int nl);
 RPM_GNUC_INTERNAL
 int parseUnsignedNum(const char * line, uint32_t * res);
 
+/* pointer distance for strlen() compatibility, pe >= p known */
+inline size_t ptrlen(const char *p, const char *pe)
+{
+    return pe-p;
+}
 #endif /* _RPMBUILD_MISC_H */
