@@ -780,7 +780,7 @@ static void rpmfcAttributes(rpmfc fc, int ix, const char *ftype, const char *fmi
 			(st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
     }
 
-    for (int i = 0; i < fc->atypes.size(); ++i) {
+    for (unsigned i = 0; i < fc->atypes.size(); ++i) {
 	rpmfcAttr attr = fc->atypes[i];
 
 	/* Filter out excludes */
