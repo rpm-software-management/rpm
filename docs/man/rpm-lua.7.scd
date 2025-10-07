@@ -618,7 +618,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	```
 
 *getcwd()*
-	Get current directory. See *getenv*(3).
+	Get current directory. See *getcwd*(3).
 
 	Example:
 	```
