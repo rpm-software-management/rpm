@@ -14,9 +14,6 @@ This allows plugins to interface with systems that may not acceptable as
 a dependency for RPM and to provide functionality that may be unwanted
 under some circumstances.
 
-For now the plugin API is internal only. So there is a limited number of
-plugins in the RPM sources.
-
 # CONFIGURATION
 
 Some plugins can be configured by specific macros or influenced by
