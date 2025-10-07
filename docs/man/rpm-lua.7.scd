@@ -684,7 +684,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	- *gid*: group id
 	- *uid*: user id
 	- *pgrp*: parent group id
-	- *pid*: parent user id
+	- *pid*: process id
 	- *ppid*: parent pid
 
 	If omitted, a table with all these fields is returned.
