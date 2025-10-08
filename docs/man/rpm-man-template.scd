@@ -145,6 +145,10 @@ On success, 0 is returned, a non-zero failure code otherwise.
 Add at least one example for each major functionality of the command.
 Command first in bold, then description, similar to option descriptions.
 If command output is included in the description, use indented literal block.
+Use second level, numbered sections to separate longer examples from each other,
+or to group related ones together.
+
+## Example 1. Basic commands
 
 *rpmcmd --do-this package-1.0-1.noarch.rpm*
 	Do this thing to _package-1.0-1.noarch.rpm_.

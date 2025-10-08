@@ -16,10 +16,10 @@ the *%load* macro separately.
 The format of a macro file is: the macro _NAME_ prefixed with *%*, followed
 by whitespace and then the macro body, each new definition separated with
 a newline. The syntax is exactly the same as when using *%define*.
-See macro syntax documentation for the details (in *SEE ALSO*).
+See *rpm-macros*(7) for details on the macro syntax.
 
 A trailing *\\* indicates line continuation, but can be omitted inside
-macro bodies wrapped in a %{macro:...} block.
+macro bodies wrapped in a *%{macro:...}* block.
 
 Lines starting with *\#* or consisting solely of whitespace
 are ignored.
@@ -28,12 +28,12 @@ Reading a macro file is always fully declarative: no macros are ever
 expanded when reading a macro file.
 
 # EXAMPLES
-Define macro named mytool to /usr/bin/mytool-with-annoying-name:
+## Example 1. Simple macro
 ```
 %mytool	/usr/bin/mytool-with-annoying-name
 ```
 
-Multiline macro with preceding comment:
+## Example 2. Multiline macro with a preceding comment
 ```
 # Trailing %{nil} is handy for ensuring a newline at the end
 %mycmd %{mytool} \\
@@ -44,7 +44,7 @@ Multiline macro with preceding comment:
 %{nil}
 ```
 
-Multiline parametric Lua macro:
+## Example 3. Multiline parametric Lua macro:
 ```
 %myhelper() %{lua:
     function dostuff(arg)
@@ -57,5 +57,3 @@ Multiline parametric Lua macro:
 # SEE ALSO
 *rpm-config*(5) *rpmbuild-config*(5)
 *rpm-macros*(7)
-
-*https://rpm-software-management.github.io/rpm/manual/macros.html*
