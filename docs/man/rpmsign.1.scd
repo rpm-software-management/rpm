@@ -140,7 +140,7 @@ _~/.config/rpm/macros_):
 
 ```
 %\_openpgp_sign sq
-%\_openpgp_signer 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
+%\_openpgp_sign_id 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
 ```
 
 ## Example 2. Basic operations
