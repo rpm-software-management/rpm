@@ -133,23 +133,23 @@ Implementation specific macros:
 	The location of your Sequoia configuration if not the default.
 
 # EXAMPLES
-For example, to configure rpm to sign with Sequoia PGP using a key with
-fingerprint of 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08 you would include
+## Example 1. Basic setup
+Configure RPM to sign packages with Sequoia PGP and a specific key by adding the
+following contents to the user's *rpm-config*(5) file (typically
+_~/.config/rpm/macros_):
 
 ```
 %\_openpgp_sign sq
 %\_openpgp_signer 7B36C3EE0CCE86EDBC3EFF2685B274E29F798E08
 ```
 
-in a macro configuration file, typically _~/.config/rpm/macros_.
-See *Macro Configuration* in *rpm-common*(8) for more details.
-
+## Example 2. Basic operations
 *rpmsign --addsign hello-2.0-1.x64_rpm*
 	Add a signature to _hello-2.0-1.x64_rpm_ package.
 
 *rpmsign --resign --key-id 771b18d3d7baa28734333c424344591e1964c5fc hello-2.0-1.x64_rpm*
 	Replace all signatures in _hello-2.0-1.x64_rpm_ package by
-	a signature using key `771b18d3d7baa28734333c424344591e1964c5fc`.
+	a signature using key *771b18d3d7baa28734333c424344591e1964c5fc*.
 
 *rpmsign --delsign --delfilesign hello-2.0-1.x64_rpm*
 	Delete all signatures from _hello-2.0-1.x64_rpm_ package.

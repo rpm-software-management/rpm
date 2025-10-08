@@ -30,27 +30,27 @@ Lines beginning with *#* are considered comments. Empty lines and
 lines consisting of only whitespace are ignored.
 
 # EXAMPLES
-Manifest of *myproj-1.0-* and it's dependency *mylib-2.1* packages
-for the *x86_64* architecture.
 
+## Example 1. Manifest of all myproj-1.0 releases and their dependencies
 ```
 /mnt/myproj/rpm/myproj-1.0-*.x86_64.rpm
 /mnt/deplib/rpm/mylib-2.1-*.x86_64.rpm
 ```
 
-Manifest of all *noarch* packages in the default *rpmbuild*(1) location.
-
+## Example 2. Manifest of all noarch packages in the default rpmbuild(1) location
 ```
 ~/rpmbuild/RPMS/noarch/*.rpm
 ```
 
+## Example 3. Manifest as a simple base image
+
 Create a manifest called *mymanifest.mft* of currently installed packages,
-assuming a base path of */mnt/Packages* for the RPM package files.
-Then install the manifest to an alternative system root at */srv/test*.
+assuming a base path of */mnt/Packages* for the RPM package files, and install
+it to an alternative system root at */srv/test*:
 
 ```
-# rpm -qa --qf '/mnt/Packages/%{nevra}.rpm\n' > mymanifest.mft
-# rpm -Uv --root /srv/test mymanifest.mft
+rpm -qa --qf '/mnt/Packages/%{nevra}.rpm\\n' > mymanifest.mft
+rpm -Uv --root /srv/test mymanifest.mft
 ```
 
 # SEE ALSO

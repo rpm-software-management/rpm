@@ -317,7 +317,7 @@ of that package, but the rest of the transaction will still take place,
 even if there are missing dependencies.
 
 # EXAMPLES
-*Example 1. Update /etc/shell on package install/removal*
+## Example 1. Update /etc/shell on package install/removal
 
 ```
 %post
@@ -333,7 +333,7 @@ if [ $1 -eq 0 ] ; then
 fi
 ```
 
-*Example 2. Manage alternatives in a subpackage*
+## Example 2. Manage alternatives in a subpackage
 
 ```
 Name: frobber
@@ -353,7 +353,7 @@ if [ $1 -eq 0]; then
 fi
 ```
 
-*Example 3. Manage the MIME database*
+## Example 3. Manage the MIME database
 
 ```
 %transfiletriggerin -- /usr/share/mime
@@ -369,7 +369,7 @@ all updates to the _/usr/share/mime_ directory. Besides removing the need
 to have such scriptlets in all packages with such content, it also eliminates
 the need to have dependencies to the helper binary in all related packages.
 
-*Example 4. Enable a systemd preset on upgrade from older version*
+## Example 4. Enable a systemd preset on upgrade from older version
 
 ```
 Name: my
@@ -383,7 +383,7 @@ if [ -x /usr/bin/systemctl ]; then
 fi
 ```
 
-*Example 5. Execute a program in %pretrans*
+## Example 5. Execute a program in %pretrans
 
 ```
 %pretrans -p <lua>
@@ -396,14 +396,14 @@ Note that this seemingly simple thing is generally not possible in
 *%pretrans* without using *-p <lua>*, as on the initial install of
 a system, even _/bin/sh_ is not present at all.
 
-*Example 6. Runtime macro expansion*
+## Example 6. Runtime macro expansion
 
 ```
 %post -e
 ln -s %{_datadir}/bar/some.ext %%{_libdir}/foo/some.ext
 ```
 
-*Example 7. Runtime queryformat expansion for installed filenames*
+## Example 7. Runtime queryformat expansion for installed filenames
 
 ```
 %post -q
