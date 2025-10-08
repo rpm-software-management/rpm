@@ -265,7 +265,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 		  const uint32_t * dirIndexes, 
 		  int fileCount)
 {
-    fingerPrint * fps = (fingerPrint *)xmalloc(fileCount * sizeof(*fps));
+    fingerPrint * fps = (fingerPrint *)xcalloc(fileCount, sizeof(*fps));
     int i;
 
     /*
@@ -383,13 +383,16 @@ fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
 			     struct fingerPrint * fp, int ix,
 			     std::vector<struct rpmffi_s> & recs)
 {
-    auto range = cache->fp.equal_range(fp + ix);
-    if (range.first != range.second) {
-	for (auto it = range.first; it != range.second; ++it)
-	    recs.push_back(it->second);
-	return fp + ix;
-    } else
-	return NULL;
+    fingerPrint *fpe = fp + ix;
+    if (fpe->entry) {
+	auto range = cache->fp.equal_range(fpe);
+	if (range.first != range.second) {
+	    for (auto it = range.first; it != range.second; ++it)
+		recs.push_back(it->second);
+	    return fpe;
+	}
+    }
+    return NULL;
 }
 
 void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
@@ -428,7 +431,9 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 		    continue;
 		ffi.p = p;
 		ffi.fileno = i;
-		symlinks.insert({fpList + i, ffi});
+		fingerPrint *fp = fpList + i;
+		if (fp->entry)
+		    symlinks.insert({fp, ffi});
 		havesymlinks = 1;
 	    }
 	}
@@ -466,8 +471,9 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    }
 	    ffi.p = p;
 	    ffi.fileno = i;
-	    fpc->fp.insert({fpList + i, ffi});
 	    lastfp = fpList + i;
+	    if (lastfp->entry)
+		fpc->fp.insert({lastfp, ffi});
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfilesFree(fi);
