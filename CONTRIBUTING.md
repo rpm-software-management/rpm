@@ -15,8 +15,8 @@ To be included in RPM, contributions need to
 * needs to have a future - the project does not add support for legacy
   technologies
 * align with [RPM's philosophy](https://rpm-software-management.github.io/rpm/manual/philosophy.html) and design
-* be implemented following the [RPM coding style](CODING_STYLE.md)
-  and submitted according to the guidelines in
+* be implemented following the [RPM coding style](CODING_STYLE.md), include
+  documentation and tests and submitted according to the guidelines in
   [submitting patches](#Submitting-Patches)
 
 **When planning on any non-trivial amount of work on RPM, please check with us
@@ -44,6 +44,13 @@ Each PR should be a single atomic change, meaning that it should be merged
 or rejected as a unit. It is okay for a PR to contain multiple commits if
 later commits are dependent on earlier ones.  If earlier commits do not
 depend on later ones, they (should/should not) be submitted separately.
+
+All new features and bugfixes must include test(s). In the rare cases
+where testing is not possible due to technical limitations of the test-suite,
+this must be explicitly stated and the technical limitation explained.
+
+All new features must be documented via man pages, using the style
+and conventions documented in docs/man/rpm-man-template.scd.
 
 Pull requests should clearly state if the code is "ready for
 inclusion" or if further work is needed. Proof of concept or request
