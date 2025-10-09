@@ -2,11 +2,10 @@ name: Man page linter
 
 on:
   push:
-    paths:
-      - docs/man/**
+    paths: &manpages
+      - 'docs/man/**'
   pull_request:
-    paths:
-      - docs/man/**
+    paths: *manpages
 
 jobs:
   scdoc_lint:
