@@ -2,11 +2,10 @@ name: Linux CI
 
 on:
   push:
-    paths-ignore:
-      - docs/**
+    paths-ignore: &docfiles
+      - 'docs/**'
   pull_request:
-    paths-ignore:
-      - docs/**
+    paths-ignore: *docfiles
 
 jobs:
   build_and_test:
