@@ -25,7 +25,8 @@ public:
     rpmRC delete_key(rpmtxn txn, rpmPubkey key) override;
     rpmRC delete_store(rpmtxn txn) override;
 private:
-    rpmRC delete_key(rpmtxn txn, const std::string & keyid, const std::string & newname = "");
+    rpmRC delete_key(rpmtxn txn, rpmPubkey key, const std::string & newname);
+    rpmRC delete_key(rpmtxn txn, const std::string & keyid, const std::string & newname);
 };
 
 class keystore_rpmdb : public keystore {
@@ -35,7 +36,8 @@ public:
     rpmRC delete_key(rpmtxn txn, rpmPubkey key) override;
     rpmRC delete_store(rpmtxn txn) override;
 private:
-    rpmRC delete_key(rpmtxn txn, const std::string & keyid, unsigned int newinstance = 0);
+    rpmRC delete_key(rpmtxn txn, rpmPubkey key, unsigned int newinstance);
+    rpmRC delete_key(rpmtxn txn, const std::string & keyid, unsigned int newinstance);
 };
 
 class keystore_openpgp_cert_d : public keystore {
