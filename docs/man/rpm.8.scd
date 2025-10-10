@@ -22,6 +22,8 @@ rpm - RPM Package Manager
 
 *rpm* {*-e*|*--erase*} [transaction-options] [erase-options] _PACKAGE_NAME_ ...
 
+*rpm* {*-K*} _PACKAGE_FILE_ ...
+
 ## Misc operations
 *rpm* *--querytags*
 
@@ -46,6 +48,7 @@ code and recipe necessary to produce binary packages.
 	metadata stored in the *rpm* database. Among other things, verifying
 	compares the size, digest, permissions, type, owner and group of each
 	file. Any discrepancies are displayed.
+
 *-q*,
 *--query*
 	Query package files or installed package(s).
@@ -77,6 +80,12 @@ code and recipe necessary to produce binary packages.
 *-e*,
 *--erase*
 	Erase installed packages.
+
+*-K*
+	Verify the file contents against included checksums to ensure
+	the contents haven't been modified. If the package is signed
+	with a GPG key, rpm will validate the signature against the
+	keys installed on the system.
 
 ## Misc operations
 *--querytags*
