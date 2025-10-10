@@ -151,9 +151,22 @@ rpmRC keystore_fs::delete_key(rpmtxn txn, const string & keyid, const string & n
     return rc;
 }
 
+rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key, const string & newname)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    string fp = rpmPubkeyFingerprintAsHex(key);
+
+    if (delete_key(txn, fp, newname) == RPMRC_NOTFOUND) {
+	/* make sure an old, short keyid version gets removed */
+	delete_key(txn, fp.substr(32), newname);
+    }
+
+    return rc;
+}
+
 rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
+    return delete_key(txn, key, "");
 }
 
 rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
@@ -168,10 +181,7 @@ rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags f
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	if (delete_key(txn, fp, keyfmt) == RPMRC_NOTFOUND) {
-	    /* make sure an old, short keyid version gets removed */
-	    delete_key(txn, fp.substr(32), keyfmt);
-	}
+	delete_key(txn, key, keyfmt);
     }
 
     free(dir);
@@ -348,9 +358,22 @@ rpmRC keystore_rpmdb::delete_key(rpmtxn txn, const string & keyid, unsigned int 
     return rc;
 }
 
+rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key, unsigned int newinstance)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    string fp = rpmPubkeyFingerprintAsHex(key);
+
+    if (delete_key(txn, fp, newinstance) == RPMRC_NOTFOUND) {
+	/* make sure an old, short keyid version gets removed */
+	delete_key(txn, fp.substr(32), newinstance);
+    }
+
+    return rc;
+}
+
 rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return delete_key(txn, rpmPubkeyFingerprintAsHex(key));
+    return delete_key(txn, key, 0);
 }
 
 rpmRC keystore_rpmdb::delete_store(rpmtxn txn)
@@ -392,11 +415,7 @@ rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlag
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
-	string fp = rpmPubkeyFingerprintAsHex(key);
-	if (delete_key(txn, fp, newinstance) == RPMRC_NOTFOUND) {
-	    /* make sure an old, short keyid version gets removed */
-	    delete_key(txn, fp.substr(32), newinstance);
-	}
+	delete_key(txn, key, newinstance);
     }
     headerFree(h);
 
