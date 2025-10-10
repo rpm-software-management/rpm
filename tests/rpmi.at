@@ -1135,6 +1135,29 @@ runroot rpm -U --relocate /opt/bin=/bin \
 2: /opt/lib
 ],
 [])
+
+RPMTEST_CHECK([
+runroot rpm -U --relocate /opt/bin=/rbin \
+	--root /srv --nodeps --noplugins --nosignature --noscripts \
+	/build/RPMS/noarch/reloc-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm --root /srv -ql reloc
+],
+[0],
+[/opt
+/rbin
+/rbin/typo
+/opt/etc
+/opt/etc/conf
+/opt/lib
+/opt/lib/notlib
+],
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i relocatable package 2])

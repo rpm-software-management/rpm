@@ -528,6 +528,9 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	 * files will be sorted in exactly the same order.
 	 */
 	fiFps = fpCacheGetByFp(fpc, fpList, i, recs);
+	/* We may not *have* records on everything, eg due to relocation. */
+	if (fiFps == NULL)
+	    continue;
 
 	/*
 	 * If this package is being added, look only at other packages
