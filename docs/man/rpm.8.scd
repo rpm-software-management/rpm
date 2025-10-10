@@ -82,6 +82,28 @@ code and recipe necessary to produce binary packages.
 *--querytags*
 	Dump known querytags. Useful with the *--queryformat* option.
 
+## Obsolete compatibility aliases
+These are obsolete *popt*(3) aliases for backwards compatibility only,
+and their use is discouraged.
+
+*--initdb*,
+*--rebuilddb*,
+*--verifydb*
+	See *rpmdb*(8).
+
+*--addsign*,
+*--delsign*,
+*--resign*
+	See *rpmsign*(1).
+
+*-K*,
+*--checksig*,
+*--import*
+	See *rpmkeys*(8).
+
+*--specfile*
+	See *rpmspec*(1).
+
 See *rpm-common*(8) for the operations common to all rpm executables.
 
 # ARGUMENTS
