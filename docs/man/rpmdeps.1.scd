@@ -4,9 +4,9 @@ RPMDEPS(1)
 rpmdeps - Generate RPM Package Dependencies
 
 # SYNOPSIS
-*rpmdeps* [options] [_OPERATION_]
+*rpmdeps* <operation> [options]
 
-*rpmdeps* [options] [_OPERATION_] _FILE_ ...
+*rpmdeps* <operation> [options] _FILE_ ...
 
 # DESCRIPTION
 *rpmdeps* generates package dependencies for one or more files, received
