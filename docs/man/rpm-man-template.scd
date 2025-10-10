@@ -9,11 +9,14 @@ Use the generic form for one-purpose commands:
 *rpmcmd* [options] [_ARGUMENT_] ...
 
 Use one entry per operation for multi-operation (aka mode) commands.
-Use {} for the operation switches:
+Use {} for the operation switches, or <operation> if the operations
+all share similar options and arguments.
 
 *rpmcmd* {*-b*|*--bardize*} [options] [bardize-options] [_ARGUMENT_] ...
 
 *rpmcmd* {*-f*|*--frobnize*} [options] [_ARGUMENT_] ...
+
+*rpmcmd* <operation> [options] [_ARGUMENT_] ...
 
 # DESCRIPTION
 Describe what *rpmcmd* command does in plain, understandable
