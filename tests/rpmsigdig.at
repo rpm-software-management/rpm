@@ -186,6 +186,26 @@ runroot rpm -qa gpg-pubkey
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmkeys legacy key delete (rpmdb)])
+AT_KEYWORDS([rpmkeys rpmdb])
+echo "%_keyring rpmdb" >> "${RPMTEST}"/"${RPMSYSCONFDIR}"/macros.testenv
+RPMTEST_CHECK([
+runroot rpm -q --dbpath /data/misc/ gpg-pubkey
+],
+[0],
+[gpg-pubkey-1964c5fc-58e63918
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys --dbpath /data/misc/ --delete 771b18d3d7baa28734333c424344591e1964c5fc
+runroot rpmkeys --dbpath /data/misc/ --list
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmkeys migrate from keyid to fingerprint (rpmdb)])
 AT_KEYWORDS([rpmkeys rpmdb])
 echo "%_db_backend sqlite" >> $RPMTEST/root/.config/rpm/macros
