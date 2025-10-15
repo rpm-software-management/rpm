@@ -41,14 +41,12 @@ formats, similar to *zcat*(1).
 *--dry-run*
 	Output the shell command that would be executed without this option.
 
+See *rpm-common*(8) for options common to all rpm executables.
+
 # EXTRACT OPTIONS
 *-C* _PATH_,
 *--path*=_PATH_
 	Extract into to _PATH_ regardless of the archive's internal layout.
-
-*-v*,
-*--verbose*
-	Provide verbose extraction output.
 
 # EXIT STATUS
 On success, 0 is returned, a nonzero failure code otherwise.
@@ -66,6 +64,6 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	_myproject_ directory, regardless of it's internal structure.
 
 # SEE ALSO
-*rpmbuild*(1), *popt*(3)
+*rpm-common*(8), *rpmbuild*(1), *popt*(3)
 
 *http://www.rpm.org/*
