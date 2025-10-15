@@ -10,24 +10,30 @@
 #include <archive_entry.h>
 
 #include <rpm/rpmcli.h>
+#include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
 #include "debug.h"
 
-static int verbose = 0;
 static int extract = 0;
 static int dryrun = 0;
 static char *dstpath = NULL;
 
-static struct poptOption optionsTable[] = {
+static struct poptOption extractTable[] = {
     { "extract", 'x', POPT_ARG_VAL, &extract, 1,
 	N_("extract an archive"), NULL },
-    { "verbose", 'v', POPT_ARG_VAL, &verbose, 1,
-	N_("provide more detailed output"), NULL },
     { "dry-run", 'n', POPT_ARG_VAL, &dryrun, 1,
 	N_("only print what would be done"), NULL },
     { "path", 'C', POPT_ARG_STRING, &dstpath, 0,
 	N_("extract into a specific path"), NULL },
+    POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, extractTable, 0,
+	N_("Extract options:"), NULL },
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all rpm modes and executables:"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
@@ -149,7 +155,7 @@ static char *doUntar(const char *fn)
     const struct archiveType_s *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
-    const char *taropts = verbose ? "-xvvof" : "-xof";
+    const char *taropts = rpmIsVerbose() ? "-xvvof" : "-xof";
     char *mkdir = NULL;
     char *stripcd = NULL;
     int needtar = 0;
@@ -199,7 +205,7 @@ static char *doUntar(const char *fn)
 
 	zipper = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			   at->cmd, " ", at->unpack, " ",
-			   verbose ? "" : at->quiet, NULL);
+			   rpmIsVerbose() ? "" : at->quiet, NULL);
 	if (needtar) {
 	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir, zipper, fn, tar, taropts, stripcd);
 	} else if (at->compressed == COMPRESSED_GEM) {
@@ -252,7 +258,7 @@ int main(int argc, char *argv[])
     if (cmd) {
 	FILE *inp = NULL;
 
-	if (verbose || dryrun)
+	if (rpmIsVerbose() || dryrun)
 	    fprintf(stderr, "%s\n", cmd);
 
 	if (dryrun) {
