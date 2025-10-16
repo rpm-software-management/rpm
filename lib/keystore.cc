@@ -113,7 +113,6 @@ exit:
     return rc;
 }
 
-
 static rpmRC delete_file_store(std::string path)
 {
     try {
@@ -124,6 +123,19 @@ static rpmRC delete_file_store(std::string path)
     return RPMRC_OK;
 }
 
+/* Wrapper for private delete_key() methods that falls back to short keyid */
+static rpmRC rpm::delete_key_compat(auto keystore, rpmtxn txn, rpmPubkey key, auto skip)
+{
+    rpmRC rc = RPMRC_NOTFOUND;
+    string fp = rpmPubkeyFingerprintAsHex(key);
+
+    if (keystore->delete_key(txn, fp, skip) == RPMRC_NOTFOUND) {
+	/* make sure an old, short keyid version gets removed */
+	keystore->delete_key(txn, fp.substr(32), skip);
+    }
+
+    return rc;
+}
 
 /*****************************************************************************/
 
@@ -151,22 +163,9 @@ rpmRC keystore_fs::delete_key(rpmtxn txn, const string & keyid, const string & n
     return rc;
 }
 
-rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key, const string & newname)
-{
-    rpmRC rc = RPMRC_NOTFOUND;
-    string fp = rpmPubkeyFingerprintAsHex(key);
-
-    if (delete_key(txn, fp, newname) == RPMRC_NOTFOUND) {
-	/* make sure an old, short keyid version gets removed */
-	delete_key(txn, fp.substr(32), newname);
-    }
-
-    return rc;
-}
-
 rpmRC keystore_fs::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return delete_key(txn, key, "");
+    return delete_key_compat(this, txn, key, "");
 }
 
 rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags flags)
@@ -181,7 +180,7 @@ rpmRC keystore_fs::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlags f
 
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
-	delete_key(txn, key, keyfmt);
+	delete_key_compat(this, txn, key, keyfmt);
     }
 
     free(dir);
@@ -358,22 +357,9 @@ rpmRC keystore_rpmdb::delete_key(rpmtxn txn, const string & keyid, unsigned int 
     return rc;
 }
 
-rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key, unsigned int newinstance)
-{
-    rpmRC rc = RPMRC_NOTFOUND;
-    string fp = rpmPubkeyFingerprintAsHex(key);
-
-    if (delete_key(txn, fp, newinstance) == RPMRC_NOTFOUND) {
-	/* make sure an old, short keyid version gets removed */
-	delete_key(txn, fp.substr(32), newinstance);
-    }
-
-    return rc;
-}
-
 rpmRC keystore_rpmdb::delete_key(rpmtxn txn, rpmPubkey key)
 {
-    return delete_key(txn, key, 0);
+    return delete_key_compat(this, txn, key, 0);
 }
 
 rpmRC keystore_rpmdb::delete_store(rpmtxn txn)
@@ -415,7 +401,7 @@ rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlag
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
-	delete_key(txn, key, newinstance);
+	delete_key_compat(this, txn, key, newinstance);
     }
     headerFree(h);
 
