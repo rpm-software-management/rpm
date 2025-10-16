@@ -392,12 +392,11 @@ rpmRC keystore_rpmdb::import_key(rpmtxn txn, rpmPubkey key, int replace, rpmFlag
     if (!rc && replace) {
 	/* find and delete the old pubkey entry */
 	unsigned int newinstance = headerGetInstance(h);
-	char *keyid = headerFormat(h, "%{version}", NULL);
-	if (delete_key(txn, keyid, newinstance) == RPMRC_NOTFOUND) {
+	string fp = rpmPubkeyFingerprintAsHex(key);
+	if (delete_key(txn, fp, newinstance) == RPMRC_NOTFOUND) {
 	    /* make sure an old, short keyid version gets removed */
-	    delete_key(txn, keyid+32, newinstance);
+	    delete_key(txn, fp.substr(32), newinstance);
 	}
-	free(keyid);
     }
     headerFree(h);
 
