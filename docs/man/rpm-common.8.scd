@@ -155,6 +155,11 @@ If both the user and password are omitted, anonymous *ftp* is used.
 # EXIT STATUS
 On success, 0 is returned, a nonzero failure code otherwise.
 
+# BUGS
+Not all options are meaningful or implemented in all the executables
+they show in. In particular, *--root* and the various verify-related
+options are only honored by *rpm*(8) and *rpmdb*(8).
+
 # FILES
 
 ## Database
