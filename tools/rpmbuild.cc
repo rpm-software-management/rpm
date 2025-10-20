@@ -659,13 +659,13 @@ int main(int argc, char *argv[])
 	/* fallthrough */
     case 'f':
 	ba->buildAmount |= RPMBUILD_CONF;
+	if ((buildChar == 'f') && shortCircuit)
+	    break;
 	ba->buildAmount |= RPMBUILD_BUILDREQUIRES;
 	if (!noDeps) {
 	    ba->buildAmount |= RPMBUILD_DUMPBUILDREQUIRES;
 	    ba->buildAmount |= RPMBUILD_CHECKBUILDREQUIRES;
 	}
-	if ((buildChar == 'f') && shortCircuit)
-	    break;
 	/* fallthrough */
     case 'p':
 	ba->buildAmount |= RPMBUILD_PREP;

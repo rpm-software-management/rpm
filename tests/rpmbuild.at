@@ -339,13 +339,11 @@ Executing(%conf)
 ],
 [])
 
-# XXX %generate_buildrequires here is a bug
 RPMTEST_CHECK([
 runroot rpmbuild -bf --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%generate_buildrequires)
-Executing(%conf)
+[Executing(%conf)
 ],
 [])
 
