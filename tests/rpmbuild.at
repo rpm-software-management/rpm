@@ -277,6 +277,14 @@ Executing(%prep)
 [])
 
 RPMTEST_CHECK([
+runroot rpmbuild -bp --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%prep)
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpmbuild -bp -D "preamble BuildRequires:foo" /data/SPECS/specstep.spec 2>&1|grep ^error:
 ],
 [0],
@@ -295,12 +303,28 @@ Executing(%generate_buildrequires)
 [])
 
 RPMTEST_CHECK([
+runroot rpmbuild -br --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%generate_buildrequires)
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpmbuild -bd /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
 [Executing(%mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bd --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%generate_buildrequires)
 ],
 [])
 
@@ -314,6 +338,17 @@ Executing(%generate_buildrequires)
 Executing(%conf)
 ],
 [])
+
+# XXX %generate_buildrequires here is a bug
+RPMTEST_CHECK([
+runroot rpmbuild -bf --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%generate_buildrequires)
+Executing(%conf)
+],
+[])
+
 RPMTEST_CHECK([
 runroot rpmbuild -bc /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
@@ -323,6 +358,14 @@ Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
 Executing(%build)
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bc --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%build)
 ],
 [])
 
@@ -338,6 +381,22 @@ Executing(%build)
 Executing(%install)
 Executing(%check)
 ],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bi --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%install)
+Executing(%check)
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bb --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[],
 [])
 
 RPMTEST_CHECK([
