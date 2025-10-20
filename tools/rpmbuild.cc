@@ -706,7 +706,8 @@ int main(int argc, char *argv[])
 	    buildChar != 'f' &&
 	    buildChar != 'c' &&
 	    buildChar != 'i' &&
-	    buildChar != 'l') {
+	    buildChar != 'l')
+	{
 	    ba->buildAmount |= RPMBUILD_RMSOURCE;
 	    ba->buildAmount |= RPMBUILD_RMSPEC;
 	    ba->buildAmount |= RPMBUILD_RMBUILD;
