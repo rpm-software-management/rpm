@@ -391,6 +391,28 @@ Executing(%check)
 [])
 
 RPMTEST_CHECK([
+runroot rpmbuild -bk /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%mkbuilddir)
+Executing(%prep)
+Executing(%generate_buildrequires)
+Executing(%conf)
+Executing(%build)
+Executing(%install)
+Executing(%check)
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bk --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
+],
+[0],
+[Executing(%check)
+],
+[])
+
+RPMTEST_CHECK([
 runroot rpmbuild -bb --short-circuit /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],

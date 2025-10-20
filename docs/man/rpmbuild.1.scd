@@ -96,9 +96,15 @@ applicable.
 *c* (%build)
 	Compile the sources. This generally involves the equivalent of *make*.
 
-*i* (%install and %check)
+*i* (%install)
 	Install the binaries into the build root. This generally involves the
-	equivalent of a *make install* and *make check*.
+	equivalent of a *make install*.
+
+	For historical reasons, this also includes the %check stage by default.
+
+*k* (%check)
+	Run any checks specified in the spec. This generally involves the
+	equivalent of *make check*.
 
 *l*
 	Do a "list check" - the *%files* section from the spec file is macro
