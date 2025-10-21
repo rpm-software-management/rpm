@@ -1120,7 +1120,7 @@ static rpmRC rpmfcApplyInternal(rpmfc fc)
 
 	if (previx != ix) {
 	    previx = ix;
-	    fc->fddictx.insert(fc->fddictx.begin() + ix, fc->ddictx.size() - 1);
+	    fc->fddictx[ix] = fc->ddictx.size() - 1;
 	}
 	fc->fddictn[ix]++;
     }
