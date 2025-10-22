@@ -1988,6 +1988,146 @@ tagno: 267 (Dsa)
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([multisign with disabled algorithms])
+AT_KEYWORDS([rpmsign signature multisig v4])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+cat << EOF > ${HOME}/.config/rpm/macros
+%_openpgp_sign sq
+%_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
+EOF
+
+runroot sq key import /data/keys/*.secret
+runroot rpmkeys --import /data/keys/*.pub
+
+cp "${RPMTEST}"/data/RPMS/hello-2.0-1.x86_64.rpm "${RPMTEST}"/tmp/
+runroot rpmsign --addsign --rpmv6 /tmp/hello-2.0-1.x86_64.rpm &> /dev/null
+runroot rpmsign --addsign --rpmv6 --key-id 152BB32FD9CA982797E835CFB0645AEC757BF69E /tmp/hello-2.0-1.x86_64.rpm &> /dev/null
+runroot rpmsign --addsign --rpmv6 --key-id E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 /tmp/hello-2.0-1.x86_64.rpm &> /dev/null
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[Verifying packages...
+Preparing packages...
+],
+[ignore])
+
+# RSA disabled
+RPMTEST_CHECK([
+runroot cp /etc/crypto-policies/back-ends/rpm-sequoia.config /tmp/
+runroot sed -i '/^rsa/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: NOTTRUSTED
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[Verifying packages...
+Preparing packages...
+],
+[ignore])
+
+# EDDSA disabled
+RPMTEST_CHECK([
+runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+# Work around https://gitlab.com/sequoia-pgp/sequoia/-/issues/1225
+# Disabling cv25519 disables ed25519, but disabling ed25519 does not:
+runroot sed -i '/^cv25519/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot sed -i '/^ed25519/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[Verifying packages...
+Preparing packages...
+],
+[ignore])
+
+# ECDSA disabled
+RPMTEST_CHECK([
+runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+runroot sed -i '/^nist/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[Verifying packages...
+Preparing packages...
+],
+[ignore])
+
+# everything disabled
+RPMTEST_CHECK([
+runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+runroot sed -i 's/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: NOTTRUSTED
+    Header OpenPGP RSA signature: NOTFOUND
+    Header OpenPGP DSA signature: NOTFOUND
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+    Legacy OpenPGP RSA signature: NOTFOUND
+    Legacy OpenPGP DSA signature: NOTFOUND
+],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[Verifying packages...
+Preparing packages...
+],
+[ignore])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmsign --addsign legacy v6])
 AT_KEYWORDS([rpmsign signature legacy v6])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
