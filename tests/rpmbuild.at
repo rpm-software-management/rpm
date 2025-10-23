@@ -1361,6 +1361,31 @@ runroot rpm -qp \
 
 ],
 [])
+
+RPMTEST_CHECK([[
+runroot rpm -qp \
+	--qf '%{FILENAMES:arraysize} ' \
+	--qf '%{FILECOLORS:arraysize} ' \
+	--qf '%{FILEDIGESTS:arraysize} ' \
+	--qf '%{FILEFLAGS:arraysize} ' \
+	--qf '%{FILEVERIFYFLAGS:arraysize} ' \
+	--qf '%{FILEMODES:arraysize} ' \
+	--qf '%{FILEMTIMES:arraysize} ' \
+	--qf '%{FILERDEVS:arraysize} ' \
+	--qf '%{FILEINODES:arraysize} ' \
+	--qf '%{FILEDEVICES:arraysize} ' \
+	--qf '%{FILESIZES:arraysize} ' \
+	--qf '%{FILEUSERNAME:arraysize} ' \
+	--qf '%{FILEGROUPNAME:arraysize} ' \
+	--qf '%{FILEDEPENDSN:arraysize} ' \
+	--qf '%{FILEDEPENDSX:arraysize} ' \
+	--qf '%{FILECLASS:arraysize}\n' \
+	/build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+[5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
+],
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([Dependency generation 1.2])
@@ -1508,6 +1533,31 @@ runroot rpm -qp \
 0
 0
 
+],
+[])
+
+RPMTEST_CHECK([[
+runroot rpm -qp \
+	--qf '%{FILENAMES:arraysize} ' \
+	--qf '%{FILECOLORS:arraysize} ' \
+	--qf '%{FILEDIGESTS:arraysize} ' \
+	--qf '%{FILEFLAGS:arraysize} ' \
+	--qf '%{FILEVERIFYFLAGS:arraysize} ' \
+	--qf '%{FILEMODES:arraysize} ' \
+	--qf '%{FILEMTIMES:arraysize} ' \
+	--qf '%{FILERDEVS:arraysize} ' \
+	--qf '%{FILEINODES:arraysize} ' \
+	--qf '%{FILEDEVICES:arraysize} ' \
+	--qf '%{LONGFILESIZES:arraysize} ' \
+	--qf '%{FILEUSERNAME:arraysize} ' \
+	--qf '%{FILEGROUPNAME:arraysize} ' \
+	--qf '%{FILEDEPENDSN:arraysize} ' \
+	--qf '%{FILEDEPENDSX:arraysize} ' \
+	--qf '%{FILEMIMEINDEX:arraysize}\n' \
+	/build/RPMS/noarch/filedep-1.0-1.noarch.rpm
+]],
+[0],
+[5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
 ],
 [])
 RPMTEST_CLEANUP
