@@ -4,7 +4,7 @@ title: rpm.org - Large File Support in RPM
 ---
 # Large File Support in RPM
 
- RPM originally used 32-bit variables and tags for storing various (file) sizes. With the increasing sizes of files and packages RPM has added support for 64-bit values step by step. If you are an RPM API user you need to go theses steps with us or your code will fail if it encounters packages making use of these new features.
+ RPM originally used 32-bit variables and tags for storing various (file) sizes. With the increasing sizes of files and packages RPM has added support for 64-bit values step by step. If you are an RPM API user you need to do these steps with us or your code will fail if it encounters packages making use of these new features.
 
 Even if you are not an RPM API user you might need to care. RPM packages can be bigger than 4GB nowadays. So if you are just handling them as files without looking into them your code still needs to be able to handle 64-bit file sizes.
 
