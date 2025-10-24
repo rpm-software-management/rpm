@@ -106,7 +106,7 @@ The complete list of tags is documented [here](tags.md).
 The Payload is a cpio archive, gzipped by default.  The cpio archive
 type used is SVR4 with a CRC checksum.
 
-As cpio is limited to 4 GB (32 bit unsigned) file sizes RPM since
+As cpio is limited to 4 GB (32-bit unsigned) file sizes RPM since
 version 4.12 uses a stripped down version of cpio for packages with
 files > 4 GB. This format uses `07070X` as magic bytes and the file
 header otherwise only contains the index number of the file in the RPM
