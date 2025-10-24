@@ -56,7 +56,7 @@ Comments are also allowed after conditionals (see below). Some older
 versions of RPM (4.14 to 4.19) did issue a warning on those, but they
 are fully legal from RPM 4.20 onward.
 
-Macros are expanded even in comment lines. If this is undesireable, escape
+Macros are expanded even in comment lines. If this is undesirable, escape
 the macro with an extra percent sign (%):
 
 ```
@@ -353,7 +353,7 @@ accepted qualifiers are:
 * `pretrans`
 
   Denotes the dependency must be present before the transaction starts,
-  and cannot be satisified by added packages in a transaction. As such,
+  and cannot be satisfied by added packages in a transaction. As such,
   it does not affect transaction ordering. A pretrans-dependency is
   free to be removed after the install-transaction completes.
 
@@ -464,7 +464,7 @@ you would add
 
 Package is not buildable on architectures listed here.
 Used when software is portable across most architectures except some,
-for example due to endianess issues.
+for example due to endianness issues.
 
 #### ExclusiveArch
 
@@ -605,7 +605,7 @@ in the script.
 ### %prep
 
 %prep prepares the sources for building. This is where sources are
-unpacked and possible patches applied, and other similar activies
+unpacked and possible patches applied, and other similar activities
 could be performed.
 
 Typically [%autosetup](autosetup.md) is used to automatically handle
@@ -690,7 +690,7 @@ used to install the build requires and restart the build.
 
 On success the found build dependencies are also added to the source
 package. As always they depend on the exact circumstance of the build
-and may be different when bulding based on other packages or even
+and may be different when building based on other packages or even
 another architecture.
 
 ### %conf (since rpm >= 4.18)
