@@ -19,7 +19,7 @@ package file is divided in 4 logical sections:
 . Payload   -- compressed archive of the file(s) in the package (aka "payload")
 ```
 
-All applicaple integer quantities are stored in network byte order
+All applicable integer quantities are stored in network byte order
 (big-endian). When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).
@@ -106,7 +106,7 @@ The complete list of tags is documented [here](tags.md).
 The Payload is a cpio archive, gzipped by default.  The cpio archive
 type used is SVR4 with a CRC checksum.
 
-As cpio is limited to 4 GB (32 bit unsigned) file sizes RPM since
+As cpio is limited to 4 GB (32-bit unsigned) file sizes RPM since
 version 4.12 uses a stripped down version of cpio for packages with
 files > 4 GB. This format uses `07070X` as magic bytes and the file
 header otherwise only contains the index number of the file in the RPM

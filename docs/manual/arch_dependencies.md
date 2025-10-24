@@ -6,7 +6,7 @@ title: rpm.org - Architecture-specific Dependencies
 
 # Architecture-specific Dependencies
 
-On multiarch systems such as x86_64 it would be often desireable to express that a package of compatible architecture is
+On multiarch systems such as x86_64 it would be often desirable to express that a package of compatible architecture is
 needed to satisfy a dependency. In most of the cases this is already handled by the automatically extracted soname dependencies,
 but this is not always the case: sometimes it's necessary to disable the automatic dependency generation, and then there
 are cases where the information cannot be automatically generated, such as -devel package dependencies on other -devel packages

@@ -56,7 +56,7 @@ cost of increased resource use and compression times.
 *T* is equivalent to *T0* and causes the number of threads to be
 automatically detected. Note that while using threads can speed up compression
 considerably, it typically causes the compression ratio to go down, and
-make the output less predicable.
+make the output less predictable.
 
 # EXAMPLES
 [[ Mode

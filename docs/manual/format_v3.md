@@ -19,7 +19,7 @@ package file is divided in 4 logical sections:
 . Payload   -- compressed archive of the file(s) in the package (aka "payload")
 ```
 
-All applicaple integer quantities are stored in network byte order
+All applicable integer quantities are stored in network byte order
 (big-endian). When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).

@@ -288,7 +288,7 @@ Sometimes also useful for temporarily working around issues while packaging.
 	(if defined) returns an error? See the *%\_build_pkgcheck_\** macros.
 
 *%\_use_internal_dependency_generator* _BOOLEAN_
-	If eneabled, use rpm 3.x style dependency generation.
+	If enabled, use rpm 3.x style dependency generation.
 	Do not use. Deprecated and scheduled for removal.
 
 *%\_use_weak_usergroup_deps* _BOOLEAN_

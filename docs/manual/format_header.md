@@ -8,7 +8,7 @@ title: rpm.org - RPM Package Header format
 The header structure is a generic key-value data store, supporting multiple
 data types and accessed via integer keys known as tags.
 
-The on-disk format of a header consists of three consequtive sections:
+The on-disk format of a header consists of three consecutive sections:
 - Intro
 - Index
 - Data
@@ -28,7 +28,7 @@ struct header_intro {
 };
 ```
 
-The header magic value is used to indentify the header, and is
+The header magic value is used to identify the header, and is
 0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00.
 
 The index length contains the number of Index Entries, and the data_length

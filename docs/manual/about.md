@@ -4,7 +4,7 @@ title: rpm.org - About the Reference Manual
 ---
 # About this manual
 
-This is the Refence Manual for the RPM Package Manager. Unfortunately
+This is the Reference Manual for the RPM Package Manager. Unfortunately
 it is still incomplete. Recently added features are described with
 decent detail but more basic properties are only being added step by
 step.
@@ -22,7 +22,7 @@ packaging for a distribution or one that doesn't have guideline choose
 one from a distribution that is similar to your target environment.
 
 This manual describes RPM as it is setup in the upstream release. Many
-distibution alter RPM in various ways. Either by changing macro values
+distribution alter RPM in various ways. Either by changing macro values
 or by disabling - or forbidding the use of - some features. This is
 especially true for new features that may require some effort to
 enable properly throughout a distribution. The distributions decisions
