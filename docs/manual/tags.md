@@ -4,7 +4,7 @@ title: rpm.org - RPM Tags
 ---
 # RPM Tags
 
-The package's meta data in stored in the RPM header. The header is a binary data structure that stores the single pieces of data in tags. Each tag has a pre-defined meaning and data type. These are not stored in the header itself but need to be known by the code reading the header. In the header the tags are only refered by their number.
+The package's meta data in stored in the RPM header. The header is a binary data structure that stores the single pieces of data in tags. Each tag has a pre-defined meaning and data type. These are not stored in the header itself but need to be known by the code reading the header. In the header the tags are only referenced by their number.
 
 ## Tag types
 
