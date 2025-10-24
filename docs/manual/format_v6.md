@@ -19,7 +19,7 @@ package file is divided in 4 logical sections:
 . Payload   -- compressed archive of the file(s) in the package (aka "payload")
 ```
 
-All applicaple integer quantities are stored in network byte order
+All applicable integer quantities are stored in network byte order
 (big-endian). When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).
@@ -70,7 +70,7 @@ header. The signatures in the OPENPGP tag are known as RPM v6 signatures.
 
 In addition, a v6 package with an RPM v6 signature may also have one
 one of the RSA or DSA tags present, known as RPM v4 signatures.
-These exist solely for the purpose of RPM 4.x compatability, RPM will ignore
+These exist solely for the purpose of RPM 4.x compatibility, RPM will ignore
 v4 signature tags if v6 signatures are present.
 
 Tags numbers above 999, including those of v3 (header+payload) signatures,
