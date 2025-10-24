@@ -133,8 +133,8 @@ macros (with parameters) but are not.
 Each section type has its own rules and syntax. Conditionals are
 evaluated first and then macros expanded. Only then are the sections
 parsed by the rules of the section types. The content of build and
-runtime scripts is then passed on the the interpreter - possible being
-stored in a header tag inbetween. The syntax of the other sections is
+runtime scripts is then passed on to the interpreter - possibly being
+stored in a header tag along the way. The syntax of the other sections is
 described below.
 
 ## Preamble
