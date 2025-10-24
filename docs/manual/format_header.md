@@ -8,7 +8,7 @@ title: rpm.org - RPM Package Header format
 The header structure is a generic key-value data store, supporting multiple
 data types and accessed via integer keys known as tags.
 
-The on-disk format of a header consists of three consequtive sections:
+The on-disk format of a header consists of three consecutive sections:
 - Intro
 - Index
 - Data

@@ -127,7 +127,7 @@ Another alternative scheme might be:
 ```
 
 ## Build dependencies
-The following dependencies need to be fullfilled at build time. These are similar to the install time version but these apply only during package creation and are specified in the specfile. They end up as "regular" dependencies of the source package (SRPM) (BuildRequires? become Requires) but are not added to the binary package at all.
+The following dependencies need to be fulfilled at build time. These are similar to the install time version but these apply only during package creation and are specified in the specfile. They end up as "regular" dependencies of the source package (SRPM) (BuildRequires? become Requires) but are not added to the binary package at all.
 
 ```
     BuildRequires:

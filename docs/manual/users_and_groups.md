@@ -31,7 +31,7 @@ packaged sysusers.d files create provides for the users and/or groups they
 create. This ensures correct installation when a package relies
 on user/group from another package.
 
-Explict group membership (m) will also create a dependency on both the user
+Explicit group membership (m) will also create a dependency on both the user
 and the group name.
 
 By default the dependencies are hard requirements, but as this can be
