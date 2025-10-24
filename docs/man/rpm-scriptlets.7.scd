@@ -220,7 +220,7 @@ number of installed instances of the _triggered package_ (ie. the package
 containing the file trigger scriptlet) when the operation has completed.
 
 In addition, *Package File Triggers* receive a second argument (*$2*),
-which contains the number of installed instaces of the the _triggering package_
+which contains the number of installed instances of the the _triggering package_
 (ie. the package which set off the trigger).
 
 The file triggers of a package can be examined with a *rpm -q --filetriggers*
