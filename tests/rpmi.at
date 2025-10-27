@@ -433,6 +433,7 @@ error: hello-2.0-1.x86_64: install failed
 
 RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_flags 0xfc000" \
 	--define "_pkgverify_level signature" \
 	/tmp/${pkg}
 ],
@@ -440,6 +441,20 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 [],
 [warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+])
+
+# This seems kinda wrong, but the initial package read can only look at
+# header signatures, so it only ever sees the bad signature during pre-install
+# verification.
+RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_level signature" \
+	/tmp/${pkg}
+],
+[1],
+[],
+[warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+	package hello-2.0-1.x86_64 does not verify: Legacy OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: BAD
 ])
 
 RPMTEST_CHECK([
