@@ -1182,38 +1182,51 @@ struct vfydata_s {
 };
 }
 
+static int sortRC(int rc)
+{
+    switch (rc) {
+    case RPMRC_OK: return 0;
+    case RPMRC_NOTFOUND: return 1;
+    case RPMRC_NOTTRUSTED: return 2;
+    case RPMRC_NOKEY: return 3;
+    case RPMRC_FAIL: return 4;
+    }
+    return -1;
+}
+
 static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = (struct vfydata_s *)cbdata;
 
-    if (sinfo->type & RPMSIG_VERIFIABLE_TYPE && sinfo->rc != RPMRC_NOTFOUND) {
-	int res = (sinfo->rc != RPMRC_OK);
-	/* Take care not to override a previous failure with success */
-	if (res > vd->type[sinfo->type])
-	    vd->type[sinfo->type] = res;
-    }
+    /* Take care not to override a previous failure with success */
+    if (sortRC(sinfo->rc) > sortRC(vd->type[sinfo->type])) {
 
-    switch (sinfo->rc) {
-    case RPMRC_OK:
-	break;
-    case RPMRC_NOTFOUND:
-	vd->msg = xstrdup((sinfo->type == RPMSIG_SIGNATURE_TYPE) ?
-			  _("no signature") : _("no digest"));
-	break;
-    case RPMRC_NOKEY:
-	/*
-	 * Legacy compat: if signatures are not required, install must
-	 * succeed despite missing key.
-	 */
-	if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
-	    sinfo->rc = RPMRC_OK;
-	/* fallthrough */
-    default:
-	if (sinfo->rc)
-	    vd->msg = rpmsinfoMsg(sinfo);
-	break;
+	switch (sinfo->rc) {
+	case RPMRC_OK:
+	    break;
+	case RPMRC_NOTFOUND:
+	    free(vd->msg);
+	    vd->msg = xstrdup((sinfo->type == RPMSIG_SIGNATURE_TYPE) ?
+			      _("no signature") : _("no digest"));
+	    break;
+	case RPMRC_NOKEY:
+	    /*
+	     * Legacy compat: if signatures are not required, install must
+	     * succeed despite missing key.
+	     */
+	    if (!(vd->vfylevel & RPMSIG_SIGNATURE_TYPE))
+		sinfo->rc = RPMRC_OK;
+	    /* fallthrough */
+	default:
+	    if (sinfo->rc) {
+		free(vd->msg);
+		vd->msg = rpmsinfoMsg(sinfo);
+	    }
+	    break;
+	}
+	vd->type[sinfo->type] = sinfo->rc;
     }
-    return (sinfo->rc == 0);
+    return 1;
 }
 
 static ARGI_t initPkgDigests(FD_t fd)
@@ -1274,7 +1287,7 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
     }
 
     if (prc == RPMRC_OK)
-	prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+	prc = rpmvsVerify(vs, vfylevel, vfyCb, &vd);
 
     /* Record verify result */
     if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)

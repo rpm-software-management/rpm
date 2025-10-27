@@ -619,10 +619,20 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	if (cb)
 	    cont = cb(sinfo, cbdata);
 
-	if (sinfo->rc == RPMRC_OK)
+	switch (sinfo->rc) {
+	case RPMRC_OK:
 	    success++;
-	else
+	    break;
+	case RPMRC_FAIL:
+	case RPMRC_NOKEY:
+	case RPMRC_NOTFOUND:
 	    failed++;
+	    break;
+	case RPMRC_NOTTRUSTED:
+	default:
+	    /* ignore */
+	    break;
+	};
     }
 
     return (success >= 1 && failed == 0) ? 0 : failed;
