@@ -1991,7 +1991,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([multisign with disabled algorithms])
 AT_KEYWORDS([rpmsign signature multisig v4])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 cat << EOF > ${HOME}/.config/rpm/macros
