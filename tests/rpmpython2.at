@@ -57,3 +57,36 @@ foo-1.0-1.noarch
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([scriptlet output])
+AT_KEYWORDS([script install python])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+runroot rpmbuild -bb --quiet /data/SPECS/reloc.spec
+runroot rpmbuild -bb --quiet /data/SPECS/fakeshell.spec
+
+RPMTEST_CHECK([
+runpython ${PYTHON} $(which prpm.py) \
+	-v --scriptout script.out --install \
+	/build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/reloc-1.0-1.noarch.rpm
+],
+[0],
+[Testing
+Committing
+],
+[])
+
+RPMTEST_CHECK([
+runroot cat script.out
+],
+[0],
+[1: /opt/bin
+2: /opt/etc
+3: /opt/lib
+0: /opt/bin
+1: /opt/etc
+2: /opt/lib
+],
+[])
+RPMTEST_CLEANUP
