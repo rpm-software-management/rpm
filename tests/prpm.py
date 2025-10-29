@@ -44,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--nodeps', action='store_true')
     parser.add_argument('--noorder', action='store_true')
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('--scriptout', default='', action='store')
     args = parser.parse_args()
 
     ts = rpm.ts(args.root)
@@ -62,6 +63,12 @@ if __name__ == '__main__':
 
     if args.nosignature:
         ts.setVfyLevel(rpm.RPMSIG_DIGEST_TYPE)
+
+    if args.scriptout:
+        ts.scriptFd = open(args.scriptout, 'w+')
+
+    if args.verbose:
+        rpm.setVerbosity(rpm.RPMLOG_INFO)
 
     if args.skip_signature:
         for te in ts:
