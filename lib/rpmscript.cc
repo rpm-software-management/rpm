@@ -177,6 +177,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
     /* Lua scripts can change our cwd and umask, save and restore */
     cwd = open(".", O_RDONLY);
     if (cwd != -1) {
+	FILE *sfd = NULL;
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 
@@ -184,9 +185,20 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	lua_pushstring(L, script->rpmver);
 	lua_settable(L, LUA_REGISTRYINDEX);
 
+	if (scriptFd) {
+	    sfd = fdopen(dup(Fileno(scriptFd)), "a");
+	    if (sfd)
+		rpmluaPushOutstream(lua, sfd);
+	}
+
 	if (chdir("/") == 0 &&
 		rpmluaRunScript(lua, scriptbuf, script->descr, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
+	}
+
+	if (sfd) {
+	    rpmluaPopOutstream(lua);
+	    fclose(sfd);
 	}
 
 	lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");

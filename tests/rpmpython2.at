@@ -60,7 +60,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([scriptlet output])
 AT_KEYWORDS([script install python])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 runroot rpmbuild -bb --quiet /data/SPECS/reloc.spec
 runroot rpmbuild -bb --quiet /data/SPECS/fakeshell.spec
