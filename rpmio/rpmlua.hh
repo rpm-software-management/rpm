@@ -36,6 +36,9 @@ void rpmluaInteractive(rpmlua lua, rpmluarl rlcb);
 char *rpmluaPopPrintBuffer(rpmlua lua);
 void rpmluaPushPrintBuffer(rpmlua lua);
 
+void rpmluaPushOutstream(rpmlua lua, FILE *stream);
+void rpmluaPopOutstream(rpmlua lua);
+
 char *rpmluaCallStringFunction(rpmlua lua, const char *function, struct rpmhookArgs_s *args);
 
 #endif /* RPMLUA_H */
