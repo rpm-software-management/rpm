@@ -59,7 +59,7 @@ static rpmRC load_keys_from_glob(rpmtxn txn, rpmKeyring keyring, string glob)
 	rpmPubkey key = rpmPubkeyRead(*f);
 
 	if (!key) {
-	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
+	    rpmlog(RPMLOG_WARNING, _("Could not read key %s\n"), *f);
 	    continue;
 	}
 
