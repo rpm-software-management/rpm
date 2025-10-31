@@ -575,7 +575,8 @@ to the corresponding main section, in the order they appear in the spec.
 If the main section does not exist, they are applied relative to the
 first fragment.
 
-During the execution of build scriptlets, (at least) the following
+The execution environment of the build scriptlets is set via the `rpmbuild.env`
+file in the per-package build directory. At least the following
 rpm-specific environment variables are set:
 
 Variable            | Description
