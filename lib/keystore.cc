@@ -65,6 +65,8 @@ static rpmRC load_keys_from_glob(rpmtxn txn, rpmKeyring keyring, string glob)
 
 	if (rpmKeyringAddKey(keyring, key) == 0) {
 	    rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", *f);
+	} else {
+	    rpmlog(RPMLOG_WARNING, _("Could not load key %s\n"), *f);
 	}
 	rpmPubkeyFree(key);
     }
@@ -310,20 +312,24 @@ rpmRC keystore_rpmdb::load_keys(rpmtxn txn, rpmKeyring keyring)
 	}
 
 	while ((key = rpmtdNextString(&pubkeys))) {
+	    int rc = 1;
 	    uint8_t *pkt;
 	    size_t pktlen;
 
-	    if (rpmBase64Decode(key, (void **) &pkt, &pktlen) == 0) {
+	    if ((rc = rpmBase64Decode(key, (void **) &pkt, &pktlen)) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
 
 		if (key) {
-		    if (rpmKeyringAddKey(keyring, key) == 0) {
+		    if ((rc = rpmKeyringAddKey(keyring, key)) == 0) {
 			rpmlog(RPMLOG_DEBUG, "Loaded key %s\n", nevr);
 		    }
 		    rpmPubkeyFree(key);
 		}
 		free(pkt);
 	    }
+
+	    if (rc)
+		rpmlog(RPMLOG_WARNING, _("Could not load key %s\n"), nevr);
 	}
 	free(nevr);
 	rpmtdFreeData(&pubkeys);
