@@ -10,7 +10,7 @@ on:
 jobs:
   scdoc_lint:
     runs-on: ubuntu-24.04
-    container: fedora:42
+    container: fedora:43
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
