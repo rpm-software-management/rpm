@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <fstream>
+
 #include <errno.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -345,7 +347,18 @@ static rpmRC doBuildDir(rpmSpec spec, int test, int inPlace, StringBuf *sbp)
 	rpmlog(RPMLOG_ERR,
 		_("failed to create package build directory %s: %s\n"),
 		spec->buildDir, strerror(errno));
+    } else {
+	auto envpath = join_path({"%{builddir}", "rpmbuild.env"});
+	std::ofstream envfile(envpath, envfile.trunc);
+	auto [ ign, buf ] = macros().expand("%{___build_pre_env}\n");
+	envfile << buf;
+	if (envfile.bad()) {
+	    rpmlog(RPMLOG_ERR, _("failed to write %s: %s\n"),
+		    envpath.c_str(), strerror(errno));
+	    rc = RPMRC_FAIL;
+	}
     }
+
     return rc;
 }
 
