@@ -1,5 +1,5 @@
-# Supported Fedora releases: 41 42
-FROM registry.fedoraproject.org/fedora:42 AS base
+# Supported Fedora releases: 43 44
+FROM registry.fedoraproject.org/fedora:43 AS base
 LABEL com.github.containers.toolbox="true"
 MAINTAINER rpm-maint@lists.rpm.org
 
@@ -14,7 +14,6 @@ RUN dnf -y install \
   autoconf \
   bubblewrap \
   cmake \
-  fedora-repos-rawhide \
   gettext-devel \
   debugedit \
   doxygen \
@@ -58,10 +57,8 @@ RUN dnf -y install \
   sequoia-sq \
   libasan \
   libubsan
-# Incapacitate IMA, needed until #3234 lands in fedora
-RUN rm -f /usr/lib/rpm/macros.d/macros.transaction_ima
 # If updates to specific packages are needed, do it here
-RUN dnf -y --enablerepo=rawhide install "sequoia-sq >= 1.3" "rpm-sequoia >= 1.9" "crypto-policies >= 20250402"
+# RUN dnf -y --enablerepo=updates install ...
 
 # Install some development tools
 RUN dnf -y install \
@@ -86,8 +83,7 @@ RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
 RUN rpm -e --nodeps --nodb \
 	rpm \
 	rpm-libs \
-	rpm-build-libs \
-	rpm-plugin-ima
+	rpm-build-libs
 
 WORKDIR /
 CMD /bin/bash
