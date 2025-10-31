@@ -797,8 +797,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   export PKG_CONFIG_PATH
 
 %___build_pre	\
-  %{___build_pre_env} \
   %[%{verbose}?"set -x":""]\
+  . %{builddir}/rpmbuild.env\
   umask 022\
   cd \"%{builddir}\"\
 
