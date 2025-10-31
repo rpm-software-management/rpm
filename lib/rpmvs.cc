@@ -554,6 +554,7 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
 int rpmvsVerify(struct rpmvs_s *sis, int type,
 		       rpmsinfoCb cb, void *cbdata)
 {
+    int success = 0;
     int failed = 0;
     int cont = 1;
     int range = 0, vfylevel = sis->vfylevel;
@@ -618,11 +619,23 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	if (cb)
 	    cont = cb(sinfo, cbdata);
 
-	if (sinfo->rc != RPMRC_OK)
-	    failed = 1;
+	switch (sinfo->rc) {
+	case RPMRC_OK:
+	    success++;
+	    break;
+	case RPMRC_FAIL:
+	case RPMRC_NOKEY:
+	case RPMRC_NOTFOUND:
+	    failed++;
+	    break;
+	case RPMRC_NOTTRUSTED:
+	default:
+	    /* ignore */
+	    break;
+	};
     }
 
-    return failed;
+    return (success >= 1 && failed == 0) ? 0 : failed;
 }
 
 static const char * rpmSigString(rpmRC res)

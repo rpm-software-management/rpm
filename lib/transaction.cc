@@ -1186,7 +1186,9 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = (struct vfydata_s *)cbdata;
 
-    if (sinfo->type & RPMSIG_VERIFIABLE_TYPE && sinfo->rc != RPMRC_NOTFOUND) {
+    if (sinfo->type & RPMSIG_VERIFIABLE_TYPE &&
+	(sinfo->rc != RPMRC_NOTFOUND && sinfo->rc != RPMRC_NOTTRUSTED))
+    {
 	int res = (sinfo->rc != RPMRC_OK);
 	/* Take care not to override a previous failure with success */
 	if (res > vd->type[sinfo->type])
