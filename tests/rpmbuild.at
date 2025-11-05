@@ -3544,7 +3544,7 @@ AT_KEYWORDS([build])
 RPMTEST_CHECK([
 
 runroot rpmbuild \
-  -bp /data/SPECS/hello-sources.spec | grep -v Executing
+  -bp /data/SPECS/hello-sources.spec | grep ^/build
 ],
 [0],
 [/build/SOURCES/hello-1.0 %tar.gz
