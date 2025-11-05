@@ -349,6 +349,7 @@ static rpmRC doBuildDir(rpmSpec spec, int test, int inPlace, StringBuf *sbp)
 		spec->buildDir, strerror(errno));
     } else {
 	auto envpath = join_path({"%{builddir}", "rpmbuild.env"});
+	rpmlog(RPMLOG_NOTICE, _("Creating(rpmbuild.env): %s"), envpath.c_str());
 	std::ofstream envfile(envpath, envfile.trunc);
 	auto [ ign, buf ] = macros().expand("%{___build_pre_env}\n");
 	envfile << buf;
@@ -356,6 +357,8 @@ static rpmRC doBuildDir(rpmSpec spec, int test, int inPlace, StringBuf *sbp)
 	    rpmlog(RPMLOG_ERR, _("failed to write %s: %s\n"),
 		    envpath.c_str(), strerror(errno));
 	    rc = RPMRC_FAIL;
+	} else {
+	    rpmlog(RPMLOG_NOTICE, "%s", buf.c_str());
 	}
     }
 
