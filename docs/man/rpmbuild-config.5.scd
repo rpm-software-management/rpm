@@ -113,7 +113,7 @@ to fail or succeed, but have no direct impact on the produced packages.
 	A hard limit for maximum number of CPU's to use in parallel
 	during a package build. Zero means unlimited.
 
-*%\_smp_nthread_max* _NUMBER_
+*%\_smp_nthreads_max* _NUMBER_
 	A hard limit for maximum number of threads to use in parallel
 	during a package build. Zero means unlimited.
 
@@ -219,7 +219,7 @@ generated debugging information.
 	Whether rpm should create separate debuginfo packages for each
 	subpackage.
 
-*%\_debugsources_packages* _BOOLEAN_
+*%\_debugsource_packages* _BOOLEAN_
 	Whether rpm should put debug source files into their own subpackage.
 
 *%\_enable_debug_packages* _BOOLEAN_
@@ -255,7 +255,7 @@ generated debugging information.
 
 ## Legacy compatibility
 These settings deal with several decades of backwards compatibility. Most
-of them determine whether a particular issues is considered an error or
+of them determine whether a particular issue is considered an error or
 just a warning.
 Sometimes also useful for temporarily working around issues while packaging.
 
