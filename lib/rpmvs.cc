@@ -531,7 +531,7 @@ static int sinfoCmp(const void *a, const void *b)
     if (rc == 0)
 	rc = sb->sigalgo - sa->sigalgo;
     if (rc == 0)
-	rc = sb->hashalgo - sb->hashalgo;
+	rc = sb->hashalgo - sa->hashalgo;
     /* last resort, these only makes sense from consistency POV */
     if (rc == 0)
 	rc = sb->id - sa->id;
