@@ -529,7 +529,7 @@ static int sinfoCmp(const void *a, const void *b)
 	rc = sb->type - sa->type;
     /* strongest (in the "newer is better" sense) algos first */
     if (rc == 0)
-	rc = sb->sigalgo - sb->sigalgo;
+	rc = sb->sigalgo - sa->sigalgo;
     if (rc == 0)
 	rc = sb->hashalgo - sb->hashalgo;
     /* last resort, these only makes sense from consistency POV */
