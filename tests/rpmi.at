@@ -184,89 +184,111 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <corrupted unsigned 1>])
 AT_KEYWORDS([install])
-RPMTEST_CHECK([
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=5555 count=6 2> /dev/null
 
-echo "INSTALL 1"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest \
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 1234 \
+	rpm -U --ignorearch --ignoreos --nodeps --nodigest \
 	--define "_pkgverify_level none" \
-	/tmp/${pkg} 2>&1 | sed -e 's/;.*$//g'
-echo "INSTALL 2"
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING;000004d2: cpio: Digest mismatch
+error: hello-2.0-1.x86_64: install failed
+])
+
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1
-echo "INSTALL 3"
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: /tmp/hello-2.0-1.x86_64.rpm: Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
+error: /tmp/hello-2.0-1.x86_64.rpm: Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
+error: /tmp/hello-2.0-1.x86_64.rpm cannot be installed
+])
+
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_flags 0x30300" \
 	--define "__vsflags 0x30300" \
 	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1
-echo "INSTALL 4"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
+	/tmp/${pkg}
+],
+[1],
+[],
+[	package hello-2.0-1.x86_64 does not verify: no digest
+])
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 1234 \
+	rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
 	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1 | sed -e 's/;.*$//g'
+	/tmp/${pkg}
 ],
-[0],
-[INSTALL 1
-error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING
+[1],
+[],
+[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING;000004d2: cpio: Digest mismatch
 error: hello-2.0-1.x86_64: install failed
-INSTALL 2
-error: /tmp/hello-2.0-1.x86_64.rpm: Header SHA256 digest: BAD (Expected ef920781af3bf072ae9888eec3de1c589143101dff9cc0b561468d395fb766d9 != 29fdfe92782fb0470a9a164a6c94af87d3b138c63b39d4c30e0223ca1202ba82)
-error: /tmp/hello-2.0-1.x86_64.rpm: Header SHA1 digest: BAD (Expected 5cd9874c510b67b44483f9e382a1649ef7743bac != 4261b2c1eb861a4152c2239bce20bfbcaa8971ba)
-error: /tmp/hello-2.0-1.x86_64.rpm cannot be installed
-INSTALL 3
-	package hello-2.0-1.x86_64 does not verify: no digest
-INSTALL 4
-error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING
-error: hello-2.0-1.x86_64: install failed
-],
-[])
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <corrupted unsigned 2>])
 AT_KEYWORDS([install])
-RPMTEST_CHECK([
 
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
 
-echo "INSTALL 1"
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level none" \
-	/tmp/${pkg} 2>&1
-echo "INSTALL 2"
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: unpacking of archive failed: cpio: Bad magic
+error: hello-2.0-1.x86_64: install failed
+])
+
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1
-echo "INSTALL 3"
+	/tmp/${pkg}
+],
+[1],
+[],
+[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+])
+
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_flags 0x30300" \
 	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1
-echo "INSTALL 4"
-runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
-	--define "_pkgverify_level digest" \
-	/tmp/${pkg} 2>&1
+	/tmp/${pkg}
 ],
 [1],
-[INSTALL 1
-error: unpacking of archive failed: cpio: Bad magic
-error: hello-2.0-1.x86_64: install failed
-INSTALL 2
-	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
-INSTALL 3
-	package hello-2.0-1.x86_64 does not verify: no digest
-INSTALL 4
-error: unpacking of archive failed: cpio: Bad magic
-error: hello-2.0-1.x86_64: install failed
+[],
+[	package hello-2.0-1.x86_64 does not verify: no digest
+])
+
+RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
+	--define "_pkgverify_level digest" \
+	/tmp/${pkg}
 ],
-[])
+[1],
+[],
+[error: unpacking of archive failed: cpio: Bad magic
+error: hello-2.0-1.x86_64: install failed
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <signed nokey 1>])
@@ -380,59 +402,69 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm -U <corrupted signed 3>])
 AT_KEYWORDS([install])
 RPMTEST_SKIP_IF([test x$PGP = xdummy])
-RPMTEST_CHECK([
 
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
    conv=notrunc bs=1 seek=7711 count=6 2> /dev/null
 
-echo "INSTALL 1"
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level none" \
-	/tmp/${pkg} 2>&1
+	/tmp/${pkg}
+],
+[1],
+[],
+[warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+error: unpacking of archive failed: cpio: Bad magic
+error: hello-2.0-1.x86_64: install failed
+])
 
-echo "INSTALL 2"
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps --nosignature \
 	--define "_pkgverify_level none" \
-	/tmp/${pkg} 2>&1
+	/tmp/${pkg}
+],
+[1],
+[],
+[error: unpacking of archive failed: cpio: Bad magic
+error: hello-2.0-1.x86_64: install failed
+])
 
-echo "INSTALL 3"
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_level signature" \
-	/tmp/${pkg} 2>&1
+	/tmp/${pkg}
+],
+[1],
+[],
+[warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+])
 
-echo "INSTALL 4"
+RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
 	--define "_pkgverify_flags 0xc0c00" \
 	--define "__vsflags 0xc0c00" \
 	--define "_pkgverify_level signature" \
-	/tmp/${pkg} 2>&1
-
-echo "INSTALL 5"
-runroot rpm -U --ignorearch --ignoreos --nodeps --noverify \
-	--define "_pkgverify_level signature" \
-	/tmp/${pkg} 2>&1
+	/tmp/${pkg}
 ],
 [1],
-[INSTALL 1
-warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-error: unpacking of archive failed: cpio: Bad magic
-error: hello-2.0-1.x86_64: install failed
-INSTALL 2
-error: unpacking of archive failed: cpio: Bad magic
-error: hello-2.0-1.x86_64: install failed
-INSTALL 3
-warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-INSTALL 4
-	package hello-2.0-1.x86_64 does not verify: no signature
-INSTALL 5
-warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
-error: unpacking of archive failed: cpio: Bad magic
-error: hello-2.0-1.x86_64: install failed
+[],
+[	package hello-2.0-1.x86_64 does not verify: no signature
+])
+
+RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps --noverify \
+	--define "_pkgverify_level signature" \
+	/tmp/${pkg}
 ],
-[])
+[1],
+[],
+[warning: /tmp/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
+error: unpacking of archive failed: cpio: Bad magic
+error: hello-2.0-1.x86_64: install failed
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -U <glob>])
