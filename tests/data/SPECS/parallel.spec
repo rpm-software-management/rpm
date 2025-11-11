@@ -30,6 +30,10 @@ cat | wc -l
 echo -n "%{name}-trigger-%{version}-%{release} FILETRIGGERIN $* | "
 cat | wc -l
 
+%filetriggerun trigger -- /opt/parallel
+echo -n "%{name}-trigger-%{version}-%{release} FILETRIGGERUN $* | "
+cat | wc -l
+
 %filetriggerpostun trigger -- /opt/parallel
 echo -n "%{name}-trigger-%{version}-%{release} FILETRIGGERPOSTUN $* | "
 cat | wc -l
