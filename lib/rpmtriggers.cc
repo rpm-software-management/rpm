@@ -531,6 +531,24 @@ static bool skipFileTrigger(rpmts ts, rpmsenseFlags sense,
 	{
 	    skip = true;
 	}
+    } else if (tm == RPMSCRIPT_FILETRIGGER) {
+	/*
+	 * Avoid duplicate triggers from add/remove elements on upgrade.
+	 * Note that postun counterintuitively runs from the new package.
+	 */
+	switch (sense) {
+	case RPMSENSE_TRIGGERPOSTUN:
+	case RPMSENSE_TRIGGERIN:
+	    if (packageHashHasEntry(ts->members->removedPackages, offset))
+		skip = true;
+	    break;
+	case RPMSENSE_TRIGGERUN:
+	    if (packageHashHasEntry(ts->members->installedPackages, offset))
+		skip = true;
+	    break;
+	default:
+	    break;
+	}
     }
     return skip;
 }

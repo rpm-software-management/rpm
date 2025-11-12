@@ -238,6 +238,8 @@ Package file triggers execute once per each triggering package.
 *%filetriggerpostun*
 	Executed just after the removal of each triggering package.
 
+	Note: not executed when the package containing the trigger is removed.
+
 ## Transaction File Triggers
 Transaction file triggers only execute once per transaction, regardless
 of how many packages triggered it.
@@ -286,11 +288,11 @@ means both _rpmdb_ and the other packages in the current transaction.
 . *%filetriggerun* of _old_ (low priority), set off by _any_
 . *%filetriggerun* of _any_ (low priority), set off by _old_
 . (erase _old_ files)
-. *%filetriggerpostun* of _old_ (high priority), set off by _any_
-. *%filetriggerpostun* of _any_ (high priority), set off by _old_
+. *%filetriggerpostun* of _new_ (high priority), set off by _any_
+. *%filetriggerpostun* of _any_ (high priority), set off by _new_
 . *%postun* of _old_
-. *%filetriggerpostun* of _old_ (low priority), set off by _any_
-. *%filetriggerpostun* of _any_ (low priority), set off by _old_
+. *%filetriggerpostun* of _new_ (low priority), set off by _any_
+. *%filetriggerpostun* of _any_ (low priority), set off by _new_
 . *%posttrans* of _new_
 . *%postuntrans* of _old_
 . *%transfiletriggerpostun* of _any_, set off by _old_
