@@ -26,7 +26,7 @@ possible to achieve in that situation. They are best solved at the source,
 by splitting packages to sub-packages to eliminate the loop.
 Sometimes this is not practical though, and also some dependencies are
 not relevant for ordering at all. Rpm supports various
-[dependency qualifiers](spec.md#Requires) to supply
+[dependency qualifiers](spec.md#requires) to supply
 context that rpm uses for loop resolution.
 
 Qualifiers work in two ways, depending on the context and the qualifier:
