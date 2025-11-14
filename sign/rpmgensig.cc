@@ -613,9 +613,9 @@ static rpmRC includeVeritySignatures(FD_t fd, Header *sigp, Header *hdrp)
 static int msgCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     char **msg = (char **)cbdata;
-    if (sinfo->rc && *msg == NULL)
+    if (sinfo->rc && sinfo->rc != RPMRC_NOTFOUND && *msg == NULL)
 	*msg = rpmsinfoMsg(sinfo);
-    return (sinfo->rc != RPMRC_FAIL);
+    return 1;
 }
 
 /* Require valid digests on entire package for signing. */

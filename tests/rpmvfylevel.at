@@ -110,12 +110,12 @@ nopl
 /data/RPMS/hello-2.0-1.x86_64.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
-    Payload SHA256 digest: NOTFOUND
-    Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
     Payload SHA512 digest: NOTFOUND
     Payload SHA512 ALT digest: NOTFOUND
+    Payload SHA256 digest: NOTFOUND
+    Payload SHA256 ALT digest: NOTFOUND
     Legacy MD5 digest: NOTFOUND
 1
 nosha1
@@ -380,14 +380,14 @@ noplds
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Header SHA1 digest: OK
-    Payload SHA256 digest: NOTFOUND
-    Payload SHA256 ALT digest: NOTFOUND
     Payload SHA3-256 digest: NOTFOUND
     Payload SHA3-256 ALT digest: NOTFOUND
     Payload SHA512 digest: NOTFOUND
     Payload SHA512 ALT digest: NOTFOUND
-    Legacy OpenPGP RSA signature: NOTFOUND
+    Payload SHA256 digest: NOTFOUND
+    Payload SHA256 ALT digest: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
     Legacy MD5 digest: OK
 1
 nohdrs
@@ -400,14 +400,14 @@ nohdrs
 0
 nosig
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header OpenPGP signature: NOTFOUND
-    Header OpenPGP RSA signature: NOTFOUND
     Header OpenPGP DSA signature: NOTFOUND
+    Header OpenPGP RSA signature: NOTFOUND
+    Header OpenPGP signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    Legacy OpenPGP RSA signature: NOTFOUND
     Legacy OpenPGP DSA signature: NOTFOUND
+    Legacy OpenPGP RSA signature: NOTFOUND
     Legacy MD5 digest: OK
 1
 ],
