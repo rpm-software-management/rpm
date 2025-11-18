@@ -423,7 +423,8 @@ rpmRC pubKeyVerify(rpmPubkey key, pgpDigParams sig, DIGEST_CTX ctx, std::vector<
     return rc;
 }
 
-rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx, rpmPubkey * keyptr)
+rpmRC rpmKeyringVerifySig3(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
+			 rpmPubkey * keyptr, ARGV_t *lints)
 {
     rpmRC rc = RPMRC_FAIL;
     rpmPubkey key = NULL;
@@ -462,10 +463,8 @@ rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
 	}
 
 	for (auto const & item : results) {
-	    if (!item.second.empty()) {
-		rpmlog(item.first ? RPMLOG_ERR : RPMLOG_WARNING, "%s\n",
-		       item.second.c_str());
-	    }
+	    if (item.second.empty() == false)
+		argvAdd(lints, item.second.c_str());
 	}
     }
 
@@ -473,6 +472,21 @@ rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
 	*keyptr = pubkeyPrimarykey(key);
     }
 
+    return rc;
+}
+
+rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
+			 rpmPubkey * keyptr)
+{
+    ARGV_t lints = NULL;
+    rpmRC rc = rpmKeyringVerifySig3(keyring, sig, ctx, keyptr, &lints);
+    if (lints) {
+	/* This is wrong, we don't know what's an error in the big picture */
+	int lvl = (rc == RPMRC_OK) ? RPMLOG_WARNING : RPMLOG_ERR;
+	for (ARGV_const_t l = lints; l && *l; l++)
+	    rpmlog(lvl, "%s\n", *l);
+	argvFree(lints);
+    }
     return rc;
 }
 
