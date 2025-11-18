@@ -8,6 +8,7 @@
  */
 
 #include <rpm/rpmtypes.h>
+#include <rpm/argv.h>
 #include <rpm/rpmpgp.h>
 
 #ifdef __cplusplus
@@ -78,7 +79,7 @@ rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator);
 rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx);
 
 /** \ingroup rpmkeyring
- * Perform combined keyring lookup and signature verification
+ * Perform combined keyring lookup and signature verification (DEPRECATED)
  * @param keyring	keyring handle
  * @param sig		OpenPGP signature parameters
  * @param ctx		signature hash context
@@ -86,6 +87,18 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx);
  * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
  */
 rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,  rpmPubkey * keyptr);
+
+/** \ingroup rpmkeyring
+ * Perform combined keyring lookup and signature verification
+ * @param keyring	keyring handle
+ * @param sig		OpenPGP signature parameters
+ * @param ctx		signature hash context
+ * @param keyptr	matching key (refcounted)
+ * @param lints		lints (if any)
+ * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
+ */
+rpmRC rpmKeyringVerifySig3(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
+			   rpmPubkey * keyptr, ARGV_t *lints);
 
 /** \ingroup rpmkeyring
  * Reference a keyring.
