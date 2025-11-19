@@ -341,7 +341,7 @@ static rpmRC doBuildDir(rpmSpec spec, int test, int inPlace, StringBuf *sbp)
 	doDir += buf;
     }
 
-    rpmRC rc = doScript(spec, RPMBUILD_MKBUILDDIR, "%mkbuilddir",
+    rpmRC rc = doScript(spec, RPMBUILD_MKBUILDDIR, "mkbuilddir",
 			doDir.c_str(), test, sbp);
     if (rc) {
 	rpmlog(RPMLOG_ERR,
