@@ -195,7 +195,8 @@ the respective identifier (see also *OPERATIONS*).
 
 Some steps are implemented as standalone scripts whose contents is dumped in the
 *rpmbuild* output for diagnostic purposes. Their names are shown in parentheses
-after the stage identifier (if any).
+after the stage identifier (if any), prefixed with *%* if they correspond to a
+spec section or directive.
 
 Binary packages are produced separately for one or more platforms, called _build
 targets_. By default, the current platform is the only build target. This can be
@@ -213,7 +214,7 @@ results, in particular with *%global*.
 . Parse spec file
 . Check static build dependencies
 . Setup build workspace
-	. Create build directory and set *%builddir* to its path (*%mkbuilddir*)
+	. Create build directory and set *%builddir* to its path (*mkbuilddir*)
 	. Export build environment to *%builddir*/_rpmbuild.env_ file
 . Build sources and populate *%buildroot*
 	. Unpack sources and apply any patches (*p*, *%prep*)
