@@ -271,7 +271,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bp /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 ],
 [])
@@ -296,7 +296,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -br /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 ],
@@ -314,7 +314,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bd /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 ],
@@ -332,7 +332,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bf /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
@@ -351,7 +351,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bc /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
@@ -371,7 +371,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bi /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
@@ -394,7 +394,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bk /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
@@ -423,7 +423,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -bb /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)
@@ -438,7 +438,7 @@ RPMTEST_CHECK([
 runroot rpmbuild -ba /data/SPECS/specstep.spec 2>&1|grep ^Executing|cut -d: -f1
 ],
 [0],
-[Executing(%mkbuilddir)
+[Executing(mkbuilddir)
 Executing(%prep)
 Executing(%generate_buildrequires)
 Executing(%conf)

@@ -200,7 +200,8 @@ for details).
 
 Some steps are implemented as build scriptlets whose contents is dumped in the
 *rpmbuild* output for diagnostic purposes. Their names are shown in parentheses
-following any stage identifier.
+following any stage identifier, prefixed with *%* if they correspond to a spec
+section or directive.
 
 Binary packages are produced separately for one or more platforms, called _build
 targets_. By default, the current platform is the only build target. This can be
@@ -214,7 +215,7 @@ overridden with *--target* or by declaring a *BuildArch* in the spec. See also
 - Parse spec file
 - Check static build dependencies
 - Setup build workspace
-	- Create build directory and set *%builddir* to its path (*%mkbuilddir*)
+	- Create build directory and set *%builddir* to its path (*mkbuilddir*)
 	- Export build environment to *%builddir*/_rpmbuild.env_ file
 - Execute build scriptlets to populate *%buildroot*
 	- Unpack sources and apply any patches (*p*, *%prep*)
