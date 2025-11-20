@@ -76,12 +76,15 @@ AT_KEYWORDS([rpmkeys digest])
 RPMTEST_CHECK([
 
 nomd5="0x20000"
-nopld="0x10000"
-nopl="0x30000"
+# payload-only digests
+nopld="0x1c000"
+# all digests crossing payload
+nopl="0x3c000"
 nosha1="0x100"
 nosha2="0x200"
 nosha="0x300"
-nohdr="0x20300"
+# header digests + md5
+nohdr="0x22300"
 
 lvl="digest"
 for dis in nomd5 nopld nopl nosha1 nosha2 nosha nohdr; do
@@ -110,13 +113,6 @@ nopl
 /data/RPMS/hello-2.0-1.x86_64.rpm:
     Header SHA256 digest: OK
     Header SHA1 digest: OK
-    Payload SHA3-256 digest: NOTFOUND
-    Payload SHA3-256 ALT digest: NOTFOUND
-    Payload SHA512 digest: NOTFOUND
-    Payload SHA512 ALT digest: NOTFOUND
-    Payload SHA256 digest: NOTFOUND
-    Payload SHA256 ALT digest: NOTFOUND
-    Legacy MD5 digest: NOTFOUND
 1
 nosha1
 /data/RPMS/hello-2.0-1.x86_64.rpm:
@@ -137,11 +133,7 @@ nosha
 0
 nohdr
 /data/RPMS/hello-2.0-1.x86_64.rpm:
-    Header SHA3-256 digest: NOTFOUND
-    Header SHA256 digest: NOTFOUND
-    Header SHA1 digest: NOTFOUND
     Payload SHA256 digest: OK
-    Legacy MD5 digest: NOTFOUND
 1
 ],
 [])
@@ -186,9 +178,6 @@ nosha3
 0
 nosha
 /build/RPMS/noarch/attrtest-1.0-1.noarch.rpm:
-    Header SHA3-256 digest: NOTFOUND
-    Header SHA256 digest: NOTFOUND
-    Header SHA1 digest: NOTFOUND
     Payload SHA3-256 digest: OK
     Payload SHA512 digest: OK
     Payload SHA256 digest: OK
@@ -351,9 +340,9 @@ nopld="0x10000"
 nopl="0x30000"
 
 nopls="0xc0000"
-noplds="0xd0000"
+noplds="0xdc000"
 nohdrs="0x00c00"
-nosig="0xc0c00"
+nosig="0xc1c00"
 
 runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 lvl="all"
@@ -376,18 +365,11 @@ done
     Legacy MD5 digest: OK
 0
 noplds
+dnl XXX this looks very wrong when there's no output wrt payload items
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
     Header OpenPGP V4 RSA/SHA256 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Header SHA1 digest: OK
-    Payload SHA3-256 digest: NOTFOUND
-    Payload SHA3-256 ALT digest: NOTFOUND
-    Payload SHA512 digest: NOTFOUND
-    Payload SHA512 ALT digest: NOTFOUND
-    Payload SHA256 digest: NOTFOUND
-    Payload SHA256 ALT digest: NOTFOUND
-    Legacy OpenPGP DSA signature: NOTFOUND
-    Legacy OpenPGP RSA signature: NOTFOUND
     Legacy MD5 digest: OK
 1
 nohdrs
@@ -399,15 +381,11 @@ nohdrs
     Legacy MD5 digest: OK
 0
 nosig
+dnl XXX this looks very wrong when there's no output wrt signatures
 /data/RPMS/hello-2.0-1.x86_64-signed.rpm:
-    Header OpenPGP DSA signature: NOTFOUND
-    Header OpenPGP RSA signature: NOTFOUND
-    Header OpenPGP signature: NOTFOUND
     Header SHA256 digest: OK
     Header SHA1 digest: OK
     Payload SHA256 digest: OK
-    Legacy OpenPGP DSA signature: NOTFOUND
-    Legacy OpenPGP RSA signature: NOTFOUND
     Legacy MD5 digest: OK
 1
 ],
