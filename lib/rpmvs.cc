@@ -383,6 +383,9 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
     if (!(vi->vi.type & RPMSIG_VERIFIABLE_TYPE))
 	return;
 
+    if (rpmsinfoDisabled(&vi->vi, sis->vsflags))
+	return;
+
     const char *o = (blob->il > blob->ril) ? _("header") : _("package");
     struct rpmtd_s td;
     rpmRC rc = hdrblobGet(blob, vi->tag, &td);
@@ -390,7 +393,7 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 
     rpmvsReserve(sis, nitems);
 
-    if (!rpmsinfoDisabled(&vi->vi, sis->vsflags) && rc == RPMRC_OK) {
+    if (rc == RPMRC_OK) {
 	while (rpmtdNext(&td) >= 0) {
 	    if (!rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs])) {
 		/* Don't bother with v3/v4 sigs when v6 sigs exist */
@@ -561,7 +564,8 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/
-    qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
+    if (sis->sigs)
+	qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
 
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
