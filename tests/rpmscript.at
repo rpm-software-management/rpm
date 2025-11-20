@@ -965,6 +965,7 @@ runroot rpm -U /build/RPMS/noarch/parallel-2.0-1.noarch.rpm
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
 parallel-trigger-1.0-1 FILETRIGGERIN 1 2 | 12
+parallel-trigger-1.0-1 FILETRIGGERUN 1 1 | 11
 parallel-trigger-1.0-1 FILETRIGGERPOSTUN 1 1 | 11
 parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
 parallel-trigger-1.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
@@ -977,6 +978,7 @@ runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
 parallel-trigger-2.0-1 FILETRIGGERIN 2 1 | 12
+parallel-trigger-1.0-1 FILETRIGGERUN 1 1 | 12
 parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 12
 ],
 [])
@@ -986,6 +988,7 @@ runroot rpm -e parallel
 ],
 [0],
 [parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERUN 1 0 | 12
 parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 0 | 12
 parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
 ],
@@ -1017,6 +1020,7 @@ runroot rpm -U /build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
 [0],
 [parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 36
 parallel-trigger-2.0-1 FILETRIGGERIN 2 3 | 36
+parallel-trigger-1.0-1 FILETRIGGERUN 1 3 | 36
 parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 36
 ],
 [])
@@ -1026,6 +1030,51 @@ runroot rpm -e parallel-trigger
 ],
 [0],
 [parallel-trigger-2.0-1 TRANSFILETRIGGERUN 0 | 36
+parallel-trigger-2.0-1 FILETRIGGERUN 0 3 | 36
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -e --allmatches parallel
+runroot rpm -U \
+	/build/RPMS/noarch/parallel-1.0-1.noarch.rpm \
+	/build/RPMS/noarch/parallel-trigger-1.0-1.noarch.rpm
+],
+[0],
+[parallel-trigger-1.0-1 FILETRIGGERIN 1 1 | 12
+parallel-trigger-1.0-1 TRANSFILETRIGGERIN 1 | 12
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U \
+	/build/RPMS/noarch/parallel-2.0-1.noarch.rpm \
+	/build/RPMS/noarch/parallel-trigger-2.0-1.noarch.rpm
+],
+[0],
+[parallel-trigger-1.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERIN 2 1 | 12
+parallel-trigger-2.0-1 FILETRIGGERIN 2 2 | 12
+parallel-trigger-1.0-1 FILETRIGGERUN 1 2 | 24
+parallel-trigger-2.0-1 FILETRIGGERPOSTUN 1 1 | 11
+parallel-trigger-2.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
+parallel-trigger-2.0-1 TRANSFILETRIGGERIN 2 | 12
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -U \
+	/build/RPMS/noarch/parallel-trigger-3.0-1.noarch.rpm \
+	/build/RPMS/noarch/parallel-3.0-1.noarch.rpm
+],
+[0],
+[parallel-trigger-2.0-1 TRANSFILETRIGGERUN 1 | 12
+parallel-trigger-3.0-1 FILETRIGGERIN 2 2 | 24
+parallel-trigger-2.0-1 FILETRIGGERUN 2 1 | 11
+parallel-trigger-3.0-1 FILETRIGGERPOSTUN 2 1 | 11
+parallel-trigger-2.0-1 FILETRIGGERUN 1 1 | 12
+parallel-trigger-3.0-1 TRANSFILETRIGGERPOSTUN 1 | 0
+parallel-trigger-3.0-1 TRANSFILETRIGGERIN 2 | 12
 ],
 [])
 RPMTEST_CLEANUP

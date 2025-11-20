@@ -516,6 +516,43 @@ static bool packageHashHasEntry(packageHash & pkghash, unsigned int entry)
     return pkghash.find(entry) != pkghash.end();
 }
 
+static bool skipFileTrigger(rpmts ts, rpmsenseFlags sense,
+			rpmscriptTriggerModes tm, unsigned offset)
+{
+    bool skip = false;
+    if (tm == RPMSCRIPT_TRANSFILETRIGGER) {
+	/*
+	 * Don't handle transaction triggers installed in current
+	 * transaction to avoid executing the same script two times.
+	 * These triggers are handled in runImmedFileTriggers().
+	 */
+	if (packageHashHasEntry(ts->members->removedPackages, offset) ||
+	    packageHashHasEntry(ts->members->installedPackages, offset))
+	{
+	    skip = true;
+	}
+    } else if (tm == RPMSCRIPT_FILETRIGGER) {
+	/*
+	 * Avoid duplicate triggers from add/remove elements on upgrade.
+	 * Note that postun counterintuitively runs from the new package.
+	 */
+	switch (sense) {
+	case RPMSENSE_TRIGGERPOSTUN:
+	case RPMSENSE_TRIGGERIN:
+	    if (packageHashHasEntry(ts->members->removedPackages, offset))
+		skip = true;
+	    break;
+	case RPMSENSE_TRIGGERUN:
+	    if (packageHashHasEntry(ts->members->installedPackages, offset))
+		skip = true;
+	    break;
+	default:
+	    break;
+	}
+    }
+    return skip;
+}
+
 rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 			rpmscriptTriggerModes tm, int priorityClass)
 {
@@ -555,14 +592,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 		unsigned int offset = rpmdbIndexIteratorPkgOffset(ii, i);
 		unsigned int tix = rpmdbIndexIteratorTagNum(ii, i);
 
-		/*
-		 * Don't handle transaction triggers installed in current
-		 * transaction to avoid executing the same script two times.
-		 * These triggers are handled in runImmedFileTriggers().
-		 */
-		if (tm == RPMSCRIPT_TRANSFILETRIGGER &&
-		    (packageHashHasEntry(ts->members->removedPackages, offset) ||
-		    packageHashHasEntry(ts->members->installedPackages, offset)))
+		if (skipFileTrigger(ts, sense, tm, offset))
 		    continue;
 
 		/* Get priority of trigger from header */
