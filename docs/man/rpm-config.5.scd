@@ -203,6 +203,8 @@ _VSFLAGS_ is formed by bitwise or'ing the individual flags:
 - *0x00800* (RPMVSF_NORSAHEADER): don't verify header RSA signature(s)
 - *0x01000* (RPMVSF_NOOPENPGP): don't verify header OpenPGP signature(s)
 - *0x02000* (RPMVSF_NOSHA3_256HEADER): don't verify header SHA3_256 digest
+- *0x04000* (RPMVSF_NOSHA512PAYLOAD): don't verify package payload SHA256 digest
+- *0x08000* (RPMVSF_NOSHA3_256PAYLOAD): don't verify package payload SHA256 digest
 - *0x10000* (RPMVSF_NOSHA256PAYLOAD): don't verify package payload SHA256 digest
 - *0x20000* (RPMVSF_NOMD5): don't verify legacy header+payload MD5 digest
 - *0x40000* (RPMVSF_NODSA): don't verify legacy header+payload DSA signature
