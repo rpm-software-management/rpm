@@ -72,6 +72,9 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #		define stat64	stat
 #endif
 #endif
+#if defined(_AIX)
+#   define __errno_location()   (&errno)
+#endif
 
 #include "system.h"
 #include <fcntl.h>
