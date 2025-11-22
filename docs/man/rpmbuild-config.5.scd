@@ -113,7 +113,7 @@ to fail or succeed, but have no direct impact on the produced packages.
 	A hard limit for maximum number of CPU's to use in parallel
 	during a package build. Zero means unlimited.
 
-*%\_smp_nthread_max* _NUMBER_
+*%\_smp_nthreads_max* _NUMBER_
 	A hard limit for maximum number of threads to use in parallel
 	during a package build. Zero means unlimited.
 
@@ -135,6 +135,10 @@ packages.
 	- *clamp_to_buildtime*: Clamp file timestamps to package buildtime.
 	- *clamp_to_source_date_epoch*: Clamp file timestamps to the
 	  *SOURCE_DATE_EPOCH* environment variable.
+
+*%clamp_mtime_to_source_date_epoch* _BOOLEAN_
+	Alias for *%build_mtime_policy* *clamp_to_source_date_epoch*.
+	Do not use. Deprecated and scheduled for removal.
 
 *%source_date_epoch_from_changelog* _BOOLEAN_
 	Whether to set the *SOURCE_DATE_EPOCH* environment variable from
@@ -219,7 +223,7 @@ generated debugging information.
 	Whether rpm should create separate debuginfo packages for each
 	subpackage.
 
-*%\_debugsources_packages* _BOOLEAN_
+*%\_debugsource_packages* _BOOLEAN_
 	Whether rpm should put debug source files into their own subpackage.
 
 *%\_enable_debug_packages* _BOOLEAN_
@@ -255,7 +259,7 @@ generated debugging information.
 
 ## Legacy compatibility
 These settings deal with several decades of backwards compatibility. Most
-of them determine whether a particular issues is considered an error or
+of them determine whether a particular issue is considered an error or
 just a warning.
 Sometimes also useful for temporarily working around issues while packaging.
 
@@ -268,6 +272,9 @@ Sometimes also useful for temporarily working around issues while packaging.
 *%\_empty_manifest_terminate_build* _BOOLEAN_
 	Whether an empty *%files* manifest file should terminate a build.
 
+*%\_invalid_encoding_terminates_build* _BOOLEAN_
+	Whether a non-UTF8 encoding in package data should terminate a build.
+
 *%\_\_find_provides* _EXECUTABLE_
 	The executable to use for rpm 3.x style provides generation.
 	Do not use. Deprecated and scheduled for removal.
@@ -275,6 +282,11 @@ Sometimes also useful for temporarily working around issues while packaging.
 *%\_\_find_requires* _EXECUTABLE_
 	The executable to use for rpm 3.x style requires generation.
 	Do not use. Deprecated and scheduled for removal.
+
+*%\_missing_build_ids_terminate_build* _BOOLEAN_
+	Whether ELF files without build-ids should terminate a build.
+	For historical reasons, this is only applicable if
+	*%\_enable_debug_packages* is also enabled.
 
 *%\_missing_doc_files_terminate_build* _BOOLEAN_
 	Whether missing %doc files in the build directory should terminate

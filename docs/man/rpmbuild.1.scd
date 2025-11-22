@@ -42,14 +42,13 @@ code and recipe necessary to produce binary packages.
 *--recompile*
 	Compatibility aliases for *-ra*.
 
-Packages are built in four phases: parse, build, assembly and cleanup. The
-middle two are further divided into _stages_, listed below, which can be built
-separately. Building a _STAGE_ means executing all the preceding stages up to
-(and including) the one specified, unless stated otherwise.
+_STAGE_ is a single-letter argument that specifies the target stage to build.
+All preceding stages are also executed unless stated otherwise. See *BUILD
+PROCESS* for a complete overview.
 
-## Assembly stages
-The assembly stages produce packages and are the primary way of interacting with
-*rpmbuild*. If in doubt, choose one of these.
+## Building packages
+
+Use these _STAGE_ arguments to produce final packages ready for distribution.
 
 *a*
 	Build both source and binary packages.
@@ -71,16 +70,11 @@ The assembly stages produce packages and are the primary way of interacting with
 *s*
 	Build just the source package. No build stages are executed.
 
-## Build stages
-The build stages produce the artifacts to be packaged, typically by patching and
-compiling the sources, and installing the binaries into the buildroot. These
-stages generally correspond to spec sections such as *%prep*, *%build* or
-*%install*, but there are some which are implicit.
+## Partial builds
 
-Building these stages separately is generally only useful when packaging new
-software in RPM format and/or troubleshooting. They are listed below in the
-order of execution, with the corresponding spec section in parenthesis where
-applicable.
+Use these _STAGE_ arguments to build through an intermediate stage of the build
+process without producing final packages. Useful when packaging new software in
+RPM format and/or troubleshooting.
 
 *p* (%prep)
 	Unpack the sources and apply any patches.
@@ -190,6 +184,59 @@ _TAR_ARCHIVE_
 
 See *rpm-common*(8) for the options common to all operations.
 
+# BUILD PROCESS
+
+Packages are built in a number of logical steps, also called _stages_, outlined
+below. They are executed from top to bottom, through the target stage specified
+by its single-letter identifier (shown in parentheses) on the *rpmbuild* command
+line, skipping those that aren't relevant to the current build configuration or
+spec file. See also *OPERATIONS*.
+
+Some stages are implemented as build scriptlets, either externally (defined in
+the spec) or internally, and are shown in parentheses with or without the *%*
+prefix, respectively. The contents of these scriptlets is also included in the
+*rpmbuild* output for diagnostic purposes.
+
+Binary packages are produced separately for one or more platforms, called _build
+targets_. By default, the current platform is the only build target. This can be
+overridden with *--target* or by declaring a *BuildArch* in the spec. See also
+*BUGS* for some related known issues.
+
+- Unpack source package or tar archive if either is given
+- Determine build targets and repeat following steps for each in turn
+- Load *rpm* configuration for next build target and set *%\_target_cpu*
+- Parse spec file
+- Check static build dependencies
+- Setup build workspace
+	- Create build directory and set *%builddir* to its path (*mkbuilddir*)
+	- Export build environment to *%builddir*/_rpmbuild.env_ file
+- Execute build scriptlets to populate *%buildroot*
+	- Unpack sources and apply any patches (*p*, *%prep*)
+	- Generate dynamic build dependencies (*d*, *%generate_buildrequires*)
+	- Check dynamic build dependencies
+	- Configure sources (*f*, *%conf*)
+	- Compile sources (*c*, *%build*)
+	- Install binaries into *%buildroot* (*i*, *%install*)
+	- Read dynamic spec parts
+	- Execute tests (*k*, *%check*)
+- Process files to be packaged
+	- Collect source files
+	- Collect binary files in *%buildroot* based on *%files*
+		- Add regular entries
+		- Add documentation entries (*%doc*)
+		- Add license entries (*%license*)
+	- Perform file classification
+	- Generate runtime dependencies using *rpm-dependency-generators*(7)
+	- Check packaged files against *%buildroot* (*l*)
+- Create packages
+	- Write binary packages to disk (*b*)
+	- Write source packages to disk (*s*)
+- Clean up
+	- Perform explicit clean up - OBSOLETE (*%clean*)
+	- Perform implicit clean up (*rmbuild*)
+
+For more information on the syntax, see *rpm-spec*(5).
+
 # DYNAMIC BUILD DEPENDENCIES
 When the *%generate_buildrequires* stage runs and some of the newly
 generated BuildRequires are not satisfied, *rpmbuild* creates an
@@ -248,6 +295,17 @@ when there are unmet *DYNAMIC BUILD DEPENDENCIES*.
 
 # FILES
 See *rpm-common*(8)
+
+# BUGS
+
+*BuildArch* may cause unexpected behavior, in particular:
+
+- It causes the spec parser to recurse from the start, causing any macros before
+  that line to be expanded twice. This can yield unexpected results, in
+  particular with *%global*.
+
+- Using a *--target* that disagrees with the *BuildArch* results in undefined
+  behavior.
 
 # SEE ALSO
 *gendiff*(1), *popt*(3), *rpm*(8), *rpm-common*(8), *rpmbuild-config*(5),
