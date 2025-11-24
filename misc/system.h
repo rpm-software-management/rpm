@@ -85,6 +85,15 @@ extern int fdatasync(int fildes);
 # define xsetprogname(pn)
   extern const char *__progname;
 # define xgetprogname(pn) __progname
+#elif defined(_AIX)
+char *aix_progname = NULL;
+#define xsetprogname(pn) \
+  {  if (aix_progname == NULL) { \
+        if ((aix_progname = strrchr(pn, '/')) != NULL)  aix_progname++; \
+        else  aix_progname = pn; \
+     } \
+  }
+#define xgetprogname() aix_progname
 #else
 # error "Did not find any sutable implementation of xsetprogname/xgetprogname"
 #endif
