@@ -2087,7 +2087,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
@@ -2095,7 +2095,7 @@ runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm: digests signatures OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
@@ -2123,7 +2123,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
@@ -2131,7 +2131,7 @@ runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm: digests signatures OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
@@ -2156,7 +2156,7 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
@@ -2164,7 +2164,7 @@ runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm: digests signatures OK
 ],
-[ignore])
+[])
 
 RPMTEST_CHECK([
 runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
@@ -2189,7 +2189,17 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
-[ignore])
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
+error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
+],
+[])
 
 RPMTEST_CHECK([
 runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm

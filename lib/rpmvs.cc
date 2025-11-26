@@ -289,6 +289,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	free(sinfo->msg);
 	free(sinfo->descr);
 	free(sinfo->keyid);
+	argvFree(sinfo->lints);
 	memset(sinfo, 0, sizeof(*sinfo));
     }
 }
@@ -641,6 +642,15 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
     return failed;
 }
 
+void rpmvsForeach(struct rpmvs_s *sis, rpmsinfoCb cb, void *cbdata)
+{
+    int cont = 1;
+    for (int i = 0; i < sis->nsigs && cont; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+	cont = cb(sinfo, cbdata);
+    }
+}
+
 static const char * rpmSigString(rpmRC res)
 {
     const char * str;
@@ -697,7 +707,8 @@ verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
     rpmRC res = RPMRC_FAIL;
     if (pgpSignatureType(sinfo->sig) == PGPSIGTYPE_BINARY) {
-	res = rpmKeyringVerifySig2(keyring, sinfo->sig, sinfo->ctx, &sinfo->key);
+	res = rpmKeyringVerifySig3(keyring, sinfo->sig, sinfo->ctx,
+			&sinfo->key, &sinfo->lints);
     }
     return res;
 }

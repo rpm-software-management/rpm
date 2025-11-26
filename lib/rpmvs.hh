@@ -34,6 +34,7 @@ struct rpmsinfo_s {
     /* verify results */
     rpmRC rc;
     char *msg;
+    ARGV_t lints;
 };
 
 /**
@@ -88,6 +89,8 @@ int rpmvsRange(struct rpmvs_s *vs);
  */
 int rpmvsVerify(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
+
+void rpmvsForeach(struct rpmvs_s *sis, rpmsinfoCb cb, void *cbdata);
 
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
