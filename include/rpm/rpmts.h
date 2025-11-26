@@ -245,6 +245,9 @@ int rpmtsCheck(rpmts ts);
  * with packages removed for upgrades immediately following the new package
  * to be installed.
  *
+ * The algorithm is deterministic, but the final order depends on the order in
+ * which packages were added to the transaction set.
+ *
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
  */
