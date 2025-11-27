@@ -6,8 +6,16 @@
 #ifndef _RPMXPROGNAME_H
 #define _RPMXPROGNAME_H
 
-char *_rpmxgetprogname(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+const char *_rpmxgetprogname(void);
 void _rpmxsetprogname(const char *pn);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMXPROGNAME_H */
 

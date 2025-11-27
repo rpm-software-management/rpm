@@ -74,6 +74,10 @@ if(WITH_CAP)
 	target_link_libraries(librpm PRIVATE PkgConfig::LIBCAP)
 endif()
 
+if(NOT HAVE_SETPROGNAME AND NOT HAVE___PROGNAME)
+	target_link_libraries(librpm PRIVATE libmisc)
+endif()
+
 add_custom_command(OUTPUT tagtbl.inc
 	COMMAND AWK=${AWK} ${CMAKE_CURRENT_SOURCE_DIR}/gentagtbl.sh ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h > tagtbl.inc
 	DEPENDS ${CMAKE_SOURCE_DIR}/include/rpm/rpmtag.h gentagtbl.sh

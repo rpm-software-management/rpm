@@ -7,13 +7,13 @@
 
 #include <string.h> /* strrchr */
 
-char *_rpmxprogname = NULL;
+const char *_rpmxprogname = NULL;
 
-char *_rpmxgetprogname(void)
+const char *_rpmxgetprogname(void)
 {
   const char *empty = "";
 
-  if (_rpmxprognam != NULL) /* never return NULL string */
+  if (_rpmxprogname != NULL) /* never return NULL string */
     return _rpmxprogname;
   else
     return empty;
@@ -29,5 +29,3 @@ void _rpmxsetprogname(const char *pn)
       _rpmxprogname = pn;
   }
 }
-
-#endif /* _RPMXPROGNAME_H */

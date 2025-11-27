@@ -86,7 +86,7 @@ extern int fdatasync(int fildes);
   extern const char *__progname;
 # define xgetprogname(pn) __progname
 #else /* Reimplement setprogname and getprogname */
-# include "misc/rpmxprogname.h"
+# include "rpmxprogname.h"
 # define xsetprogname(pn) _rpmxsetprogname(pn)
 # define xgetprogname() _rpmxgetprogname()
 #endif
