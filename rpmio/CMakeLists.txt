@@ -6,6 +6,7 @@ target_sources(librpmio PRIVATE
 	rpmsq.cc rpmsw.cc url.cc rpmio_internal.hh rpmvercmp.cc
 	rpmver.cc rpmstring.cc rpmfileutil.cc rpmglob.cc rpmkeyring.cc
 	rpmstrpool.cc rpmmacro_internal.hh rpmlua.cc rpmlua.hh lposix.cc
+	progname.cc
 )
 target_compile_definitions(librpmio PRIVATE RPM_CONFIGDIR="${RPM_CONFIGDIR}")
 target_include_directories(librpmio 
