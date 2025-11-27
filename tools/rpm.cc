@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */
-    if (rstreq(xgetprogname(), "rpmquery"))	bigMode = MODE_QUERY;
-    if (rstreq(xgetprogname(), "rpmverify")) bigMode = MODE_VERIFY;
+    if (rstreq(rgetprogname(), "rpmquery"))	bigMode = MODE_QUERY;
+    if (rstreq(rgetprogname(), "rpmverify")) bigMode = MODE_VERIFY;
 
     /* Jumpstart option from argv[0] if necessary. */
     switch (bigMode) {

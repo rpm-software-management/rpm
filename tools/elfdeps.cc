@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
 	POPT_TABLEEND
     };
 
-    xsetprogname(argv[0]); /* Portability call -- see system.h */
+    rsetprogname(argv[0]); /* Portability call -- see progname.cc */
 
     optCon = poptGetContext(argv[0], argc, (const char **) argv, opts, 0);
     if (argc < 2 || poptGetNextOpt(optCon) == 0) {
