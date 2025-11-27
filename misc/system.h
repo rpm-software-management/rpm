@@ -85,8 +85,10 @@ extern int fdatasync(int fildes);
 # define xsetprogname(pn)
   extern const char *__progname;
 # define xgetprogname(pn) __progname
-#else
-# error "Did not find any sutable implementation of xsetprogname/xgetprogname"
+#else /* Reimplement setprogname and getprogname */
+# include "misc/rpmxprogname.h"
+# define xsetprogname(pn) _rpmxsetprogname(pn)
+# define xgetprogname() _rpmxgetprogname()
 #endif
 
 /* Take care of NLS matters.  */
