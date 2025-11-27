@@ -138,6 +138,10 @@ char * rstrndup(const char *str, size_t n);
 /* Rpm specific free() which returns NULL */
 void * rfree(void *ptr);
 
+/* Rpm specific wrappers for program name handling */
+const char *rgetprogname(void);
+void rsetprogname(const char *pn);
+
 /** \ingroup rpmutil
  * Memory allocation failure callback prototype. When registered through
  * rpmSetMemFail(), this gets called if memory allocation through rmalloc()

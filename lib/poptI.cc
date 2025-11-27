@@ -28,7 +28,7 @@ struct rpmInstallArguments_s rpmIArgs = {
 RPM_GNUC_NORETURN
 static void argerror(const char * desc)
 {
-    fprintf(stderr, "%s: %s\n", xgetprogname(), desc);
+    fprintf(stderr, "%s: %s\n", rgetprogname(), desc);
     exit(EXIT_FAILURE);
 }
 

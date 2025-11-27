@@ -178,7 +178,7 @@ free:
 	if (rpmcliPipeOutput) {
 	    fprintf(stderr,
 		    _("%s: error: more than one --pipe specified "
-		      "(incompatible popt aliases?)\n"), xgetprogname());
+		      "(incompatible popt aliases?)\n"), rgetprogname());
 	    exit(EXIT_FAILURE);
 	}
 	rpmcliPipeOutput = xstrdup(arg);
@@ -300,7 +300,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     int rc;
     const char *ctx, *execPath;
 
-    xsetprogname(argv[0]);
+    rsetprogname(argv[0]);
 
 #if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
@@ -318,7 +318,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 
     /* XXX hack to get popt working from build tree wrt lt-foo names */
-    ctx = rstreqn(xgetprogname(), "lt-", 3) ? xgetprogname() + 3 : xgetprogname();
+    ctx = rstreqn(rgetprogname(), "lt-", 3) ? rgetprogname() + 3 : rgetprogname();
 
     optCon = poptGetContext(ctx, argc, (const char **)argv, optionsTable, 0);
     {
@@ -335,12 +335,12 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
-		xgetprogname(), rc);
+		rgetprogname(), rc);
 	goto err;
     }
 
     if (rc < -1) {
-	fprintf(stderr, "%s: %s: %s\n", xgetprogname(),
+	fprintf(stderr, "%s: %s: %s\n", rgetprogname(),
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		poptStrerror(rc));
 	goto err;

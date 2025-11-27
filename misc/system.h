@@ -71,24 +71,6 @@ extern int fdatasync(int fildes);
 #define _free(_ptr) rfree((_ptr))
 #endif
 
-/* To extract program's name: use calls (reimplemented or shipped with system):
-   - void setprogname(const char *pn)
-   - const char *getprogname(void)
-
-   setprogname(*pn) must be the first call in main() in order to set the name
-   as soon as possible. */
-#if defined(HAVE_SETPROGNAME) /* BSD'ish systems */
-# include <stdlib.h> /* Make sure this header is included */
-# define xsetprogname(pn) setprogname(pn)
-# define xgetprogname(pn) getprogname(pn)
-#elif defined(HAVE___PROGNAME) /* glibc and others */
-# define xsetprogname(pn)
-  extern const char *__progname;
-# define xgetprogname(pn) __progname
-#else
-# error "Did not find any sutable implementation of xsetprogname/xgetprogname"
-#endif
-
 /* Take care of NLS matters.  */
 #if defined(ENABLE_NLS)
 # include <locale.h>

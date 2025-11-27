@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
     poptContext optCon;
     const char *fn;
 
-    xsetprogname(argv[0]);	/* Portability call -- see system.h */
+    rsetprogname(argv[0]);	/* Portability call -- see progname.cc */
     rpmReadConfigFiles(NULL, NULL);
 
     optCon = poptGetContext(NULL, argc, (const char **)argv, optionsTable, 0);
