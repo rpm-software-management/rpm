@@ -26,6 +26,12 @@ Summary: %{SUMMARY} server
 %description server
 %{summary}
 
+%package tools
+Summary: %{SUMMARY} tools
+
+%description tools
+%{summary}
+
 %install
 mkdir -p ${RPM_BUILD_ROOT}/var/lib/klangd
 mkdir -p ${RPM_BUILD_ROOT}/var/lib/plongd
@@ -35,6 +41,7 @@ mkdir -p ${RPM_BUILD_ROOT}/%{_sysusersdir}
 
 echo "aaaa" > ${RPM_BUILD_ROOT}/usr/bin/klang
 echo "bbbb" > ${RPM_BUILD_ROOT}/usr/bin/klangd
+echo "cccc" > ${RPM_BUILD_ROOT}/usr/bin/klangtool
 echo "xxxx" > ${RPM_BUILD_ROOT}/etc/klang.cfg
 
 cat << EOF > ${RPM_BUILD_ROOT}/%{_sysusersdir}/klang.conf
@@ -69,3 +76,6 @@ EOF
 %attr(-,klangd,klangd) /var/lib/klangd
 %attr(-,plong,klong) /var/lib/plongd
 /usr/bin/klangd
+
+%files tools
+%attr(-,plong,klang) /usr/bin/klangtool
