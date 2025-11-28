@@ -21,6 +21,7 @@
 #include "rpmds_internal.hh"
 #include "rpmfi_internal.hh" /* rpmfiles stuff for now */
 #include "misc.hh"
+#include "rpmug.hh"
 
 #include "backend/dbiset.hh"
 
@@ -646,6 +647,48 @@ exit:
     return set1 ? set1 : dbiIndexSetNew(0);
 }
 
+/* Check a string for foo(bar) style pattern, return value in parenthesis */
+static int isDep(const char *depn, size_t dlen, const char *dtype,
+		char **depval)
+{
+    size_t dtlen = strlen(dtype);
+    int rc = 0;
+
+    if (rstreqn(depn, dtype, dtlen) && depn[dlen-1] == ')') {
+	size_t l = dlen - dtlen - 1;
+	if (depval)
+	    *depval = rstrndup(depn + dtlen, l);
+	rc = 1;
+    }
+
+    return rc;
+}
+
+static int systemProvides(rpmts ts, rpmds dep)
+{
+    int rc = 1;
+    const char *dtype = NULL;
+    const char *n = rpmdsN(dep);
+    size_t nlen = strlen(n);
+    char *dval = NULL;
+
+    if (isDep(n, nlen, "user(", &dval)) {
+	uid_t uid = 0;
+	rc = rpmugUid(dval, &uid) < 0;
+	dtype = "(system user)";
+    } else if (isDep(n, nlen, "group(", &dval)) {
+	gid_t gid = 0;
+	rc = rpmugGid(dval, &gid) < 0;
+	dtype = "(system group)";
+    }
+    if (dtype)
+	rpmdsNotify(dep, dtype, rc);
+
+    free(dval);
+
+    return rc;
+}
+
 /**
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
@@ -679,6 +722,10 @@ retry:
 	}
 	goto unsatisfied;
     }
+
+    /* See if the runtime system provides it, similar to rpmlib provides */
+    if (systemProvides(ts, dep) == 0)
+	goto exit;
 
     /* Dont look at pre-requisites of already installed packages */
     if (!adding && isTransientReq(dsflags))

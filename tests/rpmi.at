@@ -1647,6 +1647,8 @@ group(klong)
 user(klangd)
 user(klangd)
 user(plong)
+group(klang)
+user(plong)
 Provides
 group(klang) = ZyBrbGFuZyAt
 group(klangd)
@@ -1675,6 +1677,8 @@ group(klong)
 group(klong)
 user(klangd)
 user(klangd)
+user(plong)
+group(klang)
 user(plong)
 Provides
 group(klang) = ZyBrbGFuZyAt
