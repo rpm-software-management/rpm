@@ -812,3 +812,62 @@ runroot rpm -e deptest-four
 	(deptest-five unless deptest-four) conflicts with (installed) deptest-two-1.0-1.noarch
 ])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([system provides])
+AT_KEYWORDS([install sysusers depends])
+
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet /data/SPECS/klang.spec
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -U --test /build/RPMS/noarch/klang-tools-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	group(klang) is needed by klang-tools-1.0-1.noarch
+	user(plong) is needed by klang-tools-1.0-1.noarch
+])
+
+RPMTEST_CHECK([
+runroot useradd plong
+runroot rpm -U --test /build/RPMS/noarch/klang-tools-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	group(klang) is needed by klang-tools-1.0-1.noarch
+])
+
+RPMTEST_CHECK([
+runroot groupadd klang
+runroot rpm -U /build/RPMS/noarch/klang-tools-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -V klang-tools
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot groupdel klang
+runroot userdel plong
+runroot rpm -V klang-tools
+],
+[1],
+[Unsatisfied dependencies for klang-tools-1.0-1.noarch:
+	group(klang) is needed by (installed) klang-tools-1.0-1.noarch
+	user(plong) is needed by (installed) klang-tools-1.0-1.noarch
+.....UG..    /usr/bin/klangtool
+],
+[])
+RPMTEST_CLEANUP
