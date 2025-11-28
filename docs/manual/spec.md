@@ -858,6 +858,23 @@ Supported modifiers are:
 * rdev
 * caps
 
+#### %caps
+
+`%caps(<text>)` sets the given POSIX.1e draft 15 `capabilities(7)` on the file.
+`<text>` is the textual representation of capability sets as described in
+`cap_text_formats(7)`.
+
+This feature is only available if RPM was built with libcap support. On Linux,
+file capabilities are only available since the kernel version 2.6.24. Many
+filesystems (such as NFS) do not support capabilities at all, which can cause
+install-time failures and/or incorrectly functioning packages when such
+filesystems are in use.
+
+Example:
+```
+    %caps(cap_net_raw=p) %{_bindir}/foo
+```
+
 ### Shell Globbing
 
 The usual rules for shell globbing apply (see `glob(7)`), including brace
