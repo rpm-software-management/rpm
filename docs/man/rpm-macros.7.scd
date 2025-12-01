@@ -555,7 +555,7 @@ the preceding *%*-character.
 	```
 
 *%{uncompress:*_PATH_*}*
-	Expand to a command for outputting argument _PATH_ to stdout,
+	Expand to a command for outputting argument _PATH_ to standard output,
 	uncompressing as needed.
 
 	Example:
@@ -613,7 +613,7 @@ the preceding *%*-character.
 
 ## Output
 *%{echo:*_STRING_*}*
-	Print _STRING_ to process stdout.
+	Print _STRING_ to process standard output.
 
 	Example:
 	```
@@ -621,7 +621,7 @@ the preceding *%*-character.
 	```
 
 *%{warn:*_STRING_*}*
-	Print _STRING_ prefixed with "warning: " to process stderr.
+	Print _STRING_ prefixed with "warning: " to process standard error.
 
 	Example:
 	```
@@ -629,7 +629,7 @@ the preceding *%*-character.
 	```
 
 *%{error:*_STRING_*}*
-	Print _STRING_ prefixed with "error: " to process stderr and
+	Print _STRING_ prefixed with "error: " to process standard error and
 	flag an error in the macro processor.
 
 	Example:

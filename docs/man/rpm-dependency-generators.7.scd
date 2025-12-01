@@ -107,11 +107,11 @@ ignored and a warning is printed.
 
 # GENERATORS
 
-A generator is an executable that reads filenames from stdin and writes
-dependencies of a single _type_ to stdout, according to a _protocol_. It is
-written for a specific file attribute and defined as a macro in the respective
-_NAME.attr_ file. Zero or more generators, one for each supported type, can be
-defined for a single file attribute.
+A generator is an executable that reads filenames from standard input and writes
+dependencies of a single _type_ to standard output, according to a _protocol_.
+It is written for a specific file attribute and defined as a macro in the
+respective _NAME.attr_ file. Zero or more generators, one for each supported
+type, can be defined for a single file attribute.
 
 ## Generator macros
 *%\_\_*_NAME_*\_conflicts* _COMMAND_++
@@ -125,14 +125,15 @@ defined for a single file attribute.
 *%\_\_*_NAME_*\_supplements* _COMMAND_
 	Generate dependencies of the respective type. Executes _COMMAND_ (a
 	program name and any arguments), passing it one or more filenames that
-	have the file attribute _NAME_ on stdin, and reads dependency strings on
-	its stdout. See *Protocols* for details on the input and output format.
+	have the file attribute _NAME_ on standard input, and reads dependency
+	strings on its standard output. See *Protocols* for details on the input
+	and output format.
 
 ## Protocols
 *%\_\_*_NAME_*\_protocol* _PROTOCOL_
 	Use _PROTOCOL_ when running dependency generators for the file attribute
-	_NAME_. Determines the input and output format for the generators to
-	implement.
+	_NAME_. Determines the standard input and standard output format for the
+	generators to implement.
 
 	_PROTOCOL_ can be one of the following:
 
@@ -153,9 +154,9 @@ defined for a single file attribute.
 Unlike the _PATH_RE_ in file attributes, generators receive filenames with the
 *%{buildroot}* prefix so that they can access the actual file contents on disk.
 
-Generators must always consume all of stdin. For backwards compatibility,
-generators should not make any assumptions about the number of files passed,
-regardless of the protocol used.
+Generators must always consume all of standard input. For backwards
+compatibility, generators should not make any assumptions about the number of
+files passed, regardless of the protocol used.
 
 ## Exported macros
 
@@ -194,8 +195,8 @@ Added: 4.16.0
 *%\_\_find_*​_TYPE_ _COMMAND_
 	Generate dependencies of the respective _TYPE_. Executes _COMMAND_ (a
 	program name and any arguments), passing it the entire file list of the
-	package at once, and reads dependency strings on its stdout. See
-	*Generator macros* for the possible _TYPE_ values.
+	package at once, and reads dependency strings on its standard output.
+	See *Generator macros* for the possible _TYPE_ values.
 
 This is a legacy, deprecated interface that's only available for v4 packages for
 backwards compatibility, and should not be used. Packages built this way contain
@@ -309,7 +310,7 @@ The _%{\_rpmconfigdir}/frobnize_ script has the following contents:
 # Type of dependency strings to print
 mode=$1
 
-# Process every file on stdin
+# Process every file on standard input
 while read -r file; do
     # Print currently processed file as per multifile protocol
     echo ";$file"
