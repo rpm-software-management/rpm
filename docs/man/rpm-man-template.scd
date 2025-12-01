@@ -20,7 +20,10 @@ Describe what *rpmcmd* command does in plain, understandable
 English. Command-line switches belong to *OPTIONS* and *OPERATIONS*
 as appropriate.
 
-Typographic conventions:
+Below are *rpm* specific conventions. When in doubt, consult *man-pages*(7).
+
+## Typographic conventions
+
 - Use imperative style when describing functionality
 - Use hard wrapping at 80 columns for all text
 - Use bold for literal values such as command name and options:
@@ -45,7 +48,16 @@ Typographic conventions:
   Either in parentheses at the end of a line (inline variant) or on a
   line of it's own, surrounded by empty lines (standalone variant).
 
-When in doubt, consult *man-pages*(7).
+## Preferred terms
+
+|[ *Term*
+:[ *Avoid using*
+|  standard input
+:  stdin
+|  standard output
+:  stdout
+|  standard error
+:  stderr
 
 # OPERATIONS
 For multi-operation commands, describe each operation invocation

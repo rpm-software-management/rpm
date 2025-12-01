@@ -94,7 +94,7 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	```
 
 *rpmspec -P rpm.spec*
-	Parse the rpm spec file to stdout, eg:
+	Parse the rpm spec file to standard output, eg:
 	```
 	Summary: The RPM package management system
 	Name: rpm

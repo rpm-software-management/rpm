@@ -876,7 +876,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 
 *ttyname(*[_fd_]*)*
 	Get name of a terminal associated with file descriptor _fd_.
-	If _fd_ is omitted, *0* (aka stdin) is used. See *ttyname*(3).
+	If _fd_ is omitted, *0* (aka standard input) is used. See *ttyname*(3).
 
 	Example:
 	```
