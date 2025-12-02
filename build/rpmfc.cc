@@ -1646,26 +1646,36 @@ static rpmRC rpmfcCheckPackageColor(rpmfc fc)
     const char *a = headerGetString(pkg->header, RPMTAG_ARCH);
     string msg;
     int header_color = headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR);
+    int arch_color = rpmGetArchColor(a);
     bool terminate = false;
 
     if (!rstreq(a, "noarch")) {
-	int arch_color = rpmGetArchColor(a);
 	if (arch_color > 0 && header_color > 0 &&
 				    !(arch_color & header_color)) {
-	    msg = _("Binaries not matching package arch (%s)\n");
+	    msg = _("Binaries not matching package arch (%s):\n%s");
 	} else {
 	    return RPMRC_OK;
 	}
     } else if (header_color != 0) {
 	terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
-	msg = _("Arch dependent binaries in noarch package (%s)\n");
+	msg = _("Arch dependent binaries in noarch package (%s):\n%s");
     } else {
 	return RPMRC_OK;
     }
 
+    /* Gather outlier binaries to print */
+    string bins;
+    for (unsigned ix = 0; ix < fc->nfiles; ix++) {
+	int color = fc->fcolor[ix];
+	if (!color || color == arch_color)
+	    continue;
+	bins += string(4, ' ') + fc->fn[ix].substr(fc->buildRoot.size());
+	bins += '\n';
+    }
+
     char *nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);
     rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING,
-	   msg.c_str(), nvr);
+	   msg.c_str(), nvr, bins.c_str());
     free(nvr);
 
     return terminate ? RPMRC_FAIL : RPMRC_OK;
