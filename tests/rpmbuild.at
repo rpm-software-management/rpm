@@ -4003,7 +4003,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
 7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
-c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+93d8095d3fa73c1f9d49468fe34c8ab30d044277ae2d6d5f8d446bb4842bb05d hello.spec
 ],
 [])
 
@@ -4016,7 +4016,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
 7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
-c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+93d8095d3fa73c1f9d49468fe34c8ab30d044277ae2d6d5f8d446bb4842bb05d hello.spec
 ],
 [])
 
@@ -4029,7 +4029,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
 7da10c0f91e120beff34b1d1077f1a77b2422dab7cb158379d44de4e83f90f30 hello-1.0.tar.gz
-c5b976d6e0d8068cf4c5a2910c511a76b94b0e263396d72176de1d9f855794d3 hello.spec
+93d8095d3fa73c1f9d49468fe34c8ab30d044277ae2d6d5f8d446bb4842bb05d hello.spec
 ],
 [warning: Unknown file digest algorithm 12345, falling back to 8
 ])
@@ -4044,7 +4044,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [79678ec5e51e7565b4703286f26ac6a6 hello-1.0-modernize.patch
 b718a835936fd2f6c8855f210c4789a1 hello-1.0.tar.gz
-155931ba96d11559b7f116412214db3a hello.spec
+4b84966fc3486237ea5861c6ab645f35 hello.spec
 ],
 [])
 RPMTEST_CLEANUP
@@ -4060,7 +4060,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [f1a0a1e0e413d66a4bd948cb16bdd03600c7aea6dcd04522bcbc3041a29ee651 hello-1.0-modernize.patch
 a0da711d71069ab2735448140c5e0b51b4aeb3150a72877df54f372350e68644 hello-1.0.tar.gz
-bf352b9ec1645d799dde77fcde2249eb62a0a29a1c10fbbc3dce03d851132b3f hello.spec
+aaf17b3d5277fb7d985461f6b682f24eaf33d352715f2957888434bd55628d25 hello.spec
 ],
 [])
 
@@ -4073,7 +4073,7 @@ runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.s
 [0],
 [11ddad2c1e5ef58d94d008634d9ad3a95cb7b5fab51652e73bb999c8d12110c4cdf6c572187c1a880a3c171a1af739fb48f77e98f5e30cc3bc1ec91a16182915 hello-1.0-modernize.patch
 154b8717381c284af9b939cc28199347edc5cbcc3228bf0983d52323ca19ec73ad85a834ee9851d746561a0bdfc2dfa7278846b3b7b492d66451658275e0f1d5 hello-1.0.tar.gz
-7cbf4a017c065a583caecea1de6c7e48210c949e416db788118b81d8ccbc941d0890bc48b3c250208f80b7a059a3fe40fd27426f6b25920cd533bfe83c2676a2 hello.spec
+e744c7bd0cb3a535cc3bf78d4a4725b23a3fc2c72e12fe32e11d8db41eb9b7d5122144e9a31ce46024b1745b4cc31d9ae4505a4749882c3d556633829ee129cc hello.spec
 ],
 [])
 RPMTEST_CLEANUP
@@ -4100,4 +4100,29 @@ ${RPM_CONFIGDIR_PATH}/rpmuncompress --macros=macros.aux -n /data/SOURCES/hello-2
 [/an/alternative/gzip -dc /data/SOURCES/hello-2.0.tar.gz
 ])
 
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmbuild noarch package with binary])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([[
+runroot rpmbuild -bb --quiet --target noarch /data/SPECS/hello2.spec
+]],
+[1],
+[],
+[error: Arch dependent binaries in noarch package
+])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmbuild arch package with non-matching binary])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([[
+rpm2archive /data/RPMS/hello-1.0-1.i386.rpm | tar xz
+cp usr/local/bin/hello $RPMTEST/data/SOURCES/hello32
+runroot rpmbuild -bb --quiet --target x86_64 --with hello32 \
+		 /data/SPECS/hello.spec
+]],
+[0],
+[],
+[warning: Binaries arch (1) not matching the package arch (2).
+])
 RPMTEST_CLEANUP

@@ -308,6 +308,8 @@ runroot rpmspec --parse \
 
 
 
+
+
 Summary: hello -- hello, world rpm
  Name: hello
 Version: 1.0
@@ -320,6 +322,11 @@ URL: http://rpm.org
 	Source0: hello-1.0.tar.gz
  Patch0: hello-1.0-modernize.patch
 Prefix: /usr
+
+
+
+
+
 
 %description
 Simple rpm demonstration.
