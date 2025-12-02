@@ -3116,9 +3116,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *nvr;
-	const char *a;
-	int header_color;
-	int arch_color;
 
 	if (pkg == maindbg) {
 	    /* if there is just one debuginfo package, we put our extra stuff
@@ -3152,26 +3149,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
         if ((rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
-
-	a = headerGetString(pkg->header, RPMTAG_ARCH);
-	header_color = headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR);
-	if (!rstreq(a, "noarch")) {
-	    arch_color = rpmGetArchColor(a);
-	    if (arch_color > 0 && header_color > 0 &&
-					!(arch_color & header_color)) {
-		rpmlog(RPMLOG_WARNING,
-		       _("Binaries arch (%d) not matching the package arch (%d).\n"),
-		       header_color, arch_color);
-	    }
-	} else if (header_color != 0) {
-	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
-	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
-		   _("Arch dependent binaries in noarch package\n"));
-	    if (terminate) {
-		rc = RPMRC_FAIL;
-		goto exit;
-	    }
-	}
     }
 
     /* Now we have in fileList list of files from all packages.
