@@ -4110,8 +4110,8 @@ runroot rpmbuild -bb --quiet --target noarch /data/SPECS/hello2.spec
 [1],
 [],
 [error: Arch dependent binaries in noarch package (hello2-1.0-1.noarch):
-    /usr/local/bin/hello
-    /usr/local/bin/hello2
+    /usr/local/bin/hello (ELF 64-bit)
+    /usr/local/bin/hello2 (ELF 64-bit)
 ])
 RPMTEST_CLEANUP
 
@@ -4126,6 +4126,6 @@ runroot rpmbuild -bb --quiet --target x86_64 --with hello32 \
 [0],
 [],
 [warning: Binaries not matching package arch (hello-1.0-1.x86_64):
-    /usr/local/bin/hello
+    /usr/local/bin/hello (ELF 32-bit)
 ])
 RPMTEST_CLEANUP
