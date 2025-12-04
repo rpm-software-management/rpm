@@ -1647,18 +1647,19 @@ static rpmRC rpmfcCheckPackageColor(rpmfc fc)
     string msg;
     int header_color = headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR);
     int arch_color = rpmGetArchColor(a);
+    bool is_noarch = rstreq(a, "noarch");
     bool terminate = false;
 
-    if (!rstreq(a, "noarch")) {
-	if (arch_color > 0 && header_color > 0 &&
-				    !(arch_color & header_color)) {
-	    msg = _("Binaries not matching package arch (%s):\n%s");
-	} else {
+    /* Return early if no outlier binaries are present */
+    if (is_noarch) {
+	if (!header_color)
 	    return RPMRC_OK;
-	}
-    } else if (header_color != 0) {
 	terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
 	msg = _("Arch dependent binaries in noarch package (%s):\n%s");
+    } else if (arch_color <= 0 || header_color <= 0) {
+	return RPMRC_OK;
+    } else if (!(arch_color & header_color)) {
+	msg = _("Binaries not matching package arch (%s):\n%s");
     } else {
 	return RPMRC_OK;
     }
