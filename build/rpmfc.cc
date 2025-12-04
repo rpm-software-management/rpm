@@ -1640,6 +1640,13 @@ rpmRC rpmfcApply(rpmfc fc)
     return rc;
 }
 
+static string rpmfcPrettyFType(rpmfc fc, unsigned ix)
+{
+    string ftype = fc->ftype[ix];
+    size_t len = ftype.find(' ', 10);
+    return ftype.substr(0, len);
+}
+
 static rpmRC rpmfcCheckPackageColor(rpmfc fc)
 {
     Package pkg = fc->pkg;
@@ -1670,7 +1677,10 @@ static rpmRC rpmfcCheckPackageColor(rpmfc fc)
 	int color = fc->fcolor[ix];
 	if (!color || color == arch_color)
 	    continue;
+	string type = rpmfcPrettyFType(fc, ix);
 	bins += string(4, ' ') + fc->fn[ix].substr(fc->buildRoot.size());
+	if (!type.empty())
+	    bins += " (" + type + ")";
 	bins += '\n';
     }
 
