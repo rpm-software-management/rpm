@@ -5,6 +5,7 @@
 # package which can be built under runroot in the test-suite.
 
 %bcond hello32 0
+%bcond fileown 0
 
 Summary: hello -- hello, world rpm
  Name: hello
@@ -46,7 +47,11 @@ cp %{SOURCE1} $RPM_BUILD_ROOT/usr/local/bin/hello
 %doc	FAQ
 #%readme README
 #%license COPYING
+%if %{with fileown}
+%attr(0751,foobar,foobar)	/usr/local/bin/hello
+%else
 %attr(0751,root,root)	/usr/local/bin/hello
+%endif
 
 %changelog
 * Tue Oct 20 1998 Jeff Johnson <jbj@redhat.com>
