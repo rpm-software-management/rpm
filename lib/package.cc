@@ -29,7 +29,6 @@ typedef struct pkgdata_s *pkgdatap;
 typedef void (*hdrvsmsg)(struct rpmsinfo_s *sinfo, pkgdatap pkgdata, const char *msg);
 
 struct pkgdata_s {
-    hdrvsmsg msgfunc;
     const char *fn;
     char *msg;
     uint64_t logDomain;
@@ -122,28 +121,23 @@ static int handleHdrVS(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct pkgdata_s *pkgdata = (struct pkgdata_s *)cbdata;
 
-    if (pkgdata->msgfunc) {
-	char *vsmsg = rpmsinfoMsg(sinfo);
-	pkgdata->msgfunc(sinfo, pkgdata, vsmsg);
-	free(vsmsg);
-    }
-
     /* Remember actual return code, but don't override a previous failure */
-    if (sinfo->rc && pkgdata->rc != RPMRC_FAIL)
+    if (sortRC(sinfo->rc) > sortRC(pkgdata->rc))
 	pkgdata->rc = sinfo->rc;
-
-    /* Preserve traditional behavior for now: only failure prevents read */
-    if (sinfo->rc != RPMRC_FAIL)
-	sinfo->rc = RPMRC_OK;
 
     return 1;
 }
 
 
-static void appendhdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
-			const char *msg)
+static int appendhdrmsg(struct rpmsinfo_s *sinfo, void *cbdata)
 {
-    pkgdata->msg = rstrscat(&pkgdata->msg, "\n", msg, NULL);
+    struct pkgdata_s *pkgdata = (struct pkgdata_s *)cbdata;
+    if (sinfo->rc != RPMRC_NOTFOUND) {
+	char *msg = rpmsinfoMsg(sinfo);
+	pkgdata->msg = rstrscat(&pkgdata->msg, "\n", msg, NULL);
+	free(msg);
+    }
+    return 1;
 }
 
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
@@ -153,7 +147,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct hdrblob_s blob;
     struct pkgdata_s pkgdata = {
-	.msgfunc = appendhdrmsg,
 	.fn = NULL,
 	.msg = NULL,
 	.logDomain = (uint64_t) ts,
@@ -172,6 +165,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
 	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+	rpmvsForeach(vs, appendhdrmsg, &pkgdata);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
 
@@ -271,21 +265,23 @@ void applyRetrofits(Header h)
     }
 }
 
-static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
-			const char *msg)
+static int loghdrmsg(struct rpmsinfo_s *sinfo, void *cbdata)
 {
+    const struct pkgdata_s *pkgdata = (const struct pkgdata_s *)cbdata;
     int lvl = RPMLOG_DEBUG;
+    int once = 0;
+    int log = 1;
+
     switch (sinfo->rc) {
-    case RPMRC_OK:		/* Signature is OK. */
+    case RPMRC_NOTFOUND:	/* Signature/digest not present. */
+	log = 0;
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
-    case RPMRC_NOKEY:		/* Public key is unavailable. */
-	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-	if (rpmlogOnce(pkgdata->logDomain, sinfo->keyid, RPMLOG_WARNING, "%s: %s\n", pkgdata->fn, msg))
-	    goto exit;
+    case RPMRC_OK:		/* Signature is OK. */
 	break;
-    case RPMRC_NOTFOUND:	/* Signature/digest not present. */
+    case RPMRC_NOKEY:		/* Public key is unavailable. */
 	lvl = RPMLOG_WARNING;
+	once = 1;
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
@@ -293,9 +289,18 @@ static void loghdrmsg(struct rpmsinfo_s *sinfo, struct pkgdata_s *pkgdata,
 	break;
     }
 
-    rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
- exit:
-    ;
+    if (log) {
+	char *msg = rpmsinfoMsg(sinfo);
+	if (once) {
+	    rpmlogOnce(pkgdata->logDomain, sinfo->keyid, lvl,
+			"%s: %s\n", pkgdata->fn, msg);
+	} else {
+	    rpmlog(lvl, "%s: %s\n", pkgdata->fn, msg);
+	}
+	free(msg);
+    }
+
+    return 1;
 }
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
@@ -309,7 +314,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
     struct pkgdata_s pkgdata = {
-	.msgfunc = loghdrmsg,
 	.fn = fn ? fn : Fdescr(fd),
 	.msg = NULL,
 	.logDomain = (uint64_t) ts,
@@ -326,7 +330,11 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Actually all verify discovered signatures and digests */
     rc = RPMRC_FAIL;
-    if (!rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata)) {
+    rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+    rpmvsForeach(vs, loghdrmsg, &pkgdata);
+
+    /* Preserve traditional behavior for now: only failure prevents read */
+    if (pkgdata.rc != RPMRC_FAIL) {
 	/* Finally import the headers and do whatever required retrofits etc */
 	if (hdrp) {
 	    if (hdrblobImport(sigblob, 0, &sigh, &msg))
