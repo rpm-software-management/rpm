@@ -1182,7 +1182,7 @@ struct vfydata_s {
 };
 }
 
-static int sortRC(int rc)
+int sortRC(int rc)
 {
     switch (rc) {
     case RPMRC_OK: return 0;

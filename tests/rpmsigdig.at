@@ -2071,7 +2071,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[ignore])
+[])
 
 # RSA disabled
 RPMTEST_CHECK([
@@ -2104,7 +2104,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[ignore])
+[])
 
 # EDDSA disabled
 RPMTEST_CHECK([
@@ -2140,7 +2140,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[ignore])
+[])
 
 # ECDSA disabled
 RPMTEST_CHECK([
@@ -2173,7 +2173,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[ignore])
+[])
 
 # everything disabled
 RPMTEST_CHECK([
@@ -2207,7 +2207,17 @@ runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
 ],
-[ignore])
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
+error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
+],
+[])
 
 RPMTEST_CHECK([
 runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
@@ -2216,7 +2226,8 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[ignore])
+[	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmsign --addsign legacy v6])
