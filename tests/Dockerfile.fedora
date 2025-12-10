@@ -83,7 +83,9 @@ RUN ln -sf $(rpm --eval '%{_target_platform}%{?_gnu}')-pkg-config \
 RUN rpm -e --nodeps --nodb \
 	rpm \
 	rpm-libs \
-	rpm-build-libs
+	rpm-sign-libs \
+	rpm-build-libs \
+	rpm-plugin-ima
 
 WORKDIR /
 CMD /bin/bash
