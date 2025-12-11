@@ -554,10 +554,10 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
 int rpmvsVerify(struct rpmvs_s *sis, int type,
 		       rpmsinfoCb cb, void *cbdata)
 {
-    int success = 0;
     int failed = 0;
     int cont = 1;
-    int range = 0, vfylevel = sis->vfylevel;
+    int vfylevel = sis->vfylevel;
+    int range = vfylevel ? (RPMSIG_HEADER|RPMSIG_PAYLOAD) : 0;
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/
@@ -588,10 +588,6 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
     if (verified[RPMSIG_SIGNATURE_TYPE])
 	vfylevel |= RPMSIG_SIGNATURE_TYPE;
 
-    /* Cannot verify payload if RPMVSF_NEEDPAYLOAD is set */
-    if (sis->vsflags & RPMVSF_NEEDPAYLOAD)
-	range &= ~RPMSIG_PAYLOAD;
-
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 	int strength = (sinfo->type | sinfo->strength);
@@ -620,22 +616,25 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	    cont = cb(sinfo, cbdata);
 
 	switch (sinfo->rc) {
-	case RPMRC_OK:
-	    success++;
-	    break;
 	case RPMRC_FAIL:
 	case RPMRC_NOKEY:
-	case RPMRC_NOTFOUND:
-	    failed++;
+	    failed |= sinfo->type;
 	    break;
+	case RPMRC_OK:
 	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOTFOUND:
 	default:
 	    /* ignore */
 	    break;
 	};
     }
 
-    return (success >= 1 && failed == 0) ? 0 : failed;
+    if ((vfylevel & RPMSIG_DIGEST_TYPE) && (verified[RPMSIG_DIGEST_TYPE] != range))
+	failed |= RPMSIG_DIGEST_TYPE;
+    if ((vfylevel & RPMSIG_SIGNATURE_TYPE) && (verified[RPMSIG_SIGNATURE_TYPE] != range))
+	failed |= RPMSIG_SIGNATURE_TYPE;
+
+    return failed;
 }
 
 static const char * rpmSigString(rpmRC res)
