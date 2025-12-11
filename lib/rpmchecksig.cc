@@ -121,7 +121,6 @@ static int readFile(FD_t fd, char **msg)
 namespace {
 struct vfydata_s {
     int seen;
-    int bad;
     int verbose;
 };
 }
@@ -130,8 +129,6 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = (struct vfydata_s *)cbdata;
     vd->seen |= sinfo->type;
-    if (sinfo->rc != RPMRC_OK)
-	vd->bad |= sinfo->type;
     if (vd->verbose) {
 	char *vsmsg = rpmsinfoMsg(sinfo);
 	rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
@@ -218,7 +215,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
 {
     char *msg = NULL;
     struct vfydata_s vd = { .seen = 0,
-			    .bad = 0,
 			    .verbose = rpmIsVerbose(),
     };
     int rc;
@@ -235,11 +231,11 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_DIGEST_TYPE) ?
+	    rpmlog(RPMLOG_NOTICE, " %s", (rc & RPMSIG_DIGEST_TYPE) ?
 					_("DIGESTS") : _("digests"));
 	}
 	if (vd.seen & RPMSIG_SIGNATURE_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_SIGNATURE_TYPE) ?
+	    rpmlog(RPMLOG_NOTICE, " %s", (rc & RPMSIG_SIGNATURE_TYPE) ?
 					_("SIGNATURES") : _("signatures"));
 	}
 	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));
