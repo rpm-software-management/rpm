@@ -23,13 +23,19 @@ target_compile_definitions(_rpm PRIVATE Py_LIMITED_API=0x030A0000)
 
 target_link_libraries(_rpm PRIVATE librpmio librpm librpmbuild librpmsign)
 
+# Allow overriding of Python installation directory for cross-compilation
+# scenarios
+if(NOT DEFINED PYTHON_INSTALL_DIR)
+	set(PYTHON_INSTALL_DIR ${Python3_SITEARCH})
+endif()
+
 install(TARGETS _rpm
-	DESTINATION ${Python3_SITEARCH}/rpm)
+	DESTINATION ${PYTHON_INSTALL_DIR}/rpm)
 install(FILES rpm/transaction.py rpm/__init__.py
-	DESTINATION ${Python3_SITEARCH}/rpm)
+	DESTINATION ${PYTHON_INSTALL_DIR}/rpm)
 install(DIRECTORY examples TYPE DOC)
 
 set(egginfo ${PROJECT_NAME}-${PROJECT_VERSION}-py${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}.egg-info)
 configure_file(rpm.egg-info.in ${egginfo} @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${egginfo}
-	DESTINATION ${Python3_SITEARCH})
+	DESTINATION ${PYTHON_INSTALL_DIR})
