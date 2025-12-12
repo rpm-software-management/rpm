@@ -1,28 +1,31 @@
 #ifndef _RPMTRIGGERS_H
 #define _RPMTRIGGERS_H
 
+#include <set>
+#include <tuple>
+
 #include <rpm/rpmutil.h>
 #include "rpmscript.hh"
 
 #define RPMTRIGGER_DEFAULT_PRIORITY 1000000
 
-struct triggerInfo_s {
+struct triggerInfo {
     unsigned int hdrNum;
     unsigned int tix;
     unsigned int priority;
+
+    bool operator < (const triggerInfo & o) const
+    {
+	return std::tie(priority, hdrNum, tix) <
+	       std::tie(o.priority, o.hdrNum, o.tix);
+    }
+    triggerInfo(unsigned int _hnum, unsigned int _tix, unsigned int _prio) :
+		hdrNum(_hnum), tix(_tix), priority(_prio)
+    {
+    }
 };
 
-typedef struct rpmtriggers_s {
-    struct triggerInfo_s *triggerInfo;
-    int count;
-    int alloced;
-} *rpmtriggers;
-
-RPM_GNUC_INTERNAL
-rpmtriggers rpmtriggersCreate(unsigned int hint);
-
-RPM_GNUC_INTERNAL
-rpmtriggers rpmtriggersFree(rpmtriggers triggers);
+using rpmtriggers = std::set<triggerInfo>;
 
 /*
  * Prepare post trans uninstall file triggers. After transcation uninstalled
