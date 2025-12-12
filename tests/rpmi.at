@@ -1756,6 +1756,70 @@ klangd
 
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpm -i user/group lookup])
+AT_KEYWORDS([])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+# Symlink to read-only file /etc/authselect/nsswitch.conf
+rm $RPMTEST/etc/nsswitch.conf
+
+# Set up nss-altfiles
+echo "passwd: files altfiles" > $RPMTEST/etc/nsswitch.conf
+echo "group: files altfiles" >> $RPMTEST/etc/nsswitch.conf
+
+# Add new user and group for lookup via nss-altfiles
+echo "foobar:x:12345:12345:foobar:/:/usr/sbin/nologin" \
+    > $RPMTEST/usr/lib/passwd
+echo "foobar:x:12345:foobar" \
+    > $RPMTEST/usr/lib/group
+
+runroot rpmbuild --quiet -bb --with fileown /data/SPECS/hello.spec
+
+# Verify if new user/group is resolvable from NSS
+RPMTEST_CHECK([
+runroot rpm --eval "%_passwd_path"
+runroot rpm --eval "%_group_path"
+runroot getent passwd foobar
+runroot getent group foobar
+],
+[0],
+[/etc/passwd
+/etc/group
+foobar:x:12345:12345:foobar:/:/usr/sbin/nologin
+foobar:x:12345:foobar
+],
+[])
+
+# Install to system root, should resolve from NSS
+RPMTEST_CHECK([
+runroot rpm -i --nodeps /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm
+runroot stat -c '%u %g' /usr/local/bin/hello
+],
+[0],
+[12345 12345
+],
+[])
+
+# Install to custom root, should resolve from standard paths there
+RPMTEST_CHECK([
+
+# Add new user/group to custom root
+mkdir -p $RPMTEST/alt/etc
+echo "foobar:x:54321:54321:foobar:/:/usr/sbin/nologin" \
+    > $RPMTEST/alt/etc/passwd
+echo "foobar:x:54321:foobar" \
+    > $RPMTEST/alt/etc/group
+
+runroot rpm -i --noplugins --nodeps --nosignature \
+	    --root /alt /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm
+runroot stat -c '%u %g' /alt/usr/local/bin/hello
+],
+[0],
+[54321 54321
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([install on invalid symlinked directory])
 AT_KEYWORDS([install])
 
