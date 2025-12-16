@@ -414,6 +414,35 @@ static int rpmNoGlob(const char *fn, int *argcPtr, ARGV_t * argvPtr)
     return rc;
 }
 
+static int globArgs(ARGV_t fileArgv, ARGV_t *argvp, int *argcp)
+{
+    int numFailed = 0;
+    for (char **fnp = fileArgv; fnp && *fnp != NULL; fnp++) {
+	ARGV_t av = NULL;
+	int ac = 0;
+	int rc = 0;
+
+	if (giFlags & RPMGI_NOGLOB) {
+	    rc = rpmNoGlob(*fnp, &ac, &av);
+	} else {
+	    rc = rpmGlobPath(*fnp, RPMGLOB_NOCHECK, &ac, &av);
+	}
+	if (rc || ac == 0) {
+	    if (giFlags & RPMGI_NOGLOB) {
+		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *fnp);
+	    } else {
+		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *fnp);
+	    }
+	    numFailed++;
+	} else {
+	    argvAppend(argvp, av);
+	    *argcp += ac;
+	}
+	argvFree(av);
+    }
+    return numFailed;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
@@ -452,30 +481,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
-    	ARGV_t av = NULL;
-    	int ac = 0;
-
-	if (giFlags & RPMGI_NOGLOB) {
-	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
-	} else {
-	    rc = rpmGlobPath(*eiu->fnp, RPMGLOB_NOCHECK, &ac, &av);
-	}
-	if (rc || ac == 0) {
-	    if (giFlags & RPMGI_NOGLOB) {
-		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *eiu->fnp);
-	    } else {
-		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
-	    }
-	    eiu->numFailed++;
-	    argvFree(av);
-	    continue;
-	}
-
-	argvAppend(&(eiu->argv), av);
-	argvFree(av);
-	eiu->argc += ac;
-    }
+    eiu->numFailed = globArgs(fileArgv, &eiu->argv, &eiu->argc);
 
 restart:
     /* Allocate sufficient storage for next set of args. */
