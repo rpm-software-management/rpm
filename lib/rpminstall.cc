@@ -406,6 +406,45 @@ static int globArgs(ARGV_t fileArgv, std::deque<std::string> & queue)
     return numFailed;
 }
 
+std::string getFile(rpmts ts, const std::string & arg)
+{
+    FD_t tfd = NULL;
+    char *tfn = NULL;
+    const char *fileURL = arg.c_str();
+    int rc = -1;
+    std::string fn;
+
+    switch (urlIsURL(fileURL)) {
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+	if (rpmIsVerbose())
+	    fprintf(stdout, _("Retrieving %s\n"), fileURL);
+
+	tfd = rpmMkTempFile(rpmtsRootDir(ts), &tfn);
+	if (tfn) {
+	    Fclose(tfd);
+	    rc = urlGetFile(fileURL, tfn);
+	    fn = tfn;
+	}
+	if (rc)
+	    rpmlog(RPMLOG_ERR, _("skipping %s - transfer failed\n"), fileURL);
+
+	break;
+    case URL_IS_PATH:
+    case URL_IS_DASH:	/* WRONG WRONG WRONG */
+    case URL_IS_HKP:	/* WRONG WRONG WRONG */
+    default: {
+	const char *path = NULL;
+	(void) urlPath(fileURL, &path);
+	fn = path;
+	} break;
+    }
+    free(tfn);
+
+    return fn;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
@@ -445,47 +484,15 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     while (queue.empty() == false) {
 	std::string arg = queue.front();
-	const char *fileURL = arg.c_str();
-	std::string fn;
 	queue.pop_front();
 
-	switch (urlIsURL(fileURL)) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	{   char *tfn = NULL;
-	    FD_t tfd;
-	    int rc = -1;
-
-	    if (rpmIsVerbose())
-		fprintf(stdout, _("Retrieving %s\n"), fileURL);
-
-	    tfd = rpmMkTempFile(rpmtsRootDir(ts), &tfn);
-	    if (tfn) {
-		Fclose(tfd);
-		rc = urlGetFile(fileURL, tfn);
-		fn = tfn;
-		cleanup.push_back(fn);
-		free(tfn);
-	    }
-
-	    if (rc != 0) {
-		rpmlog(RPMLOG_ERR,
-			_("skipping %s - transfer failed\n"), fileURL);
-		numFailed++;
-		continue;
-	    }
-	}   break;
-	case URL_IS_PATH:
-	case URL_IS_DASH:	/* WRONG WRONG WRONG */
-	case URL_IS_HKP:	/* WRONG WRONG WRONG */
-	default: {
-	    const char *tfn = NULL;
-	    (void) urlPath(fileURL, &tfn);
-	    fn = tfn;
-	    }
-	    break;
+	std::string fn = getFile(ts, arg);
+	if (fn.empty()) {
+	    numFailed++;
+	    continue;
 	}
+	if (fn != arg)
+	    cleanup.push_back(fn);
 
 	Header h = NULL;
 	const char *cfn = fn.c_str();
