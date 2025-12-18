@@ -248,7 +248,6 @@ struct rpmEIU {
     char ** sourceURL;
     int argc;
     char ** argv;
-    rpmRelocation * relocations;
     rpmRC rpmrc;
 };
 
@@ -447,7 +446,7 @@ static int globArgs(ARGV_t fileArgv, ARGV_t *argvp, int *argcp)
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
     struct rpmEIU * eiu = (struct rpmEIU *)xcalloc(1, sizeof(*eiu));
-    rpmRelocation * relocations;
+    rpmRelocation * relocations = ia->relocations;
     char * fileURL = NULL;
     rpmVSFlags vsflags, ovsflags;
     rpmVSFlags ovfyflags;
@@ -469,15 +468,13 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
-    relocations = ia->relocations;
-
     setNotifyFlag(ia, ts); 
 
-    if ((eiu->relocations = relocations) != NULL) {
-	while (eiu->relocations->oldPath)
-	    eiu->relocations++;
-	if (eiu->relocations->newPath == NULL)
-	    eiu->relocations = NULL;
+    if (relocations != NULL) {
+	while (relocations->oldPath)
+	    relocations++;
+	if (relocations->newPath == NULL)
+	    relocations = NULL;
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
@@ -597,12 +594,12 @@ restart:
 	    continue;
 	}
 
-	if (eiu->relocations) {
+	if (relocations) {
 	    struct rpmtd_s prefixes;
 
 	    headerGet(h, RPMTAG_PREFIXES, &prefixes, HEADERGET_DEFAULT);
 	    if (rpmtdCount(&prefixes) == 1) {
-		eiu->relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
+		relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
 		rpmtdFreeData(&prefixes);
 	    } else {
 		rpmlog(RPMLOG_ERR, _("package %s is not relocatable\n"),
@@ -624,11 +621,11 @@ restart:
 	else
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
-			relocations);
+			ia->relocations);
 
 	headerFree(h);
-	if (eiu->relocations)
-	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
+	if (relocations)
+	    relocations->oldPath = _free(relocations->oldPath);
 
 	switch (rc) {
 	case 0:
