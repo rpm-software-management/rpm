@@ -466,6 +466,19 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ],
 [1],
 [],
+[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 3129d507d00b1dc60745d9637010b5d82059ebeff2318b2db75b26272b823586)
+])
+
+RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--nodigest \
+	--define "_pkgverify_flags 0xc0c00" \
+	--define "__vsflags 0xc0c00" \
+	--define "_pkgverify_level signature" \
+	/tmp/${pkg}
+],
+[1],
+[],
 [	package hello-2.0-1.x86_64 does not verify: no signature
 ])
 

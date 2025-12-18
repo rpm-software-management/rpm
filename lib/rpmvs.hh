@@ -34,6 +34,7 @@ struct rpmsinfo_s {
     /* verify results */
     rpmRC rc;
     char *msg;
+    ARGV_t lints;
 };
 
 /**
@@ -66,10 +67,35 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
 int rpmvsRange(struct rpmvs_s *vs);
 
+/*
+ * This is the main rpm package integrity verification machinery, and
+ * a peculiar beast at that because of all the legacy compatibility modes
+ * it needs to support in addition to the more modern enforcing modes.
+ *
+ * All verifiables (signatures, digests) indicated in the type bitmask are
+ * verified, a negative result causes a failure of that type in all modes.
+ *
+ * Return a bitmask of the failed verifiable types, or zero on success.
+ * Success semantics depend on the verification mode specified at rpmvsCreate()
+ * time:
+ * - In "none" verifylevel (rpm < 4.14 compatibility mode), there are no
+ *   additional constraints. Notably rpmReadPackageFile() always uses this.
+ * - In "digest", "signature" and "all" modes, there must be no failures and
+ *   a at least one positive result of each enabled verifiable type,
+ *   governing the entire package (header + payload).
+ *
+ * To make matters worse, callbacks (need to) modify some results to
+ * get the desired behavior in some cases.
+ */
 int rpmvsVerify(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
+
+void rpmvsForeach(struct rpmvs_s *sis, rpmsinfoCb cb, void *cbdata);
 
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
 
+
+RPM_GNUC_INTERNAL
+int sortRC(int rc);
 #endif /* _RPMVS_H */

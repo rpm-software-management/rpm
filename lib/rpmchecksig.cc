@@ -121,8 +121,8 @@ static int readFile(FD_t fd, char **msg)
 namespace {
 struct vfydata_s {
     int seen;
-    int bad;
     int verbose;
+    int rc;
 };
 }
 
@@ -130,12 +130,21 @@ static int vfyCb(struct rpmsinfo_s *sinfo, void *cbdata)
 {
     struct vfydata_s *vd = (struct vfydata_s *)cbdata;
     vd->seen |= sinfo->type;
-    if (sinfo->rc != RPMRC_OK)
-	vd->bad |= sinfo->type;
     if (vd->verbose) {
 	char *vsmsg = rpmsinfoMsg(sinfo);
 	rpmlog(RPMLOG_NOTICE, "    %s\n", vsmsg);
 	free(vsmsg);
+    }
+    return 1;
+}
+
+static int lintCb(struct rpmsinfo_s *sinfo, void *cbdata)
+{
+    struct vfydata_s *vd = (struct vfydata_s *)cbdata;
+    if (vd->rc && sinfo->lints) {
+	char *msg = argvJoin(sinfo->lints, "\n");
+	rpmlog(RPMLOG_ERR, "%s\n", msg);
+	free(msg);
     }
     return 1;
 }
@@ -218,8 +227,8 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
 {
     char *msg = NULL;
     struct vfydata_s vd = { .seen = 0,
-			    .bad = 0,
 			    .verbose = rpmIsVerbose(),
+			    .rc = 0,
     };
     int rc;
     struct rpmvs_s *vs = rpmvsCreate(vfylevel, flags, keyring);
@@ -231,15 +240,17 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
     if (rc)
 	goto exit;
 
-    rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+    rc = vd.rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+
+    rpmvsForeach(vs, lintCb, &vd);
 
     if (!vd.verbose) {
 	if (vd.seen & RPMSIG_DIGEST_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_DIGEST_TYPE) ?
+	    rpmlog(RPMLOG_NOTICE, " %s", (rc & RPMSIG_DIGEST_TYPE) ?
 					_("DIGESTS") : _("digests"));
 	}
 	if (vd.seen & RPMSIG_SIGNATURE_TYPE) {
-	    rpmlog(RPMLOG_NOTICE, " %s", (vd.bad & RPMSIG_SIGNATURE_TYPE) ?
+	    rpmlog(RPMLOG_NOTICE, " %s", (rc & RPMSIG_SIGNATURE_TYPE) ?
 					_("SIGNATURES") : _("signatures"));
 	}
 	rpmlog(RPMLOG_NOTICE, " %s\n", rc ? _("NOT OK") : _("OK"));

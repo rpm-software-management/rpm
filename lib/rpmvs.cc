@@ -289,6 +289,7 @@ static void rpmsinfoFini(struct rpmsinfo_s *sinfo)
 	free(sinfo->msg);
 	free(sinfo->descr);
 	free(sinfo->keyid);
+	argvFree(sinfo->lints);
 	memset(sinfo, 0, sizeof(*sinfo));
     }
 }
@@ -383,6 +384,9 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
     if (!(vi->vi.type & RPMSIG_VERIFIABLE_TYPE))
 	return;
 
+    if (rpmsinfoDisabled(&vi->vi, sis->vsflags))
+	return;
+
     const char *o = (blob->il > blob->ril) ? _("header") : _("package");
     struct rpmtd_s td;
     rpmRC rc = hdrblobGet(blob, vi->tag, &td);
@@ -390,7 +394,7 @@ static void rpmvsAppend(struct rpmvs_s *sis, hdrblob blob,
 
     rpmvsReserve(sis, nitems);
 
-    if (!rpmsinfoDisabled(&vi->vi, sis->vsflags) && rc == RPMRC_OK) {
+    if (rc == RPMRC_OK) {
 	while (rpmtdNext(&td) >= 0) {
 	    if (!rpmsinfoInit(vi, ti, &td, o, &sis->sigs[sis->nsigs])) {
 		/* Don't bother with v3/v4 sigs when v6 sigs exist */
@@ -554,14 +558,15 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
 int rpmvsVerify(struct rpmvs_s *sis, int type,
 		       rpmsinfoCb cb, void *cbdata)
 {
-    int success = 0;
     int failed = 0;
     int cont = 1;
-    int range = 0, vfylevel = sis->vfylevel;
+    int vfylevel = sis->vfylevel;
+    int range = vfylevel ? (RPMSIG_HEADER|RPMSIG_PAYLOAD) : 0;
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/
-    qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
+    if (sis->sigs)
+	qsort(sis->sigs, sis->nsigs, sizeof(*sis->sigs), sinfoCmp);
 
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
@@ -587,10 +592,6 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
     /* Unconditionally reject partially signed packages */
     if (verified[RPMSIG_SIGNATURE_TYPE])
 	vfylevel |= RPMSIG_SIGNATURE_TYPE;
-
-    /* Cannot verify payload if RPMVSF_NEEDPAYLOAD is set */
-    if (sis->vsflags & RPMVSF_NEEDPAYLOAD)
-	range &= ~RPMSIG_PAYLOAD;
 
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
@@ -620,22 +621,34 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
 	    cont = cb(sinfo, cbdata);
 
 	switch (sinfo->rc) {
-	case RPMRC_OK:
-	    success++;
-	    break;
 	case RPMRC_FAIL:
 	case RPMRC_NOKEY:
-	case RPMRC_NOTFOUND:
-	    failed++;
+	    failed |= sinfo->type;
 	    break;
+	case RPMRC_OK:
 	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOTFOUND:
 	default:
 	    /* ignore */
 	    break;
 	};
     }
 
-    return (success >= 1 && failed == 0) ? 0 : failed;
+    if ((vfylevel & RPMSIG_DIGEST_TYPE) && (verified[RPMSIG_DIGEST_TYPE] != range))
+	failed |= RPMSIG_DIGEST_TYPE;
+    if ((vfylevel & RPMSIG_SIGNATURE_TYPE) && (verified[RPMSIG_SIGNATURE_TYPE] != range))
+	failed |= RPMSIG_SIGNATURE_TYPE;
+
+    return failed;
+}
+
+void rpmvsForeach(struct rpmvs_s *sis, rpmsinfoCb cb, void *cbdata)
+{
+    int cont = 1;
+    for (int i = 0; i < sis->nsigs && cont; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+	cont = cb(sinfo, cbdata);
+    }
 }
 
 static const char * rpmSigString(rpmRC res)
@@ -694,7 +707,8 @@ verifySignature(rpmKeyring keyring, struct rpmsinfo_s *sinfo)
 {
     rpmRC res = RPMRC_FAIL;
     if (pgpSignatureType(sinfo->sig) == PGPSIGTYPE_BINARY) {
-	res = rpmKeyringVerifySig2(keyring, sinfo->sig, sinfo->ctx, &sinfo->key);
+	res = rpmKeyringVerifySig3(keyring, sinfo->sig, sinfo->ctx,
+			&sinfo->key, &sinfo->lints);
     }
     return res;
 }
