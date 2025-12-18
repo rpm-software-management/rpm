@@ -203,6 +203,7 @@ set(REQFUNCS
 find_package(PkgConfig REQUIRED)
 find_package(Lua 5.2 REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(fmt REQUIRED)
 if (WITH_BZIP2)
     find_package(BZip2 REQUIRED)
 endif()

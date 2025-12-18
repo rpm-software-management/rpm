@@ -17,6 +17,7 @@ RUN dnf -y install \
   gettext-devel \
   debugedit \
   doxygen \
+  fmt-devel \
   make \
   gcc \
   gcc-c++ \

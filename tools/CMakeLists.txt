@@ -28,6 +28,7 @@ endif()
 if (LIBELF_FOUND)
 	add_executable(elfdeps elfdeps.cc)
 	target_link_libraries(elfdeps PRIVATE PkgConfig::LIBELF)
+	target_link_libraries(elfdeps PRIVATE fmt)
 	install(TARGETS elfdeps DESTINATION ${RPM_CONFIGDIR})
 endif()
 

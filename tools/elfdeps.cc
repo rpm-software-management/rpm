@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include <format>
+#include <fmt/core.h>
 #include <string>
 #include <vector>
 
@@ -105,7 +105,7 @@ static void addSoDep(std::vector<std::string> & deps,
     if (ver.empty() && marker.empty()) {
 	addDep(deps, soname);
     } else {
-	auto dep = std::format("{}({}){}", soname, ver, marker);
+	auto dep = fmt::format("{}({}){}", soname, ver, marker);
 	addDep(deps, dep);
     }
 }
