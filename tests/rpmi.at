@@ -763,6 +763,138 @@ error: open of not_pkg.rpm failed: No such file or directory
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([install from url])
+AT_KEYWORDS([install urlhelper manifest])
+AT_SKIP_IF([test -z "${PYTHON}"])
+
+# Startup a http server, serving from /data, for the duration of this
+# test-group. It's visible to other tests running in parallel, though.
+RPMTEST_CHECK([
+daemonize -p ${HOME}/http.pid -o http.log -- ${PYTHON} -m http.server --bind 127.0.0.1 --directory /data
+],
+[0],
+[ignore],
+[ignore])
+
+# nonexistent remote package
+RPMTEST_CHECK([
+runroot rpm -Uv --nodeps --nosignature \
+		http://127.0.0.1:8000/RPMS/wello-2.0-1.x86_64.rpm
+],
+[1],
+[Retrieving http://127.0.0.1:8000/RPMS/wello-2.0-1.x86_64.rpm
+],
+[stderr])
+
+RPMTEST_CHECK([
+grep "error: skipping" stderr
+],
+[0],
+[error: skipping http://127.0.0.1:8000/RPMS/wello-2.0-1.x86_64.rpm - transfer failed
+],
+[])
+
+# existing remote packages
+RPMTEST_CHECK([
+runroot rpm -Uv --nodeps --nosignature --nodb \
+		http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm \
+		http://127.0.0.1:8000/RPMS/hlinktest-1.0-1.noarch.rpm
+],
+[0],
+[Retrieving http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm
+Retrieving http://127.0.0.1:8000/RPMS/hlinktest-1.0-1.noarch.rpm
+Verifying packages...
+Preparing packages...
+hlinktest-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+
+# mixture of existing and non-existent remote packages in a local manifest
+RPMTEST_CHECK([
+cat << EOF > ${RPMTEST}/tmp/pkgs.mft
+http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm
+http://127.0.0.1:8000/RPMS/nolinktest-1.0-1.noarch.rpm
+http://127.0.0.1:8000/RPMS/foo-1.0-1.noarch.rpm
+EOF
+
+runroot rpm -Uv --nodeps --nosignature --nodb /tmp/pkgs.mft
+],
+[1],
+[Retrieving http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm
+Retrieving http://127.0.0.1:8000/RPMS/nolinktest-1.0-1.noarch.rpm
+Retrieving http://127.0.0.1:8000/RPMS/foo-1.0-1.noarch.rpm
+],
+[stderr])
+
+RPMTEST_CHECK([
+grep "error: skipping" stderr
+],
+[0],
+[error: skipping http://127.0.0.1:8000/RPMS/nolinktest-1.0-1.noarch.rpm - transfer failed
+],
+[])
+
+# existing remote packages in a local manifest
+RPMTEST_CHECK([
+cat << EOF > ${RPMTEST}/tmp/pkgs.mft
+http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm
+http://127.0.0.1:8000/RPMS/hlinktest-1.0-1.noarch.rpm
+EOF
+
+runroot rpm -Uv --nodeps --nosignature --nodb /tmp/pkgs.mft
+],
+[0],
+[Retrieving http://127.0.0.1:8000/RPMS/hello-2.0-1.x86_64.rpm
+Retrieving http://127.0.0.1:8000/RPMS/hlinktest-1.0-1.noarch.rpm
+Verifying packages...
+Preparing packages...
+hlinktest-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+
+# existing local packages in a remote manifest
+RPMTEST_CHECK([
+runroot rpm -Uv --nodeps --nosignature --nodb \
+	http://127.0.0.1:8000/misc/localpkgs.mft
+],
+[0],
+[Retrieving http://127.0.0.1:8000/misc/localpkgs.mft
+Verifying packages...
+Preparing packages...
+hlinktest-1.0-1.noarch
+hello-2.0-1.x86_64
+],
+[])
+
+# mixture of local and remote packages in remote manifests
+RPMTEST_CHECK([
+runroot rpm -Uv --nodeps --nosignature --nodb \
+	http://127.0.0.1:8000/misc/remotepkgs.mft
+],
+[0],
+[Retrieving http://127.0.0.1:8000/misc/remotepkgs.mft
+Retrieving http://127.0.0.1:8000/RPMS/foo-1.0-1.noarch.rpm
+Retrieving http://127.0.0.1:8000/misc/localpkgs.mft
+Retrieving http://127.0.0.1:8000/RPMS/imatest-1.0-1.fc34.noarch.rpm
+Verifying packages...
+Preparing packages...
+hlinktest-1.0-1.noarch
+hello-2.0-1.x86_64
+test-1.0-1.fc34.noarch
+foo-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
+kill $(cat ${HOME}/http.pid)
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 # ------------------------------
 RPMTEST_SETUP_RW([rpm upgrade/downgrade])
 
