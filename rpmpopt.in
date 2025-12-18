@@ -111,6 +111,7 @@ Description  :\n%{DESCRIPTION}\n' \
 	--POPTdesc=$"list descriptive information from package(s)"
 
 rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
+	--pipe "if command -v less >/dev/null 2>&1; then less; else cat; fi" \
 	--POPTdesc=$"list change logs for this package"
 
 rpm	alias --changes --qf '[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]' \
