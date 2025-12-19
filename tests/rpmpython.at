@@ -460,6 +460,35 @@ runroot rpm -i \
 [])
 
 RPMPY_CHECK([
+mi = ts.dbMatch()
+mi.pattern('filenames', rpm.RPMMIRE_STRCMP, '/foo/hello-world')
+for h in mi:
+    print(h['nevra'])
+],
+[hlinktest-1.0-1.noarch
+],
+[])
+
+RPMPY_CHECK([
+mi = ts.dbMatch()
+mi.pattern('filenames', rpm.RPMMIRE_GLOB, '/usr/share/*1')
+for h in mi:
+    print(h['nevra'])
+],
+[test-1.0-1.fc34.noarch
+],
+[])
+
+RPMPY_CHECK([
+mi = ts.dbMatch()
+mi.pattern('filenames', rpm.RPMMIRE_REGEX, '/usr/share/*1')
+for h in mi:
+    print(h['nevra'])
+],
+[],
+[])
+
+RPMPY_CHECK([
 ix = 0
 mi = ts.dbMatch()
 mi.pattern('name', rpm.RPMMIRE_STRCMP, 'hello')
