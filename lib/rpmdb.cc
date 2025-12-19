@@ -1241,7 +1241,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	int anymatch;
 	struct rpmtd_s td;
 
-	if (!headerGet(mi->mi_h, mire->tag, &td, HEADERGET_MINMEM)) {
+	if (!headerGet(mi->mi_h, mire->tag, &td, HEADERGET_EXT)) {
 	    if (mire->tag != RPMTAG_EPOCH) {
 		ntags++;
 		continue;
