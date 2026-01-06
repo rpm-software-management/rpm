@@ -3,6 +3,7 @@
 #include <format>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,41 +46,35 @@ struct elfInfo {
 /*
  * Look up an RPM package that provides "soname()marker", get the features
  * that the package "provides", and if one of them has an exact match with
- * the search string and has an equality relationship (=), then return a
- * duplicate of the version. Otherwise, return NULL.
+ * the search string and has an equality relationship (=), then return the
+ * version. Otherwise, return an empty string.
  */
-static char *getElfSoVer(const char *soname, const char *marker)
+static std::string getElfSoVer(const std::string & soname, const std::string & marker)
 {
-    rpmts ts = NULL;
-    rpmdbMatchIterator mi = NULL;
-    Header h;
-    char *result = NULL;
-    std::string searchname;
-
     /* Construct the search string: soname()marker */
-    if (marker && marker[0] != '\0') {
-	searchname = std::format("{}(){}", soname, marker);
-    } else {
-	searchname = std::format("{}()", soname);
-    }
+    std::string searchname;
+    searchname = std::format("{}(){}", soname, marker);
 
-    /* Create a transaction set */
-    ts = rpmtsCreate();
-    if (ts == NULL)
-	return NULL;
+    /* Create a transaction set with RAII cleanup */
+    auto ts_deleter = [](rpmts ts) { if (ts) rpmtsFree(ts); };
+    std::unique_ptr<rpmts_s, decltype(ts_deleter)> ts(rpmtsCreate(), ts_deleter);
+    if (!ts)
+	return {};
 
     /* Look up packages that provide this soname with marker */
-    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, searchname.c_str(), 0);
-    if (mi == NULL)
-	goto exit;
+    auto mi_deleter = [](rpmdbMatchIterator mi) { if (mi) rpmdbFreeIterator(mi); };
+    std::unique_ptr<rpmdbMatchIterator_s, decltype(mi_deleter)> mi(
+	rpmtsInitIterator(ts.get(), RPMDBI_PROVIDENAME, searchname.c_str(), 0),
+	mi_deleter);
+    if (!mi)
+	return {};
 
     /* Iterate through matching packages */
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmds provides;
-
+    Header h;
+    while ((h = rpmdbNextIterator(mi.get())) != nullptr) {
 	/* Get the provides from the package */
-	provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
-	if (provides == NULL)
+	rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+	if (!provides)
 	    continue;
 
 	/* Iterate through all provides */
@@ -88,37 +83,27 @@ static char *getElfSoVer(const char *soname, const char *marker)
 	    const char *evr = rpmdsEVR(provides);
 	    rpmsenseFlags flags = rpmdsFlags(provides);
 
-	    if (name == NULL || evr == NULL)
+	    if (!name || !evr)
 		continue;
 
 	    /* Check if this provide name matches our search */
-	    if (strcmp(name, searchname.c_str()) != 0)
+	    if (searchname != name)
 		continue;
 
 	    /* Check if flags indicate equality (= relationship) */
 	    if (!(flags & RPMSENSE_EQUAL))
 		continue;
 
-	    /* Found a match - return a duplicate of the version */
-	    result = strdup(evr);
+	    /* Found a match - return the version */
+	    std::string result(evr);
 	    rpmdsFree(provides);
-	    goto exit;
+	    return result;
 	}
 
 	rpmdsFree(provides);
-
-	/* If we found a result, stop processing more headers */
-	if (result != NULL)
-	    break;
     }
 
-exit:
-    if (mi != NULL)
-	rpmdbFreeIterator(mi);
-    if (ts != NULL)
-	rpmtsFree(ts);
-
-    return result;
+    return {};
 }
 
 /*
@@ -174,10 +159,10 @@ static std::string mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
-static int findSonameInDeps(std::vector<std::string> & deps, const char *soname)
+static int findSonameInDeps(std::vector<std::string> & deps, const std::string & soname)
 {
     for (auto & dep : deps) {
-      if (dep.compare(0, strlen(soname), soname) == 0) return 1;
+	if (dep.compare(0, soname.size(), soname) == 0) return 1;
     }
     return 0;
 }
@@ -200,7 +185,7 @@ static void addSoDep(std::vector<std::string> & deps,
 	 * when versioned symbols aren't available, the full name version
 	 * might be used to generate a minimum dependency version.
 	 */
-        auto dep = std::format("{}({}){} {} {}", soname, ver, marker, compare_op, fallback_ver);
+	auto dep = std::format("{}({}){} {} {}", soname, ver, marker, compare_op, fallback_ver);
 	addDep(deps, dep);
     } else if (ver.empty() && marker.empty()) {
 	addDep(deps, soname);
@@ -241,7 +226,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (!soname_only) {
-		  addSoDep(ei->provides, soname, s, ei->marker, "", "");
+		    addSoDep(ei->provides, soname, s, ei->marker, "", "");
 		}
 	    }
 
@@ -320,18 +305,17 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
 		    if (s) {
-			char *full_name_ver = NULL;
+			std::string full_name_ver;
 			/*
 			 * If soname matches an item already in the deps, then
 			 * it had versioned symbols and doesn't require fallback.
 			 */
 			if (elf_so_version_fallback &&
 			      !findSonameInDeps(ei->requires_, s)) {
-			    full_name_ver = getElfSoVer(s, ei->marker.c_str());
+			    full_name_ver = getElfSoVer(s, ei->marker);
 			}
-			if (full_name_ver) {
+			if (!full_name_ver.empty()) {
 			  addSoDep(ei->requires_, s, "", ei->marker, ">=", full_name_ver);
-			  free(full_name_ver);
 			} else {
 			  addSoDep(ei->requires_, s, "", ei->marker, "", "");
 			}
@@ -437,9 +421,9 @@ static int processFile(const char *fn, int dtype)
 	}
 	if (ei->soname.empty() == false) {
 	    if (elf_so_version_fallback) {
-	      addSoDep(ei->provides, ei->soname, "", ei->marker, "=", elf_so_version_fallback);
+		addSoDep(ei->provides, ei->soname, "", ei->marker, "=", elf_so_version_fallback);
 	    } else {
-	      addSoDep(ei->provides, ei->soname, "", ei->marker, "", "");
+		addSoDep(ei->provides, ei->soname, "", ei->marker, "", "");
 	    }
 	}
     }
