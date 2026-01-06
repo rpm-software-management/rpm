@@ -6,7 +6,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -14,17 +13,11 @@
 #include <popt.h>
 #include <gelf.h>
 
-#include <link.h>
-#include <dlfcn.h>
-
 #include <rpm/rpmlib.h>
 #include <rpm/rpmstring.h>
-#include <rpm/argv.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
-#include <rpm/header.h>
 #include <rpm/rpmds.h>
-#include <rpm/rpmtag.h>
 
 char *elf_so_version_fallback = NULL;
 int soname_only = 0;
@@ -50,37 +43,37 @@ struct elfInfo {
 };
 
 /*
- * Look up the package that owns filename, get the features that the package
- * "provides", and if one of the features has a prefix match with the last
- * portion of the path (basename) and has an equality relationship (=), then
- * return a duplicate of the version. Otherwise, return NULL.
+ * Look up an RPM package that provides "soname()marker", get the features
+ * that the package "provides", and if one of them has an exact match with
+ * the search string and has an equality relationship (=), then return a
+ * duplicate of the version. Otherwise, return NULL.
  */
-static char *getElfSoVer(const char *filename)
+static char *getElfSoVer(const char *soname, const char *marker)
 {
     rpmts ts = NULL;
     rpmdbMatchIterator mi = NULL;
     Header h;
     char *result = NULL;
-    const char *basename;
+    std::string searchname;
 
-    /* Get the basename of the filename */
-    basename = rindex(filename, '/');
-    if (basename == NULL)
-	basename = filename;
-    else
-	basename++; /* skip the '/' */
+    /* Construct the search string: soname()marker */
+    if (marker && marker[0] != '\0') {
+	searchname = std::format("{}(){}", soname, marker);
+    } else {
+	searchname = std::format("{}()", soname);
+    }
 
     /* Create a transaction set */
     ts = rpmtsCreate();
     if (ts == NULL)
 	return NULL;
 
-    /* Look up the package that owns this file */
-    mi = rpmtsInitIterator(ts, RPMDBI_INSTFILENAMES, filename, 0);
+    /* Look up packages that provide this soname with marker */
+    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, searchname.c_str(), 0);
     if (mi == NULL)
 	goto exit;
 
-    /* Iterate through matching packages (should typically be only one) */
+    /* Iterate through matching packages */
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmds provides;
 
@@ -94,14 +87,12 @@ static char *getElfSoVer(const char *filename)
 	    const char *name = rpmdsN(provides);
 	    const char *evr = rpmdsEVR(provides);
 	    rpmsenseFlags flags = rpmdsFlags(provides);
-	    size_t baselen;
 
 	    if (name == NULL || evr == NULL)
 		continue;
 
-	    /* Check if this provide name starts with the basename */
-	    baselen = strlen(basename);
-	    if (strlen(name) < baselen || strncmp(name, basename, baselen) != 0)
+	    /* Check if this provide name matches our search */
+	    if (strcmp(name, searchname.c_str()) != 0)
 		continue;
 
 	    /* Check if flags indicate equality (= relationship) */
@@ -128,74 +119,6 @@ exit:
 	rpmtsFree(ts);
 
     return result;
-}
-
-/*
- * Rather than re-implement path searching for shared objects, use
- * dlmopen().  This will still perform initialization and finalization
- * functions, which isn't necessarily safe, so do that in a separate
- * process.
- */
-static char *getElfSoVerFromShLink(const char *filename)
-{
-#if defined(HAVE_DLMOPEN) && defined(HAVE_DLINFO)
-    char dest[PATH_MAX];
-    int pipefd[2];
-    pid_t cpid;
-
-    if (pipe(pipefd) == -1) {
-	exit(EXIT_FAILURE);
-    }
-    cpid = fork();
-    if (cpid == -1) {
-	exit(EXIT_FAILURE);
-    }
-    if (cpid == 0) {
-	void *dl_handle;
-	struct link_map *linkmap;
-	char *version = NULL;
-	ssize_t written = 0;
-
-	close(pipefd[0]);
-	dl_handle = dlmopen(LM_ID_NEWLM, filename, RTLD_LAZY);
-	if (dl_handle == NULL) _exit(EXIT_FAILURE);
-	if (dlinfo(dl_handle, RTLD_DI_LINKMAP, &linkmap) == -1)
-	    _exit(EXIT_FAILURE);
-	version = getElfSoVer(linkmap->l_name);
-	if (version)
-	    written = write(pipefd[1], version, strlen(version));
-	if (written < 0)
-	    _exit(1);
-	close(pipefd[1]);
-	free(version);
-	dlclose(dl_handle);
-	_exit(0);
-    } else {
-	ssize_t len;
-	int wstatus;
-
-	close(pipefd[1]);
-	dest[0] = 0;
-	while ((len = read(pipefd[0], dest, sizeof(dest))) == -1
-	    && errno == EINTR);
-	if (len > 0) dest[len] = 0;
-	close(pipefd[0]);
-	wait(&wstatus);
-	if (WIFSIGNALED(wstatus) || WEXITSTATUS(wstatus))
-	    exit(EXIT_FAILURE);
-    }
-    if (strlen(dest) > 0)
-	return strdup(dest);
-    else
-	return NULL;
-#else
-    /*
-     * Without dlmopen and dlinfo, elfdeps cannot improve
-     * requirement lists, and will simply continue its prior
-     * behavior of unversioned dependencies.
-     */
-    return NULL;
-#endif
 }
 
 /*
@@ -404,7 +327,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 			 */
 			if (elf_so_version_fallback &&
 			      !findSonameInDeps(ei->requires_, s)) {
-			    full_name_ver = getElfSoVerFromShLink(s);
+			    full_name_ver = getElfSoVer(s, ei->marker.c_str());
 			}
 			if (full_name_ver) {
 			  addSoDep(ei->requires_, s, "", ei->marker, ">=", full_name_ver);
