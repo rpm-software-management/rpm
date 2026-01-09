@@ -42,6 +42,7 @@ static int notCompressed(const char * fn)
 /**
  * Expand %patchN macro into %prep scriptlet.
  * @param spec		build info
+ * @param mb		macro buffer
  * @param c		patch index
  * @param strip		patch level (i.e. patch -p argument)
  * @param db		saved file suffix (i.e. patch --suffix argument)
@@ -54,7 +55,8 @@ static int notCompressed(const char * fn)
  * @return		expanded %patch macro (NULL on error)
  */
 
-static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
+static char *doPatch(rpmSpec spec, rpmMacroBuf mb,
+		     uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *dir,
 		     const char *outfile, int setUtc)
 {
@@ -69,7 +71,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *patchcmd;
 
     if ((sp = findSource(spec, c, RPMBUILD_ISPATCH)) == NULL) {
-	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
+	rpmMacroBufErr(mb, 1, _("No patch number %u\n"), c);
 	goto exit;
     }
 
@@ -121,17 +123,19 @@ exit:
 /**
  * Expand %setup macro into %prep scriptlet.
  * @param spec		build info
+ * @param mb		macro buffer
  * @param c		source index
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-static char *doUntar(rpmSpec spec, uint32_t c, int quietly, int autoPath)
+static char *doUntar(rpmSpec spec, rpmMacroBuf mb,
+		     uint32_t c, int quietly, int autoPath)
 {
     char *buf = NULL;
     struct Source *sp;
 
     if ((sp = findSource(spec, c, RPMBUILD_ISSOURCE)) == NULL) {
-	rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
+	rpmMacroBufErr(mb, 1, _("No source number %u\n"), c);
 	goto exit;
     }
 
@@ -202,7 +206,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 	    goto exit;
 	}
 
-	{   char *chptr = doUntar(spec, num, quietly, 0);
+	{   char *chptr = doUntar(spec, mb, num, quietly, 0);
 	    if (chptr == NULL)
 		goto exit;
 
@@ -259,7 +263,7 @@ void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 
     /* do the default action */
    if (!skipDefaultAction) {
-	char *chptr = doUntar(spec, 0, quietly, autoPath);
+	char *chptr = doUntar(spec, mb, 0, quietly, autoPath);
 	if (!chptr)
 	    goto exit;
 	appendMb(mb, chptr, 1);
@@ -379,7 +383,7 @@ void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed
 		     *patch, line);
 	    goto exit;
 	}
-	s = doPatch(spec, pnum, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d, opt_o, opt_Z);
+	s = doPatch(spec, mb, pnum, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d, opt_o, opt_Z);
 	if (s == NULL) {
 	    goto exit;
 	}

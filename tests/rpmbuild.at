@@ -927,7 +927,6 @@ runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ])
 RPMTEST_CLEANUP
 
-# XXX the return code is wrong on both cases
 RPMTEST_SETUP_RW([rpmbuild missing source/patch])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
@@ -938,9 +937,9 @@ cat << EOF >> /tmp/mini.spec
 EOF
 rpmbuild -bb --quiet /tmp/mini.spec
 ],
-[0],
+[1],
 [],
-[error: No source number 0
+[error: /tmp/mini.spec: line 9: No source number 0
 ])
 
 RPMTEST_CHECK([
@@ -951,9 +950,9 @@ cat << EOF >> /tmp/mini.spec
 EOF
 rpmbuild -bb --quiet /tmp/mini.spec
 ],
-[0],
+[1],
 [],
-[error: No patch number 1
+[error: /tmp/mini.spec: line 9: No patch number 1
 ])
 RPMTEST_CLEANUP
 
