@@ -927,6 +927,35 @@ runroot rpmbuild -bp --quiet /data/SPECS/hello-patch.spec
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmbuild missing source/patch])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+cp /data/SPECS/mini.spec /tmp/
+cat << EOF >> /tmp/mini.spec
+%prep
+%setup
+EOF
+rpmbuild -bb --quiet /tmp/mini.spec
+],
+[1],
+[],
+[error: /tmp/mini.spec: line 9: No source number 0
+])
+
+RPMTEST_CHECK([
+cp /data/SPECS/mini.spec /tmp/
+cat << EOF >> /tmp/mini.spec
+%prep
+%patch 1
+EOF
+rpmbuild -bb --quiet /tmp/mini.spec
+],
+[1],
+[],
+[error: /tmp/mini.spec: line 9: No patch number 1
+])
+RPMTEST_CLEANUP
+
 
 RPMTEST_SETUP_RW([rpmbuild ExclusiveArch])
 AT_KEYWORDS([build])
