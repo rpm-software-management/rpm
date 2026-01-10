@@ -12,6 +12,11 @@ This alternative is provided to enable applications to be linked against
 the RPM library (commonly called librpm) without forcing such applications
 to be distributed under the GPL. 
 
+In SPDX terms, the entire code base is licensed GPL-2.0-or-later, with the
+exception that all of the source code in the lib and rpmio subdirectories
+of the RPM source code distribution, as well as any code derived from that
+code may instead be considered licensed LGPL-2.0-or-later.
+
 Any questions regarding the licensing of RPM should be addressed to
 rpm-maint@lists.rpm.org
 
