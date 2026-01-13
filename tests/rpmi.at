@@ -1783,7 +1783,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i user/group lookup])
 AT_KEYWORDS([])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 # Symlink to read-only file /etc/authselect/nsswitch.conf
 rm $RPMTEST/etc/nsswitch.conf
@@ -1792,55 +1791,90 @@ rm $RPMTEST/etc/nsswitch.conf
 echo "passwd: files altfiles" > $RPMTEST/etc/nsswitch.conf
 echo "group: files altfiles" >> $RPMTEST/etc/nsswitch.conf
 
-# Add new user and group for lookup via nss-altfiles
-echo "foobar:x:12345:12345:foobar:/:/usr/sbin/nologin" \
-    > $RPMTEST/usr/lib/passwd
-echo "foobar:x:12345:foobar" \
-    > $RPMTEST/usr/lib/group
+# Create dummy passwd and group files
+echo "foobar:x:12345:12345:foobar:/:/usr/sbin/nologin" > passwd
+echo "foobar:x:12345:foobar" > group
 
 runroot rpmbuild --quiet -bb --with fileown /data/SPECS/hello.spec
 
-# Verify if new user/group is resolvable from NSS
+# Root: system (default)
+# Path macros: undefined
+# Expected lookup: by NSS
 RPMTEST_CHECK([
-runroot rpm --eval "%_passwd_path"
-runroot rpm --eval "%_group_path"
-runroot getent passwd foobar
-runroot getent group foobar
-],
-[0],
-[/etc/passwd
-/etc/group
-foobar:x:12345:12345:foobar:/:/usr/sbin/nologin
-foobar:x:12345:foobar
-],
-[])
+cp passwd group $RPMTEST/usr/lib/
 
-# Install to system root, should resolve from NSS
-RPMTEST_CHECK([
-runroot rpm -i --nodeps /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm
+runroot rpm -i --nodeps /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm; rc=$?
 runroot stat -c '%u %g' /usr/local/bin/hello
+
+runroot rpm -e hello
+rm $RPMTEST/usr/lib/{passwd,group}
+exit $rc
 ],
 [0],
 [12345 12345
 ],
 [])
 
-# Install to custom root, should resolve from standard paths there
+# Root: alternative
+# Path macros: undefined
+# Expected lookup: by RPM in default paths
 RPMTEST_CHECK([
-
-# Add new user/group to custom root
-mkdir -p $RPMTEST/alt/etc
-echo "foobar:x:54321:54321:foobar:/:/usr/sbin/nologin" \
-    > $RPMTEST/alt/etc/passwd
-echo "foobar:x:54321:foobar" \
-    > $RPMTEST/alt/etc/group
-
 runroot rpm -i --noplugins --nodeps --nosignature \
-	    --root /alt /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm
+	    --root /alt /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm; rc=$?
 runroot stat -c '%u %g' /alt/usr/local/bin/hello
+
+rm -rf $RPMTEST/alt
+exit $rc
 ],
 [0],
-[54321 54321
+[0 0
+],
+[error: failed to open /etc/passwd for id/name lookup: No such file or directory
+warning: user foobar does not exist - using root
+error: failed to open /etc/group for id/name lookup: No such file or directory
+warning: group foobar does not exist - using root
+])
+
+# Root: system (default)
+# Path macros: defined
+# Expected lookup: by RPM in configured paths
+RPMTEST_CHECK([
+mkdir -p $RPMTEST/opt
+cp passwd group $RPMTEST/opt/
+
+runroot rpm -i --noplugins --nodeps --nosignature \
+	    --define "_passwd_path /opt/passwd" \
+	    --define "_group_path /opt/group" \
+	    /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm; rc=$?
+runroot stat -c '%u %g' /usr/local/bin/hello
+
+runroot rpm -e hello
+rm $RPMTEST/opt/{passwd,group}
+exit $rc
+],
+[0],
+[12345 12345
+],
+[])
+
+# Root: alternative
+# Path macros: defined
+# Expected lookup: by RPM in configured paths
+RPMTEST_CHECK([
+mkdir -p $RPMTEST/alt/opt
+cp passwd group $RPMTEST/alt/opt/
+
+runroot rpm -i --noplugins --nodeps --nosignature \
+	    --define "_passwd_path /opt/passwd" \
+	    --define "_group_path /opt/group" \
+	    --root /alt /build/RPMS/x86_64/hello-1.0-1.x86_64.rpm; rc=$?
+runroot stat -c '%u %g' /alt/usr/local/bin/hello
+
+rm -rf $RPMTEST/alt
+exit $rc
+],
+[0],
+[12345 12345
 ],
 [])
 RPMTEST_CLEANUP
