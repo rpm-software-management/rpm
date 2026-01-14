@@ -1296,8 +1296,11 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
 	verified |= RPMSIG_DIGEST_TYPE;
     rpmteSetVerified(p, verified);
 
-    if (prc)
+    if (prc) {
+	if (vd.msg == NULL)
+	    vd.msg = xstrdup(_("no verifiable digest or signature available"));
 	rpmteAddProblem(p, RPMPROB_VERIFY, NULL, vd.msg, 0);
+    }
 
     vd.msg = _free(vd.msg);
     headerFree(auxh);

@@ -227,6 +227,18 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ])
 
 RPMTEST_CHECK([
+runroot rpm -U --ignorearch --ignoreos --nodeps \
+	--define "_pkgverify_flags 0xfffff" \
+	--define "__vsflags 0x30300" \
+	--define "_pkgverify_level digest" \
+	/tmp/${pkg}
+],
+[1],
+[],
+[	package hello-2.0-1.x86_64 does not verify: no verifiable digest or signature available
+])
+
+RPMTEST_CHECK([
 runroot --setenv SOURCE_DATE_EPOCH 1234 \
 	rpm -U --ignorearch --ignoreos --nodeps --nodigest --noverify \
 	--define "_pkgverify_level digest" \
