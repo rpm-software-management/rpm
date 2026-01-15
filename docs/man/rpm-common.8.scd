@@ -95,9 +95,15 @@ options and operations documented in this manual:
 	installing, or *%prep* if building, a package) will be run after a
 	*chroot*(2) to _DIRECTORY_.
 
-	Note that rpm assumes the environment inside the root is set up by
+	Note that *rpm* assumes the environment inside the root is set up by
 	the caller, such as any mounts needed for the operation inside the
 	root directory.
+
+	NSS (Name Service Switch) will _not_ be used for user and group lookups
+	in package operations. Instead, *rpm* will do its own file-based lookups
+	using the *passwd*(5) and *group*(5) files in their standard locations,
+	or those set in *rpm-config*(5), inside _DIRECTORY_. Note that, if
+	_DIRECTORY_ is _/_ (the forward slash), NSS will be used as normal.
 
 *--undefine*='_MACRO_'
 	Undefines _MACRO_.

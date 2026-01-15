@@ -67,8 +67,14 @@ opposed to just package building) parts:
 	Flush file IO during transactions (at a severe cost in performance
 	for rotational disks). Possible values are 1 to enable, 0 to disable.
 
-*%\_group_path* _PATH_
-	Location of group(5) files as : separated list
+*%\_group_path* _PATHS_
+	A colon separated list of *group*(5) file paths for group name and GID
+	lookups in package operations. Files are consulted in the given order
+	until a match is found.
+
+	If unset or empty, *rpm* uses NSS (Name Service Switch) when operating
+	on the system root, or _/etc/group_ inside the target root when using
+	*--root* (see *rpm-common*(8) for details).
 
 *%\_httpport* _PORT_
 	The port of HTTP proxy (used for FTP/HTTP).
@@ -104,8 +110,14 @@ opposed to just package building) parts:
 	A colon separated list of paths where files should *not* be installed.
 	Usually, these are network filesystem mount points.
 
-*%\_passwd_path* _PATH_
-	Location of passwd(5) files as : separated list
+*%\_passwd_path* _PATHS_
+	A colon separated list of *passwd*(5) file paths for username and UID
+	lookups in package operations. Files are consulted in the given order
+	until a match is found.
+
+	If unset or empty, *rpm* uses NSS (Name Service Switch) when operating
+	on the system root, or _/etc/passwd_ inside the target root when using
+	*--root* (see *rpm-common*(8) for details).
 
 *%\_pkgverify_digests* _HASHALGOS_
 	A colon separated list of hash algorithms to calculate digests on the
