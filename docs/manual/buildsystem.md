@@ -50,6 +50,12 @@ BuildOption(conf): --enable-fu
 Passing these per-section options to the actual buildsystem of the
 package is the responsibility of the buildsystem specific macros.
 
+3) Override the build script entirely. If you want to diverge from
+the behavior of a buidlsystem, you may override a section by defining it.
+For example, if you add the `%install` section (without `-a` or  `-p`),
+it will execute instead of the centrally defined declarative `%install` step.
+Be careful, though, this might not be supported by the buildsystem you are using.
+
 ## Supporting new build systems
 
 Supporting new build system types is just a matter of declaring a few
