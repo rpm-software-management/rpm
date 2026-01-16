@@ -6,7 +6,7 @@ set(core
 	rpm-payloadflags.7 rpmbuild-config.5 rpm-queryformat.7 rpm-macros.7
 	rpm-lua.7 rpm-manifest.5 rpm-version.7 rpm-dependency-generators.7
 	rpm-scriptlets.7 rpm-design.7 rpm-sysusers.7 rpm-spec.5
-	rpm-spec-macros.7
+	rpm-spec-macros.7 rpm-dependencies.7
 )
 set(extra
 	rpm-plugins.8 rpm-plugin-prioreset.8 rpm-plugin-syslog.8
