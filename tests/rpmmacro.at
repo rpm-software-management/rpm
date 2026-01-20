@@ -7,9 +7,9 @@ AT_KEYWORDS([macros])
 
 # .rpmmacros exists, new directory not
 RPMTEST_CHECK([[
-rm -rf ~/.config/rpm ~/.rpmmacros
-touch ~/.rpmmacros
-rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
+runroot rm -rf /root/.config/rpm /root/.rpmmacros
+runroot touch /root/.rpmmacros
+runroot rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
 ]],
 [0],
 [~/.rpmmacros
@@ -48,6 +48,60 @@ SOMENV=/tmp/somewhere rpm --macros "%{getenv:SOMENV}" --eval "%somewhere"
 [/some/where
 ],
 [])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([macro path])
+AT_KEYWORDS([convert .macros])
+RPMTEST_USER
+
+runroot_user rm -f /home/$RPMUSER/.config/rpm
+runroot_user rm -f /home/$RPMUSER/.rpmmacros
+runroot_user rm -f /home/$RPMUSER/.rpmrc
+runroot_user bash -c "echo %foo bar > /home/$RPMUSER/.rpmmacros"
+runroot_user touch "/home/$RPMUSER/.rpmrc"
+
+RPMTEST_CHECK([[
+runroot_user mkdir /home/$RPMUSER/.config
+runroot_user chmod 000 /home/$RPMUSER/.config
+runroot_user rpm -E "%{foo}"
+runroot_user chmod 755 /home/$RPMUSER/.config
+runroot_user ls /home/$RPMUSER/.rpmconfig_migration_lock
+runroot_user rpm -E "%{foo}"
+runroot_user rm /home/$RPMUSER/.rpmconfig_migration_lock
+]],
+[0],
+[bar
+/home/klang/.rpmconfig_migration_lock
+bar
+],
+[error: Could not migrate /home/klang/.rpmmacros to /home/klang/.config/rpm/macros: Permission denied
+error: Could not migrate /home/klang/.rpmrc to /home/klang/.config/rpm/rpmrc: Permission denied
+])
+
+RPMTEST_CHECK([[
+runroot_user readlink /home/$RPMUSER/.rpmmacros
+runroot_user readlink /home/$RPMUSER/.rpmrc
+# don't convert if not tty
+runroot_user rpm -E "%{foo}" < "${RPMTEST}"/data/macros.testfile
+runroot_user readlink /home/$RPMUSER/.rpmmacros
+runroot_user readlink /home/$RPMUSER/.rpmrc
+runroot_user rpm -E "%{foo}"
+runroot_user readlink /home/$RPMUSER/.rpmmacros
+runroot_user readlink /home/$RPMUSER/.rpmrc
+runroot_user rpm -E "%{foo}"
+runroot_user rpm --showrc | awk '/^Macro path/{print(a[split($0,a,":")])}'
+]],
+[0],
+[bar
+bar
+.config/rpm/macros
+.config/rpm/rpmrc
+bar
+~/.config/rpm/macros
+],
+[warning: Migrated /home/klang/.rpmmacros to /home/klang/.config/rpm/macros (leaving a symlink)
+warning: Migrated /home/klang/.rpmrc to /home/klang/.config/rpm/rpmrc (leaving a symlink)
+])
 RPMTEST_CLEANUP
 
 # ------------------------------
