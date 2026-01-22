@@ -870,4 +870,17 @@ runroot rpm -V klang-tools
 .....UG..    /usr/bin/klangtool
 ],
 [])
+
+RPMTEST_CHECK([
+mkdir -p $RPMTEST/alt/etc/default
+# Avoid spurious warning about failed mailbox creation
+echo CREATE_MAIL_SPOOL=no > $RPMTEST/alt/etc/default/useradd
+runroot useradd --root /alt plong
+runroot groupadd --root /alt klang
+runroot rpm -U --test --root /alt --noplugins --nosignature \
+	    /build/RPMS/noarch/klang-tools-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
 RPMTEST_CLEANUP

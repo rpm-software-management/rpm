@@ -107,6 +107,12 @@ int rpmChrootOut(void)
     return rc;
 }
 
+const char *rpmChrootPath(void)
+{
+    const char *path = rootState.rootDir;
+    return (path && rstreq(path, "/")) ? NULL : path;
+}
+
 int rpmChrootDone(void)
 {
     return (rootState.chrootDone > 0);

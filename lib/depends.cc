@@ -21,6 +21,7 @@
 #include "rpmds_internal.hh"
 #include "rpmfi_internal.hh" /* rpmfiles stuff for now */
 #include "misc.hh"
+#include "rpmchroot.hh"
 #include "rpmug.hh"
 
 #include "backend/dbiset.hh"
@@ -1053,6 +1054,9 @@ int rpmtsCheck(rpmts ts)
     if (reqnotfilehash->empty())
 	reqnotfilehash = filedepHashFree(reqnotfilehash);
 
+    /* Enable system provides lookup from the target root */
+    rpmChrootSet(rpmtsRootDir(ts));
+
     /*
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
@@ -1135,6 +1139,7 @@ int rpmtsCheck(rpmts ts)
     }
     rpmtsiFree(pi);
 
+    rpmChrootSet(NULL);
     if (rdb)
 	rpmdbCtrl(rdb, RPMDB_CTRL_UNLOCK_RO);
 
