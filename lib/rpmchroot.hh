@@ -13,6 +13,13 @@ RPM_GNUC_INTERNAL
 int rpmChrootSet(const char *rootDir);
 
 /** \ingroup rpmchroot
+ * Return absolute path to current chroot directory.
+ * return		chroot directory (or NULL if "/" or unset)
+ */
+RPM_GNUC_INTERNAL
+const char *rpmChrootPath(void);
+
+/** \ingroup rpmchroot
  * Enter chroot if necessary.
  * return		-1 on error, 0 on success.
  */

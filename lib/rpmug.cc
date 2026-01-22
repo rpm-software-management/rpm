@@ -10,6 +10,7 @@
 #include <rpm/rpmmacro.h>
 
 #include "misc.hh"
+#include "rpmchroot.hh"
 #include "rpmug.hh"
 #include "debug.h"
 
@@ -30,12 +31,18 @@ static __thread struct rpmug_s *rpmug = NULL;
 static const char *getpath(const char *bn, const char *dfl, char **dest)
 {
     if (*dest == NULL) {
+	const char *root = rpmChrootPath();
 	char *s = rpmExpand("%{_", bn, "_path}", NULL);
 	if (*s == '%' || *s == '\0') {
 	    free(s);
 	    s = xstrdup(dfl);
 	}
-	*dest = s;
+	if (root && !rpmChrootDone()) {
+	    *dest = rpmGetPath(root, s, NULL);
+	    free(s);
+	} else {
+	    *dest = s;
+	}
     }
     return *dest;
 }
