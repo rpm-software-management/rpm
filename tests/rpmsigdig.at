@@ -2281,6 +2281,23 @@ Preparing packages...
 ],
 [	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
 ])
+
+# importing key back should not work
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-nistp256-test.pub
+],
+[1],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Certificate 7F1C21F95F65BBE8:
+error: /data/keys/rpm.org-nistp256-test.pub: key 1 import failed.
+],
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmsign --addsign legacy v6])

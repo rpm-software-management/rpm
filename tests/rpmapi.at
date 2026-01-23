@@ -38,11 +38,28 @@ runroot sed -i '/^nist/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequ
 runroot importkey /data/keys/rpm.org-nistp256-test.pub
 ],
 [1],
-dnl XXX For desired behavior, rpm-sequoia should return 3 (NOTTRUSTED) here
-[/data/keys/rpm.org-nistp256-test.pub key 1: 2
+dnl 3 (NOTTRUSTED) here
+[/data/keys/rpm.org-nistp256-test.pub key 1: 3
 ],
 [error: Certificate 7F1C21F95F65BBE8:
   Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm
+])
+
+# unknown keys fail differently -- they are understood, but signature not verified
+RPMTEST_CHECK([
+runroot importkey /data/keys/unknown/rpm.org-v6-mldsa87-test.asc
+],
+[1],
+dnl 3 (NOTTRUSTED) here
+[/data/keys/unknown/rpm.org-v6-mldsa87-test.asc key 1: 3
+],
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Certificate AED054589CBF8584:
 ])
 
 RPMTEST_CLEANUP
