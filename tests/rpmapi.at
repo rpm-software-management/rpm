@@ -61,4 +61,21 @@ runroot importkey /data/keys/rpm.org-nistp256-test.pub
 [error: Certificate 7F1C21F95F65BBE8:
   Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm, because NistP256 is not considered secure
 ])
+
+# unknown keys fail differently -- they are not understood
+RPMTEST_CHECK([
+runroot importkey /data/keys/unknown/rpm.org-v6-mldsa87-test.asc
+],
+[1],
+[/data/keys/unknown/rpm.org-v6-mldsa87-test.asc key 1: 2
+],
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Certificate AED054589CBF8584:
+])
+
 RPMTEST_CLEANUP
