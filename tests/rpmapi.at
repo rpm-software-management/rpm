@@ -61,4 +61,14 @@ runroot importkey /data/keys/rpm.org-nistp256-test.pub
 [error: Certificate 7F1C21F95F65BBE8:
   Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm, because NistP256 is not considered secure
 ])
+
+# ML-DSA keys are now known
+RPMTEST_CHECK([
+runroot importkey /data/keys/unknown/rpm.org-v6-mldsa87-test.asc
+],
+[0],
+[/data/keys/unknown/rpm.org-v6-mldsa87-test.asc key 1: 0
+],
+[])
+
 RPMTEST_CLEANUP
