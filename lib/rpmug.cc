@@ -247,7 +247,7 @@ const char * rpmugGname(gid_t gid)
     if (it == rpmug->gidMap.end()) {
 	char *gname = NULL;
 
-	if (lookup_str(pwfile(), gid, 2, 0, &gname))
+	if (lookup_str(grpfile(), gid, 2, 0, &gname))
 	    return NULL;
 
 	auto res = rpmug->gidMap.insert({gid, gname}).first;
