@@ -4,6 +4,10 @@
 
 #include "system.h"
 
+#include <deque>
+#include <string>
+#include <vector>
+
 #include <string.h>
 
 #include <rpm/rpmcli.h>
@@ -235,23 +239,6 @@ static void setNotifyFlag(struct rpmInstallArguments_s * ia,
     rpmtsSetNotifyCallback(ts, rpmShowProgress, (void *) ((long)notifyFlags));
 }
 
-struct rpmEIU {
-    int numFailed;
-    int numPkgs;
-    char ** pkgURL;
-    char ** fnp;
-    char * pkgState;
-    int prevx;
-    int pkgx;
-    int numRPMS;
-    int numSRPMS;
-    char ** sourceURL;
-    int argc;
-    char ** argv;
-    rpmRelocation * relocations;
-    rpmRC rpmrc;
-};
-
 static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
 		      int numPackages)
 {
@@ -309,70 +296,47 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
     return rc;
 }
 
-static int tryReadManifest(struct rpmEIU * eiu)
+static int tryReadManifest(const char *fn, std::deque<std::string> & queue)
 {
-    int rc;
+    int rc = RPMRC_FAIL;
 
     /* Try to read a package manifest. */
-    FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
+    FD_t fd = Fopen(fn, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
-        rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-	       Fstrerror(fd));
-	if (fd != NULL) {
-	    Fclose(fd);
-	    fd = NULL;
-	}
-	eiu->numFailed++;
-	*eiu->fnp = NULL;
-	return RPMRC_FAIL;
+        rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
+    } else {
+	ARGV_t argv = NULL;
+	int argc = 0;
+	/* Read list of packages from manifest. */
+	rc = rpmReadPackageManifest(fd, &argc, &argv);
+	if (rc == RPMRC_OK)
+	    queue.insert(queue.end(), argv, argv+argc);
+	argvFree(argv);
     }
-
-    /* Read list of packages from manifest. */
-    rc = rpmReadPackageManifest(fd, &eiu->argc, &eiu->argv);
-    if (rc != RPMRC_OK)
-        rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
-	       *eiu->fnp, Fstrerror(fd));
     Fclose(fd);
-    fd = NULL;
-
-    if (rc != RPMRC_OK) {
-        eiu->numFailed++;
-        *eiu->fnp = NULL;
-    }
-
     return rc;
 }
 
-static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
+static int tryReadHeader(rpmts ts, const char *fn, Header * hdrp)
 {
-   /* Try to read the header from a package file. */
-   FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
-   if (fd == NULL || Ferror(fd)) {
-       rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-	      Fstrerror(fd));
-       if (fd != NULL) {
-           Fclose(fd);
-	   fd = NULL;
-       }
-       eiu->numFailed++;
-       return RPMRC_FAIL;
-   }
+    /* Try to read the header from a package file. */
+    rpmRC rc = RPMRC_FAIL;
+    FD_t fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
+    } else {
+	/* Read the header, verifying signatures (if present). */
+	rc = rpmReadPackageFile(ts, fd, fn, hdrp);
+	/* Honor --nomanifest */
+	if (rc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
+	    rc = RPMRC_FAIL;
 
-   /* Read the header, verifying signatures (if present). */
-   eiu->rpmrc = rpmReadPackageFile(ts, fd, *eiu->fnp, hdrp);
+	if (rc == RPMRC_FAIL)
+	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), fn);
+   }
    Fclose(fd);
-   fd = NULL;
    
-   /* Honor --nomanifest */
-   if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
-       eiu->rpmrc = RPMRC_FAIL;
-
-   if (eiu->rpmrc == RPMRC_FAIL) {
-       rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
-       eiu->numFailed++;
-   }
-
-   return RPMRC_OK;
+   return rc;
 }
 
 
@@ -414,16 +378,82 @@ static int rpmNoGlob(const char *fn, int *argcPtr, ARGV_t * argvPtr)
     return rc;
 }
 
+static int globArgs(ARGV_t fileArgv, std::deque<std::string> & queue)
+{
+    int numFailed = 0;
+    for (char **fnp = fileArgv; fnp && *fnp != NULL; fnp++) {
+	ARGV_t av = NULL;
+	int ac = 0;
+	int rc = 0;
+
+	if (giFlags & RPMGI_NOGLOB) {
+	    rc = rpmNoGlob(*fnp, &ac, &av);
+	} else {
+	    rc = rpmGlobPath(*fnp, RPMGLOB_NOCHECK, &ac, &av);
+	}
+	if (rc || ac == 0) {
+	    if (giFlags & RPMGI_NOGLOB) {
+		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *fnp);
+	    } else {
+		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *fnp);
+	    }
+	    numFailed++;
+	} else {
+	    queue.insert(queue.end(), av, av+ac);
+	}
+	argvFree(av);
+    }
+    return numFailed;
+}
+
+std::string getFile(rpmts ts, const std::string & arg)
+{
+    FD_t tfd = NULL;
+    char *tfn = NULL;
+    const char *fileURL = arg.c_str();
+    int rc = -1;
+    std::string fn;
+
+    switch (urlIsURL(fileURL)) {
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
+	if (rpmIsVerbose())
+	    fprintf(stdout, _("Retrieving %s\n"), fileURL);
+
+	tfd = rpmMkTempFile(rpmtsRootDir(ts), &tfn);
+	if (tfn) {
+	    Fclose(tfd);
+	    rc = urlGetFile(fileURL, tfn);
+	    fn = tfn;
+	}
+	if (rc)
+	    rpmlog(RPMLOG_ERR, _("skipping %s - transfer failed\n"), fileURL);
+
+	break;
+    case URL_IS_PATH:
+    case URL_IS_DASH:	/* WRONG WRONG WRONG */
+    case URL_IS_HKP:	/* WRONG WRONG WRONG */
+    default: {
+	const char *path = NULL;
+	(void) urlPath(fileURL, &path);
+	fn = path;
+	} break;
+    }
+    free(tfn);
+
+    return fn;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
-    struct rpmEIU * eiu = (struct rpmEIU *)xcalloc(1, sizeof(*eiu));
-    rpmRelocation * relocations;
-    char * fileURL = NULL;
+    rpmRelocation * relocations = ia->relocations;
     rpmVSFlags vsflags, ovsflags;
     rpmVSFlags ovfyflags;
-    int rc;
-    int i;
+    int numFailed = 0;
+    std::deque<std::string> queue;
+    std::vector<std::string> cleanup, RPMS, SRPMS;
 
     vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
@@ -440,139 +470,43 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
-    relocations = ia->relocations;
-
     setNotifyFlag(ia, ts); 
 
-    if ((eiu->relocations = relocations) != NULL) {
-	while (eiu->relocations->oldPath)
-	    eiu->relocations++;
-	if (eiu->relocations->newPath == NULL)
-	    eiu->relocations = NULL;
+    if (relocations != NULL) {
+	while (relocations->oldPath)
+	    relocations++;
+	if (relocations->newPath == NULL)
+	    relocations = NULL;
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
-    	ARGV_t av = NULL;
-    	int ac = 0;
+    numFailed = globArgs(fileArgv, queue);
 
-	if (giFlags & RPMGI_NOGLOB) {
-	    rc = rpmNoGlob(*eiu->fnp, &ac, &av);
-	} else {
-	    rc = rpmGlobPath(*eiu->fnp, RPMGLOB_NOCHECK, &ac, &av);
-	}
-	if (rc || ac == 0) {
-	    if (giFlags & RPMGI_NOGLOB) {
-		rpmlog(RPMLOG_ERR, _("File not found: %s\n"), *eiu->fnp);
-	    } else {
-		rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
-	    }
-	    eiu->numFailed++;
-	    argvFree(av);
+    while (queue.empty() == false) {
+	std::string arg = queue.front();
+	queue.pop_front();
+
+	std::string fn = getFile(ts, arg);
+	if (fn.empty()) {
+	    numFailed++;
 	    continue;
 	}
+	if (fn != arg)
+	    cleanup.push_back(fn);
 
-	argvAppend(&(eiu->argv), av);
-	argvFree(av);
-	eiu->argc += ac;
-    }
-
-restart:
-    /* Allocate sufficient storage for next set of args. */
-    if (eiu->pkgx >= eiu->numPkgs) {
-	eiu->numPkgs = eiu->pkgx + eiu->argc;
-	eiu->pkgURL = xrealloc(eiu->pkgURL,
-			(eiu->numPkgs + 1) * sizeof(*eiu->pkgURL));
-	memset(eiu->pkgURL + eiu->pkgx, 0,
-			((eiu->argc + 1) * sizeof(*eiu->pkgURL)));
-	eiu->pkgState = xrealloc(eiu->pkgState,
-			(eiu->numPkgs + 1) * sizeof(*eiu->pkgState));
-	memset(eiu->pkgState + eiu->pkgx, 0,
-			((eiu->argc + 1) * sizeof(*eiu->pkgState)));
-    }
-
-    /* Retrieve next set of args, cache on local storage. */
-    for (i = 0; i < eiu->argc; i++) {
-	fileURL = _free(fileURL);
-	fileURL = eiu->argv[i];
-	eiu->argv[i] = NULL;
-
-	switch (urlIsURL(fileURL)) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	{   char *tfn = NULL;
-	    FD_t tfd;
-
-	    if (rpmIsVerbose())
-		fprintf(stdout, _("Retrieving %s\n"), fileURL);
-
-	    tfd = rpmMkTempFile(rpmtsRootDir(ts), &tfn);
-	    if (tfd && tfn) {
-		Fclose(tfd);
-	    	rc = urlGetFile(fileURL, tfn);
-	    } else {
-		rc = -1;
-	    }
-
-	    if (rc != 0) {
-		rpmlog(RPMLOG_ERR,
-			_("skipping %s - transfer failed\n"), fileURL);
-		eiu->numFailed++;
-		eiu->pkgURL[eiu->pkgx] = NULL;
-		if (tfn) {
-		    (void) unlink(tfn);
-		    tfn = _free(tfn);
-		}
-		break;
-	    }
-	    eiu->pkgState[eiu->pkgx] = 1;
-	    eiu->pkgURL[eiu->pkgx] = tfn;
-	    eiu->pkgx++;
-	}   break;
-	case URL_IS_PATH:
-	case URL_IS_DASH:	/* WRONG WRONG WRONG */
-	case URL_IS_HKP:	/* WRONG WRONG WRONG */
-	default:
-	    eiu->pkgURL[eiu->pkgx] = fileURL;
-	    fileURL = NULL;
-	    eiu->pkgx++;
-	    break;
-	}
-    }
-    fileURL = _free(fileURL);
-
-    if (eiu->numFailed) goto exit;
-
-    /* Continue processing file arguments, building transaction set. */
-    for (eiu->fnp = eiu->pkgURL+eiu->prevx;
-	 *eiu->fnp != NULL;
-	 eiu->fnp++, eiu->prevx++)
-    {
 	Header h = NULL;
-	const char * fileName;
+	const char *cfn = fn.c_str();
+	rpmlog(RPMLOG_DEBUG, "============== %s\n", cfn);
 
-	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
-	(void) urlPath(*eiu->fnp, &fileName);
-
-	if (tryReadHeader(ts, eiu, &h) == RPMRC_FAIL) {
-	    if (eiu->pkgState[eiu->fnp - eiu->pkgURL] == 1)
-		(void) unlink(*eiu->fnp);
-	    *eiu->fnp = _free(*eiu->fnp);
-	    continue;
+	int rc = tryReadHeader(ts, cfn, &h);
+	if (rc == RPMRC_NOTFOUND) {
+	    /* Add manifest contents to the queue */
+	    if (tryReadManifest(cfn, queue) == RPMRC_OK)
+		continue;
 	}
-
-	if (eiu->rpmrc == RPMRC_NOTFOUND) {
-	    rc = tryReadManifest(eiu);
-	    if (rc == RPMRC_OK) {
-	        eiu->prevx++;
-		headerFree(h);
-	        goto restart;
-	    }
-	} else if (eiu->rpmrc == RPMRC_FAIL) {
-	    if (eiu->pkgState[eiu->fnp - eiu->pkgURL] == 1)
-		(void) unlink(*eiu->fnp);
-	    *eiu->fnp = _free(*eiu->fnp);
+	if (h == NULL) {
+	    numFailed++;
+	    continue;
 	}
 
 	if (headerIsSource(h)) {
@@ -580,28 +514,22 @@ restart:
 	    if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
 	        continue;
 	    }
-	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
-		eiu->numSRPMS);
-	    eiu->sourceURL = xrealloc(eiu->sourceURL,
-				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
-	    eiu->sourceURL[eiu->numSRPMS] = *eiu->fnp;
-	    *eiu->fnp = NULL;
-	    eiu->numSRPMS++;
-	    eiu->sourceURL[eiu->numSRPMS] = NULL;
+	    rpmlog(RPMLOG_DEBUG, "added source package %s\n", cfn);
+	    SRPMS.push_back(fn);
 	    continue;
 	}
 
-	if (eiu->relocations) {
+	if (relocations) {
 	    struct rpmtd_s prefixes;
 
 	    headerGet(h, RPMTAG_PREFIXES, &prefixes, HEADERGET_DEFAULT);
 	    if (rpmtdCount(&prefixes) == 1) {
-		eiu->relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
+		relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
 		rpmtdFreeData(&prefixes);
 	    } else {
 		rpmlog(RPMLOG_ERR, _("package %s is not relocatable\n"),
 		       headerGetString(h, RPMTAG_NAME));
-		eiu->numFailed++;
+		numFailed++;
 		headerFree(h);
 		goto exit;
 	    }
@@ -613,101 +541,75 @@ restart:
 	        continue;
 	    }
 
+	/* fnpyKey must persist for the duration of the transaction */
+	RPMS.push_back(fn);
+	const char *pkgfn = RPMS.back().c_str();
 	if (ia->installInterfaceFlags & INSTALL_REINSTALL)
-	    rc = rpmtsAddReinstallElement(ts, h, (fnpyKey)fileName);
+	    rc = rpmtsAddReinstallElement(ts, h, (fnpyKey)pkgfn);
 	else
-	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
+	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)pkgfn,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
-			relocations);
+			ia->relocations);
 
 	headerFree(h);
-	if (eiu->relocations)
-	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
+	if (relocations)
+	    relocations->oldPath = _free(relocations->oldPath);
 
 	switch (rc) {
 	case 0:
-	    rpmlog(RPMLOG_DEBUG, "\tadded binary package [%d]\n",
-			eiu->numRPMS);
+	    rpmlog(RPMLOG_DEBUG, "added binary package %s\n", cfn);
 	    break;
 	case 1:
-	    rpmlog(RPMLOG_ERR,
-			    _("error reading from file %s\n"), *eiu->fnp);
-	    eiu->numFailed++;
-	    goto exit;
+	    rpmlog(RPMLOG_ERR, _("error reading from file %s\n"), cfn);
 	    break;
 	case 3:
-	    rpmlog(RPMLOG_ERR,
-			    _("package format not supported: %s\n"), *eiu->fnp);
-	    eiu->numFailed++;
-	    goto exit;
+	    rpmlog(RPMLOG_ERR, _("package format not supported: %s\n"), cfn);
 	    break;
 	default:
-	    eiu->numFailed++;
-	    goto exit;
 	    break;
 	}
-
-	eiu->numRPMS++;
+	if (rc) {
+	    numFailed++;
+	    goto exit;
+	}
     }
 
-    rpmlog(RPMLOG_DEBUG, "found %d source and %d binary packages\n",
-		eiu->numSRPMS, eiu->numRPMS);
+    rpmlog(RPMLOG_DEBUG, "found %zu source and %zu binary packages\n",
+		SRPMS.size(), RPMS.size());
 
-    if (eiu->numFailed) goto exit;
+    if (numFailed) goto exit;
 
-    if (eiu->numRPMS) {
-        int rc = rpmcliTransaction(ts, ia, eiu->numPkgs);
+    if (RPMS.empty() == false) {
+        int rc = rpmcliTransaction(ts, ia, RPMS.size());
         if (rc < 0)
-            eiu->numFailed += eiu->numRPMS;
+            numFailed += RPMS.size();
 	else if (rc > 0)
-            eiu->numFailed += rc;
+            numFailed += rc;
     }
 
-    if (eiu->numSRPMS && (eiu->sourceURL != NULL)) {
+    if (SRPMS.empty() == false) {
 	rpmcliProgressState = 0;
 	rpmcliProgressTotal = 0;
 	rpmcliProgressCurrent = 0;
 	rpmtsEmpty(ts);
-	for (i = 0; i < eiu->numSRPMS; i++) {
-	    if (eiu->sourceURL[i] != NULL) {
-	        rc = RPMRC_OK;
-		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
-		    rc = rpmInstallSource(ts, eiu->sourceURL[i], NULL, NULL);
-		if (rc != 0)
-		    eiu->numFailed++;
-	    }
+	for (const auto & p : SRPMS) {
+	    int rc = RPMRC_OK;
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+		rc = rpmInstallSource(ts, p.c_str(), NULL, NULL);
+	    if (rc)
+		numFailed++;
 	}
     }
 
 exit:
-    if (eiu->pkgURL != NULL) {
-        for (i = 0; i < eiu->numPkgs; i++) {
-	    if (eiu->pkgURL[i] == NULL) continue;
-	    if (eiu->pkgState[i] == 1)
-	        (void) unlink(eiu->pkgURL[i]);
-	    eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
-	}
-    }
-    if (eiu->sourceURL != NULL) {
-        for (i = 0; i < eiu->numSRPMS; i++) {
-	    if (eiu->sourceURL[i] == NULL) continue;
-	    if (eiu->pkgState[i] == 1)
-	        (void) unlink(eiu->sourceURL[i]);
-	    eiu->sourceURL[i] = _free(eiu->sourceURL[i]);
-	}
-    }
-    eiu->pkgState = _free(eiu->pkgState);
-    eiu->pkgURL = _free(eiu->pkgURL);
-    eiu->sourceURL = _free(eiu->sourceURL);
-    eiu->argv = _free(eiu->argv);
-    rc = eiu->numFailed;
-    free(eiu);
+    for (const auto & fn : cleanup)
+	(void) unlink(fn.c_str());
 
     rpmtsEmpty(ts);
     rpmtsSetVSFlags(ts, ovsflags);
     rpmtsSetVfyFlags(ts, ovfyflags);
 
-    return rc;
+    return numFailed;
 }
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
