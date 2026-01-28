@@ -86,6 +86,6 @@ On success, 0 is returned, a non-zero failure code otherwise.
 	*multifile* generator protocol.
 
 # SEE ALSO
-*rpmbuild*(1) *rpm-dependency-generator*(7) *elf*(5) *readelf*(1)
+*rpmbuild*(1) *rpm-dependency-generators*(7) *elf*(5) *readelf*(1)
 
 *http://www.rpm.org/*
