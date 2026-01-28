@@ -11,3 +11,38 @@ readpkgnullts /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 [warning: /data/RPMS/hello-2.0-1.x86_64-signed.rpm: Header OpenPGP V4 RSA/SHA256 signature, key ID 4344591e1964c5fc: NOKEY
 ])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmtsImportPubkey()])
+AT_KEYWORDS([api signature import])
+RPMTEST_CHECK([
+runroot importkey /data/keys/rpm.org-rsa-2048-test.pub
+],
+[0],
+[/data/keys/rpm.org-rsa-2048-test.pub key 1: 0
+],
+[])
+
+RPMTEST_CHECK([
+runroot importkey /data/keys/alice-revoked-subkey.asc
+],
+[0],
+[/data/keys/alice-revoked-subkey.asc key 1: 0
+],
+[warning: Certificate B3A771BFEB04E625:
+  Subkey 1F71177215217EE0 was revoked: Key material has been compromised, it was the maid
+  Certificate does not have any usable signing keys
+])
+
+RPMTEST_CHECK([
+runroot sed -i '/^nist/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot importkey /data/keys/rpm.org-nistp256-test.pub
+],
+[1],
+dnl XXX For desired behavior, rpm-sequoia should return 3 (NOTTRUSTED) here
+[/data/keys/rpm.org-nistp256-test.pub key 1: 2
+],
+[error: Certificate 7F1C21F95F65BBE8:
+  Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm
+])
+
+RPMTEST_CLEANUP
