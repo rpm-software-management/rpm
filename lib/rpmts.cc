@@ -332,7 +332,8 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmts ts = rpmtxnTs(txn);
     rpmVSFlags oflags = rpmtsVSFlags(ts);
 
-    if (pgpPubKeyLint(pkt, pktlen, &lints) != RPMRC_OK) {
+    rc = pgpPubKeyLint(pkt, pktlen, &lints);
+    if (rc != RPMRC_OK) {
 	if (lints) {
             rpmlog(RPMLOG_ERR, "%s\n", lints);
 	    free(lints);
@@ -345,6 +346,8 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 	    rpmlog(RPMLOG_WARNING, "%s\n", lints);
         free(lints);
     }
+
+    rc = RPMRC_FAIL; /* still assuming failure */
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
     rpmtsSetVSFlags(ts, (oflags & ~RPMVSF_MASK_NOSIGNATURES));
