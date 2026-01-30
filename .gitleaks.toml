@@ -1,0 +1,6 @@
+[allowlist]
+  description = "global allowlist"
+  # Ignore our test keys
+  paths = [
+    '''tests/data/keys/''',
+  ]
