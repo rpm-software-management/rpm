@@ -3086,3 +3086,43 @@ runroot rpmkeys -Kv /data/RPMS/hlinktest-1.0-1.noarch-v3sig.rpm
 [])
 
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([ML-DSA keys and signatures])
+AT_KEYWORDS([signature multisig v4 v6])
+
+RPMTEST_CHECK([[
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+]],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([[
+runroot rpmkeys --import /data/keys/unknown/rpm.org-v6-mldsa87-test.asc
+]],
+[1],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Certificate AED054589CBF8584:
+error: /data/keys/unknown/rpm.org-v6-mldsa87-test.asc: key 1 import failed.
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm
+],
+[0],
+[/data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm:
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header OpenPGP V6 ML-DSA-87+Ed448/SHA512 signature, key ID db11ab41d7ae9cd3: NOTTRUSTED
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
+RPMTEST_CLEANUP
