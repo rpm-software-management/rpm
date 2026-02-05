@@ -126,7 +126,7 @@ static rpmRC delete_file_store(std::string path)
 }
 
 /* Wrapper for private delete_key() methods that falls back to short keyid */
-static rpmRC rpm::delete_key_compat(auto keystore, rpmtxn txn, rpmPubkey key, auto skip)
+rpmRC rpm::delete_key_compat(auto keystore, rpmtxn txn, rpmPubkey key, auto skip)
 {
     rpmRC rc = RPMRC_NOTFOUND;
     string fp = rpmPubkeyFingerprintAsHex(key);
