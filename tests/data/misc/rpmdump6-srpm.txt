@@ -51,8 +51,8 @@ Header:
 File offset: 4456
 Header magic: 1e8ad8e (reserved: 0)
 Index entries: 58 (928 bytes)
-Data size: 2104 bytes
-Header size: 3032 bytes
+Data size: 2240 bytes
+Header size: 3168 bytes
 
 Region entries 58
 Region size 944
@@ -61,7 +61,7 @@ Dribbles: 0
 Tag #0 [region]
 	tagno:    63 (Headerimmutable)
 	type:      7 (blob)
-	offset: 2088
+	offset: 2224
 	count:    16
 
 	region trailer
@@ -146,271 +146,271 @@ Tag #13 [region]
 	tagno:  1030 (Filemodes)
 	type:      3 (int16)
 	offset:  110
-	count:     1
+	count:     2
 
 Tag #14 [region]
 	tagno:  1033 (Filerdevs)
 	type:      3 (int16)
-	offset:  112
-	count:     1
+	offset:  114
+	count:     2
 
 Tag #15 [region]
 	tagno:  1034 (Filemtimes)
 	type:      4 (int32)
-	offset:  116
-	count:     1
+	offset:  120
+	count:     2
 
 Tag #16 [region]
 	tagno:  1035 (Filedigests)
 	type:      8 (argv)
-	offset:  120
-	count:     1
+	offset:  128
+	count:     2
 
 Tag #17 [region]
 	tagno:  1036 (Filelinktos)
 	type:      8 (argv)
-	offset:  185
-	count:     1
+	offset:  258
+	count:     2
 
 Tag #18 [region]
 	tagno:  1037 (Fileflags)
 	type:      4 (int32)
-	offset:  188
-	count:     1
+	offset:  260
+	count:     2
 
 Tag #19 [region]
 	tagno:  1039 (Fileusername)
 	type:      8 (argv)
-	offset:  192
-	count:     1
+	offset:  268
+	count:     2
 
 Tag #20 [region]
 	tagno:  1040 (Filegroupname)
 	type:      8 (argv)
-	offset:  197
-	count:     1
+	offset:  278
+	count:     2
 
 Tag #21 [region]
 	tagno:  1045 (Fileverifyflags)
 	type:      4 (int32)
-	offset:  204
-	count:     1
+	offset:  288
+	count:     2
 
 Tag #22 [region]
 	tagno:  1047 (Providename)
 	type:      8 (argv)
-	offset:  208
+	offset:  296
 	count:     1
 
 Tag #23 [region]
 	tagno:  1048 (Requireflags)
 	type:      4 (int32)
-	offset:  220
+	offset:  308
 	count:     1
 
 Tag #24 [region]
 	tagno:  1049 (Requirename)
 	type:      8 (argv)
-	offset:  224
+	offset:  312
 	count:     1
 
 Tag #25 [region]
 	tagno:  1050 (Requireversion)
 	type:      8 (argv)
-	offset:  243
+	offset:  331
 	count:     1
 
 Tag #26 [region]
 	tagno:  1064 (Rpmversion)
 	type:      6 (string)
-	offset:  252
+	offset:  340
 	count:     1
 
 Tag #27 [region]
 	tagno:  1080 (Changelogtime)
 	type:      4 (int32)
-	offset:  260
+	offset:  348
 	count:     1
 
 Tag #28 [region]
 	tagno:  1081 (Changelogname)
 	type:      8 (argv)
-	offset:  264
+	offset:  352
 	count:     1
 
 Tag #29 [region]
 	tagno:  1082 (Changelogtext)
 	type:      8 (argv)
-	offset:  302
+	offset:  390
 	count:     1
 
 Tag #30 [region]
 	tagno:  1089 (Buildarchs)
 	type:      8 (argv)
-	offset:  320
+	offset:  408
 	count:     1
 
 Tag #31 [region]
 	tagno:  1094 (Cookie)
 	type:      6 (string)
-	offset:  327
+	offset:  415
 	count:     1
 
 Tag #32 [region]
 	tagno:  1095 (Filedevices)
 	type:      4 (int32)
-	offset:  348
-	count:     1
+	offset:  436
+	count:     2
 
 Tag #33 [region]
 	tagno:  1096 (Fileinodes)
 	type:      4 (int32)
-	offset:  352
-	count:     1
+	offset:  444
+	count:     2
 
 Tag #34 [region]
 	tagno:  1097 (Filelangs)
 	type:      8 (argv)
-	offset:  356
-	count:     1
+	offset:  452
+	count:     2
 
 Tag #35 [region]
 	tagno:  1106 (Sourcepackage)
 	type:      4 (int32)
-	offset:  360
+	offset:  456
 	count:     1
 
 Tag #36 [region]
 	tagno:  1112 (Provideflags)
 	type:      4 (int32)
-	offset:  364
+	offset:  460
 	count:     1
 
 Tag #37 [region]
 	tagno:  1113 (Provideversion)
 	type:      8 (argv)
-	offset:  368
+	offset:  464
 	count:     1
 
 Tag #38 [region]
 	tagno:  1116 (Dirindexes)
 	type:      4 (int32)
-	offset:  376
-	count:     1
+	offset:  472
+	count:     2
 
 Tag #39 [region]
 	tagno:  1117 (Basenames)
 	type:      8 (argv)
-	offset:  380
-	count:     1
+	offset:  480
+	count:     2
 
 Tag #40 [region]
 	tagno:  1118 (Dirnames)
 	type:      8 (argv)
-	offset:  394
+	offset:  516
 	count:     1
 
 Tag #41 [region]
 	tagno:  1124 (Payloadformat)
 	type:      6 (string)
-	offset:  395
+	offset:  517
 	count:     1
 
 Tag #42 [region]
 	tagno:  1125 (Payloadcompressor)
 	type:      6 (string)
-	offset:  400
+	offset:  522
 	count:     1
 
 Tag #43 [region]
 	tagno:  1126 (Payloadflags)
 	type:      6 (string)
-	offset:  405
+	offset:  527
 	count:     1
 
 Tag #44 [region]
 	tagno:  5008 (Longfilesizes)
 	type:      5 (int64)
-	offset:  408
-	count:     1
+	offset:  536
+	count:     2
 
 Tag #45 [region]
 	tagno:  5009 (Longsize)
 	type:      5 (int64)
-	offset:  416
+	offset:  552
 	count:     1
 
 Tag #46 [region]
 	tagno:  5011 (Filedigestalgo)
 	type:      4 (int32)
-	offset:  424
+	offset:  560
 	count:     1
 
 Tag #47 [region]
 	tagno:  5062 (Encoding)
 	type:      6 (string)
-	offset:  428
+	offset:  564
 	count:     1
 
 Tag #48 [region]
 	tagno:  5092 (Payloadsha256)
 	type:      8 (argv)
-	offset:  434
+	offset:  570
 	count:     1
 
 Tag #49 [region]
 	tagno:  5097 (Payloadsha256alt)
 	type:      8 (argv)
-	offset:  499
+	offset:  635
 	count:     1
 
 Tag #50 [region]
 	tagno:  5099 (Spec)
 	type:      6 (string)
-	offset:  564
+	offset:  700
 	count:     1
 
 Tag #51 [region]
 	tagno:  5112 (Payloadsize)
 	type:      5 (int64)
-	offset: 1680
+	offset: 1816
 	count:     1
 
 Tag #52 [region]
 	tagno:  5113 (Payloadsizealt)
 	type:      5 (int64)
-	offset: 1688
+	offset: 1824
 	count:     1
 
 Tag #53 [region]
 	tagno:  5114 (Rpmformat)
 	type:      4 (int32)
-	offset: 1696
+	offset: 1832
 	count:     1
 
 Tag #54 [region]
 	tagno:  5121 (Payloadsha512)
 	type:      6 (string)
-	offset: 1700
+	offset: 1836
 	count:     1
 
 Tag #55 [region]
 	tagno:  5122 (Payloadsha512alt)
 	type:      6 (string)
-	offset: 1829
+	offset: 1965
 	count:     1
 
 Tag #56 [region]
 	tagno:  5123 (Payloadsha3_256)
 	type:      6 (string)
-	offset: 1958
+	offset: 2094
 	count:     1
 
 Tag #57 [region]
 	tagno:  5124 (Payloadsha3_256alt)
 	type:      6 (string)
-	offset: 2023
+	offset: 2159
 	count:     1
 
 Payload:
-File offset: 7504
+File offset: 7640

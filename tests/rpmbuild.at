@@ -840,10 +840,11 @@ RPMTEST_CHECK([
 runroot rpmbuild --quiet \
 	--define "packager Iam" \
 	-ts /data/SOURCES/hello-2.0.tar.gz
-runroot rpm -qpl /build/SRPMS/hello-2.0-1.src.rpm
+runroot rpm -qpl /build/SRPMS/hello-2.0-1.src.rpm | sort
 ],
 [0],
-[hello-2.0.tar.gz
+[BUILD_ENVIRONMENT.txt
+hello-2.0.tar.gz
 hello.spec
 ],
 [])
@@ -3896,7 +3897,8 @@ RPMTEST_CHECK([
 runroot rpm -ql /build/SRPMS/macrosource-0-0.src.rpm
 ],
 [0],
-[hello-1.0-install.patch
+[BUILD_ENVIRONMENT.txt
+hello-1.0-install.patch
 hello-2.0.tar.gz
 macrosource.spec
 ],
@@ -4027,7 +4029,7 @@ RPMTEST_SETUP_RW([file digests])
 AT_KEYWORDS([build digest])
 RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet /data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
@@ -4040,7 +4042,7 @@ RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet \
 		--define "_source_filedigest_algorithm 0" \
 		/data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
@@ -4053,7 +4055,7 @@ RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet \
 		--define "_source_filedigest_algorithm 12345" \
 		/data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [bd70bbf9335f28297008dafdc7679583e3b63469c435aee7c3ba1c86890fb91e hello-1.0-modernize.patch
@@ -4068,7 +4070,7 @@ RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet \
 		--define "_source_filedigest_algorithm 1" \
 		/data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [79678ec5e51e7565b4703286f26ac6a6 hello-1.0-modernize.patch
@@ -4084,7 +4086,7 @@ RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet \
 		--define "_source_filedigest_algorithm 12" \
 		 /data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [f1a0a1e0e413d66a4bd948cb16bdd03600c7aea6dcd04522bcbc3041a29ee651 hello-1.0-modernize.patch
@@ -4097,7 +4099,7 @@ RPMTEST_CHECK([[
 runroot rpmbuild -bs --quiet \
 		--define "_source_filedigest_algorithm 14" \
 		 /data/SPECS/hello.spec
-runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm
+runroot rpm -q --qf "[%{filedigests} %{filenames}\n]" /build/SRPMS/hello-1.0-1.src.rpm | grep hello
 ]],
 [0],
 [11ddad2c1e5ef58d94d008634d9ad3a95cb7b5fab51652e73bb999c8d12110c4cdf6c572187c1a880a3c171a1af739fb48f77e98f5e30cc3bc1ec91a16182915 hello-1.0-modernize.patch
