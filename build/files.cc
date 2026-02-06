@@ -2670,6 +2670,26 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     }
     fl.pkgFlags = pkgFlags;
 
+    /* Add BUILD_ENVIRONMENT.txt if it exists */
+    {
+	char *buildEnv = captureBuildEnvironment();
+	if (buildEnv) {
+	    char *sourcesPath = rpmExpand("%{_sourcedir}", NULL);
+	    char *envFile = rpmGetPath(sourcesPath, "/BUILD_ENVIRONMENT.txt", NULL);
+	    FILE *fp = fopen(envFile, "w");
+	    if (fp) {
+		fprintf(fp, "%s", buildEnv);
+		fclose(fp);
+	    }
+	    if (envFile && access(envFile, R_OK) == 0) {
+		argvAdd(&files, envFile);
+	    }
+	    free(sourcesPath);
+	    free(buildEnv);
+	    free(envFile);
+	}
+    }
+
     for (ARGV_const_t fp = files; *fp != NULL; fp++) {
 	const char *diskPath = *fp;
 	char *tmp;

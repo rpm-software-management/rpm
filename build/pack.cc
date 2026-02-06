@@ -16,6 +16,7 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmsign.h>
+#include <rpm/rpmdb.h>
 
 #include "rpmio_internal.hh"	/* fdInitDigest, fdFiniDigest */
 #include "signature.hh"
@@ -874,6 +875,172 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     }
 
     return rc;
+}
+
+static int cmpstr(const void *a, const void *b)
+{
+    return strcmp(*(const char **)a, *(const char **)b);
+}
+
+static int rpmMacroEnabled(const char *name)
+{
+    return rpmExpandNumeric(name) != 0;
+}
+
+static void appendRpmbuildArgs(StringBuf sb)
+{
+    pid_t pid;
+    char line[1024] = {};
+
+    pid = getpid();
+
+    appendStringBuf(sb, "\n--- RPMBUILD ARGS ---\n\n");
+    snprintf(line, sizeof(line), "/proc/%d/cmdline", pid);
+
+    FILE *f = fopen(line, "r");
+    if (!f) {
+	rpmlog(RPMLOG_ERR, _("fopen('%s')\n"), line);
+	return;
+    }
+
+    size_t n = fread(line, 1, sizeof(line) - 1, f);
+    fclose(f);
+
+    if (n == 0) {
+	rpmlog(RPMLOG_ERR, _("rpmbuild cmdline empty or unreadable\n"));
+	return;
+    }
+
+    line[n] = '\0';
+    for (size_t i = 0; i < n; i++) {
+	if (line[i] == '\0')
+	    line[i] = ' ';
+    }
+    line[n - 1] = '\n';
+    appendStringBuf(sb, line);
+    appendStringBuf(sb, "\n--- END OF RPMBUILD ARGS ---\n");
+}
+
+static void appendBuildEnvironmentVars(StringBuf sb)
+{
+    extern char **environ;
+
+    appendStringBuf(sb, "\n--- BUILD ENVIRONMENT VARIABLES ---\n\n");
+    if (environ) {
+	for (int i = 0; environ[i]; i++) {
+	    appendStringBuf(sb, environ[i]);
+	    appendStringBuf(sb, "\n");
+	}
+    }
+    appendStringBuf(sb, "\n--- END OF BUILD ENVIRONMENT VARIABLES ---\n");
+}
+
+static void appendInstalledPackages(StringBuf sb)
+{
+    Header h;
+    rpmts ts;
+    rpmdbMatchIterator mi;
+    char **packages = NULL;
+    size_t count = 0;
+    char line[1024] = {};
+
+    appendStringBuf(sb, "\n--- INSTALLED PACKAGES ---\n\n");
+
+    rpmReadConfigFiles(NULL, NULL);
+    ts = rpmtsCreate();
+    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	const char *name = headerGetString(h, RPMTAG_NAME);
+	const char *version = headerGetString(h, RPMTAG_VERSION);
+	const char *release = headerGetString(h, RPMTAG_RELEASE);
+
+	if (!name || strstr(name, "gpg-pubkey"))
+	    continue;
+
+	snprintf(line, sizeof(line), "%s-%s-%s\n", name, version, release);
+	packages = (char **)realloc(packages, (count + 1) * sizeof(char *));
+	packages[count++] = strdup(line);
+    }
+
+    rpmdbFreeIterator(mi);
+    rpmtsFree(ts);
+    rpmFreeRpmrc();
+
+    qsort(packages, count, sizeof(char *), cmpstr);
+
+    for (size_t i = 0; i < count; i++) {
+	appendStringBuf(sb, packages[i]);
+	free(packages[i]);
+    }
+    free(packages);
+
+    appendStringBuf(sb, "\n--- END OF INSTALLED PACKAGES ---\n");
+}
+
+static void appendShellScriptFromMacro(StringBuf sb)
+{
+    FILE *fp;
+    char *script;
+    int rc;
+    char line[1024] = {};
+    const char *macro = "%{_run_custom_script}";
+
+    script = rpmExpand(macro, NULL);
+    if (!script || !*script || !strcmp(script, macro)) {
+	free(script);
+	return;
+    }
+
+
+    appendStringBuf(sb, "\n--- SHELL SCRIPT OUTPUT ---\n\n");
+    snprintf(line, sizeof(line), "/bin/bash %s\n", script);
+    appendStringBuf(sb, line);
+
+    fp = popen(line, "r");
+    if (!fp) {
+	rpmlog(RPMLOG_ERR, _("popen('%s') failed\n"), line);
+	appendStringBuf(sb, "(failed to run script)\n");
+	goto end;
+    }
+
+    while (fgets(line, sizeof(line), fp)) {
+	appendStringBuf(sb, line);
+    }
+
+    rc = pclose(fp);
+    if (rc) {
+	snprintf(line, sizeof(line), "\n(script exited with status %d)\n", rc);
+	appendStringBuf(sb, line);
+    }
+
+end:
+    appendStringBuf(sb, "\n--- END OF SHELL SCRIPT OUTPUT ---\n");
+    free(script);
+}
+
+char *captureBuildEnvironment(void)
+{
+    char *result;
+    StringBuf sb = newStringBuf();
+
+    appendStringBuf(sb, "=== RPM BUILD ENVIRONMENT ===\n\n");
+
+    if (rpmMacroEnabled("%_embed_rpmbuild_args"))
+	appendRpmbuildArgs(sb);
+
+    if (rpmMacroEnabled("%_embed_rpmbuild_env_vars"))
+	appendBuildEnvironmentVars(sb);
+
+    if (rpmMacroEnabled("%_embed_pkglist_in_srpm"))
+	appendInstalledPackages(sb);
+
+    appendShellScriptFromMacro(sb);
+
+    result = xstrdup(getStringBuf(sb));
+    freeStringBuf(sb);
+
+    return result;
 }
 
 rpmRC packageSources(rpmSpec spec, char **cookie)
