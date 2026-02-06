@@ -29,6 +29,11 @@ The number of tests performed depends on features enabled at configure time, at
 least the CMake option `ENABLE_PYTHON=<ON|OFF>`.  See also the
 [INSTALL](../INSTALL) file for more information.
 
+> [!NOTE]
+> Consider using `cmake --preset dev` when configuring your build in order to
+> get the standard development build that enables all features including the
+> test-suite itself.
+
 If the test-suite is configured in native mode, it may sometimes be useful to
 verify that everything passes in non-native mode too as that's what our CI
 uses.  To do that, run:

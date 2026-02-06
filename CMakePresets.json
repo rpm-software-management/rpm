@@ -1,0 +1,30 @@
+{
+    "version": 10,
+    "configurePresets": [
+        {
+            "name": "full",
+            "displayName": "Full feature set",
+            "cacheVariables": {
+                "ENABLE_BDB_RO": "ON",
+                "WITH_FSVERITY": "ON",
+                "WITH_IMAEVM": "ON",
+                "WITH_DOXYGEN": "ON"
+            }
+        },
+        {
+            "name": "dev",
+            "displayName": "Development mode",
+            "inherits": ["full"],
+            "cacheVariables": {
+                "ENABLE_WERROR": "ON",
+                "ENABLE_ASAN": "ON",
+                "ENABLE_UBSAN": "ON",
+                "ENABLE_TESTSUITE": "ON"
+            },
+            "environment": {
+                "CFLAGS": "-Og -g",
+                "CXXFLAGS": "-Og -g"
+            }
+        }
+    ]
+}

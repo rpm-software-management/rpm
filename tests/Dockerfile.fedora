@@ -98,19 +98,7 @@ WORKDIR /srv/rpm
 COPY . .
 
 WORKDIR /srv/build
-ENV CFLAGS="-Og -g"
-ENV CXXFLAGS="-Og -g"
-RUN cmake \
-	-DENABLE_WERROR=ON \
-	-DENABLE_ASAN=ON \
-	-DENABLE_UBSAN=ON \
-	-DENABLE_BDB_RO=ON \
-	-DWITH_FSVERITY=ON \
-	-DWITH_IMAEVM=ON \
-	-DWITH_DOXYGEN=ON \
-	-DENABLE_TESTSUITE=ON \
-	-DMKTREE_BACKEND=rootfs \
-	../rpm
+RUN cmake --preset dev -DMKTREE_BACKEND=rootfs ../rpm
 RUN make -j$(nproc) tree
 
 RUN rm -rf /srv/{rpm,build}
