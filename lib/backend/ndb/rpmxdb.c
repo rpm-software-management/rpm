@@ -25,7 +25,7 @@
 
 #include "rpmxdb.h"
 
-typedef struct rpmxdb_s {
+struct rpmxdb_s {
     rpmpkgdb pkgdb;             /* main database */
     char *filename;
     int fd;
@@ -60,7 +60,7 @@ typedef struct rpmxdb_s {
     unsigned int systempagesize;
     int dofsync;
     unsigned int locked_excl;
-} *rpmxdb;
+};
 
 
 static inline void h2le(unsigned int x, unsigned char *p)

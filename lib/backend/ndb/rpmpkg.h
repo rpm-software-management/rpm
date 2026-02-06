@@ -1,3 +1,5 @@
+#ifndef _RPMPKG_H
+#define _RPMPKG_H
 #include <rpm/rpmtypes.h>
 
 struct rpmpkgdb_s;
@@ -29,3 +31,4 @@ int rpmpkgStats(rpmpkgdb pkgdb);
 #ifdef __cplusplus
 }
 #endif
+#endif /* _RPMPKG_H */

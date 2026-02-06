@@ -1,3 +1,6 @@
+#ifndef _RPMXDB_H
+#define _RPMXDB_H
+
 #include "rpmpkg.h"
 
 struct rpmxdb_s;
@@ -34,3 +37,5 @@ int rpmxdbStats(rpmxdb xdb);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _RPMXDB_H */
