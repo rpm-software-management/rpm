@@ -97,6 +97,7 @@ struct rpmidxdb_s {
     unsigned int pagesize;
 };
 
+#if 0
 static inline unsigned int le2h(unsigned char *p) 
 {
     return p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;
@@ -109,6 +110,7 @@ static inline void h2le(unsigned int x, unsigned char *p)
     p[2] = x >> 16;
     p[3] = x >> 24;
 }
+#endif
 
 /* aligned versions */
 static inline unsigned int le2ha(unsigned char *p) 
