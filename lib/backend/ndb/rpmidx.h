@@ -1,3 +1,6 @@
+#ifndef _RPMIDX_H
+#define _RPMIDX_H
+
 #include "rpmpkg.h"
 #include "rpmxdb.h"
 
@@ -23,3 +26,5 @@ int rpmidxStats(rpmidxdb idxdb);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _RPMIDX_H */

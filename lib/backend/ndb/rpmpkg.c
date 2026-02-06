@@ -24,7 +24,7 @@ typedef struct pkgslot_s {
     unsigned int slotno;
 } pkgslot;
 
-typedef struct rpmpkgdb_s {
+struct rpmpkgdb_s {
     int fd;			/* our file descriptor */
 
     int rdonly;
@@ -49,7 +49,7 @@ typedef struct rpmpkgdb_s {
     char *filename;
     unsigned int fileblks;	/* file size in blks */
     int dofsync;
-} * rpmpkgdb;
+};
 
 
 static inline unsigned int le2h(unsigned char *p) 

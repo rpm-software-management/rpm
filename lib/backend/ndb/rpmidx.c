@@ -64,7 +64,7 @@
  */
 
 
-typedef struct rpmidxdb_s {
+struct rpmidxdb_s {
     rpmpkgdb pkgdb;		/* main database */
 
     int flags;
@@ -95,7 +95,7 @@ typedef struct rpmidxdb_s {
     unsigned int xmask;
 
     unsigned int pagesize;
-} * rpmidxdb;
+};
 
 static inline unsigned int le2h(unsigned char *p) 
 {
