@@ -667,3 +667,5 @@ RPM_GNUC_INTERNAL
 const struct sectname_s *getSection(const char *name, int part);
 
 #endif /* _RPMBUILD_INTERNAL_H */
+
+char *captureBuildEnvironment(void);
