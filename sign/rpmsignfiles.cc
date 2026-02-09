@@ -6,6 +6,8 @@
 
 #include "system.h"
 
+#include <vector>
+
 #include <string.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>		/* rpmlog */
@@ -39,13 +41,12 @@ static char *signFile(const char *algo, const uint8_t *fdigest, int diglen,
 const char *key, char *keypass, uint32_t *siglenp)
 {
     char *fsignature;
-    unsigned char zeros[diglen];
+    std::vector<unsigned char> zeros(diglen, 0);
     unsigned char signature[MAX_SIGNATURE_LENGTH];
     int siglen;
 
     /* some entries don't have a digest - we return an empty signature */
-    memset(zeros, 0, diglen);
-    if (memcmp(zeros, fdigest, diglen) == 0)
+    if (memcmp(zeros.data(), fdigest, diglen) == 0)
         return strdup("");
 
     /* prepare file signature */

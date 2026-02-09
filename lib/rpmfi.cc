@@ -2371,9 +2371,8 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 
 		/* ...but in old packages, empty files have zeros for digest */
 		if (rpmfiFSize(fi) == 0 && digestalgo == RPM_HASH_MD5) {
-		    uint8_t zeros[diglen];
-		    memset(&zeros, 0, diglen);
-		    if (memcmp(zeros, fidigest, diglen) == 0)
+		    std::vector<uint8_t> zeros(diglen, 0);
+		    if (memcmp(zeros.data(), fidigest, diglen) == 0)
 			rc = 0;
 		}
 	    }
