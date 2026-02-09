@@ -921,15 +921,13 @@ void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 	    ptrdiff_t slen = s - start;
 	    /* quoted arguments are always kept, otherwise skip empty args */
 	    if (slen > 0) {
-		char *d, arg[slen + 1];
-		const char *t;
-		for (d = arg, t = start; t - start < slen; t++) {
+		std::string arg;
+		for (const char *t = start; t - start < slen; t++) {
 		    if (*t == qchar)
 			continue;
-		    *d++ = *t;
+		    arg += *t;
 		}
-		arg[d - arg] = '\0';
-		argvAdd(av, arg);
+		argvAdd(av, arg.c_str());
 	    }
 	    start = s + 1;
 	}
