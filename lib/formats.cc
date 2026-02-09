@@ -301,7 +301,6 @@ static char * xmlFormat(rpmtd td, char **emsg)
     case RPM_NUMERIC_CLASS:
 	xtag = "integer";
 	break;
-    case RPM_NULL_TYPE:
     default:
 	*emsg = xstrdup(_("(invalid xml type)"));
 	return NULL;
