@@ -62,9 +62,8 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 
     /* Iterate over file triggers in rpmdb */
     while ((rpmdbIndexIteratorNext(ii, &key, &keylen)) == 0) {
-	char pfx[keylen + 1];
-	memcpy(pfx, key, keylen);
-	pfx[keylen] = '\0';
+	std::string keystr(static_cast<const char *>(key), keylen);
+	const char *pfx = keystr.c_str();
 	/* Check if file trigger matches any installed file in this te */
 	rpmfi fi = rpmfilesFindPrefix(files, pfx);
 	while (rpmfiNext(fi) >= 0) {
