@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <format>
 #include <string>
 #include <unordered_map>
 
@@ -740,11 +741,9 @@ static bool formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     /* Handle field width + justification formatting if specified */
     if (tag->format && *tag->format) {
 	char *tval = NULL;
-	/* user string + extra for '%', format char and trailing '\0' */
-	char fmtbuf[strlen(tag->format) + 3];
+	const std::string fmtbuf = std::format("%{}s", tag->format);
 
-	sprintf(fmtbuf, "%%%ss", tag->format);
-	rasprintf(&tval, fmtbuf, val);
+	rasprintf(&tval, fmtbuf.c_str(), val);
 	free(val);
 	val = tval;
     }
