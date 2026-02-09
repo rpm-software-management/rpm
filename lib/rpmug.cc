@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 #include <pwd.h>
 #include <grp.h>
@@ -79,7 +80,7 @@ static int lookup_field_in_file(const char *path, const char *val, int vcol, int
 
     while ((str = fgets(buf, sizeof(buf), f)) != NULL) {
 	int nf = vcol > rcol ? vcol : rcol;
-	const char *fields[nf + 1];
+	std::vector<const char *> fields(nf + 1);
 	int col = -1;
 
 	ARGV_t tokens = argvSplitString(str, ":", ARGV_NONE);
