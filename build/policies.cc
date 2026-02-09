@@ -95,7 +95,7 @@ static rpmRC writeModuleToHeader(ModuleRec mod, Package pkg)
 		goto exit;
 	    }
 
-	    if ((mod->flags && RPMPOL_FLAG_BASE) &&
+	    if ((mod->flags & RPMPOL_FLAG_BASE) &&
 		(((int *) policyflags.data)[idx] & RPMPOL_FLAG_BASE)) {
 		rpmlog(RPMLOG_ERR, _("Base modules '%s' and '%s' have overlapping types\n"), mod->name, name);
 		goto exit;
