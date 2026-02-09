@@ -18,7 +18,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Build the Fedora testing environment (Clang)
+        run: ./mktree.oci build --toolchain clang
+        working-directory: ./tests
       - name: Build the Fedora testing environment (GNU C/C++)
+        # This replaces the previous Clang based image
         run: ./mktree.oci build --toolchain gcc
         working-directory: ./tests
       - name: Fix kernel mmap rnd bits
