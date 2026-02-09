@@ -90,6 +90,8 @@ if (MKTREE_BACKEND STREQUAL oci)
 		set(MKTREE_NATIVE yes)
 		configure_file(${DOCKERFILE} Dockerfile COPYONLY)
 		add_custom_target(ci
+			COMMAND ./mktree.oci build --toolchain clang
+			COMMAND ./mktree.oci clean
 			COMMAND ./mktree.oci build --toolchain gcc
 			COMMAND ./mktree.oci check ${JOBS} $(TESTOPTS)
 			COMMAND ./mktree.oci clean

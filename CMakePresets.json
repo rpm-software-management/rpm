@@ -20,6 +20,14 @@
             }
         },
         {
+            "name": "toolchain-clang",
+            "displayName": "Clang toolchain",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
             "name": "dev",
             "displayName": "Development mode (default toolchain)",
             "inherits": ["full"],
@@ -38,6 +46,16 @@
             "name": "dev-gcc",
             "displayName": "Development mode (GNU C/C++ toolchain)",
             "inherits": ["dev", "toolchain-gcc"]
+        },
+        {
+            "name": "dev-clang",
+            "displayName": "Development mode (Clang toolchain)",
+            "inherits": ["dev", "toolchain-clang"],
+            "cacheVariables": {
+                "ENABLE_WERROR": "OFF",
+                "ENABLE_ASAN": "OFF",
+                "ENABLE_UBSAN": "OFF"
+            }
         }
     ]
 }
