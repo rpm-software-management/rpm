@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <string>
+
 #include <errno.h>
 #include <inttypes.h>
 #include <ctype.h>
@@ -486,24 +488,21 @@ static rpmdbMatchIterator initFilterIterator(rpmts ts, ARGV_const_t argv)
 
     for (ARGV_const_t arg = argv; arg && *arg != NULL; arg++) {
 	rpmTagVal tag = RPMTAG_NAME;
-	char a[strlen(*arg)+1], *ae;
-	const char *pat = a;
-
-	strcpy(a, *arg);
+	std::string pat = *arg;
 
 	/* Parse for "tag=pattern" args. */
-	if ((ae = strchr(a, '=')) != NULL) {
-	    *ae++ = '\0';
-	    tag = rpmTagGetValue(a);
+	size_t sep = pat.find_first_of('=');
+	if (sep != pat.npos) {
+	    auto tagname = pat.substr(0, sep);
+	    tag = rpmTagGetValue(tagname.c_str());
 	    if (tag == RPMTAG_NOT_FOUND) {
-		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
+		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), tagname.c_str());
 		mi = rpmdbFreeIterator(mi);
 		break;
 	    }
-	    pat = ae;
+	    pat = pat.substr(sep + 1);
 	}
-
-	rpmdbSetIteratorRE(mi, tag, RPMMIRE_DEFAULT, pat);
+	rpmdbSetIteratorRE(mi, tag, RPMMIRE_DEFAULT, pat.c_str());
     }
 
     return mi;

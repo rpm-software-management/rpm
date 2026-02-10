@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <vector>
+
 #include <errno.h>
 #include <fcntl.h>
 #ifdef WITH_CAP
@@ -108,12 +110,12 @@ rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask)
 	size_t diglen;
 
 	if ((digest = rpmfilesFDigest(fi, ix, &algo, &diglen))) {
-	    unsigned char fdigest[diglen];
+	    std::vector<unsigned char> fdigest(diglen);
 
-	    if (rpmDoDigest(algo, fn, 0, fdigest)) {
+	    if (rpmDoDigest(algo, fn, 0, fdigest.data())) {
 		vfy |= (RPMVERIFY_READFAIL|RPMVERIFY_FILEDIGEST);
 	    } else {
-		if (memcmp(fdigest, digest, diglen))
+		if (memcmp(fdigest.data(), digest, diglen))
 		    vfy |= RPMVERIFY_FILEDIGEST;
 	    }
 	} else {

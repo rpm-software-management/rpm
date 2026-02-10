@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <string>
 #include <vector>
 
 #include <sys/file.h>
@@ -762,19 +763,18 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
 			    const char * arg, size_t arglen, const char *arch,
 			    dbiIndexSet * matches)
 {
-    char localarg[arglen+1];
     int64_t epoch;
     const char * version;
     const char * release;
-    char * s;
+    const char * s;
     char c;
     int brackets;
     rpmRC rc;
 
     if (arglen == 0) return RPMRC_NOTFOUND;
 
-    strncpy(localarg, arg, arglen);
-    localarg[arglen] = '\0';
+    std::string argstr(arg, arglen);
+    const char *localarg = argstr.c_str();
 
     /* did they give us just a name? */
     rc = dbiFindMatches(db, dbi, localarg, -1, NULL, NULL, arch, matches);
@@ -809,7 +809,7 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
 	goto exit;
     }
 
-    *s = '\0';
+    argstr.erase(s-localarg);
 
     epoch = splitEpoch(s + 1, &version);
     rc = dbiFindMatches(db, dbi, localarg, epoch, version, NULL, arch, matches);
@@ -843,7 +843,7 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
 	goto exit;
     }
 
-    *s = '\0';
+    argstr.erase(s - localarg);
    	/* FIX: *matches may be NULL. */
     epoch = splitEpoch(s + 1, &version);
     rc = dbiFindMatches(db, dbi, localarg, epoch, version, release, arch, matches);

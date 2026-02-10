@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <string>
+
 #include <archive.h>
 #include <archive_entry.h>
 
@@ -214,10 +216,9 @@ static char *doUntar(const char *fn)
 	    size_t nvlen = strlen(bn) - 3;
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 	    char *gemspec = NULL;
-	    char gemnameversion[nvlen];
+	    std::string gemnameversion(bn, nvlen);
 
-	    rstrlcpy(gemnameversion, bn, nvlen);
-	    gemspec = rpmGetPath("", gemnameversion, ".gemspec", NULL);
+	    gemspec = rpmGetPath("", gemnameversion.c_str(), ".gemspec", NULL);
 
 	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'",
 			zipper, fn, gem, fn, gemspec);

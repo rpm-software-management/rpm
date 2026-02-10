@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <string>
+
 #include <rpm/rpmlib.h>		/* rpmvercmp proto */
 #include <rpm/rpmstring.h>
 
@@ -18,21 +20,16 @@ int rpmvercmp(const char * a, const char * b)
     /* easy comparison to see if versions are identical */
     if (rstreq(a, b)) return 0;
 
-    char oldch1, oldch2;
-    char abuf[strlen(a)+1], bbuf[strlen(b)+1];
-    char *str1 = abuf, *str2 = bbuf;
-    char * one, * two;
+    std::string abuf(a);
+    std::string bbuf(b);
+    char *str1 = abuf.data(), *str2 = bbuf.data();
+    char *one = str1, *two = str2;
     int rc;
-    int isnum;
-
-    strcpy(str1, a);
-    strcpy(str2, b);
-
-    one = str1;
-    two = str2;
 
     /* loop through each version segment of str1 and str2 and compare them */
     while (*one || *two) {
+	int isnum;
+
 	while (*one && !risalnum(*one) && *one != '~' && *one != '^') one++;
 	while (*two && !risalnum(*two) && *two != '~' && *two != '^') two++;
 
@@ -81,9 +78,9 @@ int rpmvercmp(const char * a, const char * b)
 
 	/* save character at the end of the alpha or numeric segment */
 	/* so that they can be restored after the comparison */
-	oldch1 = *str1;
+	char oldch1 = *str1;
 	*str1 = '\0';
-	oldch2 = *str2;
+	char oldch2 = *str2;
 	*str2 = '\0';
 
 	/* this cannot happen, as we previously tested to make sure that */

@@ -704,8 +704,8 @@ exit:
 static rpmRC addLang(ARGV_t *av, const char *lang, size_t n, const char *ent)
 {
     rpmRC rc = RPMRC_FAIL;
-    char lbuf[n + 1];
-    rstrlcpy(lbuf, lang, sizeof(lbuf));
+    std::string langstr(lang, n);
+    const char *lbuf = langstr.c_str();
     SKIPWHITE(ent);
 
     /* Sanity check locale length */
@@ -1396,8 +1396,7 @@ static int validFilename(const char *fn)
 static rpmRC addFile(FileList fl, const char * diskPath,
 		struct stat * statp)
 {
-    size_t plen = strlen(diskPath);
-    char buf[plen + 1];
+    std::string dp = diskPath;
     const char *cpioPath;
     struct stat statbuf;
     mode_t fileMode;
@@ -1406,10 +1405,10 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     /* Strip trailing slash. The special case of '/' path is handled below. */
-    if (plen > 0 && diskPath[plen - 1] == '/') {
-	diskPath = strcpy(buf, diskPath);
-	buf[plen - 1] = '\0';
-    }
+    if (dp.size() > 0 && dp.back() == '/')
+	dp.pop_back();
+
+    diskPath = dp.c_str();
     cpioPath = diskPath;
 	
     if (strncmp(diskPath, fl->buildRoot, fl->buildRootLen)) {
@@ -2445,13 +2444,13 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 {
     ARGV_t fileNames = NULL;
     for (ARGV_const_t fp = *fileList; *fp != NULL; fp++) {
-	char buf[strlen(*fp) + 1];
 	const char *s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
 	    continue;
 	fileNames = argvFree(fileNames);
-	rstrlcpy(buf, s, sizeof(buf));
+	std::string lbuf(s);
+	char *buf = lbuf.data(); /* XXX parseFor*() modify the buf */
 	
 	/* Reset for a new line in %files */
 	FileEntryFree(&fl->cur);
