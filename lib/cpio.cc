@@ -122,8 +122,9 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
 }
 
 
-static int rpmcpioWritePad(rpmcpio_t cpio, ssize_t modulo)
+static int rpmcpioWritePad(rpmcpio_t cpio)
 {
+    const ssize_t modulo = 4;
     char buf[modulo];
     ssize_t left, written;
     memset(buf, 0, modulo);
@@ -140,8 +141,8 @@ static int rpmcpioWritePad(rpmcpio_t cpio, ssize_t modulo)
 
 static int rpmcpioReadPad(rpmcpio_t cpio)
 {
-    ssize_t modulo = 4;
-    char buf[4];
+    const ssize_t modulo = 4;
+    char buf[modulo];
     ssize_t left, read;
     left = (modulo - (cpio->offset % modulo)) % modulo;
     if (left <= 0)
@@ -174,7 +175,7 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
     if (rc)
         return rc;
 
@@ -204,7 +205,7 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
      * tape device(s) and/or concatenated cpio archives.
      */
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
 
     return rc;
 }
@@ -230,7 +231,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
 	return RPMERR_FILE_SIZE;
     }
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
     if (rc) {
         return rc;
     }
@@ -271,7 +272,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
 
     cpio->fileend = cpio->offset + st->st_size;
 
@@ -294,7 +295,7 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
     if (rc) {
         return rc;
     }
@@ -313,7 +314,7 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio, 4);
+    rc = rpmcpioWritePad(cpio);
 
     cpio->fileend = cpio->offset + fsize;
 
