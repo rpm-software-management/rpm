@@ -9,6 +9,8 @@
 
 #include "system.h"
 
+#include <string>
+
 #if defined(MAJOR_IN_MKDEV)
 #include <sys/mkdev.h>
 #elif defined(MAJOR_IN_SYSMACROS)
@@ -106,17 +108,15 @@ off_t rpmcpioTell(rpmcpio_t cpio)
  */
 static unsigned long strntoul(const char *str,char **endptr, int base, size_t num)
 {
-    char buf[num+1], * end;
-    unsigned long ret;
+    std::string buf(str,num);
+    char *end;
 
-    strncpy(buf, str, num);
-    buf[num] = '\0';
+    unsigned long ret = strtoul(buf.c_str(), &end, base);
 
-    ret = strtoul(buf, &end, base);
     if (*end != '\0')
-	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
+	*endptr = ((char *)str) + (end - buf.c_str());	/* XXX discards const */
     else
-	*endptr = ((char *)str) + strlen(buf);
+	*endptr = ((char *)str) + buf.size();
 
     return ret;
 }
