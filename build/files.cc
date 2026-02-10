@@ -2444,13 +2444,13 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 {
     ARGV_t fileNames = NULL;
     for (ARGV_const_t fp = *fileList; *fp != NULL; fp++) {
-	char buf[strlen(*fp) + 1];
 	const char *s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
 	    continue;
 	fileNames = argvFree(fileNames);
-	rstrlcpy(buf, s, sizeof(buf));
+	std::string lbuf(s);
+	char *buf = lbuf.data(); /* XXX parseFor*() modify the buf */
 	
 	/* Reset for a new line in %files */
 	FileEntryFree(&fl->cur);
