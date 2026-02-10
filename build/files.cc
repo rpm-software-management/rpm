@@ -1396,8 +1396,7 @@ static int validFilename(const char *fn)
 static rpmRC addFile(FileList fl, const char * diskPath,
 		struct stat * statp)
 {
-    size_t plen = strlen(diskPath);
-    char buf[plen + 1];
+    std::string dp = diskPath;
     const char *cpioPath;
     struct stat statbuf;
     mode_t fileMode;
@@ -1406,10 +1405,10 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     /* Strip trailing slash. The special case of '/' path is handled below. */
-    if (plen > 0 && diskPath[plen - 1] == '/') {
-	diskPath = strcpy(buf, diskPath);
-	buf[plen - 1] = '\0';
-    }
+    if (dp.size() > 0 && dp.back() == '/')
+	dp.pop_back();
+
+    diskPath = dp.c_str();
     cpioPath = diskPath;
 	
     if (strncmp(diskPath, fl->buildRoot, fl->buildRootLen)) {
