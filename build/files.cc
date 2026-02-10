@@ -704,8 +704,8 @@ exit:
 static rpmRC addLang(ARGV_t *av, const char *lang, size_t n, const char *ent)
 {
     rpmRC rc = RPMRC_FAIL;
-    char lbuf[n + 1];
-    rstrlcpy(lbuf, lang, sizeof(lbuf));
+    std::string langstr(lang, n);
+    const char *lbuf = langstr.c_str();
     SKIPWHITE(ent);
 
     /* Sanity check locale length */
