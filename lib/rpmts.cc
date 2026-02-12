@@ -298,7 +298,7 @@ static void loadKeyring(rpmts ts)
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keystore = rpmtsGetKeystore(ts);
 	ts->keyring = rpmKeyringNew();
-	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+	rpmtxn txn = rpmkxnBegin(ts, RPMTXN_READ);
 	if (txn) {
 	    ts->keystore->load_keys(txn, ts->keyring);
 	    rpmtxnEnd(txn);
@@ -403,7 +403,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     rpmRC rc = RPMRC_FAIL;
-    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
     if (txn) {
 	rc = rpmtxnImportPubkey(txn, pkt, pktlen);
 	rpmtxnEnd(txn);
@@ -597,6 +597,7 @@ rpmts rpmtsFree(rpmts ts)
     }
     ts->rootDir = _free(ts->rootDir);
     rpmtsLockFree(ts);
+    ts->kslock = rpmlockFree(ts->kslock);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -1134,6 +1135,14 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
     return rpmtxnCreate(ts, flags, rpmlock_path_default, RPMLOCK_PATH,
 			_("transaction"), &(ts->lock));
+}
+
+#define KSLOCK_PATH LOCALSTATEDIR "/rpm/.keyring.lock"
+rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags)
+{
+    static const char * const kslock_path_default = "%{?_keyring_lockpath}";
+    return rpmtxnCreate(ts, flags, kslock_path_default, KSLOCK_PATH,
+			_("keyring"), &(ts->kslock));
 }
 
 rpmtxn rpmtxnEnd(rpmtxn txn)

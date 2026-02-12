@@ -130,6 +130,8 @@
 
 %_keyringpath		%{_dbpath}/pubkeys/
 
+%_keyring_lockpath	%{_dbpath}/.keyring.lock
+
 # Location of passwd(5) and group(5), as : separated list
 # Uncomment to disable NSS lookups
 #%_passwd_path		/etc/passwd

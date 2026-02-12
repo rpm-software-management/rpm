@@ -742,6 +742,14 @@ int rpmtsAddRestoreElement(rpmts ts, Header h);
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
 /** \ingroup rpmts
+ * Create a keystore (lock) handle
+ * @param ts		transaction set
+ * @param flags		flags
+ * @return		transaction handle
+ */
+rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags);
+
+/** \ingroup rpmts
  * Create a transaction (lock) handle
  * @param ts		transaction set
  * @param flags		flags

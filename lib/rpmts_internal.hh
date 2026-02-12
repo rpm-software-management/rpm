@@ -85,6 +85,7 @@ struct rpmts_s {
     int vfylevel;		/*!< Package verification level */
     rpmKeyring keyring;		/*!< Keyring in use. */
     rpm::keystore *keystore;	/*! <Keystore in use. */
+    rpmlock kslock;		/*! <Keystore lock. */
 
     ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
     ARGV_t installLangs;	/*!< From %{_install_langs} */
