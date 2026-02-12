@@ -12,6 +12,24 @@ readpkgnullts /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([keystore API with wrong lock])
+AT_KEYWORDS([api])
+RPMTEST_CHECK([
+runroot oldtxn
+],
+[0],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+grep rpmtxnRebuildKeystore stderr
+],
+[0],
+[D: rpmtxnRebuildKeystore: expected a keystore handle, got a transaction handle
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([rpmtsImportPubkey()])
 AT_KEYWORDS([api signature import])
 RPMTEST_CHECK([
@@ -44,5 +62,4 @@ dnl XXX For desired behavior, rpm-sequoia should return 3 (NOTTRUSTED) here
 [error: Certificate 7F1C21F95F65BBE8:
   Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm
 ])
-
 RPMTEST_CLEANUP

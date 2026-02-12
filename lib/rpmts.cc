@@ -102,13 +102,25 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     return rc;
 }
 
+/* Ensure keyring lock file exists so regular users can query */
+static void ensureKrlock(rpmts ts)
+{
+    ts->kslock = rpmlockFree(ts->kslock);
+    rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
+    if (txn)
+	rpmtxnEnd(txn);
+}
+
 int rpmtsInitDB(rpmts ts, int perms)
 {
     rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int rc = -1;
-    if (txn)
-	    rc = rpmdbInit(ts->rootDir, perms);
-    rpmtxnEnd(txn);
+    if (txn) {
+	rc = rpmdbInit(ts->rootDir, perms);
+	if (rc == 0)
+	    ensureKrlock(ts);
+	rpmtxnEnd(txn);
+    }
     return rc;
 }
 
@@ -129,9 +141,6 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
     return rc;
 }
 
-static
-void rpmtsLockFree(rpmts ts);
-
 int rpmtsRebuildDB(rpmts ts)
 {
     int rc = -1;
@@ -151,13 +160,10 @@ int rpmtsRebuildDB(rpmts ts)
 	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck, rebuildflags);
 	else
 	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL, rebuildflags);
+	if (rc == 0)
+	    ensureKrlock(ts);
 	rpmtxnEnd(txn);
     }
-    /* Re-create lock file */
-    rpmtsLockFree(ts);
-    txn = rpmtxnBegin(ts, RPMTXN_WRITE);
-    if (txn)
-	rpmtxnEnd(txn);
 
     return rc;
 }
@@ -298,7 +304,7 @@ static void loadKeyring(rpmts ts)
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keystore = rpmtsGetKeystore(ts);
 	ts->keyring = rpmKeyringNew();
-	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+	rpmtxn txn = rpmkxnBegin(ts, RPMTXN_READ);
 	if (txn) {
 	    ts->keystore->load_keys(txn, ts->keyring);
 	    rpmtxnEnd(txn);
@@ -318,13 +324,26 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
     return rc;
 }
 
-rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
+static rpmtxn ensureKxn(rpmtxn txn, const char *fname)
+{
+    if (txn && txn->lock == rpmtxnTs(txn)->lock) {
+	/* XXX Make this a warning in 6.1 */
+	rpmlog(RPMLOG_DEBUG,
+	    _("%s: expected a keystore handle, got a transaction handle\n"),
+	    fname);
+	txn = rpmkxnBegin(txn->ts, txn->flags);
+    }
+    return txn;
+}
+
+rpmRC rpmtxnImportPubkey(rpmtxn kxn, const unsigned char * pkt, size_t pktlen)
 {
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char *lints = NULL;
     rpmPubkey pubkey = NULL;
     rpmKeyring keyring = NULL;
     int krc;
+    rpmtxn txn = ensureKxn(kxn, __func__);
 
     if (txn == NULL)
 	return rc;
@@ -370,15 +389,18 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
 
 exit:
     /* Clean up. */
+    if (txn != kxn)
+	rpmtxnEnd(txn);
     rpmPubkeyFree(pubkey);
 
     rpmKeyringFree(keyring);
     return rc;
 }
 
-rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
+rpmRC rpmtxnDeletePubkey(rpmtxn kxn, rpmPubkey key)
 {
     rpmRC rc = RPMRC_FAIL;
+    rpmtxn txn = ensureKxn(kxn, __func__);
 
     if (txn) {
 	/* force keyring load */
@@ -396,6 +418,8 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 	}
 	rc = RPMRC_OK;
 	rpmKeyringFree(keyring);
+	if (kxn != txn)
+	    rpmtxnEnd(txn);
     }
     return rc;
 }
@@ -403,7 +427,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     rpmRC rc = RPMRC_FAIL;
-    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
     if (txn) {
 	rc = rpmtxnImportPubkey(txn, pkt, pktlen);
 	rpmtxnEnd(txn);
@@ -411,9 +435,13 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     return rc;
 }
 
-rpmRC rpmtxnRebuildKeystore(rpmtxn txn, const char * from)
+rpmRC rpmtxnRebuildKeystore(rpmtxn kxn, const char * from)
 {
-    rpmts ts = rpmtxnTs(txn);
+    rpmtxn txn = ensureKxn(kxn, __func__);
+    if (txn == NULL)
+	return RPMRC_FAIL;
+
+    rpmts ts = rpmtxnTs(kxn);
     rpmRC rc = RPMRC_OK;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     rpmKeyringIterator iter = NULL;
@@ -443,6 +471,8 @@ rpmRC rpmtxnRebuildKeystore(rpmtxn txn, const char * from)
     rpmKeyringIteratorFree(iter);
 
  exit:
+    if (kxn != txn)
+	rpmtxnEnd(txn);
 
     rpmKeyringFree(keyring);
     return rc;
@@ -596,7 +626,8 @@ rpmts rpmtsFree(rpmts ts)
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
-    rpmtsLockFree(ts);
+    ts->lock = rpmlockFree(ts->lock);
+    ts->kslock = rpmlockFree(ts->kslock);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -1097,14 +1128,6 @@ void rpmtxnLockInit(rpmts ts, const char *path, const char *fallback_path,
 }
 
 static
-void rpmtsLockFree(rpmts ts)
-{
-    if (ts) {
-	ts->lock = rpmlockFree(ts->lock);
-    }
-}
-
-static
 rpmtxn rpmtxnCreate(rpmts ts, rpmtxnFlags flags,
 		    const char *path, const char *fallback_path,
 		    const char *name, rpmlock *lockp)
@@ -1135,6 +1158,14 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
     return rpmtxnCreate(ts, flags, rpmlock_path_default, RPMLOCK_PATH,
 			_("transaction"), &(ts->lock));
+}
+
+#define KSLOCK_PATH LOCALSTATEDIR "/rpm/.keyring.lock"
+rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags)
+{
+    static const char * const kslock_path_default = "%{?_keyring_lockpath}";
+    return rpmtxnCreate(ts, flags, kslock_path_default, KSLOCK_PATH,
+			_("keyring"), &(ts->kslock));
 }
 
 rpmtxn rpmtxnEnd(rpmtxn txn)
