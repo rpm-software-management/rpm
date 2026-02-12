@@ -2104,13 +2104,11 @@ runroot rpm -U /build/RPMS/noarch/selfkeys-1-1.noarch.rpm
 ],
 [0],
 [PRETRANS
-0
+1
 POSTTRANS
-0
+1
 ],
-[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
-error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
-])
+[])
 
 RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/selfimport-1-1.noarch.rpm
@@ -2121,9 +2119,9 @@ runroot rpm -U /build/RPMS/noarch/selfimport-1-1.noarch.rpm
 POSTTRANS
 1
 ],
-[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+[error: can't create keyring lock on /var/lib/rpm-testsuite/.keyring.lock (Resource temporarily unavailable)
 error: /data/keys/rpm.org-rsa-2048-test.pub: key 1 import failed.
-error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+error: can't create keyring lock on /var/lib/rpm-testsuite/.keyring.lock (Resource temporarily unavailable)
 error: /data/keys/rpm.org-rsa-2048-test.pub: key 1 import failed.
 ])
 
@@ -2136,9 +2134,7 @@ package selfquery is not installed
 POSTTRANS
 selfquery-1-1.noarch
 ],
-[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
-error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
-])
+[])
 
 RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/selfinst-1-1.noarch.rpm

@@ -363,30 +363,30 @@ rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
  * Import public key packet(s) to transaction keystore.
- * @param txn           transaction handle
+ * @param kxn           keystore handle
  * @param pkt           pgp pubkey packet(s)
  * @param pktlen        pgp pubkey length
  * @return              RPMRC_OK/RPMRC_FAIL
  */
-rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen);
+rpmRC rpmtxnImportPubkey(rpmtxn kxn, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
  * Delete public key from transaction keystore.
- * @param txn           transaction handle
+ * @param kxn           keystore handle
  * @param key		public key
  * @return              RPMRC_OK on success
  * 			RPMRC_NOTFOUND if key not found
  * 			RPMRC_FAIL on other failure
  */
-rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key);
+rpmRC rpmtxnDeletePubkey(rpmtxn kxn, rpmPubkey key);
 
 /** \ingroup rpmts
  * Rebuild key store using current settings and fill it with keys form keyring
- * @param txn		transaction handle
+ * @param kxn		keystore handle
  * @param from		backend to get the keys from
  * @return		RPMRC_OK on success
  */
-rpmRC rpmtxnRebuildKeystore(rpmtxn txn, const char * from);
+rpmRC rpmtxnRebuildKeystore(rpmtxn kxn, const char * from);
 
 /** \ingroup rpmts
  * Retrieve handle for keyring used for this transaction set
@@ -740,6 +740,14 @@ int rpmtsAddRestoreElement(rpmts ts, Header h);
  * @return		0 on success, 1 on error (not installed)
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
+
+/** \ingroup rpmts
+ * Create a keystore (lock) handle
+ * @param ts		transaction set
+ * @param flags		flags
+ * @return		transaction handle
+ */
+rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags);
 
 /** \ingroup rpmts
  * Create a transaction (lock) handle
