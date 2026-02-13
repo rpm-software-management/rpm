@@ -333,11 +333,11 @@ rpmRC rpmtxnImportPubkey(rpmtxn txn, const unsigned char * pkt, size_t pktlen)
     rpmVSFlags oflags = rpmtsVSFlags(ts);
 
     rc = pgpPubKeyLint(pkt, pktlen, &lints);
+    if (lints) {
+      rpmlog(RPMLOG_ERR, "%s\n", lints);
+      free(lints);
+    }
     if (rc != RPMRC_OK) {
-	if (lints) {
-            rpmlog(RPMLOG_ERR, "%s\n", lints);
-	    free(lints);
-	}
 	goto exit;
     }
     if (lints) {
