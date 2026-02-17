@@ -2083,3 +2083,71 @@ runroot rpm -U --nodb --test --ignorearch --ignoreos --nodeps --nosignature \
 [	installing package hello-2.0-1.x86_64 needs 36KB more space on the / filesystem
 ])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([run rpm from scriptlet])
+AT_KEYWORDS([install query script])
+RPMTEST_CHECK([
+runroot rpmbuild -bb \
+	/data/SPECS/fakeshell.spec \
+	/data/SPECS/selfquery.spec \
+	/data/SPECS/selfinst.spec \
+	/data/SPECS/selfkeys.spec \
+	/data/SPECS/selfimport.spec
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/selfkeys-1-1.noarch.rpm
+],
+[0],
+[PRETRANS
+0
+POSTTRANS
+0
+],
+[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/selfimport-1-1.noarch.rpm
+],
+[0],
+[PRETRANS
+1
+POSTTRANS
+1
+],
+[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+error: /data/keys/rpm.org-rsa-2048-test.pub: key 1 import failed.
+error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+error: /data/keys/rpm.org-rsa-2048-test.pub: key 1 import failed.
+])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/selfquery-1-1.noarch.rpm
+],
+[0],
+[PRETRANS
+package selfquery is not installed
+POSTTRANS
+selfquery-1-1.noarch
+],
+[error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+error: can't create transaction lock on /var/lib/rpm-testsuite/.rpm.lock (Resource temporarily unavailable)
+])
+
+RPMTEST_CHECK([
+runroot rpm -U /build/RPMS/noarch/selfinst-1-1.noarch.rpm
+],
+[0],
+[PRETRANS
+1
+POSTTRANS
+1
+],
+[ignore])
+RPMTEST_CLEANUP
