@@ -19,8 +19,6 @@ RUN dnf -y install \
   debugedit \
   doxygen \
   make \
-  gcc \
-  gcc-c++ \
   git-core \
   glibc-gconv-extra \
   zlib-devel \
@@ -56,8 +54,6 @@ RUN dnf -y install \
   scdoc \
   scd2html \
   sequoia-sq \
-  libasan \
-  libubsan \
   nss-altfiles
 # If updates to specific packages are needed, do it here
 # RUN dnf -y --enablerepo=updates install ...
@@ -68,6 +64,18 @@ RUN dnf -y install \
     gdb \
     strace \
     valgrind
+
+# Install the requested toolchain
+ARG TOOLCHAIN=gcc
+RUN case "$TOOLCHAIN" in \
+        gcc) \
+            dnf -y install \
+                gcc \
+                gcc-c++ \
+                libasan \
+                libubsan \
+        ;; \
+    esac
 
 RUN dnf clean all
 
