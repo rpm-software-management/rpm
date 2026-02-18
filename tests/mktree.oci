@@ -9,12 +9,14 @@ if [ "$PROGRAM" == "mktree" ]; then
     # Running from build directory
     CMAKE=yes
     NATIVE=@MKTREE_NATIVE@
+    TOOLCHAIN=@MKTREE_TOOLCHAIN@
     PODMAN=@PODMAN@
     CONTEXT=@CMAKE_SOURCE_DIR@
 else
     # Running from source directory
     CMAKE=no
     NATIVE=no
+    TOOLCHAIN=
     PODMAN=${MKTREE_ENGINE:-podman}
     CONTEXT=..
 fi
@@ -71,6 +73,14 @@ clean()
 
 case $CMD in
     build)
+        # Process arguments
+        case "$1" in
+            --toolchain)
+                TOOLCHAIN=$2
+                ;;
+        esac
+        [ -n "$TOOLCHAIN" ] && ARGS="--build-arg TOOLCHAIN=$TOOLCHAIN $ARGS"
+
         # Build base image
         $PODMAN build --target base -t $BASE_TAG $ARGS
 

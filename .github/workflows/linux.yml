@@ -18,8 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Build the Fedora testing environment
-        run: ./mktree.oci build
+      - name: Build the Fedora testing environment (GNU C/C++)
+        run: ./mktree.oci build --toolchain gcc
         working-directory: ./tests
       - name: Fix kernel mmap rnd bits
         # High entropy setting in GH runner images >= 20240310.1.0
