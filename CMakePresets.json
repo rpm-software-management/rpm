@@ -12,8 +12,16 @@
             }
         },
         {
+            "name": "toolchain-gcc",
+            "displayName": "GNU C/C++ toolchain",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
             "name": "dev",
-            "displayName": "Development mode",
+            "displayName": "Development mode (default toolchain)",
             "inherits": ["full"],
             "cacheVariables": {
                 "ENABLE_WERROR": "ON",
@@ -25,6 +33,11 @@
                 "CFLAGS": "-Og -g",
                 "CXXFLAGS": "-Og -g"
             }
+        },
+        {
+            "name": "dev-gcc",
+            "displayName": "Development mode (GNU C/C++ toolchain)",
+            "inherits": ["dev", "toolchain-gcc"]
         }
     ]
 }

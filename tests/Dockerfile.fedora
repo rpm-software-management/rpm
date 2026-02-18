@@ -106,7 +106,7 @@ WORKDIR /srv/rpm
 COPY . .
 
 WORKDIR /srv/build
-RUN cmake --preset dev -DMKTREE_BACKEND=rootfs ../rpm
+RUN cmake --preset dev-${TOOLCHAIN} -DMKTREE_BACKEND=rootfs ../rpm
 RUN make -j$(nproc) tree
 
 RUN rm -rf /srv/{rpm,build}
