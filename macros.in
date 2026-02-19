@@ -554,6 +554,12 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 # Use internal dependency generator rather than external helpers?
 %_use_internal_dependency_generator	1
 
+#
+# Generate minimum versions for ELF libraries that don't provide
+# versioned symbol?
+#%_elf_provide_fallback_versions   --full-name-version-fallback
+#%_elf_require_fallback_versions   --full-name-version-fallback
+
 # Directories whose contents should be considered as documentation.
 %__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{_datadir}/gnome/help:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/usr/doc:/usr/man:/usr/info:/usr/X11R6/man
 

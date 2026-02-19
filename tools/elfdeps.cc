@@ -1,11 +1,13 @@
 #include "system.h"
 
+#include <array>
 #include <format>
 #include <string>
 #include <vector>
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -13,8 +15,12 @@
 #include <popt.h>
 #include <gelf.h>
 
+#include <link.h>
+#include <dlfcn.h>
+
 #include <rpm/rpmstring.h>
 
+int full_name_version_fallback = 0;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
@@ -36,6 +42,146 @@ struct elfInfo {
     std::vector<std::string> requires_;
     std::vector<std::string> provides;
 };
+
+/*
+ * If filename is a symlink to a path that contains ".so." followed by
+ * a version number, return a copy of the version number.
+ */
+static std::string getFullNameVer(const char *filename)
+{
+    char dest[PATH_MAX];
+    ssize_t destsize = readlink(filename, dest, PATH_MAX - 1);
+
+    if (destsize == -1) {
+	if (errno != EINVAL) {
+	    exit(EXIT_FAILURE);
+	}
+	return "";
+    }
+
+    /*
+     * filename must be a symlink and the destination must be long enough
+     * to contain ".so." and a number.
+     */
+    if (destsize < static_cast<ssize_t>(sizeof(".so.1") - 1)) {
+	return "";
+    }
+
+    dest[destsize] = '\0';
+
+    /* The base name of filename and dest must be different. */
+    const char *link_basename = strrchr(filename, '/');
+    const char *dest_basename = strrchr(dest, '/');
+    link_basename = link_basename ? link_basename : filename;
+    dest_basename = dest_basename ? dest_basename : dest;
+
+    if (strcmp(link_basename, dest_basename) == 0) {
+	return "";
+    }
+
+    /*
+     * Start from the end of the string.  Verify that it ends with
+     * numbers and optionally dots, preceded by ".so.".
+     */
+    const char *so = dest + strlen(dest) - 1;
+    bool found_digit = false;
+
+    while (so > dest + 2) {
+	if (*so == '.') {
+	    so--;
+	} else if (risdigit(*so)) {
+	    found_digit = true;
+	    so--;
+	} else if (strncmp(so - 2, ".so.", 4) == 0) {
+	    so += 2;
+	    if (found_digit) {
+		return std::string(so);
+	    }
+	    break;
+	} else {
+	    break;
+	}
+    }
+
+    return "";
+}
+
+/*
+ * Rather than re-implement path searching for shared objects, use
+ * dlmopen().  This will still perform initialization and finalization
+ * functions, which isn't necessarily safe, so do that in a separate
+ * process.
+ */
+static std::string getFullNameVerFromShLink(const char *filename)
+{
+#if defined(HAVE_DLMOPEN) && defined(HAVE_DLINFO)
+    std::array<int, 2> pipefd;
+
+    if (pipe(pipefd.data()) == -1) {
+	exit(EXIT_FAILURE);
+    }
+
+    pid_t cpid = fork();
+    if (cpid == -1) {
+	exit(EXIT_FAILURE);
+    }
+
+    if (cpid == 0) {
+	// Child process
+	close(pipefd[0]);
+
+	void *dl_handle = dlmopen(LM_ID_NEWLM, filename, RTLD_LAZY);
+	if (dl_handle == nullptr) {
+	    _exit(EXIT_FAILURE);
+	}
+
+	struct link_map *linkmap;
+	if (dlinfo(dl_handle, RTLD_DI_LINKMAP, &linkmap) == -1) {
+	    _exit(EXIT_FAILURE);
+	}
+
+	std::string version = getFullNameVer(linkmap->l_name);
+	if (!version.empty()) {
+	  if (write(pipefd[1], version.c_str(), version.size()) < 0)
+	    _exit(EXIT_FAILURE);
+	}
+
+	close(pipefd[1]);
+	dlclose(dl_handle);
+	_exit(0);
+    } else {
+	// Parent process
+	close(pipefd[1]);
+
+	std::string result;
+	char buffer[PATH_MAX];
+	ssize_t len;
+
+	while ((len = read(pipefd[0], buffer, sizeof(buffer))) == -1 && errno == EINTR);
+
+	if (len > 0) {
+	    result.assign(buffer, len);
+	}
+
+	close(pipefd[0]);
+
+	int wstatus;
+	wait(&wstatus);
+	if (WIFSIGNALED(wstatus) || WEXITSTATUS(wstatus)) {
+	    exit(EXIT_FAILURE);
+	}
+
+	return result;
+    }
+#else
+    /*
+     * Without dlmopen and dlinfo, elfdeps cannot improve
+     * requirement lists, and will simply continue its prior
+     * behavior of unversioned dependencies.
+     */
+    return "";
+#endif
+}
 
 /*
  * Rough soname sanity filtering: all sane soname's dependencies need to
@@ -90,6 +236,14 @@ static std::string mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
+static int findSonameInDeps(std::vector<std::string> & deps, const std::string & soname)
+{
+    for (auto & dep : deps) {
+       if (dep.compare(0, soname.size(), soname) == 0) return 1;
+    }
+    return 0;
+}
+
 static void addDep(std::vector<std::string> & deps, const std::string & dep)
 {
     deps.push_back(dep);
@@ -97,12 +251,20 @@ static void addDep(std::vector<std::string> & deps, const std::string & dep)
 
 static void addSoDep(std::vector<std::string> & deps,
 		     const std::string & soname,
-		     const std::string & ver, const std::string & marker)
+		     const std::string & ver, const std::string & marker,
+		     const std::string & compare_op, const std::string & fallback_ver)
 {
     if (skipSoname(soname))
 	return;
 
-    if (ver.empty() && marker.empty()) {
+    if(!compare_op.empty() && !fallback_ver.empty()) {
+       /*
+        * when versioned symbols aren't available, the full name version
+        * might be used to generate a minimum dependency version.
+        */
+       auto dep = std::format("{}({}){} {} {}", soname, ver, marker, compare_op, fallback_ver);
+       addDep(deps, dep);
+    } else if (ver.empty() && marker.empty()) {
 	addDep(deps, soname);
     } else {
 	auto dep = std::format("{}({}){}", soname, ver, marker);
@@ -141,10 +303,10 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (!soname_only) {
-		    addSoDep(ei->provides, soname, s, ei->marker);
+		    addSoDep(ei->provides, soname, s, ei->marker, "", "");
 		}
 	    }
-		    
+
 	}
     }
 }
@@ -178,7 +340,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && !soname_only) {
-		    addSoDep(ei->requires_, soname, s, ei->marker);
+		    addSoDep(ei->requires_, soname, s, ei->marker, "", "");
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -219,8 +381,22 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_NEEDED:
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    if (s)
-			addSoDep(ei->requires_, s, "", ei->marker);
+		    if (s) {
+			std::string full_name_ver;
+			/*
+			 * If soname matches an item already in the deps, then
+			 * it had versioned symbols and doesn't require fallback.
+			 */
+			if (full_name_version_fallback &&
+			    !findSonameInDeps(ei->requires_, s)) {
+			    full_name_ver = getFullNameVerFromShLink(s);
+			}
+			if (!full_name_ver.empty()) {
+			    addSoDep(ei->requires_, s, "", ei->marker, ">=", full_name_ver);
+			} else {
+			    addSoDep(ei->requires_, s, "", ei->marker, "", "");
+			}
+		    }
 		}
 		break;
 	    }
@@ -320,8 +496,17 @@ static int processFile(const char *fn, int dtype)
 	    const char *bn = strrchr(fn, '/');
 	    ei->soname = bn ? bn + 1 : fn;
 	}
-	if (ei->soname.empty() == false)
-	    addSoDep(ei->provides, ei->soname, "", ei->marker);
+	if (ei->soname.empty() == false) {
+	    std::string full_name_ver;
+	    if (full_name_version_fallback) {
+	        full_name_ver = getFullNameVer(fn);
+	    }
+	    if (!full_name_ver.empty()) {
+	        addSoDep(ei->provides, ei->soname, "", ei->marker, "=", full_name_ver);
+	    } else {
+	        addSoDep(ei->provides, ei->soname, "", ei->marker, "", "");
+	    }
+	}
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -356,12 +541,13 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires_, -1, NULL, NULL },
+	{ "full-name-version-fallback", 0, POPT_ARG_VAL, &full_name_version_fallback, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	{ "multifile", 'm', POPT_ARG_VAL, &multifile, -1, NULL, NULL },
-	POPT_AUTOHELP 
+	POPT_AUTOHELP
 	POPT_TABLEEND
     };
 
