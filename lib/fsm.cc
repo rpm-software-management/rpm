@@ -469,13 +469,13 @@ static int fsmMknod(int dirfd, const char *path, mode_t mode, dev_t dev)
     return rc;
 }
 
-static void removeSBITS(int dirfd, const char *path)
+static int removeSBITS(int dirfd, const char *path)
 {
     struct stat stb;
     int flags = AT_SYMLINK_NOFOLLOW;
+    int rc = 0;
     if (fstatat(dirfd, path, &stb, flags) == 0 && S_ISREG(stb.st_mode)) {
 	/* XXX TODO: actually check for the rc, but what to do there? */
-	int rc = 0;
 	/* We now know it's not a link so no need to worry about following */
 	if ((stb.st_mode & 06000) != 0) {
 	    rc += fchmodat(dirfd, path, stb.st_mode & 0777, 0);
@@ -486,6 +486,7 @@ static void removeSBITS(int dirfd, const char *path)
 	}
 #endif
     }
+    return rc;
 }
 
 static void fsmDebug(const char *dn, const char *fpath, rpmFileAction action,
