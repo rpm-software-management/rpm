@@ -305,7 +305,7 @@ Sometimes also useful for temporarily working around issues while packaging.
 
 *%\_use_weak_usergroup_deps* _BOOLEAN_
 	If enabled, dilute user() and group() requires into recommends.
-	Useful when transitioning to sysusers.d based user/group management.
+	Useful when transitioning to *rpm-sysusers*(7) based user/group management.
 
 *%\_wrong_version_format_terminate_build* _BOOLEAN_
 	Whether invalid version format in dependencies etc should
