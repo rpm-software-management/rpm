@@ -60,6 +60,7 @@ struct archiveType_s {
     { COMPRESSED_7ZIP,	1,	"%{__7zip}",	"x -y",		"-bso0 -bsp0", "-o", 0 },
     { COMPRESSED_ZSTD,	0,	"%{__zstd}",	"-dc",		"", "", 0 },
     { COMPRESSED_GEM,	1,	"%{__gem}",	"unpack",	"", "--target=", 0 },
+    { COMPRESSED_CAR,	1,	"%{__car}",	"extract -f",	"", "", 0 },
     { -1,		0,	NULL,		NULL,		NULL, 0 },
 };
 

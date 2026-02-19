@@ -216,6 +216,8 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 	*compressed = COMPRESSED_LZMA;
     } else if (rpmFileHasSuffix(file, ".gem")) {
 	*compressed = COMPRESSED_GEM;
+    } else if (rpmFileHasSuffix(file, ".car")) {
+	*compressed = COMPRESSED_CAR;
     }
 
     return rc;
