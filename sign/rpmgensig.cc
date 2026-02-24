@@ -549,13 +549,14 @@ static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
     rpmRC rc;
     char *key = rpmExpand("%{?_file_signing_key}", NULL);
     char *keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
+    uint32_t keyid = rpmExpandNumeric("%{?_file_signing_key_id}");
 
     if (rstreq(keypass, "")) {
 	free(keypass);
 	keypass = NULL;
     }
 
-    rc = rpmSignFiles(*sigp, *hdrp, key, keypass);
+    rc = rpmSignFiles(*sigp, *hdrp, key, keypass, keyid);
 
     free(keypass);
     free(key);
