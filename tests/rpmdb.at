@@ -354,16 +354,64 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpm -q foo])
 AT_KEYWORDS([rpmdb query])
 RPMTEST_CHECK([
-
 runroot rpm -i \
-  --nosignature \
-  /data/RPMS/foo-1.0-1.noarch.rpm
+  --nosignature --nodeps \
+  /data/RPMS/foo-1.0-1.noarch.rpm \
+  /data/RPMS/hlinktest-1.0-1.noarch.rpm \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
 
+RPMTEST_CHECK([
 runroot rpm -q foo
-
 ],
 [0],
 [foo-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qa name=hlinktest
+],
+[0],
+[hlinktest-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qa arch=noarch
+],
+[0],
+[hlinktest-1.0-1.noarch
+foo-1.0-1.noarch
+],
+[])
+
+# multiple patterns of different tags are and'ed
+RPMTEST_CHECK([
+runroot rpm -qa name=foo arch=noarch
+],
+[0],
+[foo-1.0-1.noarch
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -qa name=hello arch=noarch
+],
+[0],
+[],
+[])
+
+# multiple patterns of a single tag are or'ed
+RPMTEST_CHECK([
+runroot rpm -qa name=hello name=hlinktest
+],
+[0],
+[hello-2.0-1.x86_64
+hlinktest-1.0-1.noarch
 ],
 [])
 RPMTEST_CLEANUP
