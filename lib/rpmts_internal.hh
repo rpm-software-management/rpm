@@ -73,7 +73,6 @@ struct rpmts_s {
     tsMembers members;		/*!< Transaction set member info (order etc) */
 
     char * rootDir;		/*!< Path to top of install tree. */
-    char * lockPath;		/*!< Transaction lock path */
     rpmlock lock;		/*!< Transaction lock file */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     rpm_tid_t tid;		/*!< Transaction id. */
@@ -86,6 +85,7 @@ struct rpmts_s {
     int vfylevel;		/*!< Package verification level */
     rpmKeyring keyring;		/*!< Keyring in use. */
     rpm::keystore *keystore;	/*! <Keystore in use. */
+    rpmlock kslock;		/*! <Keystore lock. */
 
     ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
     ARGV_t installLangs;	/*!< From %{_install_langs} */
