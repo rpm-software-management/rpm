@@ -52,7 +52,6 @@
             "displayName": "Development mode (Clang toolchain)",
             "inherits": ["dev", "toolchain-clang"],
             "cacheVariables": {
-                "ENABLE_WERROR": "OFF",
                 "ENABLE_ASAN": "OFF",
                 "ENABLE_UBSAN": "OFF"
             }
