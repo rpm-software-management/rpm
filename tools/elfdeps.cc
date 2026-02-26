@@ -3,6 +3,7 @@
 #include <format>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -13,8 +14,13 @@
 #include <popt.h>
 #include <gelf.h>
 
+#include <rpm/rpmlib.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmds.h>
 
+char *elf_so_version_fallback = NULL;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
@@ -36,6 +42,69 @@ struct elfInfo {
     std::vector<std::string> requires_;
     std::vector<std::string> provides;
 };
+
+/*
+ * Look up an RPM package that provides "soname()marker", get the features
+ * that the package "provides", and if one of them has an exact match with
+ * the search string and has an equality relationship (=), then return the
+ * version. Otherwise, return an empty string.
+ */
+static std::string getElfSoVer(const std::string & soname, const std::string & marker)
+{
+    /* Construct the search string: soname()marker */
+    std::string searchname;
+    searchname = std::format("{}(){}", soname, marker);
+
+    /* Create a transaction set with RAII cleanup */
+    auto ts_deleter = [](rpmts ts) { if (ts) rpmtsFree(ts); };
+    std::unique_ptr<rpmts_s, decltype(ts_deleter)> ts(rpmtsCreate(), ts_deleter);
+    if (!ts)
+	return {};
+
+    /* Look up packages that provide this soname with marker */
+    auto mi_deleter = [](rpmdbMatchIterator mi) { if (mi) rpmdbFreeIterator(mi); };
+    std::unique_ptr<rpmdbMatchIterator_s, decltype(mi_deleter)> mi(
+	rpmtsInitIterator(ts.get(), RPMDBI_PROVIDENAME, searchname.c_str(), 0),
+	mi_deleter);
+    if (!mi)
+	return {};
+
+    /* Iterate through matching packages */
+    Header h;
+    while ((h = rpmdbNextIterator(mi.get())) != nullptr) {
+	/* Get the provides from the package */
+	rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+	if (!provides)
+	    continue;
+
+	/* Iterate through all provides */
+	while (rpmdsNext(provides) >= 0) {
+	    const char *name = rpmdsN(provides);
+	    const char *evr = rpmdsEVR(provides);
+	    rpmsenseFlags flags = rpmdsFlags(provides);
+
+	    if (!name || !evr)
+		continue;
+
+	    /* Check if this provide name matches our search */
+	    if (searchname != name)
+		continue;
+
+	    /* Check if flags indicate equality (= relationship) */
+	    if (!(flags & RPMSENSE_EQUAL))
+		continue;
+
+	    /* Found a match - return the version */
+	    std::string result(evr);
+	    rpmdsFree(provides);
+	    return result;
+	}
+
+	rpmdsFree(provides);
+    }
+
+    return {};
+}
 
 /*
  * Rough soname sanity filtering: all sane soname's dependencies need to
@@ -90,6 +159,14 @@ static std::string mkmarker(GElf_Ehdr *ehdr)
     return marker;
 }
 
+static int findSonameInDeps(std::vector<std::string> & deps, const std::string & soname)
+{
+    for (auto & dep : deps) {
+	if (dep.compare(0, soname.size(), soname) == 0) return 1;
+    }
+    return 0;
+}
+
 static void addDep(std::vector<std::string> & deps, const std::string & dep)
 {
     deps.push_back(dep);
@@ -97,12 +174,20 @@ static void addDep(std::vector<std::string> & deps, const std::string & dep)
 
 static void addSoDep(std::vector<std::string> & deps,
 		     const std::string & soname,
-		     const std::string & ver, const std::string & marker)
+		     const std::string & ver, const std::string & marker,
+		     const std::string & compare_op, const std::string & fallback_ver)
 {
     if (skipSoname(soname))
 	return;
 
-    if (ver.empty() && marker.empty()) {
+    if(!compare_op.empty() && !fallback_ver.empty()) {
+	/*
+	 * when versioned symbols aren't available, the full name version
+	 * might be used to generate a minimum dependency version.
+	 */
+	auto dep = std::format("{}({}){} {} {}", soname, ver, marker, compare_op, fallback_ver);
+	addDep(deps, dep);
+    } else if (ver.empty() && marker.empty()) {
 	addDep(deps, soname);
     } else {
 	auto dep = std::format("{}({}){}", soname, ver, marker);
@@ -141,10 +226,10 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (!soname_only) {
-		    addSoDep(ei->provides, soname, s, ei->marker);
+		    addSoDep(ei->provides, soname, s, ei->marker, "", "");
 		}
 	    }
-		    
+
 	}
     }
 }
@@ -178,7 +263,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (genRequires(ei) && !soname_only) {
-		    addSoDep(ei->requires_, soname, s, ei->marker);
+		    addSoDep(ei->requires_, soname, s, ei->marker, "", "");
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -219,8 +304,22 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    case DT_NEEDED:
 		if (genRequires(ei)) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    if (s)
-			addSoDep(ei->requires_, s, "", ei->marker);
+		    if (s) {
+			std::string full_name_ver;
+			/*
+			 * If soname matches an item already in the deps, then
+			 * it had versioned symbols and doesn't require fallback.
+			 */
+			if (elf_so_version_fallback &&
+			      !findSonameInDeps(ei->requires_, s)) {
+			    full_name_ver = getElfSoVer(s, ei->marker);
+			}
+			if (!full_name_ver.empty()) {
+			  addSoDep(ei->requires_, s, "", ei->marker, ">=", full_name_ver);
+			} else {
+			  addSoDep(ei->requires_, s, "", ei->marker, "", "");
+			}
+		    }
 		}
 		break;
 	    }
@@ -320,8 +419,13 @@ static int processFile(const char *fn, int dtype)
 	    const char *bn = strrchr(fn, '/');
 	    ei->soname = bn ? bn + 1 : fn;
 	}
-	if (ei->soname.empty() == false)
-	    addSoDep(ei->provides, ei->soname, "", ei->marker);
+	if (ei->soname.empty() == false) {
+	    if (elf_so_version_fallback) {
+		addSoDep(ei->provides, ei->soname, "", ei->marker, "=", elf_so_version_fallback);
+	    } else {
+		addSoDep(ei->provides, ei->soname, "", ei->marker, "", "");
+	    }
+	}
     }
 
     /* If requested and present, add dep for interpreter (ie dynamic linker) */
@@ -356,12 +460,13 @@ int main(int argc, char *argv[])
     struct poptOption opts[] = {
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires_, -1, NULL, NULL },
+	{ "elf-so-version-fallback", 0, POPT_ARG_STRING, &elf_so_version_fallback, 0, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	{ "multifile", 'm', POPT_ARG_VAL, &multifile, -1, NULL, NULL },
-	POPT_AUTOHELP 
+	POPT_AUTOHELP
 	POPT_TABLEEND
     };
 
@@ -372,6 +477,8 @@ int main(int argc, char *argv[])
 	poptPrintUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
+
+    rpmReadConfigFiles(NULL, NULL);
 
     /* Normally our data comes from stdin, but permit args too */
     if (poptPeekArg(optCon)) {
