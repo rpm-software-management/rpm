@@ -748,15 +748,15 @@ doUndefine(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 
 static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, size_t *parsed)
 {
-    char *args = NULL;
-    const char *se = argv[1];
+    std::string args = argv[1];
 
     /* handle the "programmatic" case where macro name is arg1 and body arg2 */
-    if (argv[2])
-	se = args = rstrscat(NULL, argv[1], " ", argv[2], NULL);
+    if (argv[2]) {
+	args += " ";
+	args += argv[2];
+    }
 
-    doDefine(mb, se, level, expand, parsed);
-    free(args);
+    doDefine(mb, args.c_str(), level, expand, parsed);
 }
 
 static void doDef(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
