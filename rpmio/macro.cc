@@ -598,8 +598,9 @@ exit:
  * @return		number of consumed characters
  */
 static void
-doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *parsed)
+doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, size_t *parsed)
 {
+    const char *se = str.c_str();
     const char *start = se;
     const char *s = se;
     char *buf = (char *)xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
@@ -756,7 +757,7 @@ static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, siz
 	args += argv[2];
     }
 
-    doDefine(mb, args.c_str(), level, expand, parsed);
+    doDefine(mb, args, level, expand, parsed);
 }
 
 static void doDef(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
@@ -1838,7 +1839,7 @@ static int defineMacro(rpmMacroContext mc, const std::string macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    doDefine(mb, macro.c_str(), level, 0, &parsed);
+    doDefine(mb, macro, level, 0, &parsed);
     rc = mb->error;
     delete mb;
     return rc;
