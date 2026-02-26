@@ -2113,6 +2113,7 @@ runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
 # Disabling cv25519 disables ed25519, but disabling ed25519 does not:
 runroot sed -i '/^cv25519/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
 runroot sed -i '/^ed25519/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
+runroot sed -i '/^eddsa/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
