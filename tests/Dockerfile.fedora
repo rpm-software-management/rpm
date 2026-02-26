@@ -1,5 +1,5 @@
 # Supported Fedora releases: 43 44
-FROM registry.fedoraproject.org/fedora:43 AS base
+FROM quay.io/fedora/fedora:43 AS base
 LABEL com.github.containers.toolbox="true"
 MAINTAINER rpm-maint@lists.rpm.org
 
