@@ -1,6 +1,7 @@
 #!/bin/bash
 
-pkgconfig=/usr/bin/pkg-config
+pkgconfig=$(which pkg-config)
+pkgconfig_requires=/usr/bin/pkg-config
 test -x $pkgconfig || {
     cat > /dev/null
     exit 0
@@ -44,7 +45,7 @@ case $1 in
     case "${filename}" in
     *.pc)
 	i="`expr $i + 1`"
-	[ $i -eq 1 ] && echo "$pkgconfig"
+	[ $i -eq 1 ] && echo "$pkgconfig_requires"
 	DIR="`dirname ${filename}`"
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-requires --print-requires-private "$filename" 2> /dev/null | while read n r v ; do
