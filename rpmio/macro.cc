@@ -364,12 +364,6 @@ printExpansion(rpmMacroBuf mb, rpmMacroEntry me, const char * t, const char * te
 		(_ne) += *(_s)++; \
     }
 
-#define	COPYOPTS(_oe, _s, _c)	\
-    { \
-	while (((_c) = *(_s)) && (_c) != ')') \
-		(_oe) += *(_s)++; \
-    }
-
 /**
  * Macro-expand string src, return result in dynamically allocated buffer.
  * @param mb		macro expansion state
@@ -615,11 +609,13 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
     if (*s == '(') {
 	s++;	/* skip ( */
 	/* Options must be terminated with ')' */
-	if (strchr(s, ')')) {
-	    int oc = ')';
-	    COPYOPTS(opts, s, oc);
+	size_t pos = s - se;
+	size_t end = str.find(')', pos);
+	if (end != str.npos) {
+	    opts = str.substr(pos, end - pos);
+	    /* NULL vs "" is significant wrt opts */
 	    o = opts.c_str();
-	    s++;	/* skip ) */
+	    s += opts.size() + 1; /* skip over ) */
 	} else {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated opts\n"), n);
 	    goto exit;
