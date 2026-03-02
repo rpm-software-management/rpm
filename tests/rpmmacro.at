@@ -1591,6 +1591,73 @@ error: bad
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([macro modifiers])
+AT_KEYWORDS([macros])
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod %aa" --eval "%mymod"
+],
+[0],
+[123
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<> %aa" --eval "%mymod"
+],
+[0],
+[123
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<l> %aa" --eval "%mymod"
+],
+[0],
+[%aa
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --eval "%global mymod %aa" --eval "%mymod"
+],
+[0],
+[123
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --eval "%global mymod<l> %aa" --eval "%mymod"
+],
+[0],
+[%aa
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<lz> %aa" --eval "%mymod"
+],
+[1],
+[],
+[error: Macro %mymod has illegal modifier z
+])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod()<> %aa" --eval "%mymod"
+],
+[0],
+[123
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod()<l> %aa" --eval "%mymod"
+],
+[1],
+[],
+[error: Macro %mymod has incompatible modifiers
+])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([error macro return])
 AT_KEYWORDS([macros lua])
 
