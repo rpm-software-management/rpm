@@ -599,7 +599,7 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
     const char *sbody; /* as-is body start */
     int rc = 1; /* assume failure */
     int flags = ME_NONE;
-    std::string name, opts, body;
+    std::string name, opts, mods, body;
 
     /* Copy name */
     COPYNAME(name, s, c);
@@ -617,6 +617,22 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	    s += opts.size() + 1; /* skip over ) */
 	} else {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated opts\n"), n);
+	    goto exit;
+	}
+    }
+
+    /* Copy modifiers (if present). Empty mods field (<>) is a legit no-op */
+    if (*s == '<') {
+	s++;	/* skip < */
+	/* Modifiers must be terminated with '>' */
+	size_t pos = s - se;
+	size_t end = str.find('>', pos);
+	if (end != str.npos) {
+	    mods = str.substr(pos, end - pos);
+	    s += mods.size() + 1; /* skip over > */
+	} else {
+	    rpmMacroBufErr(mb, 1,
+			   _("Macro %%%s has unterminated modifiers\n"), n);
 	    goto exit;
 	}
     }
@@ -690,6 +706,27 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 
     if (!risblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
 	rpmMacroBufErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
+
+    for (auto m : mods) {
+	switch (m) {
+	case 'l':
+	    flags |= ME_LITERAL;
+	    /* A %global literal must not expand */
+	    expandbody = 0;
+	    break;
+	default:
+	    rpmMacroBufErr(mb, 1,
+			    _("Macro %%%s has illegal modifier %c\n"), n, m);
+	    goto exit;
+	    break;
+	}
+    }
+
+    /* Check for modifier compatibility */
+    if (o && (flags & ME_LITERAL)) {
+	rpmMacroBufErr(mb, 1, _("Macro %%%s has incompatible modifiers\n"), n);
+	goto exit;
+    }
 
     if (expandbody) {
 	char *ebody = NULL;
@@ -2197,7 +2234,11 @@ int macros::pop(const std::string & n)
 int macros::push(const std::string & n, const char *o, const std::string & b,
 		int level, int flags)
 {
-    pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
+    int iflags = ME_NONE;
+    if (flags & RPMMACRO_LITERAL)
+	iflags |= ME_LITERAL;
+
+    pushMacro(mc, n, o, b, level, iflags);
     return 0;
 }
 
