@@ -1570,6 +1570,11 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    iot = findIOT("gzdio");
     }
 
+    if(iot == NULL){
+	errno = EINVAL;
+	return NULL;
+    }
+
     if (iot && iot->_fdopen)
 	fd = iot->_fdopen(fd, fdno, stdioz);
 
@@ -1583,11 +1588,11 @@ FD_t Fopen(const char *path, const char *fmode)
     const char *end = NULL;
     mode_t perms = 0666;
     int flags = 0;
+    FD_t rawfd = NULL;
     FD_t fd = NULL;
 
     if (path == NULL || fmode == NULL)
 	return NULL;
-
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);
     if (stdio[0] == '\0')
@@ -1596,16 +1601,21 @@ FD_t Fopen(const char *path, const char *fmode)
     if (end == NULL || rstreq(end, "fdio")) {
 	if (_rpmio_debug)
 	    fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
-	fd = fdOpen(path, flags, perms);
+	rawfd = fdOpen(path, flags, perms);
     } else {
 	if (_rpmio_debug)
 	    fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
-	fd = ufdOpen(path, flags, perms);
+	rawfd = ufdOpen(path, flags, perms);
     }
 
-    /* Open compressed stream if necessary */
-    if (fd)
-	fd = Fdopen(fd, fmode);
+    if(rawfd) {
+	FD_t fdstream = Fdopen(rawfd, fmode);
+	if (!fdstream) {
+	    Fclose(rawfd);
+	} else {
+	    fd = fdstream;
+	}
+    }
 
     DBGIO(fd, (stderr, "==>\tFopen(\"%s\",%x,0%o) %s\n",
 	  path, (unsigned)flags, (unsigned)perms, fdbg(fd)));
