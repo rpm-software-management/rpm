@@ -1618,6 +1618,28 @@ rpm --define "aa 123" --define "mymod<l> %aa" --eval "%mymod"
 [])
 
 RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<> %aa" --eval "%mymod" \
+    --define "aa 321" --eval "%mymod"
+],
+[0],
+[123
+321
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<o> %aa" --eval "%mymod" \
+    --define "aa 321" --eval "%mymod" \
+    --undefine "mymod" --define "aa 987" --eval "%mymod"
+],
+[0],
+[123
+123
+987
+],
+[])
+
+RPMTEST_CHECK([
 rpm --define "aa 123" --eval "%global mymod %aa" --eval "%mymod"
 ],
 [0],
@@ -1630,6 +1652,19 @@ rpm --define "aa 123" --eval "%global mymod<l> %aa" --eval "%mymod"
 ],
 [0],
 [%aa
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa 123" --eval "%global mymod<o> %aa%bb" \
+    --define "aa 321" --define "bb 987" \
+    --eval "%mymod" \
+    --undefine "aa" --undefine "bb" \
+    --eval "%mymod"
+],
+[0],
+[123987
+123987
 ],
 [])
 
@@ -1658,10 +1693,34 @@ rpm --define "aa 123" --define "mymod()<l> %aa" --eval "%mymod"
 ])
 
 RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<lo> %aa" --eval "%mymod"
+],
+[1],
+[],
+[error: Macro %mymod has incompatible modifiers
+])
+
+RPMTEST_CHECK([
 rpm --define "mylit<l> %%%%" --showrc | grep ' mylit' | awk '{print $2}'
 ],
 [0],
 [mylit<l>
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "myonce<o> %(date)" --showrc | grep ' myonce' | awk '{print $2}'
+],
+[0],
+[myonce<o>
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "myonce<o> %(date)" --eval "%myonce" --showrc | grep ' myonce' | awk '{print $2}'
+],
+[0],
+[myonce<l>
 ],
 [])
 RPMTEST_CLEANUP
