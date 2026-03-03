@@ -63,7 +63,17 @@ Macro behavior can be altered by supplying modifiers: (Added: 6.1.0)
 	_NAME_*<*_MODIFIERS_*>* _BODY_
 
 Supported modifiers are:
-- *l*iteral - macro body is literal, *%* is not processed when expanding
+- *l*: Literal expansion. *%* is not processed when expanding.
+- *o*: One-shot expansion. The macro is expanded on first use and the
+  literal result is pushed on top of the original macro.
+
+Literal macros can simplify dealing with content that may contain
+percent signs (*%*) which otherwise would need to be escaped.
+
+One-shot macros are useful for caching expansion results, for example to
+guard a result against underlying changes, or to perform an expensive
+shell invocation just once.
+The one-shot expansion can be re-armed by undefining the macro once.
 
 See *PARAMETRIC MACROS* for the more advanced macro variant with options
 and arguments processing.
@@ -292,8 +302,11 @@ callee(s).
 
 To define a global macro inside a parametric macro, you _must_ use *%global*
 instead of *%define*. Also note that because such a macro may be referring
-to other macros only visible in the current scope, *%global* _expands the
-macro body once at the time of definition_, unless it's a *l*iteral macro.
+to other macros only visible in the current scope, *%global* expands the
+macro body once at the time of definition, unless it's a *l*iteral macro.
+Note that the body of a *o*ne-shot macro defined via *%global* is actually
+expanded twice: once at the time of definition, and the result of that
+expansion is expanded again on first use.
 
 ## Calling convention
 When a parametric macro is expanded, the following calling convention is used:
@@ -770,6 +783,19 @@ overlapping with other macros:
 ```
 
 *%cc* expands to *some%thing*, whereas *%dd* expands to *some%%thing*.
+
+## Example 8. One-shot macros
+
+Define a one-shot *\_python_platlib* macro to output Python platform
+library path:
+
+```
+%_python_platlib<o> %(python -c "import sysconfig; print(sysconfig.get_path('platlib'))")
+```
+
+The Python interpreter will only be invoked on the first use of this macro,
+the result of that expansion is pushed as a literal macro on top of the
+original.
 
 # DEBUGGING
 Some useful tools for working with and troubleshooting macros:
