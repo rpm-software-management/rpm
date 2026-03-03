@@ -32,6 +32,9 @@ RUN dnf -y install \
   rpm-sequoia-devel \
   file-devel \
   popt-devel \
+  kryoptic \
+  pkcs11-provider \
+  opensc \
   libarchive-devel \
   sqlite-devel \
   libselinux-devel \
