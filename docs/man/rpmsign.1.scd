@@ -47,7 +47,12 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	Used with *--signverity*, use file signing certificate _CERT_.
 
 *--fskpath* _KEY_
-	Used with *--signfiles*, use file signing key _KEY_.
+	Used with *--signfiles*, use file signing key _KEY_. This can be
+	used with a PKCS #11 URI as long as OpenSSL has been configured to
+	load the pkcs11 provider. For PKCS #11 keys, the IMA library cannot
+	calculate the IMA key ID so you must provide it; this is done via the
+	*%\_file_signing_key_id* macro. Typically, the key ID is set to the
+	Subject Key Identifier (SKID) of the associated X509 certificate.
 
 *--key-id* _KEYID_
 	Use key _KEYID_ for signing. Overrides *%\_openpgp_sign_id*

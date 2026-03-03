@@ -21,9 +21,11 @@ extern "C" {
  * @param h		package header
  * @param key		signing key
  * @param keypass	signing key password
+ * @param keyid 	the key ID IMA embeds in the signature; typically the
+ *                      Subject Key ID from an x509 certificate.
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass);
+rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass, uint32_t keyid);
 
 #endif /* H_RPMSIGNFILES */
