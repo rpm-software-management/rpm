@@ -50,8 +50,8 @@ All macros share the same global Lua execution environment.
 
 ## Calling parametric macros
 Parametric macros (including all built-in macros) can be called in a Lua
-native manner via the *macros* table, with either *macros.*_name_*()* or
-*macros[*_name_*]()* syntax.
+native manner via the *macros* table, with either *macros.*_NAME_*()* or
+*macros[*_NAME_*]()* syntax.
 
 Arguments are passed through a single argument, which is either
 - a single string, in which case it's expanded and split with the
@@ -166,7 +166,7 @@ Added: 4.18.0
 
 ## Exit status
 While scriptlets shouldn't be allowed to fail normally, you can signal
-scriptlet failure status by using Lua's *error(*_msg_, [_level_]*)*
+scriptlet failure status by using Lua's *error(*_MSG_, [_LEVEL_]*)*
 function if you need to.
 
 ## File triggers
@@ -212,7 +212,7 @@ Lua can be used.
 
 The following RPM specific functions are available:
 
-*b64decode(*_arg_*)*
+*b64decode(*_ARG_*)*
 	Perform base64 decoding on argument.
 	See also b64encode().
 
@@ -226,23 +226,23 @@ The following RPM specific functions are available:
 	print(d)
 	```
 
-*b64encode(*_arg_ [, _linelen_]*)*
+*b64encode(*_ARG_ [, _LINELEN_]*)*
 	Perform base64 encoding on argument.
 	Line length may be optionally specified via second argument.
 	See also b64decode().
 
-*define("*_name_ _body_*")*
-	Define a global macro _name_ with _body_.  See also *MACROS*.
+*define("*_NAME_ _BODY_*")*
+	Define a global macro _NAME_ with _BODY_.  See also *MACROS*.
 
 	Example:
 	```
 	rpm.define('foo 1')
 	```
 
-*execute(*_path_ [, _arg1_ [,...]*)*
+*execute(*_PATH_ [, _ARG1_ [,...]*)*
 	Execute an external command.
 	This is handy for executing external helper commands without depending
-	on the shell. _path_ is the command to execute, followed
+	on the shell. _PATH_ is the command to execute, followed
 	by optional number of arguments to pass to the command.
 
 	For a better control over the process execution and output,
@@ -254,17 +254,17 @@ The following RPM specific functions are available:
 	```
 	rpm.execute('ls', '-l', '/')
 	```
-*expand(*_arg_*)*
-	Perform RPM macro expansion on _arg_ string. See also *MACROS*.
+*expand(*_ARG_*)*
+	Perform RPM macro expansion on _ARG_ string. See also *MACROS*.
 
 	Example:
 	```
 	rpm.expand('%{_libdir}/mydir')
 	```
 
-*glob(*_pattern_, [_flags_]*)*
-	Return a table of pathnames matching _pattern_.
-	If _flags_ contains *c*, return _pattern_ in case of no matches.
+*glob(*_PATTERN_, [_FLAGS_]*)*
+	Return a table of pathnames matching _PATTERN_.
+	If _FLAGS_ contains *c*, return _PATTERN_ in case of no matches.
 
 	Example:
 	```
@@ -282,8 +282,8 @@ The following RPM specific functions are available:
 	rpm --eval "%{lua: rpm.interactive()}"
 	```
 
-*isdefined(*_name_*)*
-	Test whether a macro _name_ is defined and whether it's parametric,
+*isdefined(*_NAME_*)*
+	Test whether a macro _NAME_ is defined and whether it's parametric,
 	returned in two booleans. See also *MACROS*. (Added: 4.17.0)
 
 	Example:
@@ -293,7 +293,7 @@ The following RPM specific functions are available:
 	end
 	```
 
-*load(*_path_*)*
+*load(*_PATH_*)*
 	Load a macro file from given path.
 	Same as the built-in *%{load:...}* macro.
 
@@ -302,11 +302,11 @@ The following RPM specific functions are available:
 	rpm.load('my.macros')
 	```
 
-*open(*_path_, [_mode_[._flags_]]*)*
+*open(*_PATH_, [_MODE_[._FLAGS_]]*)*
 	Open a file stream using RPM IO facilities, with support for
 	transparent compression and decompression.
 
-	_path_ is filename string, optionally followed with _mode_ string to
+	_PATH_ is filename string, optionally followed with _MODE_ string to
 	specify open behavior:
 	- *a*: open for append
 	- *w*: open for writing, truncate
@@ -349,9 +349,9 @@ The following RPM specific functions are available:
 	f:close()
 	```
 
-	*fd:read(*[_len_]*)*
+	*fd:read(*[_LEN_]*)*
 
-	Read data from the file stream up to _len_ bytes or if not specified,
+	Read data from the file stream up to _LEN_ bytes or if not specified,
 	the entire file.
 
 	Example:
@@ -360,9 +360,9 @@ The following RPM specific functions are available:
 	print(f:read())
 	```
 
-	*fd:seek(*_mode_, _offset_*)*
+	*fd:seek(*_MODE_, _OFFSET_*)*
 
-	Reposition the file offset of the stream. _mode_ is one of *set*,
+	Reposition the file offset of the stream. _MODE_ is one of *set*,
 	*cur* and *end*, and offset is relative to the mode: absolute,
 	relative to current or relative to end. Not all streams support seeking.
 
@@ -377,10 +377,10 @@ The following RPM specific functions are available:
 	f:close()
 	```
 
-	*fd:write(*_buf_ [, _len_]*)*
+	*fd:write(*_BUF_ [, _LEN_]*)*
 
-	Write data in _buf_ to the file stream, either in its entirety or up
-	to _len_ bytes if specified.
+	Write data in _BUF_ to the file stream, either in its entirety or up
+	to _LEN_ bytes if specified.
 
 	Example:
 	```
@@ -389,7 +389,7 @@ The following RPM specific functions are available:
 	f:close()
 	```
 
-	*fd:reopen(*_mode_*)*
+	*fd:reopen(*_MODE_*)*
 
 	Reopen a stream with a new mode (see *rpm.open()*).
 
@@ -400,7 +400,7 @@ The following RPM specific functions are available:
 	print(f:read())}
 	```
 
-*redirect2null(*_fdno_*)* (OBSOLETE)
+*redirect2null(*_FDNO_*)* (OBSOLETE)
 	Redirect file descriptor fdno to /dev/null
 	(prior to 4.16 this was known as posix.redirect2null())
 
@@ -418,10 +418,10 @@ The following RPM specific functions are available:
 	end
 	```
 
-*spawn(*{_command_} [, {_actions_}]*)*
+*spawn(*{_COMMAND_} [, {_ACTIONS_}]*)*
 	Spawn, aka execute, an external program.
 
-	{_command_} is a table consisting of the command and its arguments.
+	{_COMMAND_} is a table consisting of the command and its arguments.
 	An optional second table can be used to pass various actions related
 	to the command execution, currently supported are:
 
@@ -443,7 +443,7 @@ The following RPM specific functions are available:
 	rpm.spawn({'systemctl', 'restart', 'httpd'}, {stderr='/dev/null'})
 	```
 
-*undefine(*_name_*)*
+*undefine(*_NAME_*)*
 	Undefine a macro. See also *MACROS*.
 
 	Note that this is only pops the most recent macro definition by the
@@ -456,9 +456,9 @@ The following RPM specific functions are available:
 	```
 
 
-*vercmp(*_v1_, _v2_*)*
+*vercmp(*_V1_, _V2_*)*
 	Perform RPM version comparison on argument strings.
-	Returns -1, 0 or 1 if _v1_ is smaller, equal or larger than _v2_.
+	Returns -1, 0 or 1 if _V1_ is smaller, equal or larger than _V2_.
 	See *rpm-version*(7).
 
 	Note: in RPM < 4.16 this operated on version segments only, which
@@ -469,9 +469,9 @@ The following RPM specific functions are available:
 	rpm.vercmp('1.2-1', '2.0-1')
 	```
 
-*ver(*_evr_*)*, *ver(*_e_, _v_, _r_*)*
+*ver(*_EVR_*)*, *ver(*_E_, _V_, _R_*)*
 	Create RPM version object.
-	This takes either an _evr_ string which is parsed to it's components,
+	This takes either an _EVR_ string which is parsed to it's components,
 	or epoch, version and release in separate arguments (which can be either
 	strings or numbers). The object has three attributes: *e* for epoch,
 	*v* for version and *r* for release, can be printed in it's EVR form and
@@ -502,9 +502,9 @@ them use *posix.function()*. This documentation concentrates on the Lua
 API conventions, for further information on the corresponding system
 calls refer to the system manual, eg *access*(3) for *posix.access()*.
 
-*access(*_path_ [, _mode_]*)*
-	Test accessibility of file/directory _path_. See *access*(3).
-	If _mode_ is omitted then existence is tested, otherwise it is
+*access(*_PATH_ [, _MODE_]*)*
+	Test accessibility of file/directory _PATH_. See *access*(3).
+	If _MODE_ is omitted then existence is tested, otherwise it is
 	a combination of the following tests:
 	- *r*: readable
 	- *w*: writable
@@ -518,15 +518,15 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
-*chdir(*_path_*)*
-	Change current working directory to _path_. See *chdir*(1).
+*chdir(*_PATH_*)*
+	Change current working directory to _PATH_. See *chdir*(1).
 
 	Example:
 	```
 	posix.chdir('/tmp')
 	```
 
-*chmod(*_path_, _mode_*)*
+*chmod(*_PATH_, _MODE_*)*
 	Change file/directory mode. Mode can be either an octal number as for
 	*chmod*(2) system call, or a string presentation similar to *chmod*(1).
 
@@ -537,8 +537,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.chmod('cc', 'u+x')
 	```
 
-*chown(*_path_, _user_, _group_*)*
-	Change file/directory owner/group of _path_. The _user_ and _group_
+*chown(*_PATH_, _USER_, _GROUP_*)*
+	Change file/directory owner/group of _PATH_. The _USER_ and _GROUP_
 	arguments may be either numeric id values or user/groupnames.
 	See *chown*(2) and *chown*(1).
 
@@ -558,8 +558,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	print(posix.ctermid())
 	```
 
-*dir(*[_path_]*)*
-	Get directory contents - like *readdir*(3). If _path_ is omitted,
+*dir(*[_PATH_]*)*
+	Get directory contents - like *readdir*(3). If _PATH_ is omitted,
 	current directory is used.
 
 	Example:
@@ -582,14 +582,14 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
-*exec(*_path_ [, _args_...]*)* (OBSOLETE)
+*exec(*_PATH_ [, _ARGS_...]*)* (OBSOLETE)
 	Execute a program. This may only be performed after posix.fork().
 
 	This function is obsolete and only available for RPM v4 packages
 	for backwards compatibility.
 	Use *rpm.spawn()* or *rpm.execute()* instead.
 
-*files(*[_path_]*)*
+*files(*[_PATH_]*)*
 	Iterate over directory contents. If path is omitted, current directory
 	is used.
 
@@ -627,7 +627,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	endif
 	```
 
-*getenv(*_name_*)*
+*getenv(*_NAME_*)*
 	Get an environment variable. See *getenv*(3).
 
 	Example:
@@ -637,8 +637,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
-*getgroup(*_group_*)*
-	Get *group*(5) information for a group. _group_ may be either a
+*getgroup(*_GROUP_*)*
+	Get *group*(5) information for a group. _GROUP_ may be either a
 	numeric id or group name. If omitted, current group is used.
 	Returns a table with fields *name* and *gid* set to group
 	name and id respectively, and indexes from 1 onwards specifying group
@@ -657,10 +657,10 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	n = posix.getlogin()
 	```
 
-*getpasswd*([_user_ [, _selector_]]*)*
-	Get *passwd*(5) information for a user account. _user_ may be either a
+*getpasswd*([_USER_ [, _SELECTOR_]]*)*
+	Get *passwd*(5) information for a user account. _USER_ may be either a
 	numeric id or username. If omitted, current user is used.
-	The optional _selector_ argument may be one of:
+	The optional _SELECTOR_ argument may be one of:
 	- *name*
 	- *uid*
 	- *gid*
@@ -676,8 +676,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	pw = posix.getpasswd(posix.getlogin(), 'shell')|
 	```
 
-*getprocessid(*[_selector_]*)*
-	Get information about current process. The optional _selector_
+*getprocessid(*[_SELECTOR_]*)*
+	Get information about current process. The optional _SELECTOR_
 	argument may be one of
 	- *egid*: effective group id
 	- *euid*: effective user id
@@ -696,8 +696,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
-*kill(*_pid_ [, _signal_]*)*
-	Send a *signal*(7) to a process. _signal_ must be a numeric value,
+*kill(*_PID_ [, _SIGNAL_]*)*
+	Send a *signal*(7) to a process. _SIGNAL_ must be a numeric value,
 	eg. *9* for *SIGKILL*.  If omitted, *SIGTERM* is used.
 	See also *kill*(2).
 
@@ -706,8 +706,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.kill(posix.getprocessid('pid'))
 	```
 
-*link(*_oldpath_, _newpath_*)*
-	Create a new name at _newpath_ for a file at _oldpath_, aka hard link.
+*link(*_OLDPATH_, _NEWPATH_*)*
+	Create a new name at _NEWPATH_ for a file at _OLDPATH_, aka hard link.
 	See also *link*(2).
 
 	Example:
@@ -716,25 +716,25 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.link('aaa', 'bbb')
 	```
 
-*mkdir(*_path_*)*
-	Create a new directory at _path_. See also *mkdir*(2).
+*mkdir(*_PATH_*)*
+	Create a new directory at _PATH_. See also *mkdir*(2).
 
 	Example:
 	```
 	posix.mkdir('/tmp')
 	```
 
-*mkfifo(*_path_*)*
-	Create a FIFO aka named pipe at _path_. See also *mkfifo*(2).
+*mkfifo(*_PATH_*)*
+	Create a FIFO aka named pipe at _PATH_. See also *mkfifo*(2).
 
 	Example:
 	```
 	posix.mkfifo('/tmp/badplace')
 	```
 
-*pathconf(*_path_ [, _selector_]*)*
-	Get *pathconf*(3) information for _path_.
-	The optional _selector_ may be one of
+*pathconf(*_PATH_ [, _SELECTOR_]*)*
+	Get *pathconf*(3) information for _PATH_.
+	The optional _SELECTOR_ may be one of
 	- *link_max*
 	- *max_canon*
 	- *max_input*
@@ -752,7 +752,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.pathconf('/', 'path_max')
 	```
 
-*putenv(*_string_*)*
+*putenv(*_STRING_*)*
 	Change or add an environment variable. See also *putenv*(3).
 
 	Example:
@@ -760,8 +760,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.putenv('HOME=/me')
 	```
 
-*readlink(*_path_*)*
-	Read value of the symbolic link at _path_. See also *readlink*(2).
+*readlink(*_PATH_*)*
+	Read value of the symbolic link at _PATH_. See also *readlink*(2).
 
 	Example:
 	```
@@ -770,22 +770,22 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	print(posix.readlink('bbb'))
 	```
 
-*rmdir(*_path_*)*
-	Remove a directory _path_. See also *rmdir*(2).
+*rmdir(*_PATH_*)*
+	Remove a directory _PATH_. See also *rmdir*(2).
 
 	Example:
 	```
 	posix.rmdir('/tmp')
 	```
 
-*setgid(*_group_*)*
-	Set group identity. _group_ may be specified either as a numeric id or
+*setgid(*_GROUP_*)*
+	Set group identity. _GROUP_ may be specified either as a numeric id or
 	group name. See also *setgid*(2).
 
 	Note: This is a privileged operation.
 
-*setuid(*_user_*)*
-	Set user identity. _user_ may be specified either as a numeric id or
+*setuid(*_USER_*)*
+	Set user identity. _USER_ may be specified either as a numeric id or
 	username. See also *setuid*(2).
 
 	Note: This is a privileged operation.
@@ -795,17 +795,17 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.setuid('nobody')
 	```
 
-*sleep(*_seconds_*)*
-	Sleep for the duration of _seconds_. See also *sleep*(3).
+*sleep(*_SECONDS_*)*
+	Sleep for the duration of _SECONDS_. See also *sleep*(3).
 
 	Example:
 	```
 	posix.sleep(5)
 	```
 
-*stat(*_path_ [, _selector_]*)*
-	Get file *stat*(3) information about a file at _path_.
-	The optional _selector_ may be one of
+*stat(*_PATH_ [, _SELECTOR_]*)*
+	Get file *stat*(3) information about a file at _PATH_.
+	The optional _SELECTOR_ may be one of
 	- *mode*
 	- *ino*
 	- *dev*
@@ -831,8 +831,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
-*symlink(*_oldpath_, _newpath_*)*
-	Create a symbolic link at _newpath_ to _oldpath_.
+*symlink(*_OLDPATH_, _NEWPATH_*)*
+	Create a symbolic link at _NEWPATH_ to _OLDPATH_.
 	See also *symlink*(2).
 
 	Example:
@@ -841,8 +841,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.symlink('aaa', 'bbb')
 	```
 
-*sysconf(*[_selector_]*)*
-	Get *sysconf*(3) information. The optional _selector_ argument
+*sysconf(*[_SELECTOR_]*)*
+	Get *sysconf*(3) information. The optional _SELECTOR_ argument
 	may be one of:
 	- *arg_max*
 	- *child_max*
@@ -862,9 +862,9 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.sysconf('open_max')|
 	```
 
-*times(*[_selector_]*)*
+*times(*[_SELECTOR_]*)*
 	Get process and waited-for child process *times*(2).
-	The optional _selector_ argument may be one of
+	The optional _SELECTOR_ argument may be one of
 	- *utime*
 	- *stime*
 	- *cutime*
@@ -879,9 +879,9 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	print(t.utime, t.stime)
 	```
 
-*ttyname(*[_fd_]*)*
-	Get name of a terminal associated with file descriptor _fd_.
-	If _fd_ is omitted, *0* (aka standard input) is used. See *ttyname*(3).
+*ttyname(*[_FD_]*)*
+	Get name of a terminal associated with file descriptor _FD_.
+	If _FD_ is omitted, *0* (aka standard input) is used. See *ttyname*(3).
 
 	Example:
 	```
@@ -890,8 +890,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	endif
 	```
 
-*umask(*[_mode_]*)*
-	Get or set process *umask*(2). _mode_ may be specified as an octal
+*umask(*[_MODE_]*)*
+	Get or set process *umask*(2). _MODE_ may be specified as an octal
 	number or mode string similarly to *posix.chmod()*.
 
 	Example:
@@ -902,7 +902,7 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.umask('rw-rw-r--')
 	```
 
-*uname(*_format_*)*
+*uname(*_FORMAT_*)*
 	Get *uname*(2) information about the current system.
 	The following format directives are supported:
 
@@ -917,11 +917,11 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	print(posix.uname('%s %r'))
 	```
 
-*utime(*_path_ [, _mtime_ [, _ctime_]]*)*
+*utime(*_PATH_ [, _MTIME_ [, _CTIME_]]*)*
 	Change last access and modification times.
 	mtime and ctime are expressed seconds since epoch. See *utime*(2).
 
-	If _mtime_ or _ctime_ are omitted, current time is used, similar
+	If _MTIME_ or _CTIME_ are omitted, current time is used, similar
 	to *touch*(1).
 
 	Example:
@@ -930,8 +930,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.utime('aaa', 0, 0)
 	```
 
-*wait(*[_pid_]*)* (DEPRECATED)
-	Wait for a child process. If _pid_ is specified wait for that
+*wait(*[_PID_]*)* (DEPRECATED)
+	Wait for a child process. If _PID_ is specified wait for that
 	particular child. See also *wait*(2).
 
 	This function is obsolete and only available for RPM v4 packages
@@ -949,8 +949,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	```
 
 
-*setenv(*_name_, _value_ [, _overwrite_]*)*
-	Change or add environment variable _name_. The optional _overwrite_
+*setenv(*_NAME_, _VALUE_ [, _OVERWRITE_]*)*
+	Change or add environment variable _NAME_. The optional _OVERWRITE_
 	is a boolean which defines behavior when a variable by the same name
 	already exists. See also *setenv*(3).
 
@@ -959,8 +959,8 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	posix.setenv('HOME', '/me', true)
 	```
 
-*unsetenv(*_name_*)*
-	Remove a variable _name_ from environment. See also *unsetenv*(3).
+*unsetenv(*_NAME_*)*
+	Remove a variable _NAME_ from environment. See also *unsetenv*(3).
 
 	Example:
 	```
