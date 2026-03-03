@@ -38,7 +38,7 @@ static const char *hash_algo_name[] = {
 #define ARRAY_SIZE(a)  (sizeof(a) / sizeof(a[0]))
 
 static char *signFile(const char *algo, const uint8_t *fdigest, int diglen,
-const char *key, char *keypass, uint32_t *siglenp)
+const char *key, char *keypass, uint32_t keyid, uint32_t *siglenp)
 {
     char *fsignature;
     std::vector<unsigned char> zeros(diglen, 0);
@@ -55,10 +55,24 @@ const char *key, char *keypass, uint32_t *siglenp)
 
     /* calculate file signature */
 #if HAVE_IMAEVM_SIGNHASH
+    /* imaevm_signhash doesn't document its API, so this relies on knowledge of the internal
+     * implementation.
+     *
+     * The library only uses the type field if the key starts with pkcs11, so passing the provider
+     * type is identical to passing the none type unless the key is accessible via the
+     * pkcs11-provider.
+     *
+     * What's more, the library does not ever use the provider passed in via the access_info
+     * structure. Instead, it uses OSSL_STORE_open_ex() with the global context with the
+     * "provider=pkcs11" propery query. As a result, there's no reason to explicitly load the
+     * provider here; users must configure openssl to load the provider.
+     */
     imaevm_ossl_access access_info = {
-	.type = IMAEVM_OSSL_ACCESS_TYPE_NONE,
+	.type = IMAEVM_OSSL_ACCESS_TYPE_PROVIDER,
     };
-    siglen = imaevm_signhash(algo, fdigest, diglen, key, keypass, signature+1, 0, &access_info, 0);
+    access_info.u.provider = NULL;
+
+    siglen = imaevm_signhash(algo, fdigest, diglen, key, keypass, signature+1, 0, &access_info, keyid);
 
 #else
     siglen = sign_hash(algo, fdigest, diglen, key, keypass, signature+1);
@@ -75,7 +89,7 @@ const char *key, char *keypass, uint32_t *siglenp)
     return fsignature;
 }
 
-rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
+rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass, uint32_t keyid)
 {
     struct rpmtd_s td;
     unsigned algo;
@@ -113,7 +127,7 @@ rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass)
     while (rpmfiNext(fi) >= 0) {
 	uint32_t slen = 0;
 	digest = rpmfiFDigest(fi, NULL, NULL);
-	signature = signFile(algoname, digest, diglen, key, keypass, &slen);
+	signature = signFile(algoname, digest, diglen, key, keypass, keyid, &slen);
 	if (!signature) {
 	    rpmlog(RPMLOG_ERR, _("signFile failed\n"));
 	    goto exit;
