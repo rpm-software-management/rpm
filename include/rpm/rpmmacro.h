@@ -65,6 +65,7 @@ extern const char * macrofiles;
 enum rpmMacroFlags_e {
     RPMMACRO_DEFAULT	= 0,
     RPMMACRO_LITERAL	= (1 << 0),		/*!< do not expand body of macro */
+    RPMMACRO_ONESHOT	= (1 << 1),		/*!< expand macro body once */
 };
 typedef rpmFlags rpmMacroFlags;
 
