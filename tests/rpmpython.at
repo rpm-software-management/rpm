@@ -36,7 +36,7 @@ RPMPY_TEST([basic rpmio],[
 msg = b'Killroy was here\n'
 data = msg * 10
 # TODO: test other compression types too if built in
-for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
+for iot in [ 'fdio', 'ufdio', 'gzdio' ]:
     fn = 'pyio.%s' % iot
     fd = rpm.fd(fn, 'w', iot)
     pos = fd.tell()
@@ -66,6 +66,26 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
         print('%s sized read fail (got %d bytes)\n%s' % (iot, len(rdata), rdata))
 ],
 [])
+
+RPMPY_TEST([rpm.fd engine validation],[
+try:
+    engine = 'fdio'
+    f = rpm.fd('/etc/passwd', 'r', engine)
+    print('rpm.fd %s: accepted' % engine)
+    f.close()
+except OSError as e:
+    print('rpm.fd %s: %s' % (engine, e))
+
+for args in [('r', 'aaaiiiooo'), ('r9xyz', '')]:
+    try:
+        rpm.fd('/etc/passwd', *args)
+    except OSError as e:
+        print('rpm.fd%r: %s' % (args, e))
+],
+[rpm.fd fdio: accepted
+rpm.fd('r', 'aaaiiiooo'): Invalid argument
+rpm.fd('r9xyz', ''): Invalid argument
+])
 
 RPMPY_TEST([spec parse 1],[
 # TODO: add a better test spec with sub-packages etc
