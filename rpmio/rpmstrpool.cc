@@ -132,7 +132,9 @@ static void poolHashResize(rpmstrPool pool, int numBuckets)
 
     for (unsigned i=0; i<ht->numBuckets; i++) {
         if (!ht->buckets[i].keyid) continue;
-        unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
+        const char * s = id2str(pool, ht->buckets[i].keyid);
+        if (!s) continue;
+        unsigned int keyHash = rstrhash(s);
         for (unsigned int j=0;;j++) {
             unsigned int hash = hashbucket(keyHash, j) % numBuckets;
             if (!buckets[hash].keyid) {
@@ -161,8 +163,9 @@ static void poolHashAddHEntry(rpmstrPool pool, const char * key, unsigned int ke
             ht->buckets[hash].keyid = keyid;
             ht->keyCount++;
             break;
-        } else if (!strcmp(id2str(pool, ht->buckets[hash].keyid), key)) {
-            return;
+        } else {
+            const char * s = id2str(pool, ht->buckets[hash].keyid);
+            if (s && !strcmp(s, key)) return;
         }
     }
 }
@@ -202,7 +205,9 @@ static void poolHashPrintStats(rpmstrPool pool)
     unsigned maxcollisions = 0;
 
     for (unsigned i=0; i<ht->numBuckets; i++) {
-        unsigned int keyHash = rstrhash(id2str(pool, ht->buckets[i].keyid));
+        const char * s = id2str(pool, ht->buckets[i].keyid);
+        if (!s) continue;
+        unsigned int keyHash = rstrhash(s);
         for (unsigned int j=0;;j++) {
             unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
             if (hash==i) {
@@ -231,8 +236,10 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 	pool->hash = poolHashFree(pool->hash);
 
     pool->hash = poolHashCreate(sizehint);
-    for (unsigned i = 1; i <= pool->offs_size; i++)
-	poolHashAddEntry(pool, id2str(pool, i), i);
+    for (unsigned i = 1; i <= pool->offs_size; i++) {
+      const char * s = id2str(pool, i);
+      if (s) poolHashAddEntry(pool, s, i);
+    }
 }
 
 rpmstrPool rpmstrPoolCreate(void)
@@ -367,7 +374,7 @@ static rpmsid rpmstrPoolGet(rpmstrPool pool, const char * key, size_t keylen,
 
 	s = id2str(pool, ht->buckets[hash].keyid);
 	/* pool string could be longer than keylen, require exact matche */
-	if (strncmp(s, key, keylen) == 0 && s[keylen] == '\0')
+	if (s && strncmp(s, key, keylen) == 0 && s[keylen] == '\0')
 	    return ht->buckets[hash].keyid;
     }
 }
@@ -453,7 +460,7 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
 int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
 		    rpmstrPool poolB, rpmsid sidB)
 {
-    int eq;
+    int eq = 0;
     if (poolA == poolB)
 	 eq = (sidA == sidB);
     else {
@@ -461,7 +468,7 @@ int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
 	rdlock lockA(poolA->mutex);
 	const char *a = rpmstrPoolStr(poolA, sidA);
 	const char *b = rpmstrPoolStr(poolB, sidB);
-	eq = rstreq(a, b);
+	if (a && b) eq = rstreq(a, b);
     }
     return eq;
 }
