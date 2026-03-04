@@ -1570,7 +1570,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    iot = findIOT("gzdio");
     }
 
-    if(iot == NULL){
+    if (iot == NULL){
 	errno = EINVAL;
 	return NULL;
     }
@@ -1593,6 +1593,7 @@ FD_t Fopen(const char *path, const char *fmode)
 
     if (path == NULL || fmode == NULL)
 	return NULL;
+
     stdio[0] = '\0';
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, &flags);
     if (stdio[0] == '\0')
@@ -1608,7 +1609,7 @@ FD_t Fopen(const char *path, const char *fmode)
 	rawfd = ufdOpen(path, flags, perms);
     }
 
-    if(rawfd) {
+    if (rawfd) {
 	FD_t fdstream = Fdopen(rawfd, fmode);
 	if (!fdstream) {
 	    Fclose(rawfd);
