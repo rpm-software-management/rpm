@@ -129,6 +129,14 @@ rpm --eval '1. %{this}' --define "this that" --eval '2. %{this}' --undefine 'thi
 2. that
 3. %{this}
 ])
+
+RPMTEST_CHECK([
+rpm --undefine getenv
+],
+[1],
+[],
+[error: Macro %getenv is a built-in (%undefine)
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([simple true conditional rpm --eval])
@@ -1094,6 +1102,15 @@ rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 [0],
 [bar
 ])
+
+RPMTEST_CHECK([
+rpm --eval '%{lua: rpm.undefine("define")}'
+],
+[1],
+[],
+[[error: Macro %define is a built-in (%undefine)
+error: lua script failed: [string "<lua>"]:1: error undefining macro
+]])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua rpm extensions 2])
