@@ -574,7 +574,8 @@ static int rpm_define(lua_State *L)
 static int rpm_undefine(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
-    rpmPopMacro(NULL, str);
+    if (rpmUndefineMacro(NULL, str))
+	return luaL_error(L, "error undefining macro");
     return 0;
 }
 
