@@ -467,6 +467,22 @@ runroot --chdir /tmp/2 find . | sort
 ./test-1.2.3-beta/src/README.txt
 ],
 [ignore])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmuncompress --dry-run /data/SOURCES/test-1.2.3.car
+],
+[0],
+[ignore],
+[/usr/bin/car extract -f /data/SOURCES/test-1.2.3.car
+])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmuncompress --dry-run /data/SOURCES/test-1.2.3.carv2
+],
+[0],
+[ignore],
+[/usr/bin/car extract -f /data/SOURCES/test-1.2.3.carv2
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([getncpus macro])

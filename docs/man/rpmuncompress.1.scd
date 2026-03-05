@@ -23,7 +23,7 @@ _FILE_
 	A regular file, optionally compressed.
 
 _ARCHIVE_
-	A *tar*(1), *zip*(1) or Ruby GEM archive. *tar* archives may
+	A *tar*(1), *zip*(1), CAR or Ruby GEM file. *tar* archives may
 	be compressed.
 
 # OPERATIONS

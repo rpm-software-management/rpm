@@ -38,6 +38,9 @@ The source for the file utility + library is available from
 The libarchive library for archive access, available from
     https://www.libarchive.org/
 
+The car tool for CAR files access, available from
+    https://github.com/ipld/go-car
+
 The scdoc manual page generator, available from
     https://git.sr.ht/~sircmpwn/scdoc
 
