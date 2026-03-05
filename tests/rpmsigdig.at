@@ -2553,6 +2553,44 @@ hello-1.0.tar.gz:(none)
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([ima file signatures with pkcs11 token])
+AT_KEYWORDS([rpmsign ima signature pkcs11])
+RPMTEST_SKIP_IF([$IMA_DISABLED])
+echo "%_openpgp_sign gpg" >> $RPMTEST/root/.config/rpm/macros
+gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
+
+RPMTEST_CHECK([[
+# Set up a NIST P-256 key in a soft token for signing
+pkcs11_mod=/usr/lib64/pkcs11/libkryoptic_pkcs11.so
+token_label="kryoptic"
+token_pin="12345678"
+token_dir=$(mktemp -d)
+export KRYOPTIC_CONF="${token_dir}/token.conf"
+cat > ${KRYOPTIC_CONF} << KRYOPTIC_EOF
+[[slots]]
+slot = 1
+dbtype = "sqlite"
+dbargs = "${token_dir}/token.sql"
+KRYOPTIC_EOF
+pkcs11-tool --module "${pkcs11_mod}" --init-token \
+  --label "${token_label}" --so-pin "${token_pin}"
+pkcs11-tool --module "${pkcs11_mod}" --init-pin \
+  --login --so-pin "${token_pin}" --pin "${token_pin}"
+pkcs11-tool --module "${pkcs11_mod}" --login \
+  --pin "${token_pin}" --keypairgen --key-type EC:prime256v1 \
+  --id 01 --label "ima-signing"
+
+cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
+rpmsign --addsign --key-id 4344591E1964C5FC --signfiles \
+  --define='_file_signing_key_id 42' \
+  --fskpath="pkcs11:token=${token_label};id=%01;type=private?pin-value=${token_pin}" \
+  /tmp/hello-2.0-1.x86_64.rpm
+]],
+[0],
+[],
+[ignore])
+RPMTEST_CLEANUP
+
 # Test that installing an ima signed package works.
 # The installation should succeed in all cases, but whether setting the
 # IMA signature succeeds depends on container privileges - in rootless
