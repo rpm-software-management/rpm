@@ -195,6 +195,15 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
+/** \ingroup rpmmacro
+ * Undefine macro in context.
+ * Subject to the same sanity checks as using the %undefine macro.
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @return		0 on success
+ */
+int rpmUndefineMacro(rpmMacroContext mc, const char *n);
+
 /**
  * Test whether a macro is defined
  * @param mc		macro context (NULL uses global context).
