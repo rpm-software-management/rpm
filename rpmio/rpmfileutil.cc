@@ -22,6 +22,9 @@
 
 #include "debug.h"
 
+// CARv2+
+#define COMPRESSED_CAR_MAGIC "\x0a\xa1\x67\x76\x65\x72\x73\x69\x6f\x6e\x02"
+
 namespace fs = std::filesystem;
 
 int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest)
@@ -212,6 +215,10 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
                (magic[2] == 0xbc) && (magic[3] == 0xaf) &&
                (magic[4] == 0x27) && (magic[5] == 0x1c)) {
 	*compressed = COMPRESSED_7ZIP;
+    } else if ((memcmp(magic, COMPRESSED_CAR_MAGIC, sizeof(COMPRESSED_CAR_MAGIC) - 1) == 0) ||
+	rpmFileHasSuffix(file, ".car")
+	) {
+	*compressed = COMPRESSED_CAR;
     } else if (rpmFileHasSuffix(file, ".lzma")) {
 	*compressed = COMPRESSED_LZMA;
     } else if (rpmFileHasSuffix(file, ".gem")) {

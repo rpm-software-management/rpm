@@ -22,6 +22,7 @@
 %__7zip			@__7ZIP@
 %__awk			@__AWK@
 %__bzip2		@__BZIP2@
+%__car			@__CAR@
 %__cat			@__CAT@
 %__chmod		@__CHMOD@
 %__chown		@__CHOWN@
