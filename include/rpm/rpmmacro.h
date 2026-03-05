@@ -186,13 +186,23 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 
 /** \ingroup rpmmacro
  * Define macro in context.
+ * Subject to the same sanity checks as using the %define macro.
  * @param mc		macro context (NULL uses global context).
  * @param macro		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
- * @return		0 on success (always)
+ * @return		0 on success
  */
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
+
+/** \ingroup rpmmacro
+ * Undefine macro in context.
+ * Subject to the same sanity checks as using the %undefine macro.
+ * @param mc		macro context (NULL uses global context).
+ * @param n		macro name
+ * @return		0 on success
+ */
+int rpmUndefineMacro(rpmMacroContext mc, const char *n);
 
 /**
  * Test whether a macro is defined

@@ -123,7 +123,8 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmcliConfigured();
 	if (*arg == '%')
 	    arg++;
-	rpmPopMacro(NULL, arg);
+	if (rpmUndefineMacro(NULL, arg))
+	    exit(EXIT_FAILURE);
 	break;
     case 'E':
 	rpmcliConfigured();
