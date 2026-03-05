@@ -178,7 +178,7 @@ See *rpm-common*(8) for the options common to all operations.
 	Don't perform verify package files prior to installation.
 
 *--nosysusers*
-	Don't create sysusers from packages
+	Don't create *rpm-sysusers*(7) from packages
 
 *--oldpackage*
 	Allow an upgrade to replace a newer package with an older one.
