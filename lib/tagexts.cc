@@ -1073,8 +1073,6 @@ static int openpgpTag(Header h, rpmtd td, headerGetFlags hgflags)
     ARGV_t sigs = NULL;
     trySigTag(h, RPMTAG_RSAHEADER, &sigs);
     trySigTag(h, RPMTAG_DSAHEADER, &sigs);
-    trySigTag(h, RPMTAG_SIGPGP, &sigs);
-    trySigTag(h, RPMTAG_SIGGPG, &sigs);
 
     if (sigs) {
 	td->data = sigs;
