@@ -729,6 +729,15 @@ exit:
 	*parsed += se - start;
 }
 
+static int undefineMacro(rpmMacroBuf mb, const std::string & n)
+{
+    if (!validName(mb, n.c_str(), n.size(), "%undefine"))
+	return mb->error;
+
+    popMacro(mb->mc, n);
+    return 0;
+}
+
 /**
  * Parse (and execute) macro undefinition.
  * @param mb		macro expansion state
@@ -738,12 +747,8 @@ exit:
 static void
 doUndefine(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    const char *n = argv[1];
-    if (!validName(mb, n, strlen(n), "%undefine")) {
+    if (undefineMacro(mb, argv[1]))
 	mb->error = 1;
-    } else {
-	popMacro(mb->mc, n);
-    }
 }
 
 static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, size_t *parsed)
@@ -1970,6 +1975,11 @@ rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
     return macros(mc).define(macro, level);
 }
 
+int rpmUndefineMacro(rpmMacroContext mc, const char *n)
+{
+    return macros(mc).undefine(n);
+}
+
 int rpmMacroIsDefined(rpmMacroContext mc, const char *n)
 {
     return macros(mc).is_defined(n);
@@ -2073,6 +2083,15 @@ void macros::copy(rpm::macros & dest, int level)
 int macros::define(const std::string & macro, int level)
 {
     return defineMacro(mc, macro, level);
+}
+
+int macros::undefine(const std::string & n)
+{
+    /* XXX just enough to get by */
+    rpmMacroBuf_s mb {};
+    mb.mc = mc;
+
+    return undefineMacro(&mb, n);
 }
 
 void macros::dump(FILE *fp)
