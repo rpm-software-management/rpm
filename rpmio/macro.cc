@@ -361,15 +361,7 @@ printExpansion(rpmMacroBuf mb, rpmMacroEntry me, const char * t, const char * te
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
 	while (((_c) = *(_s)) && (risalnum(_c) || (_c) == '_')) \
-		*(_ne)++ = *(_s)++; \
-	*(_ne) = '\0';		\
-    }
-
-#define	COPYOPTS(_oe, _s, _c)	\
-    { \
-	while (((_c) = *(_s)) && (_c) != ')') \
-		*(_oe)++ = *(_s)++; \
-	*(_oe) = '\0';		\
+		(_ne) += *(_s)++; \
     }
 
 /**
@@ -598,46 +590,59 @@ exit:
  * @return		number of consumed characters
  */
 static void
-doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *parsed)
+doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, size_t *parsed)
 {
-    const char *start = se;
+    const char *se = str.c_str();
     const char *s = se;
-    char *buf = (char *)xmalloc(strlen(s) + 3); /* Some leeway for termination issues... */
-    char *n = buf, *ne = n;
-    char *o = NULL, *oe;
-    char *b, *be, *ebody = NULL;
+    const char *o = NULL;
     int c;
-    int oc = ')';
     const char *sbody; /* as-is body start */
     int rc = 1; /* assume failure */
     int flags = ME_NONE;
+    std::string name, opts, mods, body;
 
     /* Copy name */
-    COPYNAME(ne, s, c);
+    COPYNAME(name, s, c);
+    const char *n = name.c_str();
 
     /* Copy opts (if present) */
-    oe = ne + 1;
     if (*s == '(') {
 	s++;	/* skip ( */
 	/* Options must be terminated with ')' */
-	if (strchr(s, ')')) {
-	    o = oe;
-	    COPYOPTS(oe, s, oc);
-	    s++;	/* skip ) */
+	size_t pos = s - se;
+	size_t end = str.find(')', pos);
+	if (end != str.npos) {
+	    opts = str.substr(pos, end - pos);
+	    o = opts.c_str();
+	    s += opts.size() + 1; /* skip over ) */
 	} else {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated opts\n"), n);
 	    goto exit;
 	}
     }
 
+    /* Copy modifiers (if present). Empty mods field (<>) is a legit no-op */
+    if (*s == '<') {
+	s++;	/* skip < */
+	/* Modifiers must be terminated with '>' */
+	size_t pos = s - se;
+	size_t end = str.find('>', pos);
+	if (end != str.npos) {
+	    mods = str.substr(pos, end - pos);
+	    s += mods.size() + 1; /* skip over > */
+	} else {
+	    rpmMacroBufErr(mb, 1,
+			   _("Macro %%%s has unterminated modifiers\n"), n);
+	    goto exit;
+	}
+    }
+
     /* Copy body, skipping over escaped newlines */
-    b = be = oe + 1;
     sbody = s;
     SKIPBLANK(s, c);
     if (!parsed) {
-	strcpy(b, s);
-	be = b + strlen(b);
-	s += strlen(s);
+	body = s;
+	s += body.size();
     } else if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
@@ -645,9 +650,7 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
 	    goto exit;
 	}
 	s++;	/* XXX skip { */
-	strncpy(b, s, (se - 1 - s));
-	b[se - 1 - s] = '\0';
-	be += strlen(b);
+	body = str.substr(s - se, (se - 1 - s));
 	s = se;	/* move scan forward */
     } else {	/* otherwise free-field */
 	int bc = 0, pc = 0, xc = 0;
@@ -661,10 +664,10 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
 		    break;
 		case '%':
 		    switch (*(s+1)) {
-			case '{': *be++ = *s++; bc++; break;
-			case '(': *be++ = *s++; pc++; break;
-			case '[': *be++ = *s++; xc++; break;
-			case '%': *be++ = *s++; break;
+			case '{': body += *s++; bc++; break;
+			case '(': body += *s++; pc++; break;
+			case '[': body += *s++; xc++; break;
+			case '%': body += *s++; break;
 		    }
 		    break;
 		case '{': if (bc > 0) bc++; break;
@@ -674,9 +677,8 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
 		case '[': if (xc > 0) xc++; break;
 		case ']': if (xc > 0) xc--; break;
 	    }
-	    *be++ = *s++;
+	    body += *s++;
 	}
-	*be = '\0';
 
 	if (bc || pc || xc) {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s has unterminated body\n"), n);
@@ -685,9 +687,8 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
 	}
 
 	/* Trim trailing blanks/newlines */
-	while (--be >= b && (c = *be) && (risblank(c) || iseol(c)))
-	    {};
-	*(++be) = '\0';	/* one too far */
+	while (risblank(body.back()) || iseol(body.back()))
+	    body.pop_back();
     }
 
     /* Move scan over body */
@@ -695,10 +696,10 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
 	s++;
     se = s;
 
-    if (!validName(mb, n, ne - n, expandbody ? "%global": "%define"))
+    if (!validName(mb, n, name.size(), expandbody ? "%global": "%define"))
 	goto exit;
 
-    if ((be - b) < 1) {
+    if (body.empty()) {
 	rpmMacroBufErr(mb, 1, _("Macro %%%s has empty body\n"), n);
 	goto exit;
     }
@@ -706,27 +707,48 @@ doDefine(rpmMacroBuf mb, const char *se, int level, int expandbody, size_t *pars
     if (!risblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
 	rpmMacroBufErr(mb, 0, _("Macro %%%s needs whitespace before body\n"), n);
 
+    for (auto m : mods) {
+	switch (m) {
+	case 'l':
+	    flags |= ME_LITERAL;
+	    /* A %global literal must not expand */
+	    expandbody = 0;
+	    break;
+	default:
+	    rpmMacroBufErr(mb, 1,
+			    _("Macro %%%s has illegal modifier %c\n"), n, m);
+	    goto exit;
+	    break;
+	}
+    }
+
+    /* Check for modifier compatibility */
+    if (o && (flags & ME_LITERAL)) {
+	rpmMacroBufErr(mb, 1, _("Macro %%%s has incompatible modifiers\n"), n);
+	goto exit;
+    }
+
     if (expandbody) {
+	char *ebody = NULL;
 	int eflags = RPMEXPAND_KEEP_QUOTED;
-	if (expandThis(mb, b, 0, &ebody, &eflags)) {
+	if (expandThis(mb, body.c_str(), 0, &ebody, &eflags)) {
 	    rpmMacroBufErr(mb, 1, _("Macro %%%s failed to expand\n"), n);
 	    goto exit;
 	}
-	b = ebody;
+	body = ebody;
 	if (eflags & RPMEXPAND_HAVE_QUOTED)
 	    flags |= ME_QUOTED;
+	_free(ebody);
     }
 
-    pushMacro(mb->mc, n, o, b, level, flags);
+    pushMacro(mb->mc, name, o, body, level, flags);
     rc = 0;
 
 exit:
     if (rc)
 	mb->error = 1;
-    _free(buf);
-    _free(ebody);
     if (parsed)
-	*parsed += se - start;
+	*parsed += se - str.c_str();
 }
 
 /**
@@ -748,15 +770,15 @@ doUndefine(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 
 static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, size_t *parsed)
 {
-    char *args = NULL;
-    const char *se = argv[1];
+    std::string args = argv[1];
 
     /* handle the "programmatic" case where macro name is arg1 and body arg2 */
-    if (argv[2])
-	se = args = rstrscat(NULL, argv[1], " ", argv[2], NULL);
+    if (argv[2]) {
+	args += " ";
+	args += argv[2];
+    }
 
-    doDefine(mb, se, level, expand, parsed);
-    free(args);
+    doDefine(mb, args, level, expand, parsed);
 }
 
 static void doDef(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
@@ -1838,7 +1860,7 @@ static int defineMacro(rpmMacroContext mc, const std::string macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    doDefine(mb, macro.c_str(), level, 0, &parsed);
+    doDefine(mb, macro, level, 0, &parsed);
     rc = mb->error;
     delete mb;
     return rc;
@@ -2212,7 +2234,11 @@ int macros::pop(const std::string & n)
 int macros::push(const std::string & n, const char *o, const std::string & b,
 		int level, int flags)
 {
-    pushMacro(mc, n, o, b, level, flags & RPMMACRO_LITERAL ? ME_LITERAL : ME_NONE);
+    int iflags = ME_NONE;
+    if (flags & RPMMACRO_LITERAL)
+	iflags |= ME_LITERAL;
+
+    pushMacro(mc, n, o, b, level, iflags);
     return 0;
 }
 
