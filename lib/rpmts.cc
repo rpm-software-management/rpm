@@ -298,7 +298,7 @@ static void loadKeyring(rpmts ts)
 	RPMVSF_MASK_NOSIGNATURES) {
 	ts->keystore = rpmtsGetKeystore(ts);
 	ts->keyring = rpmKeyringNew();
-	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+	rpmtxn txn = rpmkxnBegin(ts, RPMTXN_READ);
 	if (txn) {
 	    ts->keystore->load_keys(txn, ts->keyring);
 	    rpmtxnEnd(txn);
@@ -403,7 +403,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn txn, rpmPubkey key)
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     rpmRC rc = RPMRC_FAIL;
-    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
     if (txn) {
 	rc = rpmtxnImportPubkey(txn, pkt, pktlen);
 	rpmtxnEnd(txn);
@@ -597,6 +597,7 @@ rpmts rpmtsFree(rpmts ts)
     }
     ts->rootDir = _free(ts->rootDir);
     rpmtsLockFree(ts);
+    ts->kslock = rpmlockFree(ts->kslock);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -1069,55 +1070,56 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types)
     return te;
 }
 
-#define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
 static
-void rpmtsLockInit(rpmts ts)
+void rpmtxnLockInit(rpmts ts, const char *path, const char *fallback_path,
+		    const char *name, rpmlock *lockp)
 {
-    static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
-    if (ts && ts->lockPath == NULL) {
-	const char *rootDir = rpmtsRootDir(ts);
-	char *t;
+    if (lockp && *lockp == NULL) {
+	char *t = rpmExpand(path, NULL);
 
+	if (t == NULL || *t == '\0' || *t == '%') {
+	    free(t);
+	    path = t = xstrdup(fallback_path);
+	}
+
+	const char *rootDir = rpmtsRootDir(ts);
 	if (!rootDir || rpmChrootDone())
 	    rootDir = "/";
 
-	t = rpmGenPath(rootDir, rpmlock_path_default, NULL);
-	if (t == NULL || *t == '\0' || *t == '%') {
-	    free(t);
-	    t = xstrdup(RPMLOCK_PATH);
-	}
-	ts->lockPath = xstrdup(t);
-	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
+	char *lockPath = rpmGenPath(rootDir, path, NULL);
+	char *dn = xstrdup(lockPath); /* dirname() modifies */
+	(void) rpmioMkpath(dirname(dn), 0755, getuid(), getgid());
+	free(dn);
+
+	*lockp = rpmlockNew(lockPath, name);
+	free(lockPath);
 	free(t);
     }
-
-    if (ts->lock == NULL)
-	ts->lock = rpmlockNew(ts->lockPath, _("transaction"));
-
 }
 
 static
 void rpmtsLockFree(rpmts ts)
 {
     if (ts) {
-	ts->lockPath = _free(ts->lockPath);
 	ts->lock = rpmlockFree(ts->lock);
     }
 }
 
-rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
+rpmtxn rpmtxnCreate(rpmts ts, rpmtxnFlags flags,
+		    const char *path, const char *fallback_path,
+		    const char *name, rpmlock *lockp)
 {
     rpmtxn txn = NULL;
 
-    if (ts == NULL)
+    if (ts == NULL || lockp == NULL)
 	return NULL;
 
-    rpmtsLockInit(ts);
+    rpmtxnLockInit(ts, path, fallback_path, name, lockp);
 
     int lockmode = (flags & RPMTXN_WRITE) ? RPMLOCK_WRITE : RPMLOCK_READ;
-    if (rpmlockAcquire(ts->lock, lockmode)) {
+    if (rpmlockAcquire(*lockp, lockmode)) {
 	txn = new rpmtxn_s {};
-	txn->lock = ts->lock;
+	txn->lock = *lockp;
 	txn->flags = flags;
 	txn->ts = rpmtsLink(ts);
 	if (txn->flags & RPMTXN_WRITE)
@@ -1125,6 +1127,22 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
     }
     
     return txn;
+}
+
+#define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
+rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
+{
+    static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
+    return rpmtxnCreate(ts, flags, rpmlock_path_default, RPMLOCK_PATH,
+			_("transaction"), &(ts->lock));
+}
+
+#define KSLOCK_PATH LOCALSTATEDIR "/rpm/.keyring.lock"
+rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags)
+{
+    static const char * const kslock_path_default = "%{?_keyring_lockpath}";
+    return rpmtxnCreate(ts, flags, kslock_path_default, KSLOCK_PATH,
+			_("keyring"), &(ts->kslock));
 }
 
 rpmtxn rpmtxnEnd(rpmtxn txn)

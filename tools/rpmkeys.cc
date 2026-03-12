@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     }
     case MODE_DELKEY:
     {
-	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+	rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
 	if (txn) {
 	    ec = matchingKeys(ts, args, deleteKey, txn);
 	    rpmtxnEnd(txn);
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     case MODE_REBUILD:
     {
 
-	rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+	rpmtxn txn = rpmkxnBegin(ts, RPMTXN_WRITE);
 	if (txn) {
 	    ec = rpmtxnRebuildKeystore(txn, from);
 	    rpmtxnEnd(txn);
