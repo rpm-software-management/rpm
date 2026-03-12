@@ -24,6 +24,7 @@
 #include <sys/times.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
+#include <sys/statvfs.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
@@ -715,6 +716,46 @@ static int Pstat(lua_State *L)			/** stat(path,[selector]) */
 	return doselection(L, 2, Sstat, Fstat, &s);
 }
 
+static int Fstatvfs(lua_State *L, int i, const void *data)
+{
+	const struct statvfs *buf=(const struct statvfs *)data;
+	switch(i)
+	{
+		case 0: lua_pushinteger(L, (lua_Integer)buf->f_bsize); break;
+		case 1: lua_pushinteger(L, (lua_Integer)buf->f_frsize); break;
+		case 2: lua_pushinteger(L, (lua_Integer)buf->f_blocks); break;
+		case 3: lua_pushinteger(L, (lua_Integer)buf->f_bfree); break;
+		case 4: lua_pushinteger(L, (lua_Integer)buf->f_bavail); break;
+		case 5: lua_pushinteger(L, (lua_Integer)buf->f_files); break;
+		case 6: lua_pushinteger(L, (lua_Integer)buf->f_ffree); break;
+		case 7: lua_pushinteger(L, (lua_Integer)buf->f_favail); break;
+		case 8: lua_pushinteger(L, (lua_Integer)buf->f_fsid); break;
+		case 9: lua_pushinteger(L, (lua_Integer)buf->f_flag); break;
+		case 10:lua_pushinteger(L, (lua_Integer)buf->f_namemax); break;
+		default: return 0;
+	}
+	return 1;
+}
+
+static const char *const Sstatvfs[] =
+{
+    "f_bsize",   "f_frsize", "f_blocks", "f_bfree", "f_bavail",
+    "f_files",   "f_ffree",  "f_favail", "f_fsid",   "f_flag",
+    "f_namemax", NULL
+};
+
+static int Pstatvfs(lua_State *L)		/** statvfs(path) */
+{
+	const char *path = luaL_checkstring(L, 1);
+	struct statvfs buf;
+
+	if (statvfs(path, &buf) == -1) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	return doselection(L, 2, Sstatvfs, Fstatvfs, &buf);
+}
 
 static int Puname(lua_State *L)			/** uname([string]) */
 {
@@ -857,6 +898,7 @@ static const luaL_Reg R[] =
 	{"setuid",		Psetuid},
 	{"sleep",		Psleep},
 	{"stat",		Pstat},
+	{"statvfs",		Pstatvfs},
 	{"symlink",		Psymlink},
 	{"sysconf",		Psysconf},
 	{"times",		Ptimes},
