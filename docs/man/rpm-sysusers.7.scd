@@ -207,9 +207,9 @@ can ship files owned by their own users and groups.
 Virtual provides generated with the *%add_sysuser* macro in *rpm-spec*(5) files
 are package-level, with no source files to group them by. Thus, RPM does not use
 *--replace* when calling *systemd-sysusers*(8) for such entries. That may cause
-unintended behavior since the program treats the entries on standard input with
-a higher priority than any *sysusers.d*(5) overrides configured by the system
-administrator.
+unintended behavior since the program then gives the entries on standard input
+higher priority than any *sysusers.d*(5) overrides that the administrator may
+have configured on the system.
 
 Note that the packaged *sysusers.d*(5) files, if any, are installed as normal,
 but do not participate in the user/group creation itself. They simply serve as
