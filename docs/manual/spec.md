@@ -137,6 +137,25 @@ runtime scripts is then passed on to the interpreter - possibly being
 stored in a header tag along the way. The syntax of the other sections is
 described below.
 
+Normally, a section ends when the next section starts. An optional
+`%end` marker can be used to explicitly mark the end of a section.
+(since rpm >= 4.14)
+
+```
+%post
+/some/command
+%end
+
+# a comment about %preun
+%preun
+/other/command
+```
+
+`%end` does not take any arguments and does not need to be followed
+by another section. While its use is optional, it can improve
+readability and prevent comments or other non-section content from
+being swallowed by the preceding section.
+
 ## Preamble
 
 ### Preamble tags
