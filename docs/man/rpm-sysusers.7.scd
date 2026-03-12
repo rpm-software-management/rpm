@@ -113,7 +113,7 @@ tweaking even on platforms with systemd.
 
 *%add_sysusers* [*-b*] _ENTRY_
 	Interpret _ENTRY_ as if written in a *sysusers.d*(5) file and expand to
-	a (bare) dependency string as described in *ENCODING*. _ENTRY_ denotes
+	a (bare) dependency string as described in *Encoding*. _ENTRY_ denotes
 	the individual fields passed as macro arguments.
 
 	When used with *-b*, expand to a *b*are dependency string. This form can
