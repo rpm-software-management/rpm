@@ -52,7 +52,7 @@ Name        	    | Tag   | Header Type
 HEADERSIGNATURES    |   62  | BIN
 DSA (legacy)        |  267  | BIN
 RSA (legacy)        |  268  | BIN
-SHA256              |  272  | STRING
+SHA256              |  273  | STRING
 FILESIGNATURES      |  274  | STRING_ARRAY
 VERITYSIGNATURES    |  276  | STRING_ARRAY
 VERITYSIGNATUREALGO |  277  | INT_32
