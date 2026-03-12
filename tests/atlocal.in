@@ -50,6 +50,11 @@ if [ "@WITH_IMAEVM@" == "ON" ]; then
 else
     IMA_DISABLED=true;
 fi
+if [ "@ENABLE_ASAN@" == "ON" ]; then
+    ASAN_ENABLED=true;
+else
+    ASAN_ENABLED=false;
+fi
 if mknod foodev c 123 123 2>/dev/null; then
    MKNOD_DISABLED=false
    rm -f foodev
