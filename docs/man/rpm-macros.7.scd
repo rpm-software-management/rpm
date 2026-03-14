@@ -558,9 +558,15 @@ the preceding *%*-character.
 	Expand to a command for outputting argument _PATH_ to standard output,
 	uncompressing as needed.
 
-	Example:
+	If the *-x* flag is given, the argument is treated as an archive and
+	extracted into the current directory instead. This is equivalent to
+	invoking *rpmuncompress*(1) with the *--extract* option, and supports
+	*tar*(1), *zip*(1), CAR and Ruby GEM archives.
+
+	Examples:
 	```
 	%{uncompress /my/source.tar.gz}
+	%{uncompress -x %{SOURCE1}}
 	```
 
 *%{xdg:*_KIND_*}*
