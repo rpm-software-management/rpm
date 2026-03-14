@@ -1803,6 +1803,11 @@ void rpmSetCloseOnExec(void)
     const int min_fd = STDERR_FILENO; /* don't touch stdin/out/err */
     int fd;
 
+#ifdef HAVE_CLOSE_RANGE
+    if (close_range(min_fd + 1, ~0U, CLOSE_RANGE_CLOEXEC) == 0)
+        return;
+#endif
+
     DIR *dir = opendir("/proc/self/fd");
     if (dir == NULL) { /* /proc not available */
 	/* iterate over all possible fds, might be slow */
