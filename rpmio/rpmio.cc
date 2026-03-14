@@ -1788,6 +1788,12 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id)
     return ctx;
 }
 
+#ifdef HAVE_CLOSE_RANGE
+void rpmSetCloseOnExec(void)
+{
+    close_range(STDERR_FILENO + 1, ~0U, CLOSE_RANGE_CLOEXEC);
+}
+#else
 static void set_cloexec(int fd)
 {
     int flags = fcntl(fd, F_GETFD);
@@ -1832,6 +1838,5 @@ void rpmSetCloseOnExec(void)
     }
 
     closedir(dir);
-
-    return;
 }
+#endif
