@@ -16,6 +16,7 @@ contents:
 |       RSA      |    RSAHEADER      |   4.0   | OpenPGP/RSA    |    S     |   H     |
 |       DSA      |    DSAHEADER      |   4.0   | OpenPGP/DSA    |    S     |   H     |
 |      SHA256    |  SHA256HEADER     |  4.14   | SHA256         |    S     |   H     |
+|      SHA3_256  |  SHA3_256HEADER   |   6.0   | SHA3-256       |    S     |   H     |
 |      OPENPGP   |  OPENPGPHEADER    |   6.0   | any (***)      |    S     |   H     |
 |        -       |  PAYLOADSHA256    |  4.14   | SHA256 (*)     |    H     |   Pc    |
 |        -       |  PAYLOADSHA256ALT |  4.16   | SHA256 (*)     |    H     |   P     |
