@@ -917,6 +917,17 @@ If a glob pattern has no matches, it is tried literally (as if all the
 metacharacters were escaped).  This is similar to how Bash works with the
 `failglob` option unset.
 
+### External file lists
+
+The `-f` option can be used to include file lists from external files.  Each
+file should contain one file entry per line, using the same syntax as the
+`%files` section itself.  The `-f` option may be specified multiple times to
+include file lists from several sources:
+
+```
+	%files -f file1.txt -f file2.txt
+```
+
 When trying to escape a large number of file names, it is often best to create
 a file with a complete list of escaped file names.  This is easiest to do with
 a shell script like this:
