@@ -198,11 +198,22 @@ Optional, short (< 70 characters) group of the package.
 	Group: Development/Libraries
 ```
 
+A localized group can be provided using `Group(<locale>)`:
+```
+	Group(fr): Développement/Bibliothèques
+```
+
 #### Summary
 
-Short (< 70 characters) summary of the package.  
+Short (< 70 characters) summary of the package.
 ```
 	Summary: Utility for converting mumbles into giggles
+```
+
+A localized summary can be provided using `Summary(<locale>)`:
+```
+	Summary(fr): Utilitaire de conversion de mumbles en giggles
+	Summary(de): Werkzeug für die Umwandlung von Mumbles in Giggles
 ```
 
 #### Source
@@ -549,7 +560,7 @@ By default subpackages are named by prepending the main package name
 followed by a dash to the subpackage name(s), ie `<mainname>-<subname>`.
 Using the `-n` option allows specifying an arbitrary (sub-)package name.
 
-#### `%description [-n][name]`
+#### `%description [-n] [-l <locale>] [name]`
 
 %description is free form text, but there are two things to note.
 The first regards reformatting.  Lines that begin with white space
@@ -559,6 +570,16 @@ and may be subject to formatting by glint or another RPM tool.
 
 The `-n` option and `<name>` are the same as for `%package`, except that
 when name is omitted, the description refers to the main package.
+
+The `-l` option specifies a locale for the description, allowing
+localized descriptions:
+```
+%description -l fr
+Ceci est la description en français.
+
+%description -l de
+Dies ist die Beschreibung auf Deutsch.
+```
 
 ## Build scriptlets
 
