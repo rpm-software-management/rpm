@@ -31,11 +31,21 @@
 #include "debug.h"
 
 
+/**
+ * CPIO archive state, used for both reading and writing.
+ *
+ * offset tracks the current byte position in the archive stream. fileend is
+ * set to (offset + file_size) when a header is written/read, marking where
+ * the current entry's data ends. Every header write/read function checks
+ * (fileend == offset) to verify the previous entry was fully consumed before
+ * proceeding — a mismatch is treated as an error during writes, and during
+ * reads the remaining bytes are skipped.
+ */
 struct rpmcpio_s {
     FD_t fd;
     char mode;
-    off_t offset;
-    off_t fileend;
+    off_t offset;	/*!< current position in the archive stream */
+    off_t fileend;	/*!< expected end position of current entry's data */
 };
 
 /*
@@ -123,6 +133,28 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
 }
 
 
+/**
+ * Write NUL padding bytes to align cpio->offset to a 4-byte boundary.
+ *
+ * In newc CPIO format, both header+name and file data regions are independently
+ * padded to 4-byte boundaries. This means:
+ *   - After writing magic + header + name, pad so file data starts at a 4-byte boundary.
+ *   - After writing file data, pad so the next header starts at a 4-byte boundary.
+ *
+ * This function is called from multiple places:
+ *   - rpmcpioHeaderWrite: once after the header+name, and the previous entry's
+ *     file data is implicitly padded by calling this at the *start* of the function
+ *     (before the new header is written).
+ *   - rpmcpioStrippedHeaderWrite: same pattern — pads the previous entry's data
+ *     at the start, then pads the stripped header itself (which is 14 bytes, needing
+ *     2 bytes of padding to reach 16).
+ *   - rpmcpioTrailerWrite: pads the last file's data before writing the trailer.
+ *
+ * Because padding is based on the global offset rather than individual section
+ * lengths, the padding for one section's data and the next section's header are
+ * combined into a single pad call. This works because each section starts at an
+ * already-aligned offset, so the data padding amount depends only on the data size.
+ */
 static int rpmcpioWritePad(rpmcpio_t cpio)
 {
     const ssize_t modulo = 4;
@@ -164,18 +196,30 @@ static int rpmcpioReadPad(rpmcpio_t cpio)
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	\
-	memcpy(phys, space, 8) \
+	memcpy(phys, space, 8)
 
+/**
+ * Write the CPIO archive trailer.
+ *
+ * The trailer is a standard newc header with the special name "TRAILER!!!".
+ * All fields are zero except nlink (1) and namesize (11 = strlen("TRAILER!!!") + 1).
+ * The trailer itself is also padded to a 4-byte boundary.
+ *
+ * This is called automatically from rpmcpioClose() for write-mode archives.
+ * A standard newc trailer is used for both regular and stripped CPIO archives.
+ */
 static int rpmcpioTrailerWrite(rpmcpio_t cpio)
 {
     struct cpioCrcPhysicalHeader hdr;
     int rc;
     size_t written;
 
+    /* Verify the last entry's data was fully written */
     if (cpio->fileend != cpio->offset) {
         return RPMERR_WRITE_FAILED;
     }
 
+    /* Pad the last entry's file data to a 4-byte boundary */
     rc = rpmcpioWritePad(cpio);
     if (rc)
         return rc;
@@ -224,6 +268,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
         return RPMERR_WRITE_FAILED;
     }
 
+    /* Verify that the previous entry's data was fully written */
     if (cpio->fileend != cpio->offset) {
         return RPMERR_WRITE_FAILED;
     }
@@ -232,11 +277,22 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
 	return RPMERR_FILE_SIZE;
     }
 
+    /* Pad the previous entry's file data to a 4-byte boundary */
     rc = rpmcpioWritePad(cpio);
     if (rc) {
         return rc;
     }
 
+    /*
+     * The filesize field in the CPIO header has different meanings depending on
+     * the file type:
+     *   - Regular files: the size of the file content that follows.
+     *   - Symlinks: the length of the link target string (which is written as
+     *     the "file data"). The link target is NOT NUL-terminated in the archive.
+     *   - Directories: 0 (no data follows).
+     *   - Ghost files: never reach this code path — they are excluded from the
+     *     archive entirely (see rpmfiArchiveWriteFile in rpmfi.cc).
+     */
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
     SET_NUM_FIELD(hdr->mode, st->st_mode, field);
     SET_NUM_FIELD(hdr->uid, st->st_uid, field);
@@ -253,6 +309,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
     len = strlen(path) + 1;
     SET_NUM_FIELD(hdr->namesize, len, field);
 
+    /* CPIO checksum not used */
     memcpy(hdr->checksum, "00000000", 8);
 
     written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
@@ -292,10 +349,12 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
+    /* Verify that the previous entry's data was fully written */
     if (cpio->fileend != cpio->offset) {
         return RPMERR_WRITE_FAILED;
     }
 
+    /* Pad the previous entry's file data to a 4-byte boundary */
     rc = rpmcpioWritePad(cpio);
     if (rc) {
         return rc;
@@ -315,6 +374,7 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
+    /* Pad the header itself to a 4-byte boundary (14 -> 16 bytes) */
     rc = rpmcpioWritePad(cpio);
 
     cpio->fileend = cpio->offset + fsize;
@@ -338,7 +398,6 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size)
     return written;
 }
 
-
 int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
 {
     struct cpioCrcPhysicalHeader hdr;
@@ -353,7 +412,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         return RPMERR_READ_FAILED;
     }
 
-    /* Move to next file */
+    /* Skip any unread data from the previous entry */
     if (cpio->fileend != cpio->offset) {
         /* XXX try using Fseek() - which is currently broken */
         char buf[8*BUFSIZ];
@@ -365,6 +424,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         }
     }
 
+    /* Pad past the previous entry's file data to reach the next header */
     rc = rpmcpioReadPad(cpio);
     if (rc) return rc;
 

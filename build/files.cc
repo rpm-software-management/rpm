@@ -630,7 +630,7 @@ static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 exit:
     free(q);
     free(attr_parameters);
-    
+
     return rc;
 }
 
@@ -694,7 +694,7 @@ static rpmRC parseForConfig(char * buf, FileEntry cur)
 	}
     }
     rc = RPMRC_OK;
-    
+
 exit:
     free(q);
 
@@ -849,7 +849,7 @@ static rpmRC parseForCaps(char * buf, FileEntry cur)
 #endif
 
     rc = RPMRC_OK;
-    
+
 exit:
     free(q);
 
@@ -942,7 +942,7 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
  * @param fileName	file path
  * @return		1 if doc file, 0 if not
  */
-static int isDoc(ARGV_const_t docDirs, const char * fileName)	
+static int isDoc(ARGV_const_t docDirs, const char * fileName)
 {
     size_t k, l;
 
@@ -964,7 +964,7 @@ static int isHardLink(FileListRec flp, FileListRec tlp)
 {
     return ((isLinkable(flp->fl_mode) && isLinkable(tlp->fl_mode)) &&
 	    ((flp->fl_nlink > 1) && (flp->fl_nlink == tlp->fl_nlink)) &&
-	    (flp->fl_ino == tlp->fl_ino) && 
+	    (flp->fl_ino == tlp->fl_ino) &&
 	    (flp->fl_dev == tlp->fl_dev));
 }
 
@@ -1004,7 +1004,6 @@ static int seenHardLink(FileRecords & files, FileListRec flp, rpm_ino_t *fileid)
 
 /**
  * Add file entries to header.
- * @todo Should directories have %doc/%config attributes? (#14531)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  * @param pkg		(sub) package
@@ -1097,16 +1096,35 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	}
     }
 
-    /* Sort the big list */
+    /*
+     * Sort all file entries by cpioPath (strcmp ordering). This is important
+     * because:
+     *   1. It brings duplicate entries adjacent so they can be merged below.
+     *   2. The resulting order determines the CPIO archive layout and the
+     *      RPM header tag array ordering (RPMTAG_BASENAMES, RPMTAG_FILEMODES,
+     *      etc.). The reader relies on this order when using file index values
+     *      (e.g. in stripped CPIO headers).
+     */
     std::sort(fl->files.begin(), fl->files.end());
-    
+
     pkg->dpaths = (char **)xmalloc((fl->files.size() + 1) * sizeof(*pkg->dpaths));
 
     /* Generate the header. */
     for (i = 0, flp = fl->files.data(); i < fl->files.size(); i++, flp++) {
 	rpm_ino_t fileid = flp - fl->files.data();
 
- 	/* Merge duplicate entries. */
+	/*
+	 * Merge duplicate entries. Since the list is sorted, duplicates are
+	 * adjacent. When two entries share the same cpioPath, they are merged
+	 * into the second entry (flp[1]) and the first is skipped:
+	 *   - File flags are OR'd together (so %exclude + normal = excluded)
+	 *   - For mode, uid, gid, and verifyFlags: the entry with the more
+	 *     "specific" specdFlags wins. Explicit %attr() beats %defattr(),
+	 *     and %defattr() beats no specification. The specdFlags bitmask
+	 *     encodes this specificity so a simple comparison works.
+	 *   - A warning is logged unless one of the entries is an %exclude
+	 *     (which is the normal way to reference a file for exclusion).
+	 */
 	while (i < (fl->files.size() - 1) &&
 	    rstreq(flp->cpioPath, flp[1].cpioPath)) {
 
@@ -1114,7 +1132,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	    /* Note that an %exclude is a duplication of a file reference */
 
 	    /* file flags */
-	    flp[1].flags |= flp->flags;	
+	    flp[1].flags |= flp->flags;
 
 	    if (!(flp[1].flags & RPMFILE_EXCLUDE)) {
 		int lvl = RPMLOG_WARNING;
@@ -1124,7 +1142,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 		}
 		rpmlog(lvl, _("File listed twice: %s\n"), flp->cpioPath);
 	    }
-   
+
 	    /* file mode */
 	    if (S_ISDIR(flp->fl_mode)) {
 		if ((flp[1].specdFlags & (SPECD_DIRMODE | SPECD_DEFDIRMODE)) <
@@ -1191,12 +1209,12 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 		totalFileSize += flp->fl_size;
 	    }
 	}
-	
+
 	if (override_date && flp->fl_mtime > mtime_clamp) {
 	    flp->fl_mtime = mtime_clamp;
 	}
 	/*
- 	 * For items whose size varies between systems, always explicitly 
+ 	 * For items whose size varies between systems, always explicitly
  	 * cast to the header type before inserting.
  	 * TODO: check and warn if header type overflows for each case.
  	 */
@@ -1211,7 +1229,7 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	{   rpm_rdev_t rrdev = (rpm_rdev_t) flp->fl_rdev;
 	    headerPutUint16(h, RPMTAG_FILERDEVS, &rrdev, 1);
 	}
-	
+
 	/*
 	 * To allow rpmbuild to work on filesystems with 64bit inodes numbers,
 	 * remap them into 32bit integers based on filelist index, just
@@ -1225,19 +1243,19 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	    headerPutUint32(h, RPMTAG_FILEINODES, &rino, 1);
 	    headerPutUint32(h, RPMTAG_FILEDEVICES, &rdev, 1);
 	}
-	
+
 	headerPutString(h, RPMTAG_FILELANGS, flp->langs);
 
 	if (fl->haveCaps) {
 	    headerPutString(h, RPMTAG_FILECAPS, flp->caps);
 	}
-	
+
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode) && !(flp->flags & RPMFILE_GHOST))
-	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1, 
+	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1,
 			       (unsigned char *)buf);
 	headerPutString(h, RPMTAG_FILEDIGESTS, buf);
-	
+
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
 	    ssize_t llen = readlink(flp->diskPath, buf, BUFSIZ-1);
@@ -1261,19 +1279,27 @@ static void genCpioListAndHeader(FileList fl, rpmSpec spec, Package pkg, int isS
 	    }
 	}
 	headerPutString(h, RPMTAG_FILELINKTOS, buf);
-	
+
 	if (flp->flags & RPMFILE_GHOST) {
 	    flp->verifyFlags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
 	headerPutUint32(h, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1);
-	
+
+	/* Auto-tag files inside %docdir directories as %doc */
 	if (!isSrc && isDoc(fl->docDirs, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
-	/* XXX Should directories have %doc/%config attributes? (#14531) */
+
+	/*
+	 * Directory entries cannot carry %config, %doc, or %license flags.
+	 * These attributes are only meaningful for regular files. Therefore,
+	 * they are stripped here.
+	 * Note: %docdir adds %doc to files *inside* the directory, not to
+	 * the directory entry itself.
+	 */
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC|RPMFILE_LICENSE);
-	/* Strip internal parse data */
+	/* Strip internal parse-only flags (RPMFILE_EXCLUDE, RPMFILE_DOCDIR, etc.) */
 	flp->flags &= PARSEATTR_MASK;
 
 	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
@@ -1410,7 +1436,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
     diskPath = dp.c_str();
     cpioPath = diskPath;
-	
+
     if (strncmp(diskPath, fl->buildRoot, fl->buildRootLen)) {
 	rpmlog(RPMLOG_ERR, _("Path is outside buildroot: %s\n"), diskPath);
 	goto exit;
@@ -1418,7 +1444,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
     if (!validFilename(diskPath))
 	goto exit;
-    
+
     /* Path may have prepended buildRoot, so locate the original filename. */
     /*
      * XXX There are 3 types of entry into addFile:
@@ -1525,7 +1551,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     } else {
 	fileGname = GID_0_GROUP;
     }
-	
+
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
 	appendStringBuf(check_fileList, diskPath);
@@ -1534,7 +1560,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
     /* Add to the file list */
     fl->files.push_back({});
-	    
+
     {	FileListRec flp = &fl->files.back();
 
 	flp->fl_st = *statp;	/* structure assignment */
@@ -1638,7 +1664,7 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
  * @param tag		tag to add
  * @return		RPMRC_OK on success
  */
-static rpmRC processMetadataFile(Package pkg, FileList fl, 
+static rpmRC processMetadataFile(Package pkg, FileList fl,
 				 const char * fileName, rpmTagVal tag)
 {
     char * fn = NULL;
@@ -2164,14 +2190,14 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName,
     /* XXX differentiate other directories from explicit %dir */
     if (trailing_slash && !fl->cur.isDir)
 	fl->cur.isDir = -1;
-    
+
     /* Check that file starts with leading "/" */
     if (*fileName != '/') {
 	rpmlog(RPMLOG_ERR, _("File needs leading \"/\": %s\n"), fileName);
     	rc = RPMRC_FAIL;
     	goto exit;
     }
-    
+
     /* Copy file name or glob pattern removing multiple "/" chars. */
     /*
      * Note: join_path() returns a normalized path. That means
@@ -2289,7 +2315,7 @@ static char * getSpecialDocDir(Header h, rpmFlags sdtype)
     const char *dirtype = (sdtype == RPMFILE_DOC) ? "docdir" : "licensedir";
     const char *fmt_default = "%{NAME}-%{VERSION}";
     char *fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
-    char *fmt = NULL; 
+    char *fmt = NULL;
     char *res = NULL;
 
     if (fmt_macro && strlen(fmt_macro) > 0) {
@@ -2451,7 +2477,7 @@ static void addPackageFileList (struct FileList_s *fl, Package pkg,
 	fileNames = argvFree(fileNames);
 	std::string lbuf(s);
 	char *buf = lbuf.data(); /* XXX parseFor*() modify the buf */
-	
+
 	/* Reset for a new line in %files */
 	FileEntryFree(&fl->cur);
 
@@ -2579,7 +2605,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	processSpecialDir(spec, pkg, &fl, specialDoc, didInstall, test);
     if (specialLic)
 	processSpecialDir(spec, pkg, &fl, specialLic, didInstall, test);
-    
+
     if (fl.processingFailed)
 	goto exit;
 
@@ -2749,7 +2775,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
     StringBuf sb_stdout = NULL;
     int rc = -1;
     char * s = rpmExpand(av_ckfile[0], NULL);
-    
+
     if (!(s && *s))
 	goto exit;
 
@@ -2758,7 +2784,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
     rc = rpmfcExec((ARGV_const_t)av_ckfile, fileList, &sb_stdout, 0, buildRoot);
     if (rc < 0)
 	goto exit;
-    
+
     if (sb_stdout) {
 	int _unpackaged_files_terminate_build =
 		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
@@ -2769,7 +2795,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
 		_("Installed (but unpackaged) file(s) found:\n%s"), t);
 	}
     }
-    
+
 exit:
     freeStringBuf(sb_stdout);
     free(s);
@@ -2892,7 +2918,7 @@ static void filterDebuginfoPackage(rpmSpec spec, Package pkg,
 		namel = it->second.size();
 	    }
 	}
-	
+
 	/* generate path */
 	rasprintf(&path, "%s%s%.*s%s.debug", buildroot, DEBUG_LIB_DIR, namel, name, uniquearch);
 
@@ -3073,7 +3099,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
        should Recommend.  */
     Package dbgsrcpkg = NULL;
     int processDebug = rpmExpandNumeric("%{?__debug_package}");
-    
+
 #ifdef HAVE_LIBDW
     elf_version (EV_CURRENT);
 #endif
@@ -3154,8 +3180,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
      * We pass it to a script which does the work of finding missing
      * and duplicated files.
      */
-    
-    
+
+
     if (checkFiles(spec->buildRoot, check_fileList) > 0) {
 	rc = RPMRC_FAIL;
     }
@@ -3163,6 +3189,6 @@ exit:
     check_fileList = freeStringBuf(check_fileList);
     _free(buildroot);
     _free(uniquearch);
-    
+
     return rc;
 }
