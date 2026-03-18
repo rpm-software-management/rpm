@@ -64,7 +64,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
-	rpmlua rpmgraph
+	rpmlua rpmgraph rpmuncompress
 )
-install(TARGETS rpmdeps rpmdump rpmuncompress DESTINATION ${RPM_CONFIGDIR})
+install(TARGETS rpmdeps rpmdump DESTINATION ${RPM_CONFIGDIR})
 
