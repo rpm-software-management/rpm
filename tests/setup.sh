@@ -28,5 +28,5 @@ chmod 700 /root/.gnupg
 
 # setup default signing id + key (USER is not set when this runs!)
 rpmconf=$(rpm --eval "%{_rpmconfigdir}")
-USER=root ${rpmconf}/rpm-setup-autosign -p sq
+USER=root rpm-setup-autosign -p sq
 rpmkeys --import /root/.config/rpm/*.asc
