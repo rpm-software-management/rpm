@@ -2814,7 +2814,7 @@ AT_KEYWORDS([autosign signature])
 rpmconf=$(rpm --eval "%{_rpmconfigdir}")
 
 RPMTEST_CHECK([
-runroot ${RPM_CONFIGDIR_PATH}/rpm-setup-autosign
+runroot rpm-setup-autosign
 ],
 [0],
 [],
@@ -2823,7 +2823,7 @@ runroot ${RPM_CONFIGDIR_PATH}/rpm-setup-autosign
 
 RPMTEST_CHECK([
 runroot rm -rf /root/.config/rpm
-runroot ${RPM_CONFIGDIR_PATH}/rpm-setup-autosign -p gpg
+runroot rpm-setup-autosign -p gpg
 ],
 [0],
 [],

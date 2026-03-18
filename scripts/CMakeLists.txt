@@ -1,4 +1,4 @@
-install(PROGRAMS gendiff TYPE BIN)
+install(PROGRAMS gendiff rpm-setup-autosign TYPE BIN)
 install(PROGRAMS
 	brp-compress brp-strip brp-strip-comment-note
 	brp-strip-static-archive brp-remove-la-files
@@ -11,7 +11,7 @@ install(PROGRAMS
 	rpm_macros_provides.sh
 	rpmdb_dump rpmdb_load
 	rpm2cpio.sh tgpg
-	sysusers.sh rpm-setup-autosign
+	sysusers.sh
 	DESTINATION ${RPM_CONFIGDIR}
 )
 install(FILES

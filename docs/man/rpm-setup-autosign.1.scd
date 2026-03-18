@@ -36,7 +36,7 @@ _~/.config/rpm/rpmbuild-\*.asc_++
 _~/.config/rpm/macros_
 
 # EXAMPLES
-*/usr/lib/rpm/rpm-setup-autosign -p sq*
+*rpm-setup-autosign -p sq*
 	Set up *rpmbuild*(1) autosigning using Sequoia-sq.
 
 # SEE ALSO
