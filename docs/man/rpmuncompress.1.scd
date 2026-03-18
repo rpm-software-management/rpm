@@ -15,8 +15,6 @@ and uncompressed files, and extracting archives.
 It's normally invoked internally by *rpmbuild*(1) to handle *%setup*
 and *%patch* related tasks in spec files, but can be useful manually
 invoked as well.
-The installation directory of *rpmuncompress* can be determined with
-*rpm -E "%{\_rpmconfigdir}"*.
 
 # ARGUMENTS
 _FILE_

@@ -4110,7 +4110,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([rpmuncompress external macros])
 AT_KEYWORDS([build tools])
 RPMTEST_CHECK([
-${RPM_CONFIGDIR_PATH}/rpmuncompress -n /data/SOURCES/hello-2.0.tar.gz
+rpmuncompress -n /data/SOURCES/hello-2.0.tar.gz
 ],
 [0],
 [],
@@ -4122,7 +4122,7 @@ cat << EOF > macros.aux
 %__gzip /an/alternative/gzip
 EOF
 
-${RPM_CONFIGDIR_PATH}/rpmuncompress --macros=macros.aux -n /data/SOURCES/hello-2.0.tar.gz
+rpmuncompress --macros=macros.aux -n /data/SOURCES/hello-2.0.tar.gz
 ],
 [0],
 [],

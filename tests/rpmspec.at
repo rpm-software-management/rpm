@@ -290,10 +290,10 @@ RPMTEST_SETUP([rpmspec --parse])
 AT_KEYWORDS([rpmspec])
 RPMTEST_CHECK([
 
-# ensure the macros expand to expected values
+# ensure the macros expand to expected values, these depend on the prefix
 # debug packages disabled for simplicity, we're not testing for that here
 runroot rpmspec --parse \
-	--define "__rpmuncompress /usr/lib/rpm/rpmuncompress" \
+	--define "__rpmuncompress /usr/bin/rpmuncompress" \
 	--define "__make /usr/bin/make" \
 	--define "__patch /usr/bin/patch" \
 	--define "__chmod /usr/bin/chmod" \
@@ -335,7 +335,7 @@ Simple rpm demonstration.
 %prep
 cd '/build/BUILD/hello-1.0-build'
 rm -rf 'hello-1.0'
-/usr/lib/rpm/rpmuncompress -x '/build/SOURCES/hello-1.0.tar.gz'
+/usr/bin/rpmuncompress -x '/build/SOURCES/hello-1.0.tar.gz'
 STATUS=$?
 if [ $STATUS -ne 0 ]; then
   exit $STATUS

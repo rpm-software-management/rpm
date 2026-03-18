@@ -106,6 +106,7 @@ function(makemacros)
 	set(infodir "\${prefix}/${CMAKE_INSTALL_INFODIR}")
 	set(mandir "\${prefix}/${CMAKE_INSTALL_MANDIR}")
 	set(rundir /run)
+	set(bindir_full ${CMAKE_INSTALL_FULL_BINDIR})
 
 	pkg_get_variable(sysusersdir systemd sysusersdir)
 	if (NOT sysusersdir)

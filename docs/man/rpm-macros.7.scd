@@ -558,6 +558,9 @@ the preceding *%*-character.
 	Expand to a command for outputting argument _PATH_ to standard output,
 	uncompressing as needed.
 
+	Note: for unpackaging sources in *rpm-spec*(5) files, consider
+	calling *rpmuncompress*(1) directly instead.
+
 	Example:
 	```
 	%{uncompress /my/source.tar.gz}

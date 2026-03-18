@@ -367,7 +367,7 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP([uncompress 1])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
-${RPM_CONFIGDIR_PATH}/rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
+rpmuncompress /data/SOURCES/hello-2.0.tar.gz | tar t
 ],
 [0],
 [hello-2.0/
@@ -384,7 +384,7 @@ RPMTEST_SETUP([uncompress 2])
 AT_KEYWORDS([macros])
 RPMTEST_CHECK([
 echo xxxxxxxxxxxxxxxxxxxxxxxxx > "some%%ath"
-${RPM_CONFIGDIR_PATH}/rpmuncompress "some%%ath"
+rpmuncompress "some%%ath"
 ],
 [0],
 [xxxxxxxxxxxxxxxxxxxxxxxxx
@@ -395,13 +395,13 @@ RPMTEST_SETUP([uncompress 3])
 AT_KEYWORDS([macros rpmuncompress])
 
 RPMTEST_CHECK([
-${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C test-1.2.3 /data/SOURCES/test-1.2.3.zip
+rpmuncompress -x -C test-1.2.3 /data/SOURCES/test-1.2.3.zip
 ],
 [0],
 [])
 
 RPMTEST_CHECK([
-${RPM_CONFIGDIR_PATH}/rpmuncompress -x -C test-1.2.3-7 /data/SOURCES/test-1.2.3.7z
+rpmuncompress -x -C test-1.2.3-7 /data/SOURCES/test-1.2.3.7z
 ],
 [0],
 [])
@@ -434,8 +434,8 @@ AT_KEYWORDS([macros rpmuncompress])
 
 RPMTEST_CHECK([
 runroot mkdir -p /tmp/1
-runroot --chdir /tmp/1 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.zip
-runroot --chdir /tmp/1 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.zip
+runroot --chdir /tmp/1 rpmuncompress -x /data/SOURCES/test-1.2.3.zip
+runroot --chdir /tmp/1 rpmuncompress -x /data/SOURCES/test-1.2.3.zip
 ],
 [0],
 [],
@@ -456,8 +456,8 @@ runroot --chdir /tmp/1 find . | sort
 
 RPMTEST_CHECK([
 runroot mkdir -p /tmp/2
-runroot --chdir /tmp/2 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.7z
-runroot --chdir /tmp/2 ${RPM_CONFIGDIR_PATH}/rpmuncompress -x /data/SOURCES/test-1.2.3.7z
+runroot --chdir /tmp/2 rpmuncompress -x /data/SOURCES/test-1.2.3.7z
+runroot --chdir /tmp/2 rpmuncompress -x /data/SOURCES/test-1.2.3.7z
 ],
 [0],
 [],
@@ -477,7 +477,7 @@ runroot --chdir /tmp/2 find . | sort
 [ignore])
 
 RPMTEST_CHECK([
-runroot ${RPM_CONFIGDIR_PATH}/rpmuncompress --dry-run /data/SOURCES/test-1.2.3.car
+runroot rpmuncompress --dry-run /data/SOURCES/test-1.2.3.car
 ],
 [0],
 [ignore],
@@ -485,7 +485,7 @@ runroot ${RPM_CONFIGDIR_PATH}/rpmuncompress --dry-run /data/SOURCES/test-1.2.3.c
 ])
 
 RPMTEST_CHECK([
-runroot ${RPM_CONFIGDIR_PATH}/rpmuncompress --dry-run /data/SOURCES/test-1.2.3.carv2
+runroot rpmuncompress --dry-run /data/SOURCES/test-1.2.3.carv2
 ],
 [0],
 [ignore],
