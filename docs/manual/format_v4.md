@@ -53,7 +53,7 @@ RSA                 |  268  | BIN
 SHA1                |  269  | STRING
 LONGSIZE            |  270  | INT_64
 LONGARCHIVESIZE     |  271  | INT_64
-SHA256              |  273  | STRING
+SHA256              |  272  | STRING
 FILESIGNATURES      |  274  | STRING_ARRAY
 FILESIGNATURELENGTH |  275  | INT_32
 VERITYSIGNATURES    |  276  | STRING_ARRAY
