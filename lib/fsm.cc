@@ -895,7 +895,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
     struct diriter_s di = { -1, -1 };
 
     /* transaction id used for temporary path suffix while installing */
-    rasprintf(&tid, ";%08x", (unsigned)rpmtsGetTid(ts));
+    rasprintf(&tid, ".%08x~", (unsigned)rpmtsGetTid(ts));
 
     /* Collect state data for the whole operation */
     fi = rpmfilesIter(files, RPMFI_ITER_FWD);

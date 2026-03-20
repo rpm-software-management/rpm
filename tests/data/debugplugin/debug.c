@@ -64,9 +64,12 @@ static rpmRC debug_scriptlet_post(rpmPlugin plugin,
 static char *cleanpath(const char *path)
 {
     char *p = rstrdup(path);
-    char *t = strrchr(p, ';');
-    if (t)
-	*(t+1) = '\0';
+    size_t len = strlen(p);
+    /* strip .XXXXXXXX~ suffix */
+    if (len > 10 && p[len-1] == '~' && p[len-10] == '.') {
+	p[len-10] = '~';
+	p[len-9] = '\0';
+    }
     return p;
 }
 

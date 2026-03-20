@@ -60,8 +60,8 @@ debug_psm_pre: simple-1.0-1.noarch
 debug_fsm_file_pre:  /opt/bin 40755 80000001
 debug_fsm_file_prepare:  1 /opt/bin /opt/bin 40755 80000001
 debug_fsm_file_post:  /opt/bin 40755 80000001: 0
-debug_fsm_file_pre: /opt/bin/simple /opt/bin/simple; 100755 1
-debug_fsm_file_prepare: /opt/bin/simple 1 /opt/bin/simple; /opt/bin/simple 100755 1
+debug_fsm_file_pre: /opt/bin/simple /opt/bin/simple~ 100755 1
+debug_fsm_file_prepare: /opt/bin/simple 1 /opt/bin/simple~ /opt/bin/simple 100755 1
 debug_fsm_file_post: /opt/bin/simple /opt/bin/simple 100755 1: 0
 debug_scriptlet_pre: %post(simple-1.0-1.noarch) 3
 debug_scriptlet_fork_post: /bin/sh 3

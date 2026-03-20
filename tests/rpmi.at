@@ -198,7 +198,7 @@ runroot --setenv SOURCE_DATE_EPOCH 1234 \
 ],
 [1],
 [],
-[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING;000004d2: cpio: Digest mismatch
+[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING.000004d2~: cpio: Digest mismatch
 error: hello-2.0-1.x86_64: install failed
 ])
 
@@ -246,7 +246,7 @@ runroot --setenv SOURCE_DATE_EPOCH 1234 \
 ],
 [1],
 [],
-[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING;000004d2: cpio: Digest mismatch
+[error: unpacking of archive failed on file /usr/share/doc/hello-2.0/COPYING.000004d2~: cpio: Digest mismatch
 error: hello-2.0-1.x86_64: install failed
 ])
 RPMTEST_CLEANUP
@@ -1552,12 +1552,12 @@ error: hlinktest-1.0-1.noarch: install failed
 ])
 
 RPMTEST_CHECK([
-runroot rpm -i --noverify --nosignature /tmp/3.rpm 2>&1| sed 's/;.*:/:/g'
+runroot rpm -i --noverify --nosignature /tmp/3.rpm 2>&1| sed 's/\.[[0-9a-f]]*~:/:/g'
 # test that nothing of the contents remains after failure
 test -d "${RPMTEST}/foo"
 ],
 [1],
-[error: unpacking of archive failed on file /foo/hello-world: Digest mismatch
+[error: unpacking of archive failed on file /foo/hello-world: cpio: Digest mismatch
 error: hlinktest-1.0-1.noarch: install failed
 ],
 [])
@@ -2026,7 +2026,7 @@ runroot --setenv SOURCE_DATE_EPOCH 1699955855 rpm -U /build/RPMS/noarch/replacet
 [1],
 [],
 [error: failed to open dir opt of /opt/: cpio: Unsafe symlink
-error: unpacking of archive failed on file /opt/foo;6553448f: cpio: Unsafe symlink
+error: unpacking of archive failed on file /opt/foo.6553448f~: cpio: Unsafe symlink
 error: replacetest-1.0-1.noarch: install failed
 ])
 RPMTEST_CLEANUP
