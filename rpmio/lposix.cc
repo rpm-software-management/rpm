@@ -28,6 +28,13 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
+
+#ifdef __APPLE__
+#include <crt_externs.h>
+#define environ (*_NSGetEnviron())
+#else
+extern char **environ;
+#endif
 #include <rpm/rpmutil.h>
 #include "rpmio_internal.hh"
 #include "rpmlua.hh"
@@ -422,12 +429,6 @@ static int Pgetenv(lua_State *L)		/** getenv([name]) */
 {
 	if (lua_isnone(L, 1))
 	{
-	#ifdef __APPLE__
-		#include <crt_externs.h>
-		#define environ (*_NSGetEnviron())
-	#else
-		extern char **environ;
-	#endif /* __APPLE__ */
 		char **e;
 		if (*environ==NULL) lua_pushnil(L); else lua_newtable(L);
 		for (e=environ; *e!=NULL; e++)
