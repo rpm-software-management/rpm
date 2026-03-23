@@ -61,7 +61,7 @@ static int skipSoname(const char *soname)
 	    return 1;
 
 	if (rstreqn(soname, "ld.", 3) || rstreqn(soname, "ld-", 3) ||
-	    rstreqn(soname, "ld64.", 3) || rstreqn(soname, "ld64-", 3))
+	    rstreqn(soname, "ld64.", 5) || rstreqn(soname, "ld64-", 5))
 	    return 0;
 
 	if (rstreqn(soname, "lib", 3))
