@@ -639,10 +639,9 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #	Macro(s) used to parameterize transactions.
 #
 #	The output binary package file name template used when building
-#	binary packages, as described by rpm-queryformat(7). Percent signs need
-#	to be escaped.
+#	binary packages, as described by rpm-queryformat(7).
 #
-%_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_build_name_fmt<l>	%{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
 
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (RPMVSF_MASK_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
@@ -715,8 +714,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 
 #
 # Default output format for query operations, as described by
-# rpm-queryformat(7). Percent signs need to be escaped.
-%_query_all_fmt		%%{nvr}%%{archsuffix}
+# rpm-queryformat(7).
+%_query_all_fmt<l>		%{nvr}%{archsuffix}
 
 #
 # Default for coloring output
