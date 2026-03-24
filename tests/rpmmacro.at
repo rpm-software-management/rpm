@@ -88,6 +88,14 @@ rpm --eval '%{not_defined}'
 [%{not_defined}
 ],
 [])
+
+RPMTEST_CHECK([
+rpm --define 'foo { bar }' --eval '>%{foo}<'
+],
+[0],
+[> bar <
+],
+[])
 RPMTEST_CLEANUP
 
 # ------------------------------
