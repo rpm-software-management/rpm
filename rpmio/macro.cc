@@ -52,6 +52,9 @@ enum macroFlags_e {
     ME_QUOTED	= (1 << 5),
 };
 
+/* bitmask of all modifiers */
+#define ME_MODIFIER (ME_LITERAL)
+
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     const char *name;  	/*!< Macro name. */
@@ -2125,6 +2128,12 @@ void macros::dump(FILE *fp)
 	auto const & me = entry.second.top();
 	fprintf(fp, "%3d%c %s", me.level,
 		    ((me.flags & ME_USED) ? '=' : ':'), me.name);
+	if (me.flags & ME_MODIFIER) {
+	    std::string mods;
+	    if (me.flags & ME_LITERAL)
+		mods += "l";
+	    fprintf(fp, "<%s>", mods.c_str());
+	}
 	if (me.opts && *me.opts)
 		fprintf(fp, "(%s)", me.opts);
 	if (me.body && *me.body)

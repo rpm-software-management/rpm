@@ -1656,6 +1656,14 @@ rpm --define "aa 123" --define "mymod()<l> %aa" --eval "%mymod"
 [],
 [error: Macro %mymod has incompatible modifiers
 ])
+
+RPMTEST_CHECK([
+rpm --define "mylit<l> %%%%" --showrc | grep ' mylit' | awk '{print $2}'
+],
+[0],
+[mylit<l>
+],
+[])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([error macro return])
