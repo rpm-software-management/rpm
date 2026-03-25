@@ -107,6 +107,7 @@ WORKDIR /
 CMD /bin/bash
 
 FROM base AS full
+ARG TOOLCHAIN=gcc
 
 WORKDIR /srv/rpm
 COPY . .
