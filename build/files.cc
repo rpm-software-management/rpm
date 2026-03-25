@@ -709,7 +709,7 @@ static rpmRC addLang(ARGV_t *av, const char *lang, size_t n, const char *ent)
     SKIPWHITE(ent);
 
     /* Sanity check locale length */
-    if (n < 1 || (n == 1 && *lang != 'C') || n >= 32) {
+    if (n < 1 || (n == 1 && *lang != 'C')) {
 	rpmlog(RPMLOG_ERR, _("Unusual locale length: \"%s\" in %%lang(%s)\n"),
 		lbuf, ent);
 	goto exit;
