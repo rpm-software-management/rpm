@@ -1741,6 +1741,97 @@ rpm --define "myonce<o> %(date)" --eval "%myonce" --showrc | grep ' myonce' | aw
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([%define options])
+AT_KEYWORDS([macros])
+
+RPMTEST_CHECK([
+rpm \
+	--eval "%define aa 123" \
+	--eval "%define mm %aa %bb" \
+	--eval "%define -e nn %aa %bb" \
+	--eval "%define bb 321" \
+	--eval "%define aa 555" \
+	--eval "%mm" \
+	--eval "%nn"
+],
+[0],
+[555 321
+123 321
+],
+[])
+
+RPMTEST_CHECK([
+cat << EOF > mymacro
+%myparm() %{span:
+%define aa 123
+%define -g bb 321
+%define -eg cc %aa%bb
+%define -eg dd %aa%yy
+%aa
+%bb
+%cc
+%dd
+}
+EOF
+
+rpm \
+	--macros mymacro \
+	--eval "%myparm" \
+	--eval "%aa" \
+	--eval "%bb" \
+	--eval "%cc" \
+	--eval "%dd" \
+	--define "yy 555" \
+	--eval "%dd"
+],
+[0],
+[
+123
+321
+123321
+123%yy
+
+%aa
+321
+123321
+123%yy
+123555
+],
+[])
+
+RPMTEST_CHECK([
+rpm --eval "%define -x aa bb"
+],
+[1],
+[],
+[error: %define: invalid option -- 'x'
+])
+
+RPMTEST_CHECK([
+rpm --eval "%define -g -y aa bb"
+],
+[1],
+[],
+[error: %define: invalid option -- 'y'
+])
+
+RPMTEST_CHECK([
+rpm --eval "%define -"
+],
+[1],
+[],
+[error: %define: no option after -
+])
+
+RPMTEST_CHECK([
+rpm --eval "%define - xx yy"
+],
+[1],
+[],
+[error: %define: no option after -
+])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([error macro return])
 AT_KEYWORDS([macros lua])
 
