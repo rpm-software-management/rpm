@@ -330,11 +330,22 @@ The macro primitives are used for macro manipulation in spec files
 and other macros. Note that all these operate on the macro name _without_
 the preceding *%*-character. 
 
-*%define* _NAME_[([_OPTIONS_])] _BODY_
+*%define* [_DEFOPTS_] _NAME_[([_OPTIONS_])] _BODY_
 	This is the primary way to define macros.
-	A *%define* is always fully declarative: no macro expansion takes place,
-	and it has no side-effects. Macros defined with it are in global scope,
-	unless the definition occurs inside a parametric macro.
+	By default, a *%define* is declarative: no macro expansion takes place
+	and it has no side-effects. Macros are placed in the current scope by
+	default: local inside parametric macros, otherwise global.
+
+	The *%define* macro accepts the following options (_DEFOPTS_):
+
+	*-e*
+		Expand body at the time of definition, making the result
+		the actual macro body.
+	*-g*
+		Place macro in the global context.
+		Has no effect outside parametric macros.
+
+	*%define -eg* is identical to using *%global*.
 
 	Example:
 	```

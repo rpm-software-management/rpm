@@ -597,7 +597,8 @@ exit:
  * @return		number of consumed characters
  */
 static void
-doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, size_t *parsed)
+doDefine(rpmMacroBuf mb, const std::string & str, int level,
+	int expandbody, int handleopts, size_t *parsed)
 {
     const char *se = str.c_str();
     const char *s = se;
@@ -607,6 +608,37 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
     int rc = 1; /* assume failure */
     int flags = ME_NONE;
     std::string name, opts, mods, body;
+
+    /* Parse options if enabled */
+    while (handleopts) {
+	SKIPBLANK(s, c);
+	if (*s == '-') {
+	    const char *o = s + 1;
+	    while (*o && !risblank(*o)) {
+		switch (*o) {
+		case 'e':
+		    expandbody = 1;
+		    break;
+		case 'g':
+		    level = RMIL_GLOBAL;
+		    break;
+		default:
+		    rpmMacroBufErr(mb, 1,
+				_("%%define: invalid option -- '%c'\n"), *o);
+		    return;
+		}
+		++o;
+	    }
+	    if (o == s + 1) {
+		rpmMacroBufErr(mb, 1, _("%%define: no option after -\n"));
+		return;
+	    }
+	    s = o;
+	} else {
+	    handleopts = 0;
+	}
+	se = s;
+    }
 
     /* Copy name */
     COPYNAME(name, s, c);
@@ -645,9 +677,10 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	}
     }
 
-    /* Copy body, skipping over escaped newlines */
     sbody = s;
     SKIPBLANK(s, c);
+
+    /* Copy body, skipping over escaped newlines */
     if (!parsed) {
 	body = s;
 	s += body.size();
@@ -790,7 +823,8 @@ doUndefine(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 	mb->error = 1;
 }
 
-static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, size_t *parsed)
+static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level,
+			int expand, int handleopts, size_t *parsed)
 {
     std::string args = argv[1];
 
@@ -800,17 +834,17 @@ static void doArgvDefine(rpmMacroBuf mb, ARGV_t argv, int level, int expand, siz
 	args += argv[2];
     }
 
-    doDefine(mb, args, level, expand, parsed);
+    doDefine(mb, args, level, expand, handleopts, parsed);
 }
 
 static void doDef(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    doArgvDefine(mb, argv, mb->level, 0, parsed);
+    doArgvDefine(mb, argv, mb->level, 0, 1, parsed);
 }
 
 static void doGlobal(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
 {
-    doArgvDefine(mb, argv, RMIL_GLOBAL, 1, parsed);
+    doArgvDefine(mb, argv, RMIL_GLOBAL, 1, 0, parsed);
 }
 
 static void doDump(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed)
@@ -1890,7 +1924,7 @@ static int defineMacro(rpmMacroContext mc, const std::string macro, int level)
 
     /* XXX just enough to get by */
     mb->mc = mc;
-    doDefine(mb, macro, level, 0, &parsed);
+    doDefine(mb, macro, level, 0, 0, &parsed);
     rc = mb->error;
     delete mb;
     return rc;
