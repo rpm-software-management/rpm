@@ -63,6 +63,7 @@ Macro behavior can be altered by supplying modifiers: (Added: 6.1.0)
 	_NAME_*<*_MODIFIERS_*>* _BODY_
 
 Supported modifiers are:
+- *i*: Macro is immutable and cannot be redefined or undefined.
 - *l*: Literal expansion. *%* is not processed when expanding.
 - *o*: One-shot expansion. The macro is expanded on first use and the
   literal result is pushed on top of the original macro.
@@ -72,7 +73,8 @@ percent signs (*%*) which otherwise would need to be escaped.
 
 One-shot macros are useful for caching expansion results, for example to
 guard a result against underlying changes, or to perform an expensive
-shell invocation just once.
+shell invocation just once. The one-shot modifier is incompatible with
+immutable and literal modifiers.
 The one-shot expansion can be re-armed by undefining the macro once.
 
 See *PARAMETRIC MACROS* for the more advanced macro variant with options
@@ -237,8 +239,7 @@ This allows macros to fully decide how to handle their input, e.g.
 if the arguments of the macro only/mostly consist of items starting
 with *-*, the default processing only gets in the way.
 
-A modifier field may be present, but currently there are no modifiers
-compatible with parametric macros.
+The only modifier compatible with parametric macros is *i*mmutable.
 
 ## Automatic macros
 While a parameterized macro is being expanded, the following shell-like

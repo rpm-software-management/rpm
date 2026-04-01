@@ -1701,6 +1701,14 @@ rpm --define "aa 123" --define "mymod<lo> %aa" --eval "%mymod"
 ])
 
 RPMTEST_CHECK([
+rpm --define "aa 123" --define "mymod<io> %aa" --eval "%mymod"
+],
+[1],
+[],
+[error: Macro %mymod has incompatible modifiers
+])
+
+RPMTEST_CHECK([
 rpm --define "mylit<l> %%%%" --showrc | grep ' mylit' | awk '{print $2}'
 ],
 [0],
@@ -1723,6 +1731,61 @@ rpm --define "myonce<o> %(date)" --eval "%myonce" --showrc | grep ' myonce' | aw
 [myonce<l>
 ],
 [])
+
+RPMTEST_CHECK([
+rpm --define "myonce<o> %(date)" --showrc | grep ' myonce' | awk '{print $2}'
+],
+[0],
+[myonce<o>
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "myimm<i> someval" --showrc | grep ' myimm' | awk '{print $2}'
+],
+[0],
+[myimm<i>
+],
+[])
+
+RPMTEST_CHECK([
+rpm --define "aa<i> 123" --define "aa 321"
+],
+[1],
+[],
+[error: Macro %aa is immutable and cannot be redefined
+])
+
+RPMTEST_CHECK([
+rpm --define "aa<i> 123" --undefine "aa"
+],
+[1],
+[],
+[error: Macro %aa is immutable and cannot be undefined
+])
+
+RPMTEST_CHECK([
+rpm --define "myimm()<i> 123%{1}321"  --eval "%{myimm xxx}"
+],
+[0],
+[123xxx321
+],
+[])
+
+RPMTEST_CHECK([
+cat << EOF > mymacros
+%aa aa
+%aa<i> bb
+%aa cc
+EOF
+
+rpm --macros mymacros --eval "%aa"
+],
+[0],
+[bb
+],
+[error: Macro %aa is immutable and cannot be redefined
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([error macro return])

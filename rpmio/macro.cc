@@ -51,10 +51,11 @@ enum macroFlags_e {
     ME_FUNC	= (1 << 4),
     ME_QUOTED	= (1 << 5),
     ME_ONESHOT	= (1 << 6),
+    ME_IMMUTABLE = (1 << 7),
 };
 
 /* bitmask of all modifiers */
-#define ME_MODIFIER (ME_LITERAL|ME_ONESHOT)
+#define ME_MODIFIER (ME_LITERAL|ME_ONESHOT|ME_IMMUTABLE)
 
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
@@ -137,8 +138,9 @@ static int pushMacro(rpmMacroContext mc,
 	int level, int flags);
 static int pushMacroAny(rpmMacroContext mc,
 	const string & n, const char * o, const string & b,
-	macroFunc f, void *priv, int nargs, int level, int flags);
-static int popMacro(rpmMacroContext mc, const std::string & n);
+	macroFunc f, void *priv, int nargs, int level, int flags,
+	bool force=true);
+static int popMacro(rpmMacroContext mc, const std::string & n, bool force=true);
 static int loadMacroFile(rpmMacroContext mc, const std::string fn);
 /* =============================================================== */
 
@@ -725,6 +727,9 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	case 'o':
 	    flags |= ME_ONESHOT;
 	    break;
+	case 'i':
+	    flags |= ME_IMMUTABLE;
+	    break;
 	default:
 	    rpmMacroBufErr(mb, 1,
 			    _("Macro %%%s has illegal modifier %c\n"), n, m);
@@ -740,7 +745,8 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	goto exit;
     }
 
-    if ((flags & ME_LITERAL) && (flags & ME_ONESHOT)) {
+    /* One-shot macros can't be literal or immutable */
+    if ((flags & ME_ONESHOT) && (flags & (ME_LITERAL | ME_IMMUTABLE))) {
 	rpmMacroBufErr(mb, 1, _("Macro %%%s has incompatible modifiers\n"), n);
 	goto exit;
     }
@@ -758,7 +764,7 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	_free(ebody);
     }
 
-    rc = pushMacro(mb->mc, name, o, body, level, flags);
+    rc = pushMacroAny(mb->mc, name, o, body, NULL, NULL, 0, level, flags, false);
 
 exit:
     if (rc)
@@ -772,7 +778,7 @@ static int undefineMacro(rpmMacroBuf mb, const std::string & n)
     if (!validName(mb, n.c_str(), n.size(), "%undefine"))
 	return mb->error;
 
-    return popMacro(mb->mc, n);
+    return popMacro(mb->mc, n, false);
 }
 
 /**
@@ -1832,11 +1838,20 @@ static int doExpandMacros(rpmMacroContext mc, const string & src, int flags,
 
 static int pushMacroAny(rpmMacroContext mc,
 	const string & n, const char * o, const string & b,
-	macroFunc f, void *priv, int nargs, int level, int flags)
+	macroFunc f, void *priv, int nargs, int level, int flags, bool force)
 {
     auto res = mc->tab.insert({n, {}});
     auto & entry = res.first;
     auto & stack = entry->second;
+
+    if (stack.empty() == false && (stack.top().flags & ME_IMMUTABLE)) {
+	if (force == false) {
+	    rpmlog(RPMLOG_ERR,
+		    _("Macro %%%s is immutable and cannot be redefined\n"),
+		    n.c_str());
+	    return 1;
+	}
+    }
 
     /* push an empty entry to the stack and fillup */
     stack.push({});
@@ -1871,12 +1886,18 @@ static int pushMacro(rpmMacroContext mc,
 }
 
 /* Return pointer to the _previous_ macro definition (or NULL) */
-static int popMacro(rpmMacroContext mc, const std::string & n)
+static int popMacro(rpmMacroContext mc, const std::string & n, bool force)
 {
     auto const & entry = mc->tab.find(n);
     if (entry == mc->tab.end())
 	return 0;
     auto & stack = entry->second;
+    if (force == false && stack.top().flags & ME_IMMUTABLE) {
+	rpmlog(RPMLOG_ERR,
+		_("Macro %%%s is immutable and cannot be undefined\n"),
+		n.c_str());
+	return 1;
+    }
     stack.pop();
     if (stack.empty())
 	mc->tab.erase(entry);
@@ -2152,6 +2173,8 @@ void macros::dump(FILE *fp)
 		    ((me.flags & ME_USED) ? '=' : ':'), me.name);
 	if (me.flags & ME_MODIFIER) {
 	    std::string mods;
+	    if (me.flags & ME_IMMUTABLE)
+		mods += "i";
 	    if (me.flags & ME_LITERAL)
 		mods += "l";
 	    if (me.flags & ME_ONESHOT)
@@ -2289,6 +2312,8 @@ int macros::push(const std::string & n, const char *o, const std::string & b,
     int iflags = ME_NONE;
     if (flags & RPMMACRO_LITERAL)
 	iflags |= ME_LITERAL;
+    if (flags & RPMMACRO_IMMUTABLE)
+	iflags |= ME_IMMUTABLE;
 
     return pushMacro(mc, n, o, b, level, iflags);
 }
