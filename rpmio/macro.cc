@@ -132,13 +132,13 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 /* forward ref */
 static int expandMacro(rpmMacroBuf mb, const char *src, size_t slen);
 static int expandQuotedMacro(rpmMacroBuf mb, const char *src);
-static void pushMacro(rpmMacroContext mc,
+static int pushMacro(rpmMacroContext mc,
 	const std::string & n, const char * o, const std::string & b,
 	int level, int flags);
-static void pushMacroAny(rpmMacroContext mc,
+static int pushMacroAny(rpmMacroContext mc,
 	const string & n, const char * o, const string & b,
 	macroFunc f, void *priv, int nargs, int level, int flags);
-static void popMacro(rpmMacroContext mc, const std::string & n);
+static int popMacro(rpmMacroContext mc, const std::string & n);
 static int loadMacroFile(rpmMacroContext mc, const std::string fn);
 /* =============================================================== */
 
@@ -758,8 +758,7 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	_free(ebody);
     }
 
-    pushMacro(mb->mc, name, o, body, level, flags);
-    rc = 0;
+    rc = pushMacro(mb->mc, name, o, body, level, flags);
 
 exit:
     if (rc)
@@ -773,8 +772,7 @@ static int undefineMacro(rpmMacroBuf mb, const std::string & n)
     if (!validName(mb, n.c_str(), n.size(), "%undefine"))
 	return mb->error;
 
-    popMacro(mb->mc, n);
-    return 0;
+    return popMacro(mb->mc, n);
 }
 
 /**
@@ -1832,7 +1830,7 @@ static int doExpandMacros(rpmMacroContext mc, const string & src, int flags,
     return rc;
 }
 
-static void pushMacroAny(rpmMacroContext mc,
+static int pushMacroAny(rpmMacroContext mc,
 	const string & n, const char * o, const string & b,
 	macroFunc f, void *priv, int nargs, int level, int flags)
 {
@@ -1861,9 +1859,11 @@ static void pushMacroAny(rpmMacroContext mc,
     me.flags = flags;
     me.flags &= ~(ME_USED);
     me.level = level;
+
+    return 0;
 }
 
-static void pushMacro(rpmMacroContext mc,
+static int pushMacro(rpmMacroContext mc,
 		const string & n, const char * o, const string & b,
 		int level, int flags)
 {
@@ -1871,15 +1871,16 @@ static void pushMacro(rpmMacroContext mc,
 }
 
 /* Return pointer to the _previous_ macro definition (or NULL) */
-static void popMacro(rpmMacroContext mc, const std::string & n)
+static int popMacro(rpmMacroContext mc, const std::string & n)
 {
     auto const & entry = mc->tab.find(n);
     if (entry == mc->tab.end())
-	return;
+	return 0;
     auto & stack = entry->second;
     stack.pop();
     if (stack.empty())
 	mc->tab.erase(entry);
+    return 0;
 }
 
 static int defineMacro(rpmMacroContext mc, const std::string macro, int level)
@@ -2279,8 +2280,7 @@ int macros::load(const string & fn)
 
 int macros::pop(const std::string & n)
 {
-    popMacro(mc, n);
-    return 0;
+    return popMacro(mc, n);
 }
 
 int macros::push(const std::string & n, const char *o, const std::string & b,
@@ -2290,17 +2290,15 @@ int macros::push(const std::string & n, const char *o, const std::string & b,
     if (flags & RPMMACRO_LITERAL)
 	iflags |= ME_LITERAL;
 
-    pushMacro(mc, n, o, b, level, iflags);
-    return 0;
+    return pushMacro(mc, n, o, b, level, iflags);
 }
 
 int macros::push_aux(const std::string & n, const char *o,
 		    macroFunc f, void *priv, int nargs,
 		    int level, int flags)
 {
-    pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
-		level, flags|ME_FUNC);
-    return 0;
+    return pushMacroAny(mc, n, nargs ? "" : NULL, "<aux>", f, priv, nargs,
+			level, flags|ME_FUNC);
 }
 
 macros::macros(rpmMacroContext mctx) :
