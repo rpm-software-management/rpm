@@ -120,7 +120,7 @@ rpm --define "undefine that"
 [1],
 [],
 [error: Macro %_ has illegal name (%define)
-error: Macro %undefine is a built-in (%define)
+error: Macro %undefine is immutable and cannot be redefined
 ])
 RPMTEST_CLEANUP
 
@@ -143,7 +143,7 @@ rpm --undefine getenv
 ],
 [1],
 [],
-[error: Macro %getenv is a built-in (%undefine)
+[error: Macro %getenv is immutable and cannot be undefined
 ])
 RPMTEST_CLEANUP
 
@@ -354,8 +354,8 @@ rpm --eval "%dump" 2>&1 | head -3
 ],
 [0],
 [[========================
--20: P	<builtin>
--20: S	<builtin>
+-20: P<i>	<builtin>
+-20: S<i>	<builtin>
 ]],
 [])
 RPMTEST_CLEANUP
@@ -1132,7 +1132,7 @@ rpm --eval '%{lua: rpm.undefine("define")}'
 ],
 [1],
 [],
-[[error: Macro %define is a built-in (%undefine)
+[[error: Macro %define is immutable and cannot be undefined
 error: lua script failed: [string "<lua>"]:1: error undefining macro
 ]])
 RPMTEST_CLEANUP

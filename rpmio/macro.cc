@@ -568,26 +568,15 @@ static unsigned int getncpus(void)
 static int
 validName(rpmMacroBuf mb, const char *name, size_t namelen, const char *action)
 {
-    rpmMacroEntry mep;
-    int rc = 0;
     int c;
 
     /* Names must start with alphabetic, or _ and be at least 2 chars */
     if (!((c = *name) && (risalpha(c) || (c == '_' && namelen > 1)))) {
 	rpmMacroBufErr(mb, 1, _("Macro %%%s has illegal name (%s)\n"), name, action);
-	goto exit;
+	return 0;
     }
 
-    mep = findEntry(mb->mc, name, namelen, NULL);
-    if (mep && mep->flags & (ME_FUNC|ME_AUTO)) {
-	rpmMacroBufErr(mb, 1, _("Macro %%%s is a built-in (%s)\n"), name, action);
-	goto exit;
-    }
-
-    rc = 1;
-
-exit:
-    return rc;
+    return 1;
 }
 
 /**
@@ -2129,7 +2118,8 @@ static void initBuiltins(rpmMacroContext_s *mc)
     /* Define built-in macros */
     for (const struct builtins_s *b = builtinmacros; b->name; b++) {
 	pushMacroAny(mc, b->name, b->nargs ? "" : NULL, "<builtin>",
-		    b->func, NULL, b->nargs, RMIL_BUILTIN, b->flags | ME_FUNC);
+		    b->func, NULL, b->nargs, RMIL_BUILTIN,
+		    b->flags | ME_FUNC | ME_IMMUTABLE);
     }
 }
 
