@@ -56,7 +56,7 @@ css: style.css
 
 FOOTER="\
 <footer>
-<p id=\"version\">RPM @CMAKE_PROJECT_VERSION@</p>
+<p id=\"version\">RPM @RPM_VERSION@</p>
 <p id=\"index\"><a href="./">Index</a></p>
 <p id=\"date\">$(date -I)</p>
 </footer>

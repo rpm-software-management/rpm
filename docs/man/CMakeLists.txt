@@ -18,7 +18,7 @@ set(extra
 set(manuals ${core} ${extra})
 foreach(man ${manuals})
 	add_custom_command(OUTPUT ${man} COMMAND
-			sed '1 s/$$/ \"RPM ${CMAKE_PROJECT_VERSION}\"/'
+			sed '1 s/$$/ \"RPM ${RPM_VERSION}\"/'
 			< ${CMAKE_CURRENT_SOURCE_DIR}/${man}.scd | ${SCDOC}
 			> ${man} DEPENDS ${man}.scd)
 endforeach()

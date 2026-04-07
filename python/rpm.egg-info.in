@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: @PROJECT_NAME@
-Version: @PROJECT_VERSION@
+Version: @RPM_VERSION_PY@
 Summary: Python bindings for rpm
 Home-page: @PROJECT_HOMEPAGE_URL@
 Author: Rpm community

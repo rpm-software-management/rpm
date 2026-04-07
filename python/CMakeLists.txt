@@ -29,7 +29,7 @@ install(FILES rpm/transaction.py rpm/__init__.py
 	DESTINATION ${Python3_SITEARCH}/rpm)
 install(DIRECTORY examples TYPE DOC)
 
-set(egginfo ${PROJECT_NAME}-${PROJECT_VERSION}-py${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}.egg-info)
+set(egginfo ${PROJECT_NAME}-${RPM_VERSION_PY}-py${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}.egg-info)
 configure_file(rpm.egg-info.in ${egginfo} @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${egginfo}
 	DESTINATION ${Python3_SITEARCH})
