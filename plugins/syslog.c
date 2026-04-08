@@ -74,13 +74,24 @@ static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     return RPMRC_OK;
 }
 
+static const char *getOp(rpmte te)
+{
+    switch (rpmteType(te)) {
+    case TR_ADDED:	return "install";
+    case TR_REMOVED:	return "erase";
+    case TR_RPMDB:	return "rpmdb";
+    case TR_RESTORED:	return "restore";
+    }
+    return "<unknown>";
+}
+
 static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
 
     if (state->logging) {
 	int lvl = LOG_NOTICE;
-	const char *op = (rpmteType(te) == TR_ADDED) ? "install" : "erase";
+	const char *op = getOp(te);
 	const char *outcome = "success";
 	/* XXX: Permit configurable header queryformat? */
 	const char *pkg = rpmteNEVRA(te);
