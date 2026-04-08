@@ -509,10 +509,11 @@ function(add_tarball targetname namever treeish)
 	set(tarname ${namever}.${distfmt})
 	set(distname ${tarname}.bz2)
 
-	add_custom_target(${distname}
+	add_custom_target(${targetname}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		VERBATIM
 		DEPENDS ChangeLog po/rpm.pot
+		COMMENT "Creating tarball: ${distname}"
 		COMMAND git archive
 			--format=${distfmt}
 			--output=${CMAKE_BINARY_DIR}/${tarname}
@@ -528,16 +529,14 @@ function(add_tarball targetname namever treeish)
 			 && rm -f ${CMAKE_BINARY_DIR}/$sha1.tar"
 		COMMAND bzip2 -f ${CMAKE_BINARY_DIR}/${tarname}
 	)
-	add_custom_target(${targetname} DEPENDS ${distname})
 endfunction()
-
-add_tarball(dist ${PROJECT_NAME}-${RPM_VERSION} HEAD)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
 	execute_process(COMMAND git rev-list --count HEAD
 			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 			OUTPUT_VARIABLE gitcount
 			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	add_tarball(dist ${PROJECT_NAME}-${RPM_VERSION} HEAD)
 	add_tarball(snapshot
 		    ${PROJECT_NAME}-${RPM_VERSION}-git${gitcount} HEAD)
 endif()
