@@ -5,9 +5,7 @@
 * 05 Nov 2003 22:09:10
 */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "system.h"
 
 #include <vector>
 
@@ -42,6 +40,8 @@
 #endif
 
 #include "modemuncher.cc"
+
+#include "debug.h"
 
 extern int _rpmlua_have_forked;
 
@@ -422,12 +422,6 @@ static int Pgetenv(lua_State *L)		/** getenv([name]) */
 {
 	if (lua_isnone(L, 1))
 	{
-	#ifdef __APPLE__
-		#include <crt_externs.h>
-		#define environ (*_NSGetEnviron())
-	#else
-		extern char **environ;
-	#endif /* __APPLE__ */
 		char **e;
 		if (*environ==NULL) lua_pushnil(L); else lua_newtable(L);
 		for (e=environ; *e!=NULL; e++)
