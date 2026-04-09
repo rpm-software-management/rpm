@@ -204,5 +204,5 @@ exit:
     fflush(stdout);
     if (ferror(stdout) || ferror(stderr))
 	return 255; /* I/O error */
-    return ec;
+    return RETVAL(ec);
 }
