@@ -45,6 +45,18 @@ hello-2.0-1.x86_64
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([rpmkeys -K argument overflow])
+AT_KEYWORDS([rpmkeys digest])
+AT_SKIP_IF([test -z "${PYTHON}"])
+RPMTEST_CHECK([
+${PYTHON} -c "for i in range(1, 257): open('%s.notrpm' % i, 'w')"
+rpmkeys -K *.notrpm
+],
+[254],
+[ignore],
+[ignore])
+RPMTEST_CLEANUP
+
 # ------------------------------
 # Test pre-built package verification
 RPMTEST_SETUP([rpmkeys -Kv <unsigned> 1])
