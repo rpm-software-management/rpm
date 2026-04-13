@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 project(rpm
-	VERSION 6.0.90
+	VERSION 6.1.0
 	DESCRIPTION "The RPM Package Manager"
 	HOMEPAGE_URL "http://rpm.org"
 	LANGUAGES C CXX
@@ -54,8 +54,42 @@ set(RPM_VENDOR "vendor" CACHE STRING "rpm vendor string")
 set(RPM_SOVERSION 10)
 set(RPM_LIBVERSION ${RPM_SOVERSION}.6.0)
 
-set(RPM_VERSION ${PROJECT_VERSION})
-set(RPM_VERSION_PY ${PROJECT_VERSION})
+# Obtain the git tag and revision from HEAD (or ChangeLog if not a git repo)
+if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
+	execute_process(COMMAND git describe --exact-match
+			OUTPUT_VARIABLE RPM_VERSION_TAG
+			OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+	execute_process(COMMAND git rev-list --no-merges --count HEAD
+			OUTPUT_VARIABLE RPM_VERSION_REV
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif (EXISTS ${CMAKE_SOURCE_DIR}/ChangeLog)
+	execute_process(COMMAND sed -n
+				"1 s/^commit .\\+ (tag: \\(.\\+\\))/\\1/p"
+				${CMAKE_SOURCE_DIR}/ChangeLog
+			OUTPUT_VARIABLE RPM_VERSION_TAG
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND grep -c ^commit ${CMAKE_SOURCE_DIR}/ChangeLog
+			OUTPUT_VARIABLE RPM_VERSION_REV
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+string(REGEX MATCH "^rpm-${PROJECT_VERSION}-([a-z]+[0-9]*)"
+		   RPM_VERSION_TAG "${RPM_VERSION_TAG}")
+
+# Construct human-friendly RPM version strings
+# Follow rpm-version(7) and PEP 440
+if (CMAKE_MATCH_1 STREQUAL release)
+	# Final release
+	set(RPM_VERSION ${PROJECT_VERSION})
+	set(RPM_VERSION_PY ${PROJECT_VERSION})
+elseif (CMAKE_MATCH_1)
+	# Pre-release
+	set(RPM_VERSION ${PROJECT_VERSION}~${CMAKE_MATCH_1})
+	set(RPM_VERSION_PY ${PROJECT_VERSION}${CMAKE_MATCH_1})
+else()
+	# Development snapshot (sorts newer than any pre-release)
+	set(RPM_VERSION ${PROJECT_VERSION}~${RPM_VERSION_REV})
+	set(RPM_VERSION_PY ${PROJECT_VERSION}.dev${RPM_VERSION_REV})
+endif()
 message(STATUS "RPM version ${RPM_VERSION}")
 
 set(CMAKE_C_STANDARD 99)
@@ -497,8 +531,9 @@ install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
 add_custom_target(ChangeLog
 		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-		   COMMAND git log --no-merges --no-decorate
-				--output=${CMAKE_BINARY_DIR}/ChangeLog
+		   COMMAND git log --no-merges
+			--decorate-refs=refs/tags/rpm-${PROJECT_VERSION}-*
+			--output=${CMAKE_BINARY_DIR}/ChangeLog
 )
 
 add_custom_command(OUTPUT po/rpm.pot
@@ -532,13 +567,7 @@ function(add_tarball targetname namever treeish)
 endfunction()
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/.git)
-	execute_process(COMMAND git rev-list --count HEAD
-			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-			OUTPUT_VARIABLE gitcount
-			OUTPUT_STRIP_TRAILING_WHITESPACE)
 	add_tarball(dist ${PROJECT_NAME}-${RPM_VERSION} HEAD)
-	add_tarball(snapshot
-		    ${PROJECT_NAME}-${RPM_VERSION}-git${gitcount} HEAD)
 endif()
 
 # Voodoo rites to make our libraries cmake find_package() importable
