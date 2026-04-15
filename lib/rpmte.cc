@@ -816,7 +816,7 @@ int rpmteAddOp(rpmte te)
 int rpmteProcess(rpmte te, pkgGoal goal, int num)
 {
     /* Only install/erase resets pkg file info */
-    int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE && goal != PKG_RESTORE);
+    int scriptstage = isScriptStage(goal);
     int test = (rpmtsFlags(te->ts) & RPMTRANS_FLAG_TEST);
     int reset_fi = (scriptstage == 0 && test == 0);
     int failed = 1;
