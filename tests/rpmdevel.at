@@ -67,8 +67,6 @@ debug_scriptlet_pre: %post(simple-1.0-1.noarch) 3
 debug_scriptlet_fork_post: /bin/sh 3
 debug_scriptlet_post: %post(simple-1.0-1.noarch) 3: 0
 debug_psm_post: simple-1.0-1.noarch:0
-debug_psm_pre: simple-1.0-1.noarch
-debug_psm_post: simple-1.0-1.noarch:0
 debug_tsm_post: 0
 debug_cleanup
 ])
