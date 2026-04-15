@@ -22,6 +22,8 @@ typedef enum pkgGoal_e {
     PKG_TRANSFILETRIGGERUN	= RPMTAG_TRANSFILETRIGGERUN,
 } pkgGoal;
 
+#define isScriptStage(_g) ((_g) != PKG_INSTALL && (_g) != PKG_ERASE && (_g) != PKG_RESTORE)
+
 /** \ingroup rpmte
  * Transaction element ordering chain linkage.
  */
