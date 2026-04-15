@@ -44,7 +44,7 @@ Post hook is guaranteed to execute whenever pre hook was executed.
 
 ## Per transaction element hooks
 
-Hooks `psm_pre` and `psm_post` occur before and after the processing of single transaction element within the transaction. Both hooks can get executed multiple times for a single element as these hooks get called separately for %pretrans and %posttrans scriptlets in addition to the main package install or erase action.
+Hooks `psm_pre` and `psm_post` occur before and after the processing of single transaction element within the transaction during install, erase and restore operations.
 
 Post hook is guaranteed to execute whenever pre hook was executed.
 

@@ -1109,7 +1109,8 @@ static rpmRC runGoal(rpmpsm psm, pkgGoal goal)
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 {
     rpmpsm psm = NULL;
-    rpmRC rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_OK;
+    int runplugins = (isScriptStage(goal) == 0);
 
     /* Psm can't fail in test mode, just return early */
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
@@ -1117,7 +1118,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 
     psm = rpmpsmNew(ts, te, goal);
     /* Run pre transaction element hook for all plugins */
-    if (rpmChrootIn() == 0) {
+    if (runplugins && rpmChrootIn() == 0) {
 	rc = rpmpluginsCallPsmPre(rpmtsPlugins(ts), te);
 	rpmChrootOut();
     }
@@ -1126,7 +1127,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	rc = runGoal(psm, goal);
 
     /* Run post transaction element hook for all plugins (even on failure) */
-    if (rpmChrootIn() == 0) {
+    if (runplugins && rpmChrootIn() == 0) {
 	rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
 	rpmChrootOut();
     }
