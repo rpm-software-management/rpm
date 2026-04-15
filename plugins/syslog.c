@@ -16,7 +16,7 @@ struct logstat {
 static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
 {
     /* XXX make this configurable? */
-    const char * log_ident = "[RPM]";
+    const char * log_ident = "rpm";
     struct logstat * state = rcalloc(1, sizeof(*state));
 
     rpmPluginSetData(plugin, state);
