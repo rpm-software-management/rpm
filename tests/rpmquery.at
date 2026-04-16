@@ -1415,8 +1415,8 @@ Group        : Testing
 Size         : 7243
 License      : GPL
 Signature    :
-              RSA/SHA256, Thu Apr  6 13:02:33 2017, Key ID 4344591e1964c5fc
-              RSA/SHA256, Thu Apr  6 13:02:32 2017, Key ID 4344591e1964c5fc
+               RSA/SHA256, Thu Apr  6 13:02:33 2017, Key ID 4344591e1964c5fc
+               RSA/SHA256, Thu Apr  6 13:02:32 2017, Key ID 4344591e1964c5fc
 Source RPM   : hello-2.0-1.src.rpm
 Build Date   : Sat Nov 22 12:00:00 2008
 Build Host   : localhost
