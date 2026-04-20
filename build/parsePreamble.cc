@@ -1143,10 +1143,11 @@ static struct PreambleRec_s const preambleList[] = {
 
 /**
  */
-static int findPreambleTag(rpmSpec spec, PreambleRec * pr, const char ** macro, char * lang)
+static int findPreambleTag(rpmSpec spec, PreambleRec * pr, const char ** macro, char * lang, size_t langsize)
 {
     PreambleRec p;
     char *s = spec->line;
+    size_t l = 0;
     SKIPSPACE(s);
 
     for (p = preambleList; p->token != NULL; p++) {
@@ -1177,14 +1178,17 @@ static int findPreambleTag(rpmSpec spec, PreambleRec * pr, const char ** macro, 
     case 2:
 	if (*s == ':') {
 	    /* Type 1 is multilang, 2 is qualifiers with no defaults */
-	    strcpy(lang, (p->type == 1) ? RPMBUILD_DEFAULT_LANG : "");
+	    rstrlcpy(lang, (p->type == 1) ? RPMBUILD_DEFAULT_LANG : "", langsize);
+	    l = strlen(lang);
 	    break;
 	}
 	if (*s != '(') return 1;
 	s++;
 	SKIPSPACE(s);
-	while (!risspace(*s) && *s != ')')
+	while (!risspace(*s) && *s != ')' && l < (langsize - 1)) {
 	    *lang++ = *s++;
+	    l++;
+	}
 	*lang = '\0';
 	SKIPSPACE(s);
 	if (*s != ')') return 1;
@@ -1254,7 +1258,7 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage)
 	    linep = spec->line;
 	    SKIPSPACE(linep);
 	    if (*linep != '\0') {
-		if (findPreambleTag(spec, &p, &macro, lang)) {
+		if (findPreambleTag(spec, &p, &macro, lang, sizeof(lang))) {
 		    if (spec->lineNum == 1 &&
 			(unsigned char)(spec->line[0]) == 0xed &&
 			(unsigned char)(spec->line[1]) == 0xab &&
