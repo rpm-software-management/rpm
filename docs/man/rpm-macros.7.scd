@@ -75,10 +75,10 @@ described in *rpm-common*(8) and the API (C, Python, Lua).
 Except for those defined inside parametric macros, macros are always global
 in scope.
 
-RPM macros are stacked, ie. when redefining an already existing
-macro, it shadows the previous definition instead of replacing it, and
-undefining a macro only pops the topmost definition, thus activating
-the previous macro definition.
+RPM macros are stacked, ie. when redefining an already existing macro,
+the new definition is pushed on top of the previous one, shadowing it.
+Conversely, undefining a macro only pops the topmost definition,
+reactivating the previous macro definition if there is one.
 
 Note that this manual only describes the macro processor engine itself.
 On a normal RPM based system, there are a vast number of other macros
