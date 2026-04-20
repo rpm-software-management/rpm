@@ -1689,7 +1689,7 @@ rpm --define "aa 123" --define "mymod()<l> %aa" --eval "%mymod"
 ],
 [1],
 [],
-[error: Macro %mymod has incompatible modifiers
+[error: Macro %mymod has modifiers incompatible with parametric macros
 ])
 
 RPMTEST_CHECK([
