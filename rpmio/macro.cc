@@ -735,7 +735,8 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 
     /* Check for modifier compatibility */
     if (o && (flags & (ME_LITERAL|ME_ONESHOT))) {
-	rpmMacroBufErr(mb, 1, _("Macro %%%s has incompatible modifiers\n"), n);
+	rpmMacroBufErr(mb, 1, _("Macro %%%s has modifiers incompatible "
+				"with parametric macros\n"), n);
 	goto exit;
     }
 
