@@ -180,18 +180,23 @@ static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 
-	lua_pushstring(L, "RPM_PACKAGE_RPMVERSION");
-	lua_pushstring(L, script->rpmver);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	/* Not all packages out there are built by RPM */
+	if (script->rpmver) {
+	    lua_pushstring(L, "RPM_PACKAGE_RPMVERSION");
+	    lua_pushstring(L, script->rpmver);
+	    lua_settable(L, LUA_REGISTRYINDEX);
+	}
 
 	if (chdir("/") == 0 &&
 		rpmluaRunScript(lua, scriptbuf, script->descr, NULL, *argvp) == 0) {
 	    rc = RPMRC_OK;
 	}
 
-	lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");
-	lua_pushnil(L);
-	lua_settable(L, LUA_REGISTRYINDEX);
+	if (script->rpmver) {
+	    lua_getfield(L, LUA_REGISTRYINDEX, "RPM_PACKAGE_RPMVERSION");
+	    lua_pushnil(L);
+	    lua_settable(L, LUA_REGISTRYINDEX);
+	}
 
 	/* This failing would be fatal, return something different for it... */
 	if (fchdir(cwd)) {
