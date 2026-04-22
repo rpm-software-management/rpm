@@ -2147,3 +2147,14 @@ POSTTRANS
 ],
 [ignore])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpm -U package from java rpm-builder])
+AT_KEYWORDS([install lua script])
+RPMTEST_CHECK([
+runroot rpm -U --nosignature /data/RPMS/mwe-rpm-lua-problem-1.0.0-1.noarch.rpm
+],
+[0],
+[Hello World from preinstall lua scriptlet!
+],
+[])
+RPMTEST_CLEANUP
