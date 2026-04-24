@@ -16,7 +16,7 @@ BuildArch:	noarch
 %setup -c -T
 
 %install
-for f in fi de_DE pl ""; do
+for f in fi de_DE pl be@latin ""; do
     mkdir -p $RPM_BUILD_ROOT/%{_datadir}/man/$f/man1
     echo "This is $f language" | gzip > $RPM_BUILD_ROOT/%{_datadir}/man/$f/man1/%{name}.1.gz
 done
