@@ -301,7 +301,7 @@ echo "" > $MO_NAME
 while IFS= read -r line
 do
     LOCALE=`echo $line|sed 's/%lang(//'|sed 's/).*//'`
-    LANG=`echo $LOCALE|sed 's/_.*//'`
+    LANG=`echo $LOCALE|sed 's/[_.@].*//'`
     LANGNAME=$LANG
     #LANGNAME=`locale -av | grep -m 1 -A 12 "locale: $LOCALE" | grep " language |" | cut "-d|" -f2`
     if [ -z "$LANGNAME" ]; then
