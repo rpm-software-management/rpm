@@ -695,7 +695,7 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level, int expandbody, siz
 	}
 
 	/* Trim trailing blanks/newlines */
-	while (risblank(body.back()) || iseol(body.back()))
+	while (!body.empty() && (risblank(body.back()) || iseol(body.back())))
 	    body.pop_back();
     }
 
