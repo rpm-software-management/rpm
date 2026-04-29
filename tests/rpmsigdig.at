@@ -2118,6 +2118,36 @@ Preparing packages...
 ],
 [])
 
+# Delete RSA and ECDSA from RPMDB
+# Importing bundle of nontrusted and trusted key should take trusted one
+# FIXME should fail?
+RPMTEST_CHECK([
+runroot rpmkeys --delete 771b18d3d7baa28734333c424344591e1964c5fc
+runroot rpmkeys --delete e8a62c0512b06b5d2183ba207f1c21f95f65bbe8
+runroot rpm -qa gpg-pubkey
+cat /data/keys/rpm.org-rsa-2048-test.pub /data/keys/rpm.org-nistp256-test.pub > "${RPMTEST}/tmp/bundle.pub"
+runroot rpmkeys --import /tmp/bundle.pub
+],
+[1],
+[],
+[error: Certificate 4344591E1964C5FC:
+  Policy rejects 4344591E1964C5FC: Policy rejected asymmetric algorithm, because RSA2048 is not considered secure
+error: /tmp/bundle.pub: key 1 import failed.
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key ID 4344591e1964c5fc: NOTTRUSTED
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[])
+
 # EDDSA disabled
 RPMTEST_CHECK([
 runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
