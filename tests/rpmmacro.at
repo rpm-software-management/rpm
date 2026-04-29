@@ -108,6 +108,22 @@ rpm --eval '%define _ that'
 [],
 [error: Macro %_ has illegal name (%define)
 ])
+
+RPMTEST_CHECK([
+rpm --eval '%define this'
+],
+[1],
+[],
+[error: Macro %this has empty body
+])
+
+RPMTEST_CHECK([
+rpm --eval '%define this {}'
+],
+[1],
+[],
+[error: Macro %this has empty body
+])
 RPMTEST_CLEANUP
 
 # ------------------------------
