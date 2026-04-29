@@ -2087,7 +2087,9 @@ Preparing packages...
 
 # RSA disabled
 RPMTEST_CHECK([
+# backup crypto policies configuration
 runroot cp /etc/crypto-policies/back-ends/rpm-sequoia.config /tmp/
+# disable RSA signature algorithm
 runroot sed -i '/^rsa/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
@@ -2118,9 +2120,40 @@ Preparing packages...
 ],
 [])
 
+# Delete RSA and ECDSA from rpm keyring
+# Importing bundle of nontrusted and trusted key should take just the trusted one (ECDSA)
+RPMTEST_CHECK([
+runroot rpmkeys --delete 771b18d3d7baa28734333c424344591e1964c5fc # RSA
+runroot rpmkeys --delete e8a62c0512b06b5d2183ba207f1c21f95f65bbe8 # ECDSA
+cat /data/keys/rpm.org-rsa-2048-test.pub /data/keys/rpm.org-nistp256-test.pub > "${RPMTEST}/tmp/bundle.pub"
+runroot rpmkeys --import /tmp/bundle.pub
+],
+[1],
+[],
+[error: Certificate 4344591E1964C5FC:
+  Policy rejects 4344591E1964C5FC: Policy rejected asymmetric algorithm, because RSA2048 is not considered secure
+error: /tmp/bundle.pub: key 1 import failed.
+])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key ID 4344591e1964c5fc: NOTTRUSTED
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[stderr])
+
 # EDDSA disabled
 RPMTEST_CHECK([
+# restore crypto policies configuration
 runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+# import previously removed certificates
+runroot rpmkeys --import /data/keys/*.pub
 # Work around https://gitlab.com/sequoia-pgp/sequoia/-/issues/1225
 # Disabling cv25519 disables ed25519, but disabling ed25519 does not:
 runroot sed -i '/^cv25519/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
@@ -2155,9 +2188,33 @@ Preparing packages...
 ],
 [])
 
+# remove the EdDSA key from rpm keyring -- should report UNTRUSTED instead of NOKEY
+RPMTEST_CHECK([
+runroot rpmkeys --delete 152bb32fd9ca982797e835cfb0645aec757bf69e
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key ID b0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[stderr])
+
 # ECDSA disabled
 RPMTEST_CHECK([
+# restore crypto policies configuration
 runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+# import previously removed certificates
+runroot rpmkeys --import /data/keys/*.pub
 runroot sed -i '/^nist/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
@@ -2188,9 +2245,33 @@ Preparing packages...
 ],
 [])
 
+# remove the ECDSA key from rpm keyring -- should report UNTRUSTED instead of NOKEY
+RPMTEST_CHECK([
+runroot rpmkeys --delete e8a62c0512b06b5d2183ba207f1c21f95f65bbe8
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[stderr])
+
 # everything disabled
 RPMTEST_CHECK([
+# restore crypto policies configuration
 runroot cp -f /tmp/rpm-sequoia.config /etc/crypto-policies/back-ends/
+# import previously removed certificates
+runroot rpmkeys --import /data/keys/*.pub
 runroot sed -i 's/always/never/g' /etc/crypto-policies/back-ends/rpm-sequoia.config
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
@@ -2242,7 +2323,7 @@ Preparing packages...
 [	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
 ])
 
-# remove the ECDSA key from RPM DB -- should report UNTRUSTED instead of NOKEY
+# remove the ECDSA key from rpm keyring -- should report UNTRUSTED instead of NOKEY
 RPMTEST_CHECK([
 runroot rpmkeys --delete e8a62c0512b06b5d2183ba207f1c21f95f65bbe8
 runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
@@ -2294,6 +2375,48 @@ Preparing packages...
 ],
 [	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
 ])
+
+# importing key back should not work
+RPMTEST_CHECK([
+runroot rpmkeys --import /data/keys/rpm.org-nistp256-test.pub
+],
+[1],
+[],
+[stderr])
+
+RPMTEST_CHECK([
+grep "^error:" stderr
+],
+[0],
+[error: Certificate 7F1C21F95F65BBE8:
+error: /data/keys/rpm.org-nistp256-test.pub: key 1 import failed.
+],
+[])
+
+# remove all keys from rpm keyring -- should report UNTRUSTED but fail
+RPMTEST_CHECK([
+runroot rpmkeys --delete 152bb32fd9ca982797e835cfb0645aec757bf69e
+runroot rpmkeys --delete 771b18d3d7baa28734333c424344591e1964c5fc
+runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm:
+    Header OpenPGP V4 EdDSA/SHA512 signature, key ID b0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
+    Header OpenPGP V4 RSA/SHA512 signature, key ID 4344591e1964c5fc: NOTTRUSTED
+    Header SHA256 digest: OK
+    Payload SHA256 digest: OK
+],
+[stderr])
+
+RPMTEST_CHECK([
+runroot rpmkeys -K /tmp/hello-2.0-1.x86_64.rpm
+],
+[1],
+[/tmp/hello-2.0-1.x86_64.rpm: digests SIGNATURES NOT OK
+],
+[stderr])
+
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmsign --addsign legacy v6])
