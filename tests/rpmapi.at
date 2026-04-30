@@ -56,10 +56,9 @@ runroot sed -i '/^nist/s/always/never/g' /etc/crypto-policies/back-ends/rpm-sequ
 runroot importkey /data/keys/rpm.org-nistp256-test.pub
 ],
 [1],
-dnl XXX For desired behavior, rpm-sequoia should return 3 (NOTTRUSTED) here
-[/data/keys/rpm.org-nistp256-test.pub key 1: 2
+[/data/keys/rpm.org-nistp256-test.pub key 1: 3
 ],
 [error: Certificate 7F1C21F95F65BBE8:
-  Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm
+  Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm, because NistP256 is not considered secure
 ])
 RPMTEST_CLEANUP
