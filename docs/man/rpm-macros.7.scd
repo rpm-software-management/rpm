@@ -685,16 +685,6 @@ the preceding *%*-character.
 	```
 	%{verbose:-x}
 	```
-
-## Spec specific macros
-*%{S:*_NUMBER_*}*
-	Expand to the filename of the specified Source _NUMBER_.
-	*%{S:n}* is equivalent to *%{SOURCEn}*.
-
-*%{P:*_NUMBER_*}*
-	Expand to the filename of the specified Patch _NUMBER_.
-	*%{P:n}* is equivalent to *%{PATCHn}*.
-
 ## Diagnostics
 *%trace*
 	Toggle print of debugging information before/after expansion.
