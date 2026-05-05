@@ -64,6 +64,9 @@ _PATHPREFIX_
 	Note that macros intended to be runtime expanded generally need
 	to be escaped in specs to avoid buildtime expansion.
 
+*-f* _PATH_
+	Read the scriptlet body from the file at _PATH_ (during build).
+
 *-n*
 	Interpret _NAME_ as a full package name.
 
