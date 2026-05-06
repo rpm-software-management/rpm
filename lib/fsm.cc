@@ -492,7 +492,7 @@ static int removeSBITS(int dirfd, const char *path, nlink_t *nlinkp)
 	}
 #ifdef WITH_CAP
 	if (stb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) {
-	    if (cap_set_fileat(dirfd, path, NULL) != 0)
+	    if (cap_set_fileat(dirfd, path, NULL) != 0 && errno != ENODATA)
 		rc = -1;
 	}
 #endif
