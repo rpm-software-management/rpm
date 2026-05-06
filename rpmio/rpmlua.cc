@@ -1323,7 +1323,7 @@ static int mc_newindex(lua_State *L)
     rpmMacroContext *mc = checkmc(L, 1);
     const char *name = luaL_checkstring(L, 2);
     if (lua_isnil(L, 3)) {
-	if (rpmPopMacro(*mc, name))
+	if (rpmUndefineMacro(*mc, name))
 	    luaL_error(L, "error undefining macro %s", name);
     } else {
 	const char *body = luaL_checkstring(L, 3);
