@@ -491,6 +491,14 @@ install(DIRECTORY DESTINATION ${RPM_CONFIGDIR}/macros.d)
 install(DIRECTORY DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/rpm)
 install(FILES CONTRIBUTING.md COPYING CREDITS INSTALL README TYPE DOC)
 
+# Compat links for commands that moved from /usr/lib/rpm to bin
+foreach(cmd rpmuncompress rpm-setup-autosign)
+	install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} \
+		-E create_symlink \
+			../../${CMAKE_INSTALL_BINDIR}/${cmd} \
+			\$ENV{DESTDIR}/${RPM_CONFIGDIR}/${cmd})")
+endforeach()
+
 add_custom_target(ChangeLog
 		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 		   COMMAND git log --no-merges --no-decorate
