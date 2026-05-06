@@ -469,20 +469,31 @@ static int fsmMknod(int dirfd, const char *path, mode_t mode, dev_t dev)
     return rc;
 }
 
-static int removeSBITS(int dirfd, const char *path)
+/*
+ * Strip setuid/setgid (and file caps when WITH_CAP) from a regular file
+ * before we unlink/rename it.  *nlinkp is set to st_nlink so callers can
+ * decide how to react to a failure: when nlink > 1 the bits live on via
+ * the surviving hardlink and the failure is fatal; when nlink == 1 the
+ * unlink itself removes the inode so a stripping failure is harmless.
+ */
+static int removeSBITS(int dirfd, const char *path, nlink_t *nlinkp)
 {
     struct stat stb;
     int flags = AT_SYMLINK_NOFOLLOW;
     int rc = 0;
+    if (nlinkp)
+	*nlinkp = 0;
     if (fstatat(dirfd, path, &stb, flags) == 0 && S_ISREG(stb.st_mode)) {
-	/* XXX TODO: actually check for the rc, but what to do there? */
-	/* We now know it's not a link so no need to worry about following */
+	if (nlinkp)
+	    *nlinkp = stb.st_nlink;
 	if ((stb.st_mode & 06000) != 0) {
-	    rc += fchmodat(dirfd, path, stb.st_mode & 0777, 0);
+	    if (fchmodat(dirfd, path, stb.st_mode & 0777, 0) != 0)
+		rc = -1;
 	}
 #ifdef WITH_CAP
 	if (stb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) {
-	    rc += cap_set_fileat(dirfd, path, NULL);
+	    if (cap_set_fileat(dirfd, path, NULL) != 0)
+		rc = -1;
 	}
 #endif
     }
@@ -516,7 +527,16 @@ static int fsmSymlink(const char *opath, int dirfd, const char *path)
 static int fsmUnlink(int dirfd, const char *path)
 {
     int rc = 0;
-    removeSBITS(dirfd, path);
+    nlink_t nlink = 0;
+    if (removeSBITS(dirfd, path, &nlink) != 0 && nlink > 1) {
+	/* Surviving hardlinks would inherit the suid bits; refuse to
+	 * remove the directory entry so the operator sees the failure. */
+	rpmlog(RPMLOG_ERR,
+	       _("failed to strip suid/caps from %s with %u links; "
+		 "refusing to unlink: %m\n"),
+	       path, (unsigned)nlink);
+	return RPMERR_CHMOD_FAILED;
+    }
     rc = unlinkat(dirfd, path, 0);
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%d %s) %s\n", __func__,
@@ -528,7 +548,14 @@ static int fsmUnlink(int dirfd, const char *path)
 
 static int fsmRename(int odirfd, const char *opath, int dirfd, const char *path)
 {
-    removeSBITS(dirfd, path);
+    nlink_t nlink = 0;
+    if (removeSBITS(dirfd, path, &nlink) != 0 && nlink > 1) {
+	rpmlog(RPMLOG_ERR,
+	       _("failed to strip suid/caps from %s with %u links; "
+		 "refusing to rename: %m\n"),
+	       path, (unsigned)nlink);
+	return RPMERR_CHMOD_FAILED;
+    }
     int rc = renameat(odirfd, opath, dirfd, path);
 #if defined(ETXTBSY) && defined(__HPUX__)
     /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
