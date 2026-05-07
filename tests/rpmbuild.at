@@ -748,6 +748,7 @@ runroot rpm -qp --qf '[%{FILELANGS} %{FILENAMES}\n]' /build/RPMS/noarch/find-lan
 ]],
 [0],
 [ /usr/share/find-lang-test/empty.txt
+be@latin /usr/share/man/be@latin/man1/find-lang-test.1.gz
 de /usr/share/man/de_DE/man1/find-lang-test.1.gz
 fi /usr/share/man/fi/man1/find-lang-test.1.gz
  /usr/share/man/man1/find-lang-test.1.gz
@@ -773,6 +774,8 @@ runroot rpm -qp --qf '%{NVRA}\n[%{FILELANGS} %{FILENAMES}\n]' /build/RPMS/noarch
 [find-lang-test-1.0-1.noarch
  /usr/share/find-lang-test/empty.txt
  /usr/share/man/man1/find-lang-test.1.gz
+find-lang-test-langpack-be-1.0-1.noarch
+be@latin /usr/share/man/be@latin/man1/find-lang-test.1.gz
 find-lang-test-langpack-de-1.0-1.noarch
 de /usr/share/man/de_DE/man1/find-lang-test.1.gz
 find-lang-test-langpack-fi-1.0-1.noarch
