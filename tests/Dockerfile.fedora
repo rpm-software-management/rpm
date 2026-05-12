@@ -48,7 +48,7 @@ RUN dnf -y install \
   which \
   elfutils binutils \
   findutils sed grep gawk diffutils file patch \
-  tar unzip gzip bzip2 cpio xz p7zip \
+  tar unzip gzip bzip2 cpio xz 7zip 7zip-standalone \
   pkgconfig \
   /usr/bin/systemd-sysusers \
   gdb-headless \
