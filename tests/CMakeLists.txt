@@ -102,6 +102,13 @@ if (MKTREE_BACKEND STREQUAL oci)
 	else()
 		set(MKTREE_NATIVE no)
 		configure_file(Dockerfile Dockerfile COPYONLY)
+		file(GLOB DOCKERFILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+					       Dockerfile.*-*)
+		list(TRANSFORM DOCKERFILES REPLACE "^Dockerfile\\." "")
+		string(REPLACE ";" ", " DOCKERFILE_NAMES "${DOCKERFILES}")
+		message(WARNING "Could NOT find matching Dockerfile for host "
+				"${OS_RELEASE} (found: ${DOCKERFILE_NAMES}). "
+				"Reverting to containerized test builds.")
 	endif()
 	find_program(PODMAN NAMES podman docker REQUIRED)
 elseif (MKTREE_BACKEND STREQUAL rootfs)
@@ -109,8 +116,7 @@ elseif (MKTREE_BACKEND STREQUAL rootfs)
 	find_program(BWRAP bwrap REQUIRED)
 	mark_as_advanced(BWRAP)
 endif()
-message(STATUS "Using mktree backend: ${MKTREE_BACKEND} "
-	       "(native: ${MKTREE_NATIVE})")
+message(STATUS "Using mktree backend: ${MKTREE_BACKEND}")
 
 # Detect the toolchain used
 if (CMAKE_C_COMPILER_ID STREQUAL GNU)
