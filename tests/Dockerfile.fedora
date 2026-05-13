@@ -1,4 +1,3 @@
-# Supported Fedora releases: 43 44
 FROM quay.io/fedora/fedora:44 AS base
 LABEL com.github.containers.toolbox="true"
 MAINTAINER rpm-maint@lists.rpm.org
