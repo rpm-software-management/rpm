@@ -4,34 +4,38 @@ RPMDB(8)
 rpmdb - RPM Database Tool
 
 # SYNOPSIS
-*rpmdb* [options] {*--initdb*|*--rebuilddb*}
+## Maintenance
+*rpmdb* [options] {*--initdb*|*--rebuilddb*|*--parkdb*}
 
+## Diagnostics
 *rpmdb* [options] {*--verifydb*}
 
+## Migration
 *rpmdb* [options] {*--exportdb*|*--importdb*}
 
 # DESCRIPTION
-The *rpmdb* is used for *rpm* database maintenance operations.
+The *rpmdb* tool is used for low-level *rpm* database operations.
 
 # OPERATIONS
+## Maintenance
 *--initdb*
 	Create a new database if one doesn't already exist. An
 	existing database is not overwritten.
 
 *--rebuilddb*
-	Rebuild database from the installed package headers.
-	Rebuilding discards any unreadable (corrupt) headers
-	from the database, but also compacts the database in
-	case it has grown large over time.
+	Rebuild the database from the installed package headers. Discards any
+	unreadable (corrupt) headers and compacts the database in case it has
+	grown large over time.
 
-	Can also be used to convert between different *rpmdb*
-	formats.
+	Can also be used to convert between different *rpmdb* formats.
 
+## Diagnostics
 *--verifydb*
 	Perform a low-level integrity check on the database.
 	Rarely useful, for system health *rpm --verify -a* is a far more
 	meaningful operation.
 
+## Migration
 *--exportdb*
 	Export the database in header-list format, suitable
 	for transporting to another host or database type.
@@ -58,7 +62,7 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	Initialize a new database in _/tmp/testdb_ directory.
 
 *rpmdb --rebuilddb*
-	Rebuild the system rpmdb.
+	Rebuild the system database.
 
 *rpmdb --verifydb --root /mnt*
 	Verify the system database of a system image mounted
