@@ -29,8 +29,19 @@ the upstream project cannot review translations.
 
 ## AI Policy
 
-As a policy, the RPM project does not accept use of generative AI
-in contributions.
+The RPM project is developed and maintained by humans. Thus, all contributions
+must be fully authored by humans. This is an important aspect of ensuring the
+quality, security, maintainability and license integrity of this critical piece
+of infrastructure that RPM has grown to become over the many decades of its
+existence.
+
+You are free to use AI tools to *accompany* you while working on a patch. That
+is, to explore the codebase, review the patch before submission, or as a fancy
+autocomplete of the text that you would otherwise write by hand.
+
+In other words, we treat the AI technologies the same way as we do the standard
+text editor or IDE features: It's none of our business what tools you have used
+to produce the patch. You always take full accountability for every line in it.
 
 ## Submitting Patches
 
