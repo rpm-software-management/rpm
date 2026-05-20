@@ -6,6 +6,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmver.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmplugin.h>
@@ -16,6 +17,7 @@ struct logstat {
     int logging;
     unsigned int scriptfail;
     unsigned int pkgfail;
+    rpmts ts;
     loggerfunc log;
 };
 
@@ -31,7 +33,6 @@ static void errlog(int prio, const char *fmt, ...)
 
 static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
 {
-    /* XXX make this configurable? */
     const char * log_ident = "rpm";
     struct logstat * state = rcalloc(1, sizeof(*state));
     char *target = rpmExpand("%{?__transaction_syslog_target}", NULL);
@@ -65,6 +66,7 @@ static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
     struct logstat * state = rpmPluginGetData(plugin);
     
     /* Reset counters */
+    state->ts = ts;
     state->scriptfail = 0;
     state->pkgfail = 0;
 
@@ -103,15 +105,89 @@ static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     return RPMRC_OK;
 }
 
-static const char *getOp(rpmte te)
+static rpmte findDependent(rpmts ts, rpmte te)
 {
-    switch (rpmteType(te)) {
-    case TR_ADDED:	return "install";
-    case TR_REMOVED:	return "erase";
-    case TR_RPMDB:	return "rpmdb";
-    case TR_RESTORED:	return "restore";
+    rpmte dep = NULL;
+    rpmte p = NULL;
+    rpmtsi pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if (rpmteDependsOn(p) == te) {
+	    dep = p;
+	    break;
+	}
     }
-    return "<unknown>";
+    rpmtsiFree(pi);
+
+    return dep;
+}
+
+static int isObsolete(rpmte a, rpmte b)
+{
+    return strcmp(rpmteN(a), rpmteN(b));
+}
+
+static int isDowngrade(rpmte a, rpmte b)
+{
+    int downgrade = 0;
+    rpmver av = rpmverParse(rpmteEVR(a));
+    rpmver bv = rpmverParse(rpmteEVR(b));
+
+    if (av && bv && rpmverCmp(av, bv) < 0)
+	downgrade = 1;
+
+    rpmverFree(av);
+    rpmverFree(bv);
+    return downgrade;
+}
+
+static char *getOp(rpmts ts, rpmte te)
+{
+    char *ret = NULL;
+    const char *op = NULL;
+    rpmte dep = NULL;
+
+    switch (rpmteType(te)) {
+    case TR_ADDED:
+	dep = findDependent(ts, te);
+	if (dep) {
+	    if (isObsolete(te, dep)) {
+		op = "replace";
+	    } else {
+		op = isDowngrade(te, dep) ? "downgrade" : "upgrade";
+	    }
+	} else {
+	    op = "install";
+	}
+	break;
+    case TR_REMOVED:
+	dep = rpmteDependsOn(te);
+	if (dep && !isObsolete(te, dep)) {
+	    op = "cleanup";
+	} else {
+	    op = "erase";
+	}
+	break;
+    case TR_RPMDB:
+	/* not an operation */
+	break;
+    case TR_RESTORED:
+	op = "restore";
+	break;
+    default:
+	op = "<unknown>";
+	break;
+    }
+
+    if (op) {
+	if (dep) {
+	    rasprintf(&ret, "%s: %s (from: %s)", op,
+			rpmteNEVRA(te), rpmteNEVRA(dep));
+	} else {
+	    rasprintf(&ret, "%s: %s", op, rpmteNEVRA(te));
+	}
+    }
+
+    return ret;
 }
 
 static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
@@ -120,10 +196,8 @@ static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 
     if (state->logging) {
 	int lvl = LOG_NOTICE;
-	const char *op = getOp(te);
+	char *op = getOp(state->ts, te);
 	const char *outcome = "success";
-	/* XXX: Permit configurable header queryformat? */
-	const char *pkg = rpmteNEVRA(te);
 
 	if (res != RPMRC_OK) {
 	    lvl = LOG_WARNING;
@@ -131,7 +205,8 @@ static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 	    state->pkgfail++;
 	}
 
-	state->log(lvl, "%s %s: %s", op, pkg, outcome);
+	state->log(lvl, "%s: %s", op, outcome);
+	free(op);
     }
     return RPMRC_OK;
 }
