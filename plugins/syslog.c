@@ -1,34 +1,63 @@
 #include "system.h"
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <syslog.h>
 
+#include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmplugin.h>
+
+typedef void (*loggerfunc)(int prio, const char *fmt, ...);
 
 struct logstat {
     int logging;
     unsigned int scriptfail;
     unsigned int pkgfail;
+    loggerfunc log;
 };
+
+static void errlog(int prio, const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    va_end(ap);
+}
 
 static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
 {
     /* XXX make this configurable? */
     const char * log_ident = "rpm";
     struct logstat * state = rcalloc(1, sizeof(*state));
+    char *target = rpmExpand("%{?__transaction_syslog_target}", NULL);
+
+    if (rstreq(target, "stderr")) {
+	state->log = errlog;
+    } else {
+	if (*target && !rstreq(target, "syslog")) {
+	    rpmlog(RPMLOG_WARNING,
+		_("unknown syslog target %s, using 'syslog'\n"), target);
+	}
+	state->log = syslog;
+	openlog(log_ident, (LOG_PID), LOG_USER);
+    }
 
     rpmPluginSetData(plugin, state);
-    openlog(log_ident, (LOG_PID), LOG_USER);
+    free(target);
     return RPMRC_OK;
 }
 
 static void syslog_cleanup(rpmPlugin plugin)
 {
     struct logstat * state = rpmPluginGetData(plugin);
+    if (state->log == syslog)
+	closelog();
     free(state);
-    closelog();
 }
 
 static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
@@ -51,7 +80,7 @@ static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
 	state->logging = 0;
 
     if (state->logging) {
-	syslog(LOG_NOTICE, "Transaction ID %x started", rpmtsGetTid(ts));
+	state->log(LOG_NOTICE, "Transaction ID %x started", rpmtsGetTid(ts));
     }
 
     return RPMRC_OK;
@@ -63,10 +92,10 @@ static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 
     if (state->logging) {
 	if (state->pkgfail || state->scriptfail) {
-	    syslog(LOG_WARNING, "%u elements failed, %u scripts failed",
+	    state->log(LOG_WARNING, "%u elements failed, %u scripts failed",
 		   state->pkgfail, state->scriptfail);
 	}
-	syslog(LOG_NOTICE, "Transaction ID %x finished: %d",
+	state->log(LOG_NOTICE, "Transaction ID %x finished: %d",
 		rpmtsGetTid(ts), res);
     }
 
@@ -102,7 +131,7 @@ static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 	    state->pkgfail++;
 	}
 
-	syslog(lvl, "%s %s: %s", op, pkg, outcome);
+	state->log(lvl, "%s %s: %s", op, pkg, outcome);
     }
     return RPMRC_OK;
 }
@@ -113,7 +142,7 @@ static rpmRC syslog_scriptlet_post(rpmPlugin plugin,
     struct logstat * state = rpmPluginGetData(plugin);
 
     if (state->logging && res) {
-	syslog(LOG_WARNING, "scriptlet %s failure: %d\n", s_name, res);
+	state->log(LOG_WARNING, "scriptlet %s failure: %d\n", s_name, res);
 	state->scriptfail++;
     }
     return RPMRC_OK;
