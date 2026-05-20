@@ -2158,3 +2158,80 @@ runroot rpm -U --nosignature /data/RPMS/mwe-rpm-lua-problem-1.0.0-1.noarch.rpm
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([syslog plugin])
+AT_KEYWORDS([install plugin])
+runroot rpmbuild -bb \
+	--define "myname aaa" --define "myver 1.2" --define "myrel 1" \
+	/data/SPECS/logtest.spec
+runroot rpmbuild -bb \
+	--define "myname aaa" --define "myver 2.0" --define "myrel 1" \
+	/data/SPECS/logtest.spec
+runroot rpmbuild -bb \
+	--define "myname bbb" --define "myver 1.3" --define "myrel 5" \
+	--define "mydep Obsoletes: aaa <= 2.0" \
+	/data/SPECS/logtest.spec
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 1 \
+	rpm -U --define "%__transaction_syslog_target stderr" \
+		/build/RPMS/noarch/aaa-1.2-1.noarch.rpm
+],
+[0],
+[],
+[Transaction ID 1 started
+install: aaa-1.2-1.noarch: success
+Transaction ID 1 finished: 0
+])
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 2 \
+	rpm -U --define "%__transaction_syslog_target stderr" \
+		/build/RPMS/noarch/aaa-2.0-1.noarch.rpm
+],
+[0],
+[],
+[Transaction ID 2 started
+upgrade: aaa-2.0-1.noarch (from: aaa-1.2-1.noarch): success
+cleanup: aaa-1.2-1.noarch (from: aaa-2.0-1.noarch): success
+Transaction ID 2 finished: 0
+])
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 2 \
+	rpm -U --oldpackage --define "%__transaction_syslog_target stderr" \
+		/build/RPMS/noarch/aaa-1.2-1.noarch.rpm
+],
+[0],
+[],
+[Transaction ID 2 started
+downgrade: aaa-1.2-1.noarch (from: aaa-2.0-1.noarch): success
+cleanup: aaa-2.0-1.noarch (from: aaa-1.2-1.noarch): success
+Transaction ID 2 finished: 0
+])
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 3 \
+	rpm -U --define "%__transaction_syslog_target stderr" \
+		/build/RPMS/noarch/bbb-1.3-5.noarch.rpm
+],
+[0],
+[],
+[Transaction ID 3 started
+replace: bbb-1.3-5.noarch (from: aaa-1.2-1.noarch): success
+erase: aaa-1.2-1.noarch (from: bbb-1.3-5.noarch): success
+Transaction ID 3 finished: 0
+])
+
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 4 \
+	rpm -e --define "%__transaction_syslog_target stderr" \
+		bbb
+],
+[0],
+[],
+[Transaction ID 4 started
+erase: bbb-1.3-5.noarch: success
+Transaction ID 4 finished: 0
+])
+RPMTEST_CLEANUP
