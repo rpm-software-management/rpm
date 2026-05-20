@@ -11,8 +11,14 @@ like transactions run and packages installed or removed.
 
 # CONFIGURATION
 
-There are currently no options for this plugin in particular. See
-*rpm-plugins*(8) on how to control plugins in general.
+*%\_\_transaction\_syslog\_target*
+	Specify target output for the plugin. Supported values are:
+	- *syslog*: system log (default)
+	- *stderr*: standard error
+
+See *rpm-plugins*(8) on how to control plugins in general.
+
+# OUTPUT
 
 # SEE ALSO
 
