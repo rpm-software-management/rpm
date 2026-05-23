@@ -2513,6 +2513,14 @@ gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
 
 RPMTEST_CHECK([[
+rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem --define "_file_signing_key_id 9000000000" /tmp/hello-2.0-1.x86_64.rpm
+]],
+[1],
+[],
+[error: invalid %_file_signing_key_id value; must fit into an unsigned 32 bit integer
+])
+
+RPMTEST_CHECK([[
 rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /tmp/hello-2.0-1.x86_64.rpm | sed 's/:[^(none)].\+$/:(...)/'
 rpm -qp --qf "[%{filenames}:%{filesignatures}\n]" /data/RPMS/imatest-1.0-1.fc34.noarch.rpm
 ]],
@@ -2615,7 +2623,7 @@ OSSL_EOF
 
 cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/
 rpmsign --addsign --key-id 4344591E1964C5FC --signfiles \
-  --define='_file_signing_key_id 42' \
+  --define='_file_signing_key_id 3846977987' \
   --fskpath="pkcs11:token=${token_label};id=%01;type=private?pin-value=${token_pin}" \
   /tmp/hello-2.0-1.x86_64.rpm
 ]],
