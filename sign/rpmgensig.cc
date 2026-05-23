@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <algorithm>
 #include <errno.h>
 #include <sys/wait.h>
 #include <popt.h>
@@ -549,7 +550,13 @@ static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
     rpmRC rc;
     char *key = rpmExpand("%{?_file_signing_key}", NULL);
     char *keypass = rpmExpand("%{?_file_signing_key_password}", NULL);
-    uint32_t keyid = rpmExpandNumeric("%{?_file_signing_key_id}");
+    auto [ ign, keyid ] = rpm::macros().expand_numeric("%{?_file_signing_key_id}");
+    if (keyid < 0 || keyid > std::numeric_limits<uint32_t>::max()) {
+	rpmlog(RPMLOG_ERR, _("invalid %%_file_signing_key_id value; must fit into an unsigned 32 bit integer\n"));
+	free(keypass);
+	free(key);
+	return RPMRC_FAIL;
+    }
 
     if (rstreq(keypass, "")) {
 	free(keypass);
