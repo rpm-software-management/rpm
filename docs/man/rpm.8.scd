@@ -45,7 +45,9 @@ code and recipe necessary to produce binary packages.
 	the package with information about the files taken from the package
 	metadata stored in the *rpm* database. Among other things, verifying
 	compares the size, digest, permissions, type, owner and group of each
-	file. Any discrepancies are displayed.
+	file. By default, only files with discrepancies are displayed. Use
+	*--verbose* to display all verified files.
+
 *-q*,
 *--query*
 	Query package files or installed package(s).
@@ -602,6 +604,10 @@ On success, 0 is returned, a nonzero failure code otherwise.
 *rpm --verify --noconfig openssh-server*
 	Verify the integrity of the installed *openssh-server* package,
 	ignoring changes in configuration.
+
+*rpm --verify --configfiles --verbose logrotate*
+	List all config files of the installed *logrotate* package,
+	showing both changed and unchanged files.
 
 *rpm -qa*
 	List all installed packages, using the default formatting.
