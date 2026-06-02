@@ -141,11 +141,10 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
     return rc;
 }
 
-int rpmtsRebuildDB(rpmts ts)
+static int rebuildDB(rpmts ts, int rebuildflags)
 {
     int rc = -1;
     rpmtxn txn = NULL;
-    int rebuildflags = 0;
 
     /* Cannot do this on a populated transaction set */
     if (rpmtsNElements(ts) > 0)
@@ -166,6 +165,11 @@ int rpmtsRebuildDB(rpmts ts)
     }
 
     return rc;
+}
+
+int rpmtsRebuildDB(rpmts ts)
+{
+    return rebuildDB(ts, 0);
 }
 
 int rpmtsVerifyDB(rpmts ts)
