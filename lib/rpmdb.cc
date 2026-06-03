@@ -2407,7 +2407,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
     if (openDatabase(prefix, newdbpath, &newdb,
-		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
+		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD |
+		     (rebuildflags & RPMDB_REBUILD_FLAG_PARK ?
+		         RPMDB_FLAG_PARK : 0))) {
 	rc = 1;
 	goto exit;
     }
@@ -2444,7 +2446,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     rpmdbClose(olddb);
     dbCtrl(newdb, DB_CTRL_INDEXSYNC);
-    rpmdbClose(newdb);
+    if (rpmdbClose(newdb))
+	failed = 1;
 
     if (failed) {
 	rpmlog(RPMLOG_WARNING, 

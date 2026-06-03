@@ -695,6 +695,44 @@ print(c1 != c2)
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([database parking])
+AT_KEYWORDS([python rpmdb])
+# this is only relevant with sqlite db, make sure we get one
+echo "%_db_backend sqlite" >> $RPMTEST/root/.config/rpm/macros
+RPMDB_RESET
+
+DBPATH=$RPMTEST/$(rpm --eval '%_dbpath')
+
+# Assert unparked state
+RPMTEST_CHECK([
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+rpmdb.sqlite-shm
+rpmdb.sqlite-wal
+],
+[])
+
+# Park
+RPMPY_CHECK([
+rc = ts.parkDB()
+print(rc)
+],
+[0
+],
+[])
+
+# Verify parked
+RPMTEST_CHECK([
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+],
+[])
+RPMTEST_CLEANUP
+
 RPMPY_TEST([dependency sets 1],[
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
 for dep in rpm.ds(h, 'requires'):
