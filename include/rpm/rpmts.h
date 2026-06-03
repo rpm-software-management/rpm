@@ -326,6 +326,13 @@ int rpmtsSetDBMode(rpmts ts, int dbmode);
 int rpmtsRebuildDB(rpmts ts);
 
 /** \ingroup rpmts
+ * Park the database used by the transaction.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsParkDB(rpmts ts);
+
+/** \ingroup rpmts
  * Verify the database used by the transaction.
  * @param ts		transaction set
  * @return		0 on success
