@@ -375,6 +375,18 @@ rpmts_RebuildDB(rpmtsObject * s)
 }
 
 static PyObject *
+rpmts_ParkDB(rpmtsObject * s)
+{
+    int rc;
+
+    Py_BEGIN_ALLOW_THREADS
+    rc = rpmtsParkDB(s->ts);
+    Py_END_ALLOW_THREADS
+
+    return Py_BuildValue("i", rc);
+}
+
+static PyObject *
 rpmts_VerifyDB(rpmtsObject * s)
 {
     int rc;
@@ -839,6 +851,9 @@ Remove all elements from the transaction set\n" },
  {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_NOARGS,
 "ts.rebuildDB() -> None\n\
 - Rebuild the default transaction rpmdb.\n" },
+ {"parkDB",	(PyCFunction) rpmts_ParkDB,	METH_NOARGS,
+"ts.parkDB() -> None\n\
+- Park the default transaction rpmdb.\n" },
  {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_NOARGS,
 "ts.verifyDB() -> None\n\
 - Verify the default transaction rpmdb.\n" },
