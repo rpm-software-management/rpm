@@ -214,6 +214,19 @@ static int sqlite_fini(rpmdb rdb)
 		sqlexec(sdb, "PRAGMA optimize");
 		sqlexec(sdb, "PRAGMA wal_checkpoint = TRUNCATE");
 
+		/* Park the database if requested */
+		if ((rdb->db_flags & RPMDB_FLAG_PARK) != 0) {
+		    int zero = 0;
+		    /* Make sure any WAL and SHM files are cleaned up */
+		    sqlite3_file_control(sdb, NULL, SQLITE_FCNTL_PERSIST_WAL,
+					 &zero);
+		    rc = sqlexec(sdb, "PRAGMA journal_mode = DELETE");
+		    if (rc == 0)
+			rpmlog(RPMLOG_DEBUG, _("rpmdb sqlite parking done\n"));
+		    else
+			rpmlog(RPMLOG_ERR, _("rpmdb sqlite parking failed\n"));
+		}
+
 		int max_size = rpmExpandNumeric("%{?_sqlite_vacuum_kb}");
 		if (max_size <= 0)
 		    max_size = 20*1024;
@@ -228,7 +241,7 @@ static int sqlite_fini(rpmdb rdb)
 	    }
 	    rdb->db_dbenv = NULL;
 	    int xx = sqlite3_close(sdb);
-	    rc = (xx != SQLITE_OK);
+	    rc += (xx != SQLITE_OK);
 	}
     }
 
@@ -357,7 +370,7 @@ static int sqlite_Close(dbiIndex dbi, unsigned int flags)
     int rc = 0;
     if (rdb->db_flags & RPMDB_FLAG_REBUILD)
 	rc = init_index(dbi, rpmTagGetValue(dbi->dbi_file));
-    sqlite_fini(dbi->dbi_rpmdb);
+    rc += sqlite_fini(dbi->dbi_rpmdb);
     dbiFree(dbi);
     return rc;
 }

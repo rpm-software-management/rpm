@@ -780,3 +780,90 @@ D: rpmdb sqlite backend VACUUM maxfree: 1kB, free: 8kB -> 0kB
 ],
 [])
 RPMTEST_CLEANUP
+
+# ------------------------------
+RPMTEST_SETUP_RW([rpmdb --parkdb])
+RPMTEST_USER
+AT_KEYWORDS([install rpmdb sqlite])
+# this is only relevant with sqlite db, make sure we get one
+echo "%_db_backend sqlite" >> $RPMTEST/root/.config/rpm/macros
+RPMDB_RESET
+
+runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
+	/data/RPMS/capstest-1.0-1.noarch.rpm
+DBPATH=$RPMTEST/$(rpm --eval '%_dbpath')
+
+# Assert unparked state
+RPMTEST_CHECK([
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+rpmdb.sqlite-shm
+rpmdb.sqlite-wal
+],
+[])
+
+# Park
+RPMTEST_CHECK([
+runroot rpmdb --parkdb || exit $?
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+],
+[])
+
+# Query with read-only database should not fail
+RPMTEST_CHECK([
+mkdir $PWD/rpmdb
+mount -o bind,ro $DBPATH $PWD/rpmdb
+rpm --dbpath $PWD/rpmdb -qa || exit $?
+umount -ql $PWD/rpmdb
+],
+[0],
+[capstest-1.0-1.noarch
+],
+[])
+
+# Query with writable database should not unpark
+RPMTEST_CHECK([
+runroot rpm -qa || exit $?
+cd $DBPATH; ls
+],
+[0],
+[capstest-1.0-1.noarch
+rpmdb.sqlite
+],
+[])
+
+# Implicit unpark
+RPMTEST_CHECK([
+runroot rpm -e capstest || exit $?
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+rpmdb.sqlite-shm
+rpmdb.sqlite-wal
+],
+[])
+
+# Explicit unpark
+RPMTEST_CHECK([
+runroot rpmdb --parkdb || exit $?
+cd $DBPATH; ls
+echo ---
+runroot rpmdb --rebuilddb || exit $?
+cd $DBPATH; ls
+],
+[0],
+[rpmdb.sqlite
+---
+rpmdb.sqlite
+rpmdb.sqlite-shm
+rpmdb.sqlite-wal
+],
+[])
+
+RPMTEST_CLEANUP

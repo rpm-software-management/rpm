@@ -13,6 +13,7 @@ enum modes {
     MODE_EXPORTDB	= (1 << 3),
     MODE_IMPORTDB	= (1 << 4),
     MODE_SALVAGEDB	= (1 << 5),
+    MODE_PARKDB		= (1 << 6),
 };
 
 static int mode = 0;
@@ -23,6 +24,8 @@ static struct poptOption dbOptsTable[] = {
     { "rebuilddb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_REBUILDDB,
 	N_("rebuild database inverted lists from installed package headers"),
 	NULL},
+    { "parkdb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&mode, MODE_PARKDB, N_("park database"), NULL},
     { "verifydb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&mode, MODE_VERIFYDB, N_("verify database"), NULL},
     { "salvagedb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR|POPT_ARGFLAG_DOC_HIDDEN),
@@ -118,6 +121,9 @@ int main(int argc, char *argv[])
 	ec = rpmtsRebuildDB(ts);
 	rpmtsSetVSFlags(ts, ovsflags);
     }	break;
+    case MODE_PARKDB:
+	ec = rpmtsParkDB(ts);
+	break;
     case MODE_VERIFYDB:
 	ec = rpmtsVerifyDB(ts);
 	break;

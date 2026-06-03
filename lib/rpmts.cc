@@ -172,6 +172,11 @@ int rpmtsRebuildDB(rpmts ts)
     return rebuildDB(ts, 0);
 }
 
+int rpmtsParkDB(rpmts ts)
+{
+    return rebuildDB(ts, RPMDB_REBUILD_FLAG_PARK);
+}
+
 int rpmtsVerifyDB(rpmts ts)
 {
     int rc = -1;

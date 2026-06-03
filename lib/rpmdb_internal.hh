@@ -13,6 +13,7 @@ using packageHash = std::unordered_map<unsigned int,rpmte>;
 
 enum rpmdbRebuildFlags_e {
     RPMDB_REBUILD_FLAG_SALVAGE	= (1 << 0),
+    RPMDB_REBUILD_FLAG_PARK	= (1 << 1),
 };
 
 /** \ingroup rpmdb
