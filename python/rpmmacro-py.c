@@ -29,7 +29,7 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:DelMacro", kwlist, &name))
 	return NULL;
 
-    rpmPopMacro(NULL, name);
+    rpmUndefineMacro(NULL, name);
 
     Py_RETURN_NONE;
 }
