@@ -21,7 +21,7 @@ for d in .${PREFIX}/man/man* .${PREFIX}/man/*/man* .${PREFIX}/info \
     .${PREFIX}/share/fish/man/man*
 do
     [ -d $d ] || continue
-    find $d -type f ! -name dir -print0 |
+    find $d -type f ! -name dir ! -name '*.jpg' ! -name '*.png' -print0 |
     while IFS= read -r -d '' f; do
 		[ -f "$f" ] || continue
 
