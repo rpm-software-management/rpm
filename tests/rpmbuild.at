@@ -679,7 +679,6 @@ RPMTEST_CLEANUP
 RPMTEST_SETUP_RW([rpmbuild with %autosetup -C])
 AT_KEYWORDS([build])
 RPMTEST_CHECK([
-
 rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-noroot.spec
 ],
@@ -688,7 +687,14 @@ rpmbuild \
 [ignore])
 
 RPMTEST_CHECK([
+rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-noroot-nodir.spec
+],
+[0],
+[ignore],
+[ignore])
 
+RPMTEST_CHECK([
 rpmbuild \
   -bp ${RPMDATA}/SPECS/autosetup-singleroot.spec
 ],
