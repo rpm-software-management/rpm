@@ -130,6 +130,9 @@ static char * singleRoot(const char *path)
 	if (sep) {
 	    rootName = xstrdup(p);
 	    rootLen = sep - p + 1;
+	} else if (archive_entry_filetype(entry) == AE_IFDIR) {
+	    rootName = rstrscat(NULL, p, "/", NULL);
+	    rootLen = strlen(rootName);
 	} else {
 	    /* No directories in the pathname */
 	    ret = 0;

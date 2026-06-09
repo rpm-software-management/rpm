@@ -717,6 +717,14 @@ rpmbuild \
 [0],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+rpmbuild \
+  -bp ${RPMDATA}/SPECS/autosetup-singleroot-noslash.spec
+],
+[0],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild -ba autopatch])
