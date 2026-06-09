@@ -127,13 +127,13 @@ static char * singleRoot(const char *path)
 	/* Extract the lead directory from the first entry */
 	p = archive_entry_pathname(entry);
 	sep = strchr(p, '/');
-	if (sep == NULL) {
+	if (sep) {
+	    rootName = xstrdup(p);
+	    rootLen = sep - p + 1;
+	} else {
 	    /* No directories in the pathname */
 	    ret = 0;
 	    goto afree;
-	} else {
-	    rootName = xstrdup(p);
-	    rootLen = sep - p + 1;
 	}
 
 	/* Do all entries in the archive start with the same lead directory? */
