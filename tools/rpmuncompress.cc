@@ -109,8 +109,9 @@ static char * singleRoot(const char *path)
 	struct archive *a;
 	struct archive_entry *entry;
 	int r, ret = -1, rootLen;
+	const char *p = NULL;
+	const char *sep = NULL;
 	char *rootName = NULL;
-	char *sep = NULL;
 
 	a = archive_read_new();
 	archive_read_support_filter_all(a);
@@ -122,24 +123,29 @@ static char * singleRoot(const char *path)
 	if (archive_read_next_header(a, &entry) != ARCHIVE_OK) {
 	    goto afree;
 	}
-	rootName = xstrdup(archive_entry_pathname(entry));
-	sep = strchr(rootName, '/');
+
+	/* Extract the lead directory from the first entry */
+	p = archive_entry_pathname(entry);
+	sep = strchr(p, '/');
 	if (sep == NULL) {
 	    /* No directories in the pathname */
 	    ret = 0;
 	    goto afree;
+	} else {
+	    rootName = xstrdup(p);
+	    rootLen = sep - p + 1;
 	}
 
 	/* Do all entries in the archive start with the same lead directory? */
-	rootLen = sep - rootName + 1;
 	while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-	    const char *p = archive_entry_pathname(entry);
+	    p = archive_entry_pathname(entry);
 	    if (strncmp(rootName, p, rootLen)) {
 		ret = 0;
 		goto afree;
 	    }
 	}
-	*sep = '\0';
+
+	rootName[rootLen - 1] = '\0';
 	ret = 1;
 
 afree:
