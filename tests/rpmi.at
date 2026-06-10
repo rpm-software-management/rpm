@@ -1626,7 +1626,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i create group membership])
 AT_KEYWORDS([install sysusers])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMTEST_CHECK([
 
 runroot rpmbuild -bb --quiet --define "pkg user" --define "provs %{add_sysuser m myuser mygroup}"\
