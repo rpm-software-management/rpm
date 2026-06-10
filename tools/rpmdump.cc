@@ -1,3 +1,4 @@
+#include "system.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -8,6 +9,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <rpm/rpmtag.h>
+#include "debug.h"
 
 struct entryInfo {
     uint32_t tag;
@@ -133,7 +135,7 @@ static int readhdr(int fd, int sighdr, const char *msg)
     indexLen = numEntries * sizeof(*entry);
     headerLen = indexLen + numBytes;
 
-    blob = (uint32_t *)malloc(sizeof(numEntries) + sizeof(numBytes) + headerLen);
+    blob = (uint32_t *)xmalloc(sizeof(numEntries) + sizeof(numBytes) + headerLen);
     blob[0] = htonl(numEntries);
     blob[1] = htonl(numBytes);
 
