@@ -903,7 +903,7 @@ static int epochnumTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     /* For consistency, always return malloced data */
     if (!headerGet(h, RPMTAG_EPOCH, td, HEADERGET_ALLOC)) {
-	uint32_t *e = (uint32_t *)malloc(sizeof(*e));
+	uint32_t *e = (uint32_t *)xmalloc(sizeof(*e));
 	*e = 0;
 	td->data = e;
 	td->type = RPM_INT32_TYPE;
