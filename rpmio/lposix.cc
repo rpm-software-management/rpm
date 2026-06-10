@@ -394,7 +394,7 @@ static int Pputenv(lua_State *L)		/** putenv(string) */
 #ifdef HAVE_PUTENV
 	size_t l;
 	const char *s=luaL_checklstring(L, 1, &l);
-	char *e=(char *)malloc(++l);
+	char *e=(char *)xmalloc(++l);
 	return pushresult(L, (e==NULL) ? -1 : putenv((char *)memcpy(e,s,l)), s);
 #else
 	return -1;
