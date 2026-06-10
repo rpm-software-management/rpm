@@ -1385,7 +1385,7 @@ end
     if type == 'groupmember' then
         print(string.format('%s%s(%s/%s) = %s\\n', prefix, type, name, arg[3], enc))
 	if (prefix ~= '') then
-	   prefix2 = rpm.expand('%[%{?_use_weak_usergroup_deps} > 0 : "Recommends" : "Requires"]')
+	   prefix2 = rpm.expand('%[%{?_use_weak_usergroup_deps} > 0 ? "Recommends" : "Requires"]')
 	   print(string.format('%s: user(%s)\\n', prefix2, name))
 	   print(string.format('%s: group(%s)\\n', prefix2, arg[3]))
 	end
