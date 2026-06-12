@@ -711,6 +711,15 @@ rpmbuild \
 [0],
 [ignore],
 [ignore])
+
+RPMTEST_CHECK([
+rpmbuild \
+  -bp --quiet ${RPMDATA}/SPECS/autosetup-singleroot-evil.spec
+test -f $RPMTEST/build/BUILD/*/beenhere
+],
+[1],
+[ignore],
+[ignore])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild -ba autopatch])
