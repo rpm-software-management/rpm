@@ -188,8 +188,8 @@ static char *doUntar(const char *fn)
 		rasprintf(
 		    &moveup,
 		    " && "
-		    "(shopt -s dotglob; mv \"$tmp\"/'%s'/* '%s') && "
-		    "rmdir \"$tmp\"/'%s' \"$tmp\" ", sr, dstpath, sr);
+		    "(shopt -s dotglob; mv \"$tmp\"/*/* '%s') && "
+		    "rmdir \"$tmp\"/* \"$tmp\" ", dstpath);
 		rasprintf(&stripcd, "%s\"$tmp\" %s", at->dest, moveup);
 		free(moveup);
 	    } else {
