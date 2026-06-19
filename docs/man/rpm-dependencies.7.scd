@@ -92,7 +92,7 @@ with *rpmbuild*(1). They are not carried into binary packages at all,
 and are recorded as regular *Requires* and *Conflicts* in source rpms.
 
 *BuildRequires*
-	Capabilities that musth be present during the build of the package.
+	Capabilities that must be present during the build of the package.
 
 *BuildConflicts*
 	Capabilities that must not be present during the build of the package.
@@ -111,17 +111,17 @@ when breaking loops for ordering purposes.
 
 *interp*
 	Denotes a scriptlet interpreter dependency, usually added automatically
-	by rpm. Used as a strong ordering hint for breaking dependency loops.
+	by RPM. Used as a strong ordering hint for breaking dependency loops.
 
 *meta* (since rpm >= 4.16)
 	Denotes a "meta" dependency, which must not affect transaction
-	ordering. Typical use-cases would be meta-packages and sub-package
+	ordering. Typical use cases would be meta-packages and sub-package
 	cross-dependencies whose purpose is just to ensure the sub-packages
 	stay on common version.
 
 *post*
 	Denotes the dependency must be present right after the package is
-	is installed, and is used a strong ordering hint to break possible
+	installed, and is used as a strong ordering hint to break possible
 	dependency loops. A *post*-dependency is free to be removed
 	once the install-transaction completes.
 
@@ -135,14 +135,14 @@ when breaking loops for ordering purposes.
 
 *postun*
 	Denotes the dependency must be present right after the package is
-	is removed, and is used a strong ordering hint to break possible
+	removed, and is used as a strong ordering hint to break possible
 	dependency loops.
 
 	Also relates to *%postun* scriptlet execution.
 
 *pre*
 	Denotes the dependency must be present in before the package is
-	is installed, and is used a strong ordering hint to break possible
+	installed, and is used as a strong ordering hint to break possible
 	dependency loops. A pre-dependency is free to be removed
 	once the install-transaction completes.
 
@@ -156,8 +156,8 @@ when breaking loops for ordering purposes.
 	Also relates to *%pretrans* and *%preuntrans* scriptlet execution.
 
 *preun*
-	Denotes the dependency must be present in before the package is
-	is removed, and is used a strong ordering hint to break possible
+	Denotes the dependency must be present before the package is
+	removed, and is used as a strong ordering hint to break possible
 	dependency loops.
 
 	Also relates to *%preun* scriptlet execution.
@@ -184,15 +184,15 @@ queries, eg. *rpm -qv --requires*. Dependencies added by the
 
 ## Boolean dependencies
 RPM can process boolean expressions in
-Requires, Recommends, Suggests, Supplements, Enhances and Conflicts type
-dependencies. This allows for complex dynamic behavior whereas traditional
+*Requires*, *Recommends*, *Suggests*, *Supplements*, *Enhances* and *Conflicts*
+type dependencies. This allows for complex dynamic behavior whereas traditional
 dependencies are static in nature.
 
 Boolean expressions are always enclosed with parenthesis.
 Boolean dependencies are built out of two or more dependencies (operands)
 and boolean operators:
 
-*(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
+*(*_DEPENDENCY_ _OPERATOR_ _DEPENDENCY_ ...*)*
 
 Operands can be boolean expressions themselves. They also need to be surrounded
 by parenthesis. *and* and *or* operators may be chained together repeating the
@@ -205,7 +205,7 @@ the result has to be _false_, for everything else it has to be _true_.
 
 ## Boolean operators
 *and*
-	Requires all operands to be fulfilled for the term to be True.
+	Requires all operands to be fulfilled for the term to be true.
 
 	Example:
 	```
@@ -236,7 +236,7 @@ the result has to be _false_, for everything else it has to be _true_.
 	```
 *with*
 	Requires all operands to be fulfilled by the same package for the
-	term to be True.
+	term to be true.
 
 	Example:
 	```
@@ -302,7 +302,7 @@ not match *> 2.0*. There are some notable gotchas however:
 
 - A capability _EVR_ with no release component matches _any release_ of
   that version. For example, capability *= 1.2.3* matches *>= 1.2.3-5*
-- A versionless capability matches _any_EVR_. For example, *Provides: abc*
+- A versionless capability matches _any EVR_. For example, *Provides: abc*
   matches *Requires: abc >= 1:5.0-2*.
 - Note the significance of *Epoch* on both sides: a *= 1:1.0* capability does
   not match *<= 1.0* and a *= 1.0* capability does not match *>= 1:1.0*
@@ -365,8 +365,8 @@ RPM can be inspected by running *rpm --showrc*.
 
 # ORDERING
 RPM uses the dependency information in packages to calculate the install
-and erase ordering. The basic principle is simple: any Requires of a package
-must be present at the time of it's install and erase. In other words, if
+and erase ordering. The basic principle is simple: any *Requires* of a package
+must be present at the time of its install and erase. In other words, if
 package A requires B and C, A must be installed last of the three, and
 erased first.
 
@@ -381,7 +381,7 @@ an ordered modifier (eg. *pre*, *post*, *preun* or *postun*), but these
 tend to add up and then lose their efficiency.
 
 Weak dependencies are only considered for ordering if they have ordered
-modifiers, but even then the modifiers are stripped to avoid overuling
+modifiers, but even then the modifiers are stripped to avoid overruling
 modifiers from hard requires.
 
 Note that RPM always performs all installs first, and erasures last.
