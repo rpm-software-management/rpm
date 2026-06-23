@@ -42,10 +42,9 @@ A capability _NAME_ must start with an alpha-numeric, underscore (*\_*)
 or slash (*/*). _RANGE_ consists of a comparison operator
 (*<*, *<=*, *=*, *>=*, *>*, *<>*) and an *rpm-version*(7) label called _EVR_.
 
-Dependencies can be either _file-backed_, such as when generated from, or using
-the path of, a packaged file, or _virtual_. Most automatically generated
-dependencies are file-backed. All dependencies added manually to a spec are
-virtual.
+Dependencies can either be generated automatically from packaged files using
+*rpm-dependency-generators*(7), or declared manually in an *rpm-spec*(5) file.
+The latter are known as _virtual_ dependencies.
 
 # DECLARING
 ## Core dependencies
