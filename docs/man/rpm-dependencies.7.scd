@@ -25,9 +25,9 @@ RPM-DEPENDENCIES(7)
 *(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
 
 # DESCRIPTION
-RPM uses _dependencies_ to describe various relations among packages.
-There are many different dependency types, such as what _capabilities_ a
-packaged software needs to function, and other constraints such as conflicting
+RPM uses a mechanism called _dependencies_ to describe various relations among
+packages. There are many different dependency types, such as what _capabilities_
+a packaged software needs to function, and other constraints such as conflicting
 with, or replacing another package.
 
 Dependencies are _resolved_ before package operations such as install,
