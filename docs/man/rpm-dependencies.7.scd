@@ -113,11 +113,13 @@ when breaking loops for ordering purposes.
 	Denotes a scriptlet interpreter dependency, usually added automatically
 	by RPM. Used as a strong ordering hint for breaking dependency loops.
 
-*meta* (since rpm >= 4.16)
+*meta*
 	Denotes a "meta" dependency, which must not affect transaction
 	ordering. Typical use cases would be meta-packages and sub-package
 	cross-dependencies whose purpose is just to ensure the sub-packages
 	stay on common version.
+
+	Added: 4.16.0
 
 *post*
 	Denotes the dependency must be present right after the package is
@@ -195,8 +197,8 @@ and boolean operators:
 *(*_DEPENDENCY_ _OPERATOR_ _DEPENDENCY_ ...*)*
 
 Operands can be boolean expressions themselves. They also need to be surrounded
-by parenthesis. *and* and *or* operators may be chained together repeating the
-same operator with only one set of surrounding parenthesis.
+by parenthesis. The operators *and* and *or* may be chained together repeating
+the same operator with only one set of surrounding parenthesis.
 
 The semantics of the dependencies are unchanged, but instead of checking for
 one match, all names are checked and the boolean value of a match is then
