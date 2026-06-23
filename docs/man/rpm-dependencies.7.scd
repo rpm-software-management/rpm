@@ -4,11 +4,21 @@ RPM-DEPENDENCIES(7)
 *rpm-dependencies* - RPM dependencies
 
 # SYNOPSIS
-## Capability
-_NAME_ [_RANGE_]
+## Capabilities and dependencies
+*Provides:* _NAME_ [_RANGE_]++
+*Conflicts:* _NAME_ [_RANGE_]++
+*Obsoletes:* _NAME_ [_RANGE_]
 
-## Dependency
-_NAME_[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*] [_RANGE_]
+*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Suggests*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Supplements*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Enhances*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*OrderWithRequires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+
+## Build dependencies
+*BuildRequires:* _NAME_ [_RANGE_]++
+*BuildConflicts:* _NAME_ [_RANGE_]
 
 ## Boolean dependency
 *(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
@@ -35,23 +45,25 @@ automatically generated dependencies are file-backed. All dependencies
 added manually to a spec are virtual.
 
 ## Capabilities
-*Provides*
+*Provides* _NAME_ [_RANGE_]
 	Capabilities provided by a package (or the system).
 
 	Note: Although commonly referred to as such, provides themselves are
 	not dependencies. They merely describe the capabilities that can be
 	depended on.
 
-## Dependencies
-*Requires*
+## Hard dependencies
+Hard dependencies _must_ be met for a transaction to succeed.
+
+*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Capabilities a package requires to function.
 
-*Conflicts*
+*Conflicts:* _NAME_ [_RANGE_]
 	Capabilities a package conflicts with. Typically packages
 	with conflicting paths or otherwise conflicting functionality,
 	such as using the same network port.
 
-*Obsoletes*
+*Obsoletes:* _NAME_ [_RANGE_]
 	Packages obsoleted by a package. Used for replacing and
 	renaming packages.
 
@@ -60,28 +72,31 @@ added manually to a spec are virtual.
 	capabilities.
 
 ## Weak dependencies
-Weak dependencies are group of optional *Requires*-like dependencies.
+Weak dependencies are only hints and may be ignored entirely in a transaction.
+They are
+mainly aimed at higher level package managers operating in the layers
+above RPM itself.
 RPM only uses the weak dependency information for ordering hints,
 they are mainly targeted at dependency solver programs.
 
-*Recommends*
+*Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional capabilities recommended by a package for the best user
 	experience. 
 
-*Suggests*
+*Suggests*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional capabilities that provide additional functionality for
 	a package.
 
-*Supplements*
+*Supplements*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Reverse *Recommends*: this package is recommended for another
 	package for the best user experience.
 	Mainly useful for 3rd party enhancements.
 
-*Enhances*
+*Enhances*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Reverse *Suggests*: this package provides additional functionality
 	for another package. Mainly useful for 3rd party enhancements.
 
-*OrderWithRequires*
+*OrderWithRequires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional *Requires* for ordering calculations. IFF the capability
 	is present in a transaction, calculate ordering as if it was a
 	*Requires*.
@@ -91,10 +106,11 @@ Build dependencies only exist in the context of building a package
 with *rpmbuild*(1). They are not carried into binary packages at all,
 and are recorded as regular *Requires* and *Conflicts* in source rpms.
 
-*BuildRequires*
+*BuildRequires:* _NAME_ [_RANGE_]
 	Capabilities that must be present during the build of the package.
 
-*BuildConflicts*
+*BuildRequires:* _NAME_ [_RANGE_]
+*BuildConflicts:* _NAME_ [_RANGE_]
 	Capabilities that must not be present during the build of the package.
 
 ## Modifiers
