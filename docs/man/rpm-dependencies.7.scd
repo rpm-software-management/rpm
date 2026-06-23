@@ -4,12 +4,13 @@ RPM-DEPENDENCIES(7)
 *rpm-dependencies* - RPM dependencies
 
 # SYNOPSIS
-## Capabilities and dependencies
+## Core dependencies
 *Provides:* _NAME_ [_RANGE_]++
+*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
 *Conflicts:* _NAME_ [_RANGE_]++
 *Obsoletes:* _NAME_ [_RANGE_]
 
-*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+## Weak dependencies
 *Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
 *Suggests*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
 *Supplements*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
@@ -20,7 +21,7 @@ RPM-DEPENDENCIES(7)
 *BuildRequires:* _NAME_ [_RANGE_]++
 *BuildConflicts:* _NAME_ [_RANGE_]
 
-## Boolean dependency
+## Boolean dependencies
 *(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
 
 # DESCRIPTION
