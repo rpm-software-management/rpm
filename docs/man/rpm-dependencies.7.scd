@@ -357,13 +357,13 @@ To allow packaged content to reference such users and groups,
 RPM uses special *rpmlib()* dependencies to track feature compatibility.
 Packages utilizing features that are not supported in all RPM versions
 are automatically flagged with an *rpmlib(*_CAPABILITY_*)*
-requires-dependency by *rpmbuild*(1). Some of these are
+requires-dependency by *rpmbuild*(1). Some of these capabilities are
 compile-time options when building RPM, others are RPM version-dependent.
 
-*rpmlib()* requires cannot be satisfied by other packages.
-Instead, they dependencies are matched against the RPM process performing
-the installation. The *rpmlib()* features supported by the system
-RPM can be inspected by running *rpm --showrc*.
+*rpmlib()* requires cannot be satisfied by other packages. Instead, they are
+resolved against the capabilities supported by the RPM process performing
+the installation. The *rpmlib()* features supported by the system RPM can be
+inspected by running *rpm --showrc*.
 
 # ORDERING
 RPM uses the dependency information in packages to calculate the install
