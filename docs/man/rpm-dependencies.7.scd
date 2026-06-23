@@ -47,6 +47,7 @@ file or a dependency generated from such a file, or _virtual_. Most
 automatically generated dependencies are file-backed. All dependencies
 added manually to a spec are virtual.
 
+# DECLARING
 ## Core dependencies
 Core dependencies are absolute and must be satisfied for a successful
 transaction.
