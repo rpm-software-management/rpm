@@ -24,18 +24,20 @@ RPM-DEPENDENCIES(7)
 *(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
 
 # DESCRIPTION
-RPM uses _dependencies_ to describe various relations among packages,
-such as what _capabilities_ are needed for software to function,
-and other constraints such as conflicting with another package.
+RPM uses _dependencies_ to describe various relations among packages.
+There are many different dependency types, such as what _capabilities_ a
+packaged software to function, and other constraints such as conflicting
+with, or replacing another package.
+
 Dependencies are _resolved_ before package operations such as install,
 update and erase to ensure the constraints of all packages are fulfilled.
 RPM also uses the dependency information for calculating the
 installation and erase _ordering_.
 
-Capabilities and dependencies on them consist of a capability name,
-optionally followed by version range information. 
+A dependency consists of a capability name, optionally followed by version
+range information.
 
-Capability _NAME_ must start with an alpha-numeric, underscore (*\_*)
+A capability _NAME_ must start with an alpha-numeric, underscore (*\_*)
 or slash (*/*). _RANGE_ consists of a comparison operator
 (*<*, *<=*, *=*, *>=*, *>*, *<>*) and an *rpm-version*(7) label called _EVR_.
 
@@ -44,16 +46,16 @@ file or a dependency generated from such a file, or _virtual_. Most
 automatically generated dependencies are file-backed. All dependencies
 added manually to a spec are virtual.
 
-## Capabilities
+## Core dependencies
+Core dependencies are absolute and must be resolved for a successful
+transaction.
+
 *Provides* _NAME_ [_RANGE_]
 	Capabilities provided by a package (or the system).
 
-	Note: Although commonly referred to as such, provides themselves are
-	not dependencies. They merely describe the capabilities that can be
-	depended on.
-
-## Hard dependencies
-Hard dependencies _must_ be met for a transaction to succeed.
+	*Provides* form the basis of the dependency system, even though
+	they technically are not dependencies themselves. Instead, they
+	declare the capabilities that can be depended on.
 
 *Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Capabilities a package requires to function.
@@ -72,12 +74,9 @@ Hard dependencies _must_ be met for a transaction to succeed.
 	capabilities.
 
 ## Weak dependencies
-Weak dependencies are only hints and may be ignored entirely in a transaction.
-They are
-mainly aimed at higher level package managers operating in the layers
-above RPM itself.
-RPM only uses the weak dependency information for ordering hints,
-they are mainly targeted at dependency solver programs.
+Weak dependencies are only hints that are not enforced by RPM, they
+are mainly targeted at higher level package managers (see *rpm-design*(8)).
+RPM only uses weak dependencies for ordering purposes.
 
 *Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional capabilities recommended by a package for the best user
