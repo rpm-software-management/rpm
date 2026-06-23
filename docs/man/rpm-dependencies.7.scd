@@ -1,7 +1,7 @@
 RPM-DEPENDENCIES(7)
 
 # NAME
-*rpm-dependencies* - RPM dependencies
+*rpm-dependencies* - RPM dependency system
 
 # SYNOPSIS
 ## Core dependencies
@@ -27,11 +27,11 @@ RPM-DEPENDENCIES(7)
 # DESCRIPTION
 RPM uses _dependencies_ to describe various relations among packages.
 There are many different dependency types, such as what _capabilities_ a
-packaged software to function, and other constraints such as conflicting
+packaged software needs to function, and other constraints such as conflicting
 with, or replacing another package.
 
 Dependencies are _resolved_ before package operations such as install,
-update and erase to ensure the constraints of all packages are fulfilled.
+update and erase, to ensure the constraints of all packages are fulfilled.
 RPM also uses the dependency information for calculating the
 installation and erase _ordering_.
 
@@ -48,10 +48,10 @@ automatically generated dependencies are file-backed. All dependencies
 added manually to a spec are virtual.
 
 ## Core dependencies
-Core dependencies are absolute and must be resolved for a successful
+Core dependencies are absolute and must be satisfied for a successful
 transaction.
 
-*Provides* _NAME_ [_RANGE_]
+*Provides:* _NAME_ [_RANGE_]
 	Capabilities provided by a package (or the system).
 
 	*Provides* form the basis of the dependency system, even though
