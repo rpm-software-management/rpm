@@ -310,15 +310,11 @@ not match *> 2.0*. There are some notable gotchas however:
   not match *<= 1.0* and a *= 1.0* capability does not match *>= 1:1.0*
 
 ## Package provides
-Package provides include all the capabilities that were added either
-by *rpm-dependency-generators*(7) during the package build, or manually
-in the *rpm-spec*(5).
-
-In addition, all packages explicitly provide their own _NEVR_:
+All packages provide their own _NEVR_:
 
 _NAME_ = [_EPOCH_:]_VERSION_-_RELEASE_
 
-Similarly, all architecture dependent packages explicitly provide an ISA
+Similarly, all architecture dependent packages provide an ISA
 dependency which can be used for requiring an specific architecture family
 among multiple providers:
 
@@ -328,6 +324,10 @@ The *%{\_isa}* macro can be used to populate the _ISA_ value in an
 *rpm-spec*(5). ISA consists of two parts separated with a dash (*-*):
 the name of the architecture family in *%\_\_isa\_name* and its
 bitness in *%\_\_isa\_bits*.
+
+In addition, packages provide all the capabilities that were added
+either by *rpm-dependency-generators*(7) during the package build,
+or manually in the *rpm-spec*(5).
 
 ## Implicit file provides
 All packages implicitly provide the pathnames of the contained files.
