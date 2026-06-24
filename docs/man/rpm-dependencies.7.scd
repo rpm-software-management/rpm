@@ -113,7 +113,7 @@ and are recorded as regular *Requires* and *Conflicts* in source rpms.
 *BuildConflicts:* _NAME_ [_RANGE_]
 	Capabilities that must not be present during the build of the package.
 
-## Qualiiers
+## Qualifiers
 Most dependency types accept additional qualifiers to change how and when
 that dependency is enforced. Some qualifiers make a dependency _transient_:
 it only applies to certain times of installation or erasure. Others make
