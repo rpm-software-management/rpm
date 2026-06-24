@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <filesystem>
 #include <string>
 
 #include <archive.h>
@@ -16,6 +17,8 @@
 #include <rpm/rpmstring.h>
 
 #include "debug.h"
+
+namespace fs = std::filesystem;
 
 static int extract = 0;
 static int dryrun = 0;
@@ -217,21 +220,13 @@ static char *doUntar(const char *fn)
 	if (needtar) {
 	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir, zipper, fn, tar, taropts, stripcd);
 	} else if (at->compressed == COMPRESSED_GEM) {
-	    char *tmp = xstrdup(fn);
-	    const char *bn = basename(tmp);
-	    size_t nvlen = strlen(bn) - 3;
+	    auto bn = fs::path(fn).stem();
 	    char *gem = rpmGetPath("%{__gem}", NULL);
-	    char *gemspec = NULL;
-	    std::string gemnameversion(bn, nvlen);
 
-	    gemspec = rpmGetPath("", gemnameversion.c_str(), ".gemspec", NULL);
+	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s.gemspec'",
+			zipper, fn, gem, fn, bn.c_str());
 
-	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s'",
-			zipper, fn, gem, fn, gemspec);
-
-	    free(gemspec);
 	    free(gem);
-	    free(tmp);
 	} else {
 	    rasprintf(&buf, "%s%s '%s' %s", mkdir, zipper, fn, stripcd);
 	}
