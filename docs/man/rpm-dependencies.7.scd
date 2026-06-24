@@ -6,16 +6,16 @@ RPM-DEPENDENCIES(7)
 # SYNOPSIS
 ## Core dependencies
 *Provides:* _NAME_ [_RANGE_]++
-*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
 *Conflicts:* _NAME_ [_RANGE_]++
 *Obsoletes:* _NAME_ [_RANGE_]
 
 ## Weak dependencies
-*Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Suggests*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Supplements*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Enhances*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*OrderWithRequires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
+*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 
 ## Build dependencies
 *BuildRequires:* _NAME_ [_RANGE_]++
@@ -58,7 +58,7 @@ transaction.
 	they technically are not dependencies themselves. Instead, they
 	declare the capabilities that can be depended on.
 
-*Requires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Capabilities a package requires to function.
 
 *Conflicts:* _NAME_ [_RANGE_]
@@ -79,24 +79,24 @@ Weak dependencies are only hints that are not enforced by RPM, they
 are mainly targeted at higher level package managers (see *rpm-design*(8)).
 RPM only uses weak dependencies for ordering purposes.
 
-*Recommends*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional capabilities recommended by a package for the best user
 	experience. 
 
-*Suggests*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional capabilities that provide additional functionality for
 	a package.
 
-*Supplements*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Reverse *Recommends*: this package is recommended for another
 	package for the best user experience.
 	Mainly useful for 3rd party enhancements.
 
-*Enhances*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Reverse *Suggests*: this package provides additional functionality
 	for another package. Mainly useful for 3rd party enhancements.
 
-*OrderWithRequires*[*(*_MODIFIER_[*,*_MODIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
 	Optional *Requires* for ordering calculations. IFF the capability
 	is present in a transaction, calculate ordering as if it was a
 	*Requires*.
@@ -113,12 +113,12 @@ and are recorded as regular *Requires* and *Conflicts* in source rpms.
 *BuildConflicts:* _NAME_ [_RANGE_]
 	Capabilities that must not be present during the build of the package.
 
-## Modifiers
-Most dependency types accept additional modifiers to change how and when
-that dependency is enforced. Some modifiers make a dependency _transient_:
+## Qualiiers
+Most dependency types accept additional qualifiers to change how and when
+that dependency is enforced. Some qualifiers make a dependency _transient_:
 it only applies to certain times of installation or erasure. Others make
 a dependency _unordered_, causing it to be dismissed from ordering
-calculations. _Ordered_ modifiers cause the dependency to be favored
+calculations. _Ordered_ qualifiers cause the dependency to be favored
 when breaking loops for ordering purposes.
 
 *config*
@@ -186,9 +186,9 @@ when breaking loops for ordering purposes.
 	ordering.
 
 
-Multiple modifiers can be supplied separated by comma, as long as
-they're not semantically contradictory: *meta* modifier contradicts any
-ordered modifier, eg *meta* and *verify* can be combined, and *pre* and
+Multiple qualifiers can be supplied separated by comma, as long as
+they're not semantically contradictory: *meta* qualifier contradicts any
+ordered qualifier, eg *meta* and *verify* can be combined, and *pre* and
 *verify* can be combined, but *pre* and *meta* can not.
 
 As noted above, install-time only dependencies (*pretrans*,
@@ -196,7 +196,7 @@ As noted above, install-time only dependencies (*pretrans*,
 installation transaction completes if there are no other dependencies
 to prevent that. This is a common source of confusion.
 
-Modifiers in packages can be examined by adding *-v* to *rpm*(8) dependency
+Qualifiers in packages can be examined by adding *-v* to *rpm*(8) dependency
 queries, eg. *rpm -qv --requires*. Dependencies added by the
 *rpm-dependency-generators*(7) are marked *auto* in the output.
 
@@ -390,17 +390,17 @@ erased first.
 
 A dependency loop has no correct ordering, so they should be avoided when
 packaging. Common techniques are splitting packages to smaller sub-packages,
-using unordered modifiers (*meta* in particular) where appropriate,
+using unordered qualifiers (*meta* in particular) where appropriate,
 using *rpm-sysusers*(7) for managing user and group creation and rewriting
 scriptlets to use *rpm-lua*(7) instead of external commands.
 
 An otherwise equal A <-> B loop can be broken one way or the other by
-an ordered modifier (eg. *pre*, *post*, *preun* or *postun*), but these
+an ordered qualifier (eg. *pre*, *post*, *preun* or *postun*), but these
 tend to add up and then lose their efficiency.
 
 Weak dependencies are only considered for ordering if they have ordered
-modifiers, but even then the modifiers are stripped to avoid overruling
-modifiers from hard requires.
+qualifiers, but even then the qualifiers are stripped to avoid overruling
+qualifiers from hard requires.
 
 Note that RPM always performs all installs first, and erasures last.
 This means conflicting packages may temporarily coexist within a transaction,
