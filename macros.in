@@ -1249,6 +1249,7 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 %{__git} config user.name "%{__scm_username}"\
 %{__git} config user.email "%{__scm_usermail}"\
 %{__git} config gc.auto 0\
+%{__git} config maintenance.auto false\
 %{__git} add --force .\
 GIT_COMMITTER_DATE=%{__scm_source_timestamp} GIT_AUTHOR_DATE=%{__scm_source_timestamp}\\\
 	%{__git} commit %{-q} --no-gpg-sign --allow-empty -a\\\
