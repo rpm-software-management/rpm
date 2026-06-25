@@ -637,7 +637,6 @@ doDefine(rpmMacroBuf mb, const std::string & str, int level,
 	} else {
 	    handleopts = 0;
 	}
-	se = s;
     }
 
     /* Copy name */
