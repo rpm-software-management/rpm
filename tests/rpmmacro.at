@@ -1849,6 +1849,42 @@ rpm --eval "%define - xx yy"
 [],
 [error: %define: no option after -
 ])
+
+RPMTEST_CHECK([
+rpm --eval "%define xx() yy" --eval "%xx"
+],
+[0],
+[yy
+],
+[])
+
+RPMTEST_CHECK([
+rpm \
+	--define "mypath /bar" \
+	--eval "%define -e xx(abc:) %mypath" \
+	--eval "%xx -a -b -c1" \
+	--eval "%define mypath /foo" \
+	--eval "%xx"
+],
+[0],
+[/bar
+/bar
+],
+[])
+RPMTEST_CHECK([
+rpm \
+	--define "mypath /bar" \
+	--eval "%define -g xx<o> %mypath" \
+	--eval "%xx" \
+	--eval "%define mypath /foo" \
+	--eval "%xx"
+],
+[0],
+[/bar
+/bar
+],
+[])
+
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([error macro return])
