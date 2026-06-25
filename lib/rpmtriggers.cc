@@ -17,6 +17,88 @@
 
 #define TRIGGER_PRIORITY_BOUND 10000
 
+rpmtriggers rpmtriggersCreate(unsigned int hint)
+{
+    rpmtriggers triggers = new rpmtriggers_s {};
+    triggers->count = 0;
+    triggers->alloced = hint;
+    triggers->triggerInfo = (struct triggerInfo_s *)xmalloc(sizeof(struct triggerInfo_s) *
+				    triggers->alloced);
+    return triggers;
+}
+
+rpmtriggers rpmtriggersFree(rpmtriggers triggers)
+{
+    _free(triggers->triggerInfo);
+    delete triggers;
+
+    return NULL;
+}
+
+static void rpmtriggersAdd(rpmtriggers trigs, unsigned int hdrNum,
+			    unsigned int tix, unsigned int priority)
+{
+    if (trigs->count == trigs->alloced) {
+	trigs->alloced <<= 1;
+	trigs->triggerInfo = xrealloc(trigs->triggerInfo,
+				sizeof(struct triggerInfo_s) * trigs->alloced);
+    }
+
+    trigs->triggerInfo[trigs->count].hdrNum = hdrNum;
+    trigs->triggerInfo[trigs->count].tix = tix;
+    trigs->triggerInfo[trigs->count].priority = priority;
+    trigs->count++;
+}
+
+static int trigCmp(const void *a, const void *b)
+{
+    const struct triggerInfo_s *trigA = (const struct triggerInfo_s *)a;
+    const struct triggerInfo_s *trigB = (const struct triggerInfo_s *)b;
+
+    if (trigA->priority < trigB->priority)
+	return 1;
+
+    if (trigA->priority > trigB->priority)
+	return -1;
+
+    if (trigA->hdrNum < trigB->hdrNum)
+	return -1;
+
+    if (trigA->hdrNum > trigB->hdrNum)
+	return 1;
+
+    if (trigA->tix < trigB->tix)
+	return -1;
+
+    if (trigA->tix > trigB->tix)
+	return 1;
+
+    return 0;
+}
+
+static void rpmtriggersSortAndUniq(rpmtriggers trigs)
+{
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int count = trigs->count;
+
+    if (count > 1)
+	qsort(trigs->triggerInfo, count, sizeof(struct triggerInfo_s), trigCmp);
+
+    for (from = 0; from < count; from++) {
+	if (from > 0 &&
+	    !trigCmp((const void *) &trigs->triggerInfo[from - 1],
+		    (const void *) &trigs->triggerInfo[from])) {
+
+	    trigs->count--;
+	    continue;
+	}
+	if (from != to)
+	    trigs->triggerInfo[to] = trigs->triggerInfo[from];
+	to++;
+    }
+}
+
 static unsigned int getTrigPriority(Header h, rpmTagVal prioTag, int tix)
 {
     unsigned int priority = RPMTRIGGER_DEFAULT_PRIORITY;
@@ -41,7 +123,8 @@ static void addTriggers(rpmts ts, Header trigH, rpmsenseFlags filter,
 	while (rpmdsNext(ds) >= 0) {
 	    if ((rpmdsFlags(ds) & filter) && strcmp(prefix, rpmdsN(ds)) == 0) {
 		unsigned int priority = getTrigPriority(trigH, prioTag, tix);
-		ts->trigs2run.emplace(headerGetInstance(trigH), tix, priority);
+		rpmtriggersAdd(ts->trigs2run, headerGetInstance(trigH),
+				    tix, priority);
 	    }
 	}
 	rpmdsFree(ds);
@@ -87,17 +170,21 @@ void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te)
 
 int runPostUnTransFileTrigs(rpmts ts)
 {
+    int i;
     Header trigH;
     const char * trigName = NULL;
     int arg1 = 0;
     struct rpmtd_s installPrefixes;
     rpmScript script;
+    rpmtriggers trigs = ts->trigs2run;
     int nerrors = 0;
 
+    rpmtriggersSortAndUniq(trigs);
     /* Iterate over stored triggers */
-    for (const auto & trig : ts->trigs2run) {
+    for (i = 0; i < trigs->count; i++) {
 	/* Get header containing trigger script */
-	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), trig.hdrNum);
+	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts),
+				trigs->triggerInfo[i].hdrNum);
 
 	/* Maybe package with this trigger is already uninstalled */
 	if (trigH == NULL)
@@ -106,7 +193,7 @@ int runPostUnTransFileTrigs(rpmts ts)
 	/* Prepare and run script */
 	script = rpmScriptFromTriggerTag(trigH,
 		triggertag(RPMSENSE_TRIGGERPOSTUN),
-		RPMSCRIPT_TRANSFILETRIGGER, trig.tix);
+		RPMSCRIPT_TRANSFILETRIGGER, trigs->triggerInfo[i].tix);
 
 	headerGet(trigH, RPMTAG_INSTPREFIXES, &installPrefixes,
 		HEADERGET_ALLOC|HEADERGET_ARGV);
@@ -478,7 +565,7 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
     int arg1 = 0;
     int (*matchFunc)(rpmts, rpmte, const char*, rpmsenseFlags sense);
     rpmTagVal priorityTag;
-    rpmtriggers triggers;
+    rpmtriggers triggers = rpmtriggersCreate(10);
 
     /* Decide if we match triggers against files in te or in whole ts */
     if (tm == RPMSCRIPT_FILETRIGGER) {
@@ -513,37 +600,41 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 		headerFree(trigH);
 
 		/* Store file trigger in array */
-		triggers.emplace(offset, tix, priority);
+		rpmtriggersAdd(triggers, offset, tix, priority);
 	    }
 	}
 	free(pfx);
     }
     rpmdbIndexIteratorFree(ii);
 
+    /* Sort triggers by priority, offset, trigger index */
+    rpmtriggersSortAndUniq(triggers);
+
     /* Handle stored triggers */
-    for (const auto & trig : triggers) {
+    for (i = 0; i < triggers->count; i++) {
 	if (priorityClass == 1) {
-	    if (trig.priority < TRIGGER_PRIORITY_BOUND)
+	    if (triggers->triggerInfo[i].priority < TRIGGER_PRIORITY_BOUND)
 		continue;
 	} else if (priorityClass == 2) {
-	    if (trig.priority >= TRIGGER_PRIORITY_BOUND)
+	    if (triggers->triggerInfo[i].priority >= TRIGGER_PRIORITY_BOUND)
 		continue;
 	}
 
-	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), trig.hdrNum);
+	trigH = rpmdbGetHeaderAt(rpmtsGetRdb(ts), triggers->triggerInfo[i].hdrNum);
 	trigName = headerGetString(trigH, RPMTAG_NAME);
 	arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), trigName);
 
 	if (tm == RPMSCRIPT_FILETRIGGER)
 	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 0,
-						trig.tix,
+						triggers->triggerInfo[i].tix,
 						arg1, arg2);
 	else
 	    nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 1,
-						trig.tix,
+						triggers->triggerInfo[i].tix,
 						arg1, arg2);
 	headerFree(trigH);
     }
+    rpmtriggersFree(triggers);
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
@@ -552,7 +643,7 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int priorityClass)
 {
     int nerrors = 0;
-    int triggersCount;
+    int triggersCount, i;
     Header trigH = rpmteHeader(te);
     struct rpmtd_s priorities;
     rpmTagVal priorityTag;
@@ -566,28 +657,33 @@ rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
     headerGet(trigH, priorityTag, &priorities, HEADERGET_MINMEM);
 
     triggersCount = rpmtdCount(&priorities);
+    triggers = rpmtriggersCreate(triggersCount);
 
-    for (int i = 0; i < triggersCount; i++) {
+    for (i = 0; i < triggersCount; i++) {
 	unsigned int priority = RPMTRIGGER_DEFAULT_PRIORITY;
 	if (rpmtdSetIndex(&priorities, i) >= 0)
 	    priority = rpmtdGetNumber(&priorities);
 	/* Offset is not important, all triggers are from the same package */
-	triggers.emplace(0, i, priority);
+	rpmtriggersAdd(triggers, 0, i, priority);
     }
 
-    for (const auto & trig : triggers) {
+    /* Sort triggers by priority, offset, trigger index */
+    rpmtriggersSortAndUniq(triggers);
+
+    for (i = 0; i < triggersCount; i++) {
 	if (priorityClass == 1) {
-	    if (trig.priority < TRIGGER_PRIORITY_BOUND)
+	    if (triggers->triggerInfo[i].priority < TRIGGER_PRIORITY_BOUND)
 		continue;
 	} else if (priorityClass == 2) {
-	    if (trig.priority >= TRIGGER_PRIORITY_BOUND)
+	    if (triggers->triggerInfo[i].priority >= TRIGGER_PRIORITY_BOUND)
 		continue;
 	}
 
 	nerrors += runHandleTriggersInPkg(ts, te, trigH, sense, tm, 2,
-					    trig.tix,
+					    triggers->triggerInfo[i].tix,
 					    arg1, -1);
     }
+    rpmtriggersFree(triggers);
     headerFree(trigH);
 
     return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
