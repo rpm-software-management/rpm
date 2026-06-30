@@ -1,7 +1,13 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpmbuild.ver)
+if (ENABLE_SYMVER)
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${VERSION_SCRIPT}")
+endif()
+
 add_library(librpmbuild SHARED)
 set_target_properties(librpmbuild PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 target_sources(librpmbuild PRIVATE
 	build.cc files.cc misc.cc pack.cc

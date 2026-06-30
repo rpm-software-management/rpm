@@ -156,6 +156,11 @@ If glibc is used, it needs to be of version 2.27 or newer. Older glibc
 versions have a longstanding bug where glob() does not return dangling
 symlinks as matches, which broadly affects rpmbuild.
 
+By default, all RPM libraries are built with symbol versioning and default
+hidden visibility. If building with a toolchain whose linker does not support
+this functionality (-Wl,--version-script=<path>), it's possible to disable
+it with -DENABLE_SYMVER=OFF.
+
 Rpm requires a POSIX.1-2008 level operating system.
 
 To compile RPM:

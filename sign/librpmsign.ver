@@ -1,0 +1,8 @@
+LIBRPMSIGN_6.2 {
+    global:
+	rpmPkgDelFileSign;
+	rpmPkgDelSign;
+	rpmPkgSign;
+    local:
+	*;
+};
