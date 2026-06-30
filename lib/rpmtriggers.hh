@@ -33,11 +33,9 @@ using rpmtriggers = std::set<triggerInfo>;
  * package, in time when the files to uninstall are still available,
  * to determine and store triggers that should be set off after transaction.
  */
-RPM_GNUC_INTERNAL
 void rpmtriggersPrepPostUnTransFileTrigs(rpmts ts, rpmte te);
 
 /* Run triggers stored in ts */
-RPM_GNUC_INTERNAL
 int runPostUnTransFileTrigs(rpmts ts);
 
 /*
@@ -58,7 +56,6 @@ int runPostUnTransFileTrigs(rpmts ts);
  *			standard scriptlets
  *			0 to run all triggers
  */
-RPM_GNUC_INTERNAL
 rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
 			rpmscriptTriggerModes tm, int priorityClass);
 
@@ -75,7 +72,6 @@ rpmRC runFileTriggers(rpmts ts, rpmte te, int arg2, rpmsenseFlags sense,
  *			standard scriptlets
  *			0 to run all triggers
  */
-RPM_GNUC_INTERNAL
 rpmRC runImmedFileTriggers(rpmts ts, rpmte te, int arg1, rpmsenseFlags sense,
 			    rpmscriptTriggerModes tm, int priorityClass);
 #endif /* _RPMTRIGGERS_H */

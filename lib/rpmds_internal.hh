@@ -12,7 +12,6 @@
  * @param selfevr	only look at package EVR?
  * @return		1 if dependency overlaps, 0 otherwise
  */
-RPM_GNUC_INTERNAL
 int rpmdsMatches(rpmstrPool pool, Header h, int prix,
 		 rpmds req, int selfevr);
 
@@ -22,7 +21,6 @@ int rpmdsMatches(rpmstrPool pool, Header h, int prix,
  * @param where		where dependency was resolved (or NULL)
  * @param rc		0 == YES, otherwise NO
  */
-RPM_GNUC_INTERNAL
 void rpmdsNotify(rpmds ds, const char * where, int rc);
 
 /** \ingroup rpmds
@@ -30,7 +28,6 @@ void rpmdsNotify(rpmds ds, const char * where, int rc);
  * @param ds            dependency set
  * @return              current dependency name id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmdsNId(rpmds ds);
 
 /** \ingroup rpmds
@@ -38,7 +35,6 @@ rpmsid rpmdsNId(rpmds ds);
  * @param ds            dependency set
  * @return              current dependency EVR id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmdsEVRId(rpmds ds);
 
 /** \ingroup rpmds
@@ -46,31 +42,22 @@ rpmsid rpmdsEVRId(rpmds ds);
  * @param ds		dependency set
  * @return		string pool handle (weak reference)
  */
-RPM_GNUC_INTERNAL
 rpmstrPool rpmdsPool(rpmds ds);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmdsNIdIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmdsEVRIdIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 const char * rpmdsNIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 const char * rpmdsEVRIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 int rpmdsTiIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 rpm_color_t rpmdsColorIndex(rpmds ds, int i);
 
-RPM_GNUC_INTERNAL
 int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix);
 
 /** \ingroup rpmds
@@ -80,7 +67,6 @@ int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix);
  * @param ti		trigger index
  * @return		new filtered dependency set
  */
-RPM_GNUC_INTERNAL
 rpmds rpmdsFilterTi(rpmds ds, int ti);
 
 #endif /* _RPMDS_INTERNAL_H */

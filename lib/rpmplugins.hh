@@ -10,7 +10,6 @@
  * @param ts		transaction set
  * @return		new plugin structure
  */
-RPM_GNUC_INTERNAL
 rpmPlugins rpmpluginsNew(rpmts ts);
 
 /** \ingroup rpmplugins
@@ -18,7 +17,6 @@ rpmPlugins rpmpluginsNew(rpmts ts);
  * @param plugins	plugins structure to destroy
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 rpmPlugins rpmpluginsFree(rpmPlugins plugins);
 
 /** \ingroup rpmplugins
@@ -29,7 +27,6 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins);
  * @param opts		options to pass to the plugin
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path, const char *opts);
 
 /** \ingroup rpmplugins
@@ -39,7 +36,6 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path, cons
  * @param name		name of plugin
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name);
 
 /** \ingroup rpmplugins
@@ -48,7 +44,6 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
  * @param name		name of plugin to check
  * @return		1 if plugin name has already been added, 0 otherwise
  */
-RPM_GNUC_INTERNAL
 int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name);
 
 /** \ingroup rpmplugins
@@ -57,7 +52,6 @@ int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name);
  * @param ts		processed transaction
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts);
 
 /** \ingroup rpmplugins
@@ -67,7 +61,6 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts);
  * @param res		transaction result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res);
 
 /** \ingroup rpmplugins
@@ -76,7 +69,6 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res);
  * @param te		processed transaction element
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
 
 /** \ingroup rpmplugins
@@ -86,7 +78,6 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
  * @param res		transaction element result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res);
 
 /** \ingroup rpmplugins
@@ -96,7 +87,6 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res);
  * @param type		indicates the scriptlet execution flow, see rpmScriptletExecutionFlow
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int type);
 
 /** \ingroup rpmplugins
@@ -106,7 +96,6 @@ rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int typ
  * @param type		indicates the scriptlet execution flow, see rpmScriptletExecutionFlow
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int type);
 
 /** \ingroup rpmplugins
@@ -117,7 +106,6 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
  * @param res		scriptlet execution result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int type, int res);
 
 /** \ingroup rpmplugins
@@ -129,7 +117,6 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
  * @param op		file operation + associated flags
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char* path,
                                 mode_t file_mode, rpmFsmOp op);
 
@@ -143,7 +130,6 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, rpmfi fi, const char* path,
  * @param res		fsm result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
                                 mode_t file_mode, rpmFsmOp op, int res);
 
@@ -159,7 +145,6 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, rpmfi fi, const char* path,
  * @param op		file operation + associated flags
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins, rpmfi fi,
                                    int fd, const char *path, const char *dest,
                                    mode_t mode, rpmFsmOp op);

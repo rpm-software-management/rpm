@@ -284,14 +284,12 @@ typedef enum rpmParseState_e {
  * Create and initialize rpmSpec structure.
  * @return spec		spec file control structure
  */
-RPM_GNUC_INTERNAL
 rpmSpec newSpec(void);
 
 /** \ingroup rpmbuild
  * Stop reading from spec file, freeing resources.
  * @param spec		spec file control structure
  */
-RPM_GNUC_INTERNAL
 void closeSpec(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -300,7 +298,6 @@ void closeSpec(rpmSpec spec);
  * @param strip		truncate comments?
  * @return		0 on success, 1 on EOF, <0 on error
  */
-RPM_GNUC_INTERNAL
 int readLine(rpmSpec spec, int strip);
 
 /** \ingroup rpmbuild
@@ -311,7 +308,6 @@ int readLine(rpmSpec spec, int strip);
  * @param[out] sbp		pointer to string buf (optional, alloced)
  * @return		next spec part or PART_ERROR on error
  */
-RPM_GNUC_INTERNAL
 int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp);
 
 /** \ingroup rpmbuild
@@ -319,7 +315,6 @@ int parseLines(rpmSpec spec, int strip, ARGV_t *avp, StringBuf *sbp);
  * @param s		source component chain
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 struct Source * freeSources(struct Source * s);
 
 /** \ingroup rpmbuild
@@ -327,7 +322,6 @@ struct Source * freeSources(struct Source * s);
  * @param		line from spec file
  * @return		next parser state
  */
-RPM_GNUC_INTERNAL
 int isPart(const char * line)	;
 
 /** \ingroup rpmbuild
@@ -336,7 +330,6 @@ int isPart(const char * line)	;
  * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parseSimpleScript(rpmSpec spec, const char * name,
 		      StringBuf *sbp, ARGV_t *avp, int *modep);
 
@@ -345,7 +338,6 @@ int parseSimpleScript(rpmSpec spec, const char * name,
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parseChangelog(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -353,7 +345,6 @@ int parseChangelog(rpmSpec spec);
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parseDescription(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -361,7 +352,6 @@ int parseDescription(rpmSpec spec);
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parseFiles(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -369,7 +359,6 @@ int parseFiles(rpmSpec spec);
  * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parsePolicies(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -379,7 +368,6 @@ int parsePolicies(rpmSpec spec);
  * @param stage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage);
 
 /** \ingroup rpmbuild
@@ -388,10 +376,8 @@ int parsePreamble(rpmSpec spec, int initialPackage, enum parseStages stage);
  * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
-RPM_GNUC_INTERNAL
 int parseScript(rpmSpec spec, int parsePart);
 
-RPM_GNUC_INTERNAL
 int parseList(rpmSpec spec, const char *name, rpmTagVal stype);
 
 /** \ingroup rpmbuild
@@ -401,7 +387,6 @@ int parseList(rpmSpec spec, const char *name, rpmTagVal stype);
  * @param allowedchars  string of permitted characters
  * @return              RPMRC_OK if OK
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmCharCheck(rpmSpec spec, const char *field,
 		   const char *allowedchars,
 		   const char *allowedcharsfirst);
@@ -422,7 +407,6 @@ typedef rpmRC (*addReqProvFunction) (void *cbdata, rpmTagVal tagN,
  * @param cbdata	Callback data (@pkg if NULL)
  * @return		RPMRC_OK on success, RPMRC_FAIL on failure
  */
-RPM_GNUC_INTERNAL
 rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTagVal tagN,
 		int index, rpmsenseFlags tagflags, addReqProvFunction cb, void *cbdata);
 
@@ -432,7 +416,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTagVal tagN,
  * @param spec		spec file control structure
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC parseGeneratedSpecs(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -446,7 +429,6 @@ rpmRC parseGeneratedSpecs(rpmSpec spec);
  * @param sb_stdoutp	StringBuf to catupre the stdout of the script or NULL
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
 	       const char * sb, int test, StringBuf * sb_stdoutp);
 
@@ -458,7 +440,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
  * @param[out] pkg		package control structure
  * @return		0 on success, 1 on failure
  */
-RPM_GNUC_INTERNAL
 rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 		Package * pkg);
 
@@ -469,14 +450,12 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
  * @param pkglist	package list pointer to append to (or NULL)
  * @return		package control structure
  */
-RPM_GNUC_INTERNAL
 Package newPackage(const char *name, rpmstrPool pool, Package * pkglist);
 
 /** \ingroup rpmbuild
  * Free a package control structure.
  * @param pkg          package control structure
  */
-RPM_GNUC_INTERNAL
 Package freePackage(Package pkg);
 
 /** \ingroup rpmbuild
@@ -485,7 +464,6 @@ Package freePackage(Package pkg);
  * @param tag		name tag denominating the dependency
  * @return		pointer to dependency set
  */
-RPM_GNUC_INTERNAL
 rpmds * packageDependencies(Package pkg, rpmTagVal tag);
 
 /** \ingroup rpmbuild
@@ -496,7 +474,6 @@ rpmds * packageDependencies(Package pkg, rpmTagVal tag);
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int didInstall, int test);
 
@@ -506,7 +483,6 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
  * @param pkg		package control
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
 
 /** \ingroup rpmfc
@@ -517,7 +493,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
  * @param failnonzero	IS non-zero helper exit status a failure?
  * @param buildRoot	buildRoot directory (or NULL)
  */
-RPM_GNUC_INTERNAL
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero, const std::string & buildRoot);
 
@@ -527,7 +502,6 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
  * @param test		don't execute scripts or package if testing
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 rpmRC processBinaryPolicies(rpmSpec spec, int test);
 
 /** \ingroup rpmbuild
@@ -536,7 +510,6 @@ rpmRC processBinaryPolicies(rpmSpec spec, int test);
  * @param pkgFlags	bit(s) to control package generation
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags);
 
 /** \ingroup rpmbuild
@@ -546,7 +519,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags);
  * @param cheating	was build shortcircuited?
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
 
 /** \ingroup rpmbuild
@@ -555,10 +527,8 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
  * @param[out] cookie	build identifier "cookie" or NULL
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC packageSources(rpmSpec spec, char **cookie);
 
-RPM_GNUC_INTERNAL
 int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
 		const char *field, const char *lang);
 
@@ -572,12 +542,10 @@ int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
  * @param index         (# trigger script for triggers, 0 for others)
  * @return		0 on success, 1 on error
  */
-RPM_GNUC_INTERNAL
 int addReqProv(Package pkg, rpmTagVal tagN,
 	       const char * N, const char * EVR, rpmsenseFlags Flags,
 	       uint32_t index);
 
-RPM_GNUC_INTERNAL
 rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
 		    const char * N, const char * EVR, rpmsenseFlags Flags,
 		    int index);
@@ -586,10 +554,8 @@ rpmRC addReqProvPkg(void *cbdata, rpmTagVal tagN,
  * Add self-provides to package.
  * @param pkg		package
  */
-RPM_GNUC_INTERNAL
 void addPackageProvides(Package pkg);
 
-RPM_GNUC_INTERNAL
 int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag);
 
 /** \ingroup rpmbuild
@@ -599,10 +565,8 @@ int addSource(rpmSpec spec, int specline, const char *srcname, rpmTagVal tag);
  * @param featureEVR	rpm feature epoch/version/release
  * @return		0 always
  */
-RPM_GNUC_INTERNAL
 int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR);
 
-RPM_GNUC_INTERNAL
 rpmRC checkForEncoding(Header h, int addtag);
 
 
@@ -611,10 +575,8 @@ rpmRC checkForEncoding(Header h, int addtag);
  * @param h		target header
  * @param fromh		source header
  */
-RPM_GNUC_INTERNAL
 void copyInheritedTags(Header h, Header fromh);
 
-RPM_GNUC_INTERNAL
 int specExpand(rpmSpec spec, int lineno, const char *sbuf,
 		char **obuf);
 
@@ -623,47 +585,33 @@ int specExpand(rpmSpec spec, int lineno, const char *sbuf,
  * flags (STRIP_*, ALLOW_EMPTY)
  * Returns number or read lines, or -1 on error.
  */
-RPM_GNUC_INTERNAL
 int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
 		ARGV_t *avp, StringBuf *sbp);
 
-RPM_GNUC_INTERNAL
 void * specLuaInit(rpmSpec spec);
 
-RPM_GNUC_INTERNAL
 void * specLuaFini(rpmSpec spec);
 
-RPM_GNUC_INTERNAL
 void addLuaSource(const struct Source *p);
 
-RPM_GNUC_INTERNAL
 int isMemberInEntry(Header h, const char *name, rpmTagVal tag);
 
-RPM_GNUC_INTERNAL
 rpmRC checkForValidArchitectures(rpmSpec spec);
 
-RPM_GNUC_INTERNAL
 int checkForRequired(Header h);
 
-RPM_GNUC_INTERNAL
 int checkForDuplicates(Header h);
 
-RPM_GNUC_INTERNAL
 int checkBuildsystem(rpmSpec spec, const char *buildsys);
 
-RPM_GNUC_INTERNAL
 void fillOutMainPackage(Header h);
 
-RPM_GNUC_INTERNAL
 void copyInheritedTags(Header h, Header fromh);
 
-RPM_GNUC_INTERNAL
 void doSetupMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
-RPM_GNUC_INTERNAL
 void doPatchMacro(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t margs, size_t *parsed);
 
 /* Return section number, -1 on error */
-RPM_GNUC_INTERNAL
 const struct sectname_s *getSection(const char *name, int part);
 
 #endif /* _RPMBUILD_INTERNAL_H */
