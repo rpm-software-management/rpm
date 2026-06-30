@@ -74,21 +74,21 @@ done
 ]],
 [0],
 [librpm.so.10.8.0:
-	headerAddI18NString
-	headerCheck
-	headerConvert
+	headerAddI18NString@@LIBRPM_6.2
+	headerCheck@@LIBRPM_6.2
+	headerConvert@@LIBRPM_6.2
 librpmbuild.so.10.8.0:
-	rpmSpecBuild
-	rpmSpecCheckDeps
-	rpmSpecDS
+	rpmSpecBuild@@LIBRPMBUILD_6.2
+	rpmSpecCheckDeps@@LIBRPMBUILD_6.2
+	rpmSpecDS@@LIBRPMBUILD_6.2
 librpmio.so.10.8.0:
-	Fclose
-	Fcntl
-	Fdescr
+	Fclose@@LIBRPMIO_6.2
+	Fcntl@@LIBRPMIO_6.2
+	Fdescr@@LIBRPMIO_6.2
 librpmsign.so.10.8.0:
-	rpmPkgDelFileSign
-	rpmPkgDelSign
-	rpmPkgSign
+	rpmPkgDelFileSign@@LIBRPMSIGN_6.2
+	rpmPkgDelSign@@LIBRPMSIGN_6.2
+	rpmPkgSign@@LIBRPMSIGN_6.2
 ],
 [])
 RPMTEST_CLEANUP

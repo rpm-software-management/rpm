@@ -188,6 +188,7 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
+include(CheckLinkerFlag)
 include(CheckVariableExists)
 
 set(OPTFUNCS
@@ -440,6 +441,9 @@ foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened -f
 		add_compile_options(${flag})
 	endif()
 endforeach()
+
+check_linker_flag(CXX "-Wl,--version-script=${CMAKE_SOURCE_DIR}/lib/librpm.ver"
+		  HAVE_LINKER_VERSION_SCRIPT)
 
 # generated sources
 include_directories(${CMAKE_BINARY_DIR})
