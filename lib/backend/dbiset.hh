@@ -4,7 +4,7 @@
 #include <rpm/rpmutil.h>
 
 /* A single item from an index database (i.e. the "data returned"). */
-typedef struct RPM_GNUC_INTERNAL dbiIndexItem_s {
+typedef struct dbiIndexItem_s {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
 
@@ -15,26 +15,20 @@ typedef struct RPM_GNUC_INTERNAL dbiIndexItem_s {
 typedef struct dbiIndexSet_s * dbiIndexSet;
 
 /* Create an empty index set, optionally with sizehint reservation for recs */
-RPM_GNUC_INTERNAL
 dbiIndexSet dbiIndexSetNew(unsigned int sizehint);
 
 /* Reserve space for at least nrecs new records */
-RPM_GNUC_INTERNAL
 void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs);
 
-RPM_GNUC_INTERNAL
 void dbiIndexSetClear(dbiIndexSet set);
 
 /* Sort an index set */
-RPM_GNUC_INTERNAL
 void dbiIndexSetSort(dbiIndexSet set);
 
 /* Uniq an index set */
-RPM_GNUC_INTERNAL
 void dbiIndexSetUniq(dbiIndexSet set, int sorted);
 
 /* Append an index set to another */
-RPM_GNUC_INTERNAL
 int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
 
 /**
@@ -45,7 +39,6 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
   * @param sortset      should resulting set be sorted?
   * @return             0 success, 1 failure (bad args)
   */
-RPM_GNUC_INTERNAL
 int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
 			 unsigned int tagNum, int sortset);
 
@@ -57,7 +50,6 @@ int dbiIndexSetAppendOne(dbiIndexSet set, unsigned int hdrNum,
  * @param sorted       are set and oset already sorted?
  * @return             0 success, 1 failure (no items found)
  */
-RPM_GNUC_INTERNAL
 int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
 
 /**
@@ -68,22 +60,17 @@ int dbiIndexSetPruneSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
  * @param sorted       are set and oset already sorted?
  * @return             0 success, 1 failure (no items removed)
  */
-RPM_GNUC_INTERNAL
 int dbiIndexSetFilterSet(dbiIndexSet set, dbiIndexSet oset, int sorted);
 
 /* Count items in index database set. */
-RPM_GNUC_INTERNAL
 unsigned int dbiIndexSetCount(dbiIndexSet set);
 
 /* Return record offset of header from element in index database set. */
-RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno);
 
 /* Return file index from element in index database set. */
-RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno);
 
 /* Destroy set of index database items */
-RPM_GNUC_INTERNAL
 dbiIndexSet dbiIndexSetFree(dbiIndexSet set);
 #endif

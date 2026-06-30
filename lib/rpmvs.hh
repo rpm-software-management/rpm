@@ -96,6 +96,5 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
 
 
-RPM_GNUC_INTERNAL
 int sortRC(int rc);
 #endif /* _RPMVS_H */
