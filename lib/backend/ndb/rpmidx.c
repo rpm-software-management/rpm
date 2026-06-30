@@ -215,6 +215,14 @@ static int rpmidxReadHeader(rpmidxdb idxdb)
     idxdb->keyend     = le2ha(idxdb->head_mapped + IDXDB_OFFSET_KEYEND);
     idxdb->keyexcess  = le2ha(idxdb->head_mapped + IDXDB_OFFSET_KEYEXCESS);
 
+    /* make sure data is sane */
+    if (idxdb->nslots < 256 || (idxdb->nslots & (idxdb->nslots - 1)) != 0 ||
+	    idxdb->usedslots > idxdb->nslots || idxdb->dummyslots > idxdb->nslots ||
+	    idxdb->nslots >= (0xffffffffU - IDXDB_SLOT_OFFSET) / 12) {
+	rpmidxUnmap(idxdb);	/* too small, somthing is wrong */
+	return RPMRC_FAIL;
+    }
+
     idxdb->hmask = idxdb->nslots - 1;
 
     /* now that we know nslots we can split between slots and keys */
@@ -368,6 +376,8 @@ static inline int equalkey(rpmidxdb idxdb, unsigned int off, const unsigned char
 static int addkeypage(rpmidxdb idxdb) {
     unsigned int addsize = idxdb->pagesize > IDXDB_KEY_CHUNKSIZE ? idxdb->pagesize : IDXDB_KEY_CHUNKSIZE;
 
+    if (addsize > 0xffffffffU - idxdb->file_size)
+	return RPMRC_FAIL;
     if (rpmxdbResizeBlob(idxdb->xdb, idxdb->xdbid, idxdb->file_size + addsize))
 	return RPMRC_FAIL;
     return RPMRC_OK;
@@ -498,6 +508,8 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
     while (nslots & (nslots - 1))
 	nslots = nslots & (nslots - 1);
     nslots *= 4;
+    if (nslots < 256 || nslots >= (0xffffffffU - IDXDB_SLOT_OFFSET) / 12)
+	return RPMRC_FAIL;
 
     nidxdb->nslots = nslots;
     nidxdb->hmask = nslots - 1;
@@ -506,11 +518,16 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
     key_size = idxdb->keyend;
     if (key_size < IDXDB_KEY_CHUNKSIZE)
 	key_size = IDXDB_KEY_CHUNKSIZE;
+    if (key_size >= 0xffffffffU - (IDXDB_SLOT_OFFSET + nslots * 12))
+	return RPMRC_FAIL;
+
     file_size = IDXDB_SLOT_OFFSET + nslots * 12 + key_size;
 
     /* round file size to multiple of the page size */
     if (file_size & (nidxdb->pagesize - 1)) {
 	unsigned int add = nidxdb->pagesize - (file_size & (nidxdb->pagesize - 1));
+	if (add > 0xffffffffU - file_size)
+	    return RPMRC_FAIL;
 	file_size += add;
 	key_size += add;
     }
@@ -584,7 +601,7 @@ static int rpmidxRebuildInternal(rpmidxdb idxdb)
  */
 static int rpmidxCheck(rpmidxdb idxdb)
 {
-    if (idxdb->usedslots * 2 > idxdb->nslots ||
+    if (idxdb->usedslots > idxdb->nslots / 2 ||
 	(idxdb->keyexcess > 4096 && idxdb->keyexcess * 4 > idxdb->keyend) ||
 	idxdb->keyend >= ~idxdb->xmask) {
 	if (rpmidxRebuildInternal(idxdb))
@@ -605,6 +622,8 @@ static int rpmidxPutInternal(rpmidxdb idxdb, const unsigned char *key, unsigned 
     unsigned int data, ovldata;
 
     if (datidx >= 0x80000000)
+	return RPMRC_FAIL;
+    if (keyl >= 0x80000000)
 	return RPMRC_FAIL;
     if (rpmidxCheck(idxdb))
 	return RPMRC_FAIL;
@@ -676,6 +695,8 @@ static int rpmidxDelInternal(rpmidxdb idxdb, const unsigned char *key, unsigned 
     unsigned int data, ovldata;
 
     if (datidx >= 0x80000000)
+	return RPMRC_FAIL;
+    if (keyl >= 0x80000000)
 	return RPMRC_FAIL;
     if (rpmidxCheck(idxdb))
 	return RPMRC_FAIL;
