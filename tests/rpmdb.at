@@ -707,7 +707,6 @@ RPMTEST_CLEANUP
 # ------------------------------
 RPMTEST_SETUP_RW([rpmdb ndb heap buffer overflow])
 AT_KEYWORDS([install rpmdb ndb])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 # this is only relevant with ndb db, make sure we get one
 echo "%_db_backend ndb" >> $RPMTEST/root/.config/rpm/macros
 RPMDB_RESET
@@ -728,5 +727,5 @@ runroot rpm -qa
 [Header: 4294967296 slots (16777216 pages)
 Allocate: 0 slots (0 pages)
 ],
-[ignore])
+[])
 RPMTEST_CLEANUP
