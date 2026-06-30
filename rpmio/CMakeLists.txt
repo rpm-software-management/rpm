@@ -1,3 +1,5 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpmio.ver)
+
 add_library(librpmio SHARED)
 
 target_sources(librpmio PRIVATE
@@ -46,6 +48,7 @@ endif()
 set_target_properties(librpmio PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 target_link_libraries(librpmio PRIVATE
 	PkgConfig::POPT
@@ -67,4 +70,7 @@ if (OpenMP_C_FOUND)
         target_link_libraries(librpmio PRIVATE OpenMP::OpenMP_C)
 endif()
 
+if (HAVE_LINKER_VERSION_SCRIPT)
+	target_link_libraries(librpmio PRIVATE -Wl,--version-script=${VERSION_SCRIPT})
+endif()
 install(TARGETS librpmio EXPORT rpm-targets)

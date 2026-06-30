@@ -1,7 +1,10 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpm.ver)
+
 add_library(librpm SHARED)
 set_target_properties(librpm PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 
 target_compile_definitions(librpm PRIVATE
@@ -83,5 +86,8 @@ add_custom_command(OUTPUT tagtbl.inc
 target_link_libraries(librpm PUBLIC librpmio)
 target_link_libraries(librpm PRIVATE PkgConfig::POPT LUA::LUA ${Intl_LIBRARIES})
 target_compile_options(librpm PRIVATE -Wno-sign-compare)
+if (HAVE_LINKER_VERSION_SCRIPT)
+	target_link_options(librpm PRIVATE -Wl,--version-script=${VERSION_SCRIPT})
+endif()
 
 install(TARGETS librpm EXPORT rpm-targets)

@@ -1,7 +1,10 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpmbuild.ver)
+
 add_library(librpmbuild SHARED)
 set_target_properties(librpmbuild PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 target_sources(librpmbuild PRIVATE
 	build.cc files.cc misc.cc pack.cc
@@ -57,4 +60,7 @@ if (OpenMP_C_FOUND)
 	target_link_libraries(librpmbuild PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
+if (HAVE_LINKER_VERSION_SCRIPT)
+	target_link_options(librpmbuild PRIVATE -Wl,--version-script=${VERSION_SCRIPT})
+endif()
 install(TARGETS librpmbuild EXPORT rpm-targets)

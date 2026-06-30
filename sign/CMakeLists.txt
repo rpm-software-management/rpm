@@ -1,7 +1,10 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpmsign.ver)
+
 add_library(librpmsign SHARED)
 set_target_properties(librpmsign PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 target_sources(librpmsign PRIVATE rpmgensig.cc)
 
@@ -27,4 +30,7 @@ if (WITH_FSVERITY)
 	target_link_libraries(librpmsign PRIVATE PkgConfig::FSVERITY)
 endif()
 
+if (HAVE_LINKER_VERSION_SCRIPT)
+	target_link_options(librpmsign PRIVATE -Wl,--version-script=${VERSION_SCRIPT})
+endif()
 install(TARGETS librpmsign EXPORT rpm-targets)
