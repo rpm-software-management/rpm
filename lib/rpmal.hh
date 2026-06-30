@@ -18,7 +18,6 @@ typedef struct rpmal_s * rpmal;
  * @param delta		no. of entries to add on each realloc
  * @return al		new available list
  */
-RPM_GNUC_INTERNAL
 rpmal rpmalCreate(rpmts ts, int delta);
 
 /**
@@ -26,7 +25,6 @@ rpmal rpmalCreate(rpmts ts, int delta);
  * @param al		available list
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 rpmal rpmalFree(rpmal al);
 
 /**
@@ -34,7 +32,6 @@ rpmal rpmalFree(rpmal al);
  * @param al		available list
  * @param p	        package
  */
-RPM_GNUC_INTERNAL
 void rpmalDel(rpmal al, rpmte p);
 
 /**
@@ -42,7 +39,6 @@ void rpmalDel(rpmal al, rpmte p);
  * @param al	        available list
  * @param p             package
  */
-RPM_GNUC_INTERNAL
 void rpmalAdd(rpmal al, rpmte p);
 
 /**
@@ -51,7 +47,6 @@ void rpmalAdd(rpmal al, rpmte p);
  * @param ds		dependency set
  * @return		obsoleting packages for ds, NULL if none
  */
-RPM_GNUC_INTERNAL
 std::vector<rpmte> rpmalAllObsoletes(const rpmal al, const rpmds ds);
 
 /**
@@ -60,7 +55,6 @@ std::vector<rpmte> rpmalAllObsoletes(const rpmal al, const rpmds ds);
  * @param ds		dependency set
  * @return		best provider for the dependency (if any)
  */
-RPM_GNUC_INTERNAL
 std::vector<rpmte> rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
 
 /**
@@ -70,7 +64,6 @@ std::vector<rpmte> rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
  * @param ds		dependency set
  * @return		best provider for the dependency, NULL if none
  */
-RPM_GNUC_INTERNAL
 rpmte rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds);
 
 /**
@@ -79,7 +72,6 @@ rpmte rpmalSatisfiesDepend(const rpmal al, const rpmte te, const rpmds ds);
  * @param te           transaction element
  * @return             index, (unsigned int)-1 if not found
  */
-RPM_GNUC_INTERNAL
 unsigned int rpmalLookupTE(const rpmal al, const rpmte te);
 
 #endif	/* H_RPMAL */

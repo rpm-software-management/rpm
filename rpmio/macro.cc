@@ -985,7 +985,6 @@ freeArgs(rpmMacroBuf mb)
     mb->me = NULL;
 }
 
-RPM_GNUC_INTERNAL
 void splitQuoted(ARGV_t *av, const char * str, const char * seps)
 {
     const int qchar = 0x1f; /* ASCII unit separator */
@@ -1016,7 +1015,6 @@ void splitQuoted(ARGV_t *av, const char * str, const char * seps)
     }
 }
 
-RPM_GNUC_INTERNAL
 char *unsplitQuoted(ARGV_const_t av, const char *sep)
 {
     const int qchar = 0x1f; /* ASCII unit separator */
@@ -1486,7 +1484,6 @@ static const char *setNegateAndCheck(const char *str, int *pnegate, int *pchkexi
  * @param str           pointer to the character after the initial '%'
  * @return              pointer to the next character after the macro
  */
-RPM_GNUC_INTERNAL
 const char *findMacroEnd(const char *str)
 {
     int c;

@@ -21,7 +21,6 @@ enum rpmdbRebuildFlags_e {
  * @param db		rpm database
  * @return		new rpm database reference
  */
-RPM_GNUC_INTERNAL
 rpmdb rpmdbLink(rpmdb db);
 
 /** \ingroup rpmdb
@@ -32,7 +31,6 @@ rpmdb rpmdbLink(rpmdb db);
  * @param perms		database permissions
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbOpen (const char * prefix, rpmdb * dbp, int mode, int perms);
 
 /** \ingroup rpmdb
@@ -41,7 +39,6 @@ int rpmdbOpen (const char * prefix, rpmdb * dbp, int mode, int perms);
  * @param perms		database permissions
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbInit(const char * prefix, int perms);
 
 /** \ingroup rpmdb
@@ -49,7 +46,6 @@ int rpmdbInit(const char * prefix, int perms);
  * @param db		rpm database
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbClose (rpmdb db);
 
 /** \ingroup rpmdb
@@ -60,7 +56,6 @@ int rpmdbClose (rpmdb db);
  * @param rebuildflags	flags
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbRebuild(const char * prefix, rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg),
 		int rebuildflags);
@@ -70,7 +65,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
  * @param prefix	path to top of install tree
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbVerify(const char * prefix);
 
 /** \ingroup rpmdb
@@ -79,7 +73,6 @@ int rpmdbVerify(const char * prefix);
  * @param h		header
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbAdd(rpmdb db, Header h);
 
 /** \ingroup rpmdb
@@ -88,7 +81,6 @@ int rpmdbAdd(rpmdb db, Header h);
  * @param hdrNum	package instance number in database
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbRemove(rpmdb db, unsigned int hdrNum);
 
 /** \ingroup rpmdb
@@ -96,7 +88,6 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum);
  * param db		rpmdb handle
  * return		db home directory (or NULL on error)
  */
-RPM_GNUC_INTERNAL
 const char *rpmdbHome(rpmdb db);
 
 /** \ingroup rpmdb
@@ -106,7 +97,6 @@ const char *rpmdbHome(rpmdb db);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const char * keyp, size_t keylen);
 
@@ -115,7 +105,6 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
  * Return database iterator.
  * @param mi		rpm database iterator
  */
-RPM_GNUC_INTERNAL
 void rpmdbSortIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -123,7 +112,6 @@ void rpmdbSortIterator(rpmdbMatchIterator mi);
  * Return database iterator.
  * @param mi		rpm database iterator
  */
-RPM_GNUC_INTERNAL
 void rpmdbUniqIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -135,7 +123,6 @@ void rpmdbUniqIterator(rpmdbMatchIterator mi);
  * @param neg		mode
  * return		0 on success, 1 on failure (bad args)
  */
-RPM_GNUC_INTERNAL
 int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int neg);
 
 /** \ingroup rpmdb
@@ -145,7 +132,6 @@ int rpmdbFilterIterator(rpmdbMatchIterator mi, packageHash const & hdrNums, int 
  * @param hdrNums	hash of package instances
  * @return		0 on success, 1 on failure (bad args)
  */
-RPM_GNUC_INTERNAL
 int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash const & hdrNums);
 
 /** \ingroup rpmdb
@@ -155,7 +141,6 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, packageHash const & hdrNums);
  * @param dbitag	database index tag
  * @return		empty match iterator
  */
-RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
 
 /** \ingroup rpmdb
@@ -167,7 +152,6 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
  * @param plen		prefix data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
 					const char* pfx, size_t plen);
 /** \ingroup rpmdb
@@ -175,7 +159,6 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * @param ii		index iterator
  * @return		db offsets of pkgs
  */
-RPM_GNUC_INTERNAL
 const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
@@ -183,7 +166,6 @@ const unsigned int *rpmdbIndexIteratorPkgOffsets(rpmdbIndexIterator ii);
  * @param mi		rpm database iterator
  * @return		current index
  */
-RPM_GNUC_INTERNAL
 int rpmdbGetIteratorIndex(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -191,7 +173,6 @@ int rpmdbGetIteratorIndex(rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @param ix		index
  */
-RPM_GNUC_INTERNAL
 void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix);
 
 /** \ingroup rpmdb
@@ -200,7 +181,6 @@ void rpmdbSetIteratorIndex(rpmdbMatchIterator mi, unsigned int ix);
  * @param ix		index
  * @return		package offset
  */
-RPM_GNUC_INTERNAL
 unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix);
 
 /** \ingroup rpmdb
@@ -209,7 +189,6 @@ unsigned int rpmdbGetIteratorOffsetFor(rpmdbMatchIterator mi, unsigned int ix);
  * @param offset	database offset
  * @return		header at given offset
  */
-RPM_GNUC_INTERNAL
 Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset);
 
 #endif

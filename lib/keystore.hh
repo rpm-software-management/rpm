@@ -50,7 +50,6 @@ public:
     rpmRC delete_store(rpmtxn txn) override;
 };
 
-RPM_GNUC_INTERNAL
 keystore *getKeystore(const char * krtype);
 
 }; /* namespace */

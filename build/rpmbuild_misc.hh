@@ -12,10 +12,8 @@
  * @param s		skip white space, truncate line at '#'
  * @return		1 on comment lines, 0 otherwise
  */
-RPM_GNUC_INTERNAL
 int handleComments(char * s);
 
-RPM_GNUC_INTERNAL
 struct Source *findSource(rpmSpec spec, uint32_t num, int flag);
 
 /** \ingroup rpmstring
@@ -24,22 +22,18 @@ typedef struct StringBufRec *StringBuf;
 
 /** \ingroup rpmstring
  */
-RPM_GNUC_INTERNAL
 StringBuf newStringBuf(void);
 
 /** \ingroup rpmstring
  */
-RPM_GNUC_INTERNAL
 StringBuf freeStringBuf( StringBuf sb);
 
 /** \ingroup rpmstring
  */
-RPM_GNUC_INTERNAL
 const char * getStringBuf(StringBuf sb);
 
 /** \ingroup rpmstring
  */
-RPM_GNUC_INTERNAL
 void stripTrailingBlanksStringBuf(StringBuf sb);
 
 /** \ingroup rpmstring
@@ -52,7 +46,6 @@ void stripTrailingBlanksStringBuf(StringBuf sb);
 
 /** \ingroup rpmstring
  */
-RPM_GNUC_INTERNAL
 void appendStringBufAux(StringBuf sb, const std::string & s, int nl);
 
 /** \ingroup rpmbuild
@@ -61,7 +54,6 @@ void appendStringBufAux(StringBuf sb, const std::string & s, int nl);
  * @param[out] res		pointer to uint32_t
  * @return		0 on success, -1 on failure
  */
-RPM_GNUC_INTERNAL
 int parseUnsignedNum(const char * line, uint32_t * res);
 
 /* pointer distance for strlen() compatibility, pe >= p known */

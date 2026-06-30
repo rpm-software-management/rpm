@@ -21,7 +21,6 @@
  * @param cert		signing cert
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
 		    char *keypass, char *cert, uint16_t algo);
 

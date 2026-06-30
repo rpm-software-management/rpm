@@ -113,18 +113,14 @@ struct dbiIndex_s {
 typedef rpmRC (*idxfunc)(dbiIndex dbi, dbiCursor dbc,
 			const char *keyp, size_t keylen, dbiIndexItem rec);
 
-RPM_GNUC_INTERNAL
 rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h,
 		idxfunc idxupdate);
 
-RPM_GNUC_INTERNAL
 /* Globally enable/disable fsync in the backend */
 void dbSetFSync(rpmdb rdb, int enable);
 
-RPM_GNUC_INTERNAL
 int dbCtrl(rpmdb rdb, dbCtrlOp ctrl);
 
-RPM_GNUC_INTERNAL
 void dbShowRC(FILE* fp);
 
 /** \ingroup dbi
@@ -133,7 +129,6 @@ void dbShowRC(FILE* fp);
  * @param rpmtag	database index tag
  * @return		index database handle
  */
-RPM_GNUC_INTERNAL
 dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag);
 
 /** \ingroup dbi
@@ -141,7 +136,6 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag);
  * @param dbi		index database handle
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 dbiIndex dbiFree( dbiIndex dbi);
 
 /** \ingroup dbi
@@ -152,7 +146,6 @@ dbiIndex dbiFree( dbiIndex dbi);
  * @param flags
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
 
 /** \ingroup dbi
@@ -161,7 +154,6 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
  * @param flags		(unused)
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int dbiClose(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
@@ -170,7 +162,6 @@ int dbiClose(dbiIndex dbi, unsigned int flags);
  * @param flags		(unused)
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int dbiVerify(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
@@ -178,7 +169,6 @@ int dbiVerify(dbiIndex dbi, unsigned int flags);
  * @param dbi		index database handle
  * @return		dbi control flags
  */
-RPM_GNUC_INTERNAL
 int dbiFlags(dbiIndex dbi);
 
 /** \ingroup dbi
@@ -186,7 +176,6 @@ int dbiFlags(dbiIndex dbi);
  * @param dbi		index database handle
  * @return		dbi name
  */
-RPM_GNUC_INTERNAL
 const char * dbiName(dbiIndex dbi);
 
 /** \ingroup dbi
@@ -195,7 +184,6 @@ const char * dbiName(dbiIndex dbi);
  * @param flags		DBC_WRITE if writing, or 0 (DBC_READ) for reading
  * @return		database cursor handle
  */
-RPM_GNUC_INTERNAL
 dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
@@ -203,31 +191,22 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
  * @param dbc		database cursor handle
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 dbiCursor dbiCursorFree(dbiIndex dbi, dbiCursor dbc);
 
 
-RPM_GNUC_INTERNAL
 rpmRC pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int *hdrNum,
                unsigned char *hdrBlob, unsigned int hdrLen);
-RPM_GNUC_INTERNAL
 rpmRC pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
-RPM_GNUC_INTERNAL
 rpmRC pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
                unsigned char **hdrBlob, unsigned int *hdrLen);
-RPM_GNUC_INTERNAL
 unsigned int pkgdbKey(dbiIndex dbi, dbiCursor dbc);
 
-RPM_GNUC_INTERNAL
 rpmRC idxdbGet(dbiIndex dbi, dbiCursor dbc, const char *keyp, size_t keylen,
                dbiIndexSet *set, int curFlags);
-RPM_GNUC_INTERNAL
 rpmRC idxdbPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 
-RPM_GNUC_INTERNAL
 rpmRC idxdbDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 
-RPM_GNUC_INTERNAL
 const void * idxdbKey(dbiIndex dbi, dbiCursor dbc, unsigned int *keylen);
 
 struct rpmdbOps_s {
@@ -255,21 +234,17 @@ struct rpmdbOps_s {
 };
 
 #if defined(ENABLE_BDB_RO)
-RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s bdbro_dbops;
 #endif
 
 #ifdef ENABLE_NDB
-RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s ndb_dbops;
 #endif
 
 #if defined(ENABLE_SQLITE)
-RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s sqlite_dbops;
 #endif
 
-RPM_GNUC_INTERNAL
 extern struct rpmdbOps_s dummydb_dbops;
 
 #endif /* _DBI_H */

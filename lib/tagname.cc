@@ -55,7 +55,7 @@ static int tagCmpValue(const void * avp, const void * bvp)
     return ret;
 }
 
-class RPM_GNUC_INTERNAL tagTable {
+class tagTable {
     public:
     tagTable();
     headerTagTableEntry getEntry(const char *tag);

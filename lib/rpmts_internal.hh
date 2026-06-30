@@ -109,45 +109,33 @@ struct rpmts_s {
  * @param ts		transaction set
  * @return		string pool handle (weak ref)
  */
-RPM_GNUC_INTERNAL
 rpmstrPool rpmtsPool(rpmts ts);
 
-RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 
 /* Return rpmdb iterator with removals optionally pruned out */
-RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
 					      const char * key, int prune);
 
 /* Return rpmdb iterator locked to a single rpmte */
-RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmtsTeIterator(rpmts ts, rpmte te, int prune);
 
-RPM_GNUC_INTERNAL
 rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
 
 /* returns -1 for retry, 0 for ignore and 1 for not found */
-RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
-RPM_GNUC_INTERNAL
 rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
 
-RPM_GNUC_INTERNAL
 rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2);
 
 
-RPM_GNUC_INTERNAL
 int rpmtsNotifyChange(rpmts ts, int event, rpmte te, rpmte other);
 
-RPM_GNUC_INTERNAL
 rpm_time_t rpmtsGetTime(rpmts ts, time_t step);
 
-RPM_GNUC_INTERNAL
 rpmts rpmtxnTs(rpmtxn txn);
 
-RPM_GNUC_INTERNAL
 const char *rpmtxnRootDir(rpmtxn txn);
 #endif /* _RPMTS_INTERNAL_H */

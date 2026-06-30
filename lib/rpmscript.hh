@@ -47,49 +47,35 @@ typedef struct rpmScript_s * rpmScript;
 
 typedef const char *(*nextfilefunc)(void *);
 
-RPM_GNUC_INTERNAL
 rpmTagVal triggerDsTag(rpmscriptTriggerModes tm);
 
-RPM_GNUC_INTERNAL
 rpmscriptTriggerModes triggerMode(rpmTagVal tag);
 
-RPM_GNUC_INTERNAL
 rpmTagVal triggertag(rpmsenseFlags sense);
 
-RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromArgv(Header h, rpmTagVal scriptTag, ARGV_t argv, rpmscriptFlags flags, int chroot);
 
-RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag);
 
-RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag,
 				    rpmscriptTriggerModes tm, uint32_t ix);
 
-RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);
 
-RPM_GNUC_INTERNAL
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
                    ARGV_const_t prefixes, rpmPlugins plugins);
 
-RPM_GNUC_INTERNAL
 rpmTagVal rpmScriptTag(rpmScript script);
 
-RPM_GNUC_INTERNAL
 rpmscriptTypes rpmScriptType(rpmScript script);
 
-RPM_GNUC_INTERNAL
 rpmscriptFlags rpmScriptFlags(rpmScript script);
 
-RPM_GNUC_INTERNAL
 void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param);
 
-RPM_GNUC_INTERNAL
 int rpmScriptChrootIn(rpmScript script);
 
-RPM_GNUC_INTERNAL
 int rpmScriptChrootOut(rpmScript script);
 
 #endif /* _RPMSCRIPT_H */
