@@ -102,6 +102,11 @@ static inline void h2lea(unsigned int x, unsigned char *p)
 #define SLOT_SIZE		16
 #define SLOT_START (XDB_HEADER_SIZE / SLOT_SIZE)
 
+/* limits */
+#define XDB_MAX_SLOTNPAGES 0x10000
+#define XDB_MIN_PAGESIZE   0x100
+#define XDB_MAX_PAGESIZE   0x10000
+
 
 /* low level map/remap a file into memory */
 static void *mapmem(void *oldaddr, size_t oldsize, size_t newsize, int prot, int fd, off_t offset)
@@ -248,6 +253,10 @@ static int rpmxdbReadHeaderRaw(rpmxdb xdb, unsigned int *generationp, unsigned i
     *pagesizep = le2ha((unsigned char *)header + XDB_OFFSET_PAGESIZE);
     *usergenerationp = le2ha((unsigned char *)header + XDB_OFFSET_USERGENERATION);
     if (!*slotnpagesp || !*pagesizep)
+	return RPMRC_FAIL;
+    if ((*pagesizep & (*pagesizep - 1)) != 0 || *pagesizep < XDB_MIN_PAGESIZE || *pagesizep > XDB_MAX_PAGESIZE)
+	return RPMRC_FAIL;
+    if (*slotnpagesp >= XDB_MAX_SLOTNPAGES)
 	return RPMRC_FAIL;
     return RPMRC_OK;
 }
@@ -471,6 +480,10 @@ static int rpmxdbInitInternal(rpmxdb xdb)
         xdb->slotnpages = 1;
         xdb->generation++;
 	xdb->pagesize = sysconf(_SC_PAGE_SIZE);
+	if (xdb->pagesize > XDB_MAX_PAGESIZE)
+	    xdb->pagesize = XDB_MAX_PAGESIZE;
+	if ((xdb->pagesize & (xdb->pagesize - 1)) != 0 || xdb->pagesize < XDB_MIN_PAGESIZE)
+            return RPMRC_FAIL;
         if (rpmxdbWriteEmptySlotpage(xdb, 0)) {
             return RPMRC_FAIL;
         }
@@ -777,6 +790,9 @@ static int addslotpage(rpmxdb xdb)
     int i, spp, nslots;
 
     if (xdb->firstfree)
+	return RPMRC_FAIL;
+
+    if (xdb->slotnpages >= XDB_MAX_SLOTNPAGES - 1)
 	return RPMRC_FAIL;
 
     /* move first blob if needed */
