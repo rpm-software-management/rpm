@@ -21,18 +21,14 @@ typedef struct rpmpsm_s * rpmpsm;
  * @return		0 on success
  */
 
-RPM_GNUC_INTERNAL
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
-RPM_GNUC_INTERNAL
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
-RPM_GNUC_INTERNAL
 int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
 
-RPM_GNUC_INTERNAL
 void rpmpsmNotify(rpmpsm psm, rpmCallbackType what, rpm_loff_t amount);
 
 #endif	/* H_FSM */

@@ -25,7 +25,6 @@ extern rpmgiFlags giFlags;
  * @param gi		generalized iterator
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 rpmgi rpmgiFree(rpmgi gi);
 
 /** \ingroup rpmgi
@@ -35,7 +34,6 @@ rpmgi rpmgiFree(rpmgi gi);
  * @param argv		arg list
  * @return		new iterator
  */
-RPM_GNUC_INTERNAL
 rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
 
 /** \ingroup rpmgi
@@ -43,7 +41,6 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
  * @param gi		generalized iterator
  * @returns		next header (new reference), NULL on end of iteration
  */
-RPM_GNUC_INTERNAL
 Header rpmgiNext(rpmgi gi);
 
 /** \ingroup rpmgi
@@ -51,7 +48,6 @@ Header rpmgiNext(rpmgi gi);
  * @param gi		generalized iterator
  * @return 		number of errors
  */
-RPM_GNUC_INTERNAL
 int rpmgiNumErrors(rpmgi gi);
 
 #endif	/* H_RPMGI */

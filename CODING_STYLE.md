@@ -95,15 +95,22 @@ visibility in RPM:
 2. Internal cross-library API, which is described by various non-public C
    headers but whose symbols are visible in our public ABI.
 3. Internal per-library APIs, which are described by various non-public
-   C headers and whose symbols are hidden from the ABI on platforms
-   where supported (marked by `RPM_GNUC_INTERNAL`)
+   C headers and whose symbols are hidden from the ABI by default.
 4. Statically scoped symbols in sources.
+
+Starting with RPM 6.2, all the libraries use symbol versioning and all
+symbols are hidden by default. When adding new public APIs, place them in
+the `librpm*.ver` version script of the library, into the section matching the
+major.minor[.micro] version currently under development. If one doesn't
+already exist, create one. Never touch the symbol exports of an already
+released RPM version.
 
 Internals are generally free to change, but public API must be carefully
 preserved. Adding new public APIs is generally not a problem, removing
 and changing existing ones can only be done in major version bumps and
-even there should be done conservatively. People are annoyed when their
-code stops compiling. ABI compatibility in RPM is tracked with
+even there should be done conservatively. Use symbol versioning
+to preserve backwards compatibility. People are annoyed when their
+code stops compiling. Rough ABI compatibility in RPM is also tracked with
 [libtool versioning](https://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html)
 
 Newly added symbols in the public ABI must prefixed with `rpm` except to

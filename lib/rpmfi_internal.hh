@@ -24,7 +24,6 @@ typedef int (*rpmfiChdirCb)(rpmfi fi, void *data);
  * @param data		caller private callback data
  * @return		string pool handle (weak reference)
  */
-RPM_GNUC_INTERNAL
 int rpmfiSetOnChdir(rpmfi fi, rpmfiChdirCb cb, void *data);
 
 /** \ingroup rpmfi
@@ -32,7 +31,6 @@ int rpmfiSetOnChdir(rpmfi fi, rpmfiChdirCb cb, void *data);
  * @param fi		file info
  * @return		string pool handle (weak reference)
  */
-RPM_GNUC_INTERNAL
 rpmstrPool rpmfilesPool(rpmfiles fi);
 
 /** \ingroup rpmfi
@@ -40,7 +38,6 @@ rpmstrPool rpmfilesPool(rpmfiles fi);
  * @param fi		file info set
  * @return		current base name id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmfiBNId(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -48,13 +45,10 @@ rpmsid rpmfiBNId(rpmfi fi);
  * @param fi		file info set
  * @return		current base name id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmfiDNId(rpmfi fi);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmfilesBNId(rpmfiles fi, int ix);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmfilesDNId(rpmfiles fi, int jx);
 
 /** \ingroup rpmfi
@@ -62,7 +56,6 @@ rpmsid rpmfilesDNId(rpmfiles fi, int jx);
  * @param fi		file info set
  * @return		current base name id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmfiOBNId(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -70,16 +63,12 @@ rpmsid rpmfiOBNId(rpmfi fi);
  * @param fi		file info set
  * @return		current base name id, 0 on invalid
  */
-RPM_GNUC_INTERNAL
 rpmsid rpmfiODNId(rpmfi fi);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmfilesOBNId(rpmfiles fi, int ix);
 
-RPM_GNUC_INTERNAL
 rpmsid rpmfilesODNId(rpmfiles fi, int jx);
 
-RPM_GNUC_INTERNAL
 struct fingerPrint *rpmfilesFps(rpmfiles fi);
 
 /** \ingroup rpmfi
@@ -90,28 +79,21 @@ struct fingerPrint *rpmfilesFps(rpmfiles fi);
  * @param 	old file index
  * @return	1 if the condition is satisfied, 0 otherwise
  */
-RPM_GNUC_INTERNAL
 int rpmfileContentsEqual(rpmfiles ofi, int oix, rpmfiles nfi, int nix);
 
 
-RPM_GNUC_INTERNAL
 rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 				   rpmfiles nfi, int nix,
                                    int skipMissing);
 
-RPM_GNUC_INTERNAL
 int rpmfilesConfigConflict(rpmfiles fi, int ix);
 
-RPM_GNUC_INTERNAL
 void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize);
 
-RPM_GNUC_INTERNAL
 rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix);
 
-RPM_GNUC_INTERNAL
 void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc);
 
-RPM_GNUC_INTERNAL
 rpmfiles rpmfiFiles(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -120,7 +102,6 @@ rpmfiles rpmfiFiles(rpmfi fi);
  * @param pfx		prefix
  * @return		file iterator
  */
-RPM_GNUC_INTERNAL
 rpmfi rpmfilesFindPrefix(rpmfiles fi, const char *pfx);
 
 #endif	/* _RPMFI_INTERNAL_H */

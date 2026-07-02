@@ -46,7 +46,6 @@ enum addOp_e {
  * @param addop         (TR_ADDED) RPMTE_INSTALL/UPGRADE/REINSTALL
  * @return		new transaction element
  */
-RPM_GNUC_INTERNAL
 rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
 	       rpmRelocation * relocs, int addop);
 
@@ -55,51 +54,37 @@ rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
  * @param te		transaction element
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 rpmte rpmteFree(rpmte te);
 
-RPM_GNUC_INTERNAL
 void rpmteCleanFiles(rpmte te);
 
-RPM_GNUC_INTERNAL
 FD_t rpmteSetFd(rpmte te, FD_t fd);
 
-RPM_GNUC_INTERNAL
 FD_t rpmtePayload(rpmte te);
 
-RPM_GNUC_INTERNAL
 int rpmteProcess(rpmte te, pkgGoal goal, int num);
 
-RPM_GNUC_INTERNAL
 void rpmteAddProblem(rpmte te, rpmProblemType type,
                      const char *altNEVR, const char *str, uint64_t number);
 
-RPM_GNUC_INTERNAL
 void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 		        fnpyKey * suggestedKeys);
 
-RPM_GNUC_INTERNAL
 void rpmteAddRelocProblems(rpmte te);
 
-RPM_GNUC_INTERNAL
 const char * rpmteTypeString(rpmte te);
 
-RPM_GNUC_INTERNAL
 tsortInfo rpmteTSI(rpmte te);
 
-RPM_GNUC_INTERNAL
 void rpmteSetTSI(rpmte te, tsortInfo tsi);
 
-RPM_GNUC_INTERNAL
 int rpmteHaveTransScript(rpmte te, rpmTagVal tag);
 
 /* XXX should be internal too but build code needs for now... */
 rpmfs rpmteGetFileStates(rpmte te);
 
-RPM_GNUC_INTERNAL
 void rpmteSetVerified(rpmte te, int verified);
 
-RPM_GNUC_INTERNAL
 Header rpmteHeaderAux(rpmte te, int init);
 
 /** \ingroup rpmte
@@ -107,7 +92,6 @@ Header rpmteHeaderAux(rpmte te, int init);
  * @param te		transaction element
  * @return		size in bytes of package file.
  */
-RPM_GNUC_INTERNAL
 unsigned int rpmteHeaderSize(rpmte te);
 
 /**
@@ -117,10 +101,8 @@ unsigned int rpmteHeaderSize(rpmte te);
  * @param goal		state machine goal
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
 
-RPM_GNUC_INTERNAL
 int rpmteAddOp(rpmte te);
 
 #endif	/* _RPMTE_INTERNAL_H */

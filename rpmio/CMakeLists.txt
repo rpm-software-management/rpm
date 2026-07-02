@@ -1,3 +1,8 @@
+set (VERSION_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/librpmio.ver)
+if (ENABLE_SYMVER)
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${VERSION_SCRIPT}")
+endif()
+
 add_library(librpmio SHARED)
 
 target_sources(librpmio PRIVATE
@@ -46,6 +51,7 @@ endif()
 set_target_properties(librpmio PROPERTIES
 	VERSION ${RPM_LIBVERSION}
 	SOVERSION ${RPM_SOVERSION}
+	LINK_DEPENDS ${VERSION_SCRIPT}
 )
 target_link_libraries(librpmio PRIVATE
 	PkgConfig::POPT

@@ -26,7 +26,6 @@ struct rpmffi_s {
  * @param pool		string pool (or NULL for private)
  * @return pointer to initialized fingerprint cache
  */
-RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool);
 
 /**
@@ -34,30 +33,23 @@ fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool);
  * @param cache		pointer to fingerprint cache
  * @return		NULL always
  */
-RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheFree(fingerPrintCache cache);
 
-RPM_GNUC_INTERNAL
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
 			     struct fingerPrint * fp, int ix,
 			     std::vector<struct rpmffi_s> & recs);
 
-RPM_GNUC_INTERNAL
 void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);
 
 /* compare an existing fingerprint with a looked-up fingerprint for db/bn */
-RPM_GNUC_INTERNAL
 int fpLookupEquals(fingerPrintCache cache, fingerPrint * fp,
 	           const char * dirName, const char * baseName);
 
-RPM_GNUC_INTERNAL
 int fpLookupEqualsId(fingerPrintCache cache, fingerPrint * fp,
 	             rpmsid dirNameId, rpmsid baseNameId);
 
-RPM_GNUC_INTERNAL
 const char *fpEntryDir(fingerPrintCache cache, fingerPrint *fp);
 
-RPM_GNUC_INTERNAL
 dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
 
 /**
@@ -68,7 +60,6 @@ dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
  * @param[out] fp		pointer of fingerprint struct to fill out
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int fpLookup(fingerPrintCache cache,
 	     const char * dirName, const char * baseName,
 	     fingerPrint **fp);
@@ -81,7 +72,6 @@ int fpLookup(fingerPrintCache cache,
  * @param[out] fp		pointer of fingerprint struct to fill out
  * @return		0 on success
  */
-RPM_GNUC_INTERNAL
 int fpLookupId(fingerPrintCache cache,
 	       rpmsid dirNameId, rpmsid BaseNameId,
 	       fingerPrint **fp);
@@ -96,7 +86,6 @@ int fpLookupId(fingerPrintCache cache,
  * @param fileCount	number of file entries
  * @return		pointer to array of finger prints
  */
-RPM_GNUC_INTERNAL
 fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 			   rpmsid * dirNames, rpmsid * baseNames,
 			   const uint32_t * dirIndexes, int fileCount);
