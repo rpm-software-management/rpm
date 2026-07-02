@@ -867,3 +867,32 @@ rpmdb.sqlite-wal
 [])
 
 RPMTEST_CLEANUP
+
+# ------------------------------
+RPMTEST_SETUP_RW([rpmdb ndb heap buffer overflow])
+AT_KEYWORDS([install rpmdb ndb])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+# this is only relevant with ndb db, make sure we get one
+echo "%_db_backend ndb" >> $RPMTEST/root/.config/rpm/macros
+RPMDB_RESET
+
+gcc -o $RPMTEST/bin/ndb-corruptor /data/misc/ndb-corruptor.c
+
+RPMTEST_CHECK([
+runroot rpm -U --nodeps --ignorearch --ignoreos --nosignature \
+	/data/RPMS/capstest-1.0-1.noarch.rpm \
+	/data/RPMS/foo-1.0-1.noarch.rpm \
+	/data/RPMS/hello-2.0-1.x86_64-signed.rpm \
+	/data/RPMS/hlinktest-1.0-1.noarch.rpm
+# Allocate 0 pages since we have very few packages (1 page = 256 slots)
+runroot ndb-corruptor $(rpm --eval '%_dbpath')/Packages.db 0
+runroot rpm -qa; rc=$?
+# Check if a segfault has occurred
+test $rc == 139
+],
+[1],
+[Header: 4294967296 slots (16777216 pages)
+Allocate: 0 slots (0 pages)
+],
+[ignore])
+RPMTEST_CLEANUP
