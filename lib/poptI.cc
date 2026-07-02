@@ -129,7 +129,7 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("relocate files in non-relocatable package"), NULL},
 
  { "deploops", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DEPLOOPS,
+	&rpmIArgs.transFlags, (int)RPMTRANS_FLAG_DEPLOOPS,
 	N_("print dependency loops as warning"), NULL},
 
  { "erase", 'e', POPT_BIT_SET,
