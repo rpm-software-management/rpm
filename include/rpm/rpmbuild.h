@@ -40,7 +40,7 @@ enum rpmBuildFlags_e {
     RPMBUILD_CONF	= (1 << 22),	/*!< Execute %%conf. */
     RPMBUILD_MKBUILDDIR	= (1 << 23),	/*!< Internal use only */
 
-    RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
+    RPMBUILD_NOBUILD	= (1U << 31)	/*!< Don't execute or package. */
 };
 
 typedef rpmFlags rpmBuildFlags;
