@@ -10,6 +10,10 @@ rpmspec - RPM Spec Tool
 
 *rpmspec* *--shell* [options] [_SPEC_FILE_ ...]
 
+*rpmspec* *--sources* [options] [list-options] _SPEC_FILE_ ...
+
+*rpmspec* *--patches* [options] [list-options] _SPEC_FILE_ ...
+
 # DESCRIPTION
 *rpmspec* is a tool for querying a spec file. More specifically for
 querying hypothetical packages which would be created from the given
@@ -33,6 +37,12 @@ generated during a build of a package like auto generated dependencies.
 *--shell*
 	Invoke an interactive shell for inspecting macros, optionally
 	after parsing a spec. Mainly useful for troubleshooting.
+
+*--sources*
+	List all source files defined in the spec file(s), one file per line.
+
+*--patches*
+	List all patch files defined in the spec file(s), one file per line.
 
 # ARGUMENTS
 _SPECFILE_
@@ -58,6 +68,10 @@ See *rpm-common*(8) for the options common to all operations.
 
 *--srpm*
 	Operate on the source package header(s) generated from spec.
+
+# LIST OPTIONS
+*--full*
+	Show full URLs when listing *--sources* or *--patches*.
 
 # ENVIRONMENT
 See *rpm-common*(8).
@@ -121,6 +135,27 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	popt
 	%version
 	1.18
+	```
+
+*rpmspec --sources example.spec*
+	Get list of all sources for given spec files, eg:
+	```
+	source-example.tar.gz
+	hello-source.tar.gz
+	```
+
+*rpmspec --sources --full example.spec*
+	Get list of all sources with their full URLs or absolute paths
+	for given spec files, eg:
+	```
+	http://example.com/source-example.tar.gz
+	hello-source.tar.gz
+	```
+
+*rpmspec --patches example.spec*
+	Get list of all patches for given spec files, eg:
+	```
+	hello-1.0-install.patch
 	```
 
 # SEE ALSO
