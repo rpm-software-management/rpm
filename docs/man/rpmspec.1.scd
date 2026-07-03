@@ -34,6 +34,14 @@ generated during a build of a package like auto generated dependencies.
 	Invoke an interactive shell for inspecting macros, optionally
 	after parsing a spec. Mainly useful for troubleshooting.
 
+*--sources*
+	List all source files and URLs defined in the spec file(s).
+	Output separated by newlines.
+
+*--patches*
+	List all patch files and URLs defined in the spec file(s).
+	Output separated by newlines.
+	
 # ARGUMENTS
 _SPECFILE_
 	RPM spec file used for building packages with rpmbuild.
