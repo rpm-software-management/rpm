@@ -7,11 +7,11 @@ Summary: Simple rpm demonstration.
 
 %sourcelist
 hello-1.0 %tar.gz
-hello-addon ! tar\.gz
+https://example.com/hello-addon ! tar\.gz
 
 %patchlist
 hello-1.0-m<o>dernize&renew.patch
-hello-1.0-inst(a);;.patch
+http://example.com/hello-1.0-inst(a);;.patch
 
 %description
 Simple rpm demonstration.
