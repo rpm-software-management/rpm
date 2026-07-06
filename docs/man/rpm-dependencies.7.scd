@@ -4,41 +4,52 @@ RPM-DEPENDENCIES(7)
 *rpm-dependencies* - RPM dependency system
 
 # SYNOPSIS
+## Capability
+_NAME_ [_RANGE_]
+
+## Dependency
+_RELATION_*:* _CAPABILITY_ ...
+
 ## Core dependencies
-*Provides:* _NAME_ [_RANGE_]++
-*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Conflicts:* _NAME_ [_RANGE_]++
-*Obsoletes:* _NAME_ [_RANGE_]
+*Provides:* _CAPABILITY_ ...++
+*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...++
+*Conflicts:* _CAPABILITY_ ...++
+*Obsoletes:* _CAPABILITY_ ...
 
 ## Weak dependencies
-*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]++
-*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...++
+*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...++
+*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...++
+*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...++
+*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 
 ## Build dependencies
-*BuildRequires:* _NAME_ [_RANGE_]++
-*BuildConflicts:* _NAME_ [_RANGE_]
+*BuildRequires:* _CAPABILITY_++
+*BuildConflicts:* _CAPABILITY_
 
 ## Boolean dependencies
 *(*_DEPENDENCY_ _OPER_ _DEPENDENCY_ ...*)*
 
 # DESCRIPTION
 RPM uses a mechanism called _dependencies_ to describe various relations among
-packages. There are many different dependency types, such as what _capabilities_
-a packaged software needs to function, and other constraints such as conflicting
-with, or replacing another package.
+packages.
+
+Dependencies are expressed in terms of _capability_ relations.
+There are many different relation types. The most foundational ones are the
+_provider_ of a capability and the functional requirements of the software.
+There are also various recommendation type dependencies, and finally,
+conflicts and replaces relations.
 
 Dependencies are _resolved_ before package operations such as install,
 update and erase, to ensure the constraints of all packages are fulfilled.
 RPM also uses the dependency information for calculating the
 installation and erase _ordering_.
 
-A dependency consists of a capability name, optionally followed by version
+## Capabilities
+A capability consists of a name, optionally followed by version
 range information.
 
-A capability _NAME_ must start with an alpha-numeric, underscore (*\_*)
+The _NAME_ must start with an alpha-numeric, underscore (*\_*)
 or slash (*/*). _RANGE_ consists of a comparison operator
 (*<*, *<=*, *=*, *>=*, *>*, *<>*) and an *rpm-version*(7) label called _EVR_.
 
@@ -46,27 +57,25 @@ Dependencies can either be generated automatically from packaged files using
 *rpm-dependency-generators*(7), or declared manually in an *rpm-spec*(5) file.
 The latter are known as _virtual_ dependencies.
 
-# DECLARING
 ## Core dependencies
 Core dependencies are absolute and must be satisfied for a successful
 transaction.
 
-*Provides:* _NAME_ [_RANGE_]
+*Provides:* _CAPABILITY_ ...
 	Capabilities provided by a package (or the system).
 
-	*Provides* form the basis of the dependency system, even though
-	they technically are not dependencies themselves. Instead, they
-	declare the capabilities that can be depended on.
+	*Provides* relations form the basis of the dependency system, they
+	declare the capabilities that all the other dependencies relate to.
 
-*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Requires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Capabilities a package requires to function.
 
-*Conflicts:* _NAME_ [_RANGE_]
+*Conflicts:* _CAPABILITY_ ...
 	Capabilities a package conflicts with. Typically packages
 	with conflicting paths or otherwise conflicting functionality,
 	such as using the same network port.
 
-*Obsoletes:* _NAME_ [_RANGE_]
+*Obsoletes:* _CAPABILITY_ ...
 	Packages obsoleted by a package. Used for replacing and
 	renaming packages.
 
@@ -79,24 +88,24 @@ Weak dependencies are only hints that are not enforced by RPM, they
 are mainly targeted at higher level package managers (see *rpm-design*(8)).
 RPM only uses weak dependencies for ordering purposes.
 
-*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Recommends*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Optional capabilities recommended by a package for the best user
 	experience. 
 
-*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Suggests*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Optional capabilities that provide additional functionality for
 	a package.
 
-*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Supplements*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Reverse *Recommends*: this package is recommended for another
 	package for the best user experience.
 	Mainly useful for 3rd party enhancements.
 
-*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*Enhances*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Reverse *Suggests*: this package provides additional functionality
 	for another package. Mainly useful for 3rd party enhancements.
 
-*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _NAME_ [_RANGE_]
+*OrderWithRequires*[*(*_QUALIFIER_[*,*_QUALIFIER_ ...]*)*]*:* _CAPABILITY_ ...
 	Optional *Requires* for ordering calculations. IFF the capability
 	is present in a transaction, calculate ordering as if it was a
 	*Requires*.
@@ -106,11 +115,10 @@ Build dependencies only exist in the context of building a package
 with *rpmbuild*(1). They are not carried into binary packages at all,
 and are recorded as regular *Requires* and *Conflicts* in source rpms.
 
-*BuildRequires:* _NAME_ [_RANGE_]
+*BuildRequires:* _CAPABILITY_ ...
 	Capabilities that must be present during the build of the package.
 
-*BuildRequires:* _NAME_ [_RANGE_]
-*BuildConflicts:* _NAME_ [_RANGE_]
+*BuildConflicts:* _CAPABILITY_ ...
 	Capabilities that must not be present during the build of the package.
 
 ## Qualifiers
@@ -296,19 +304,22 @@ capabilities, taking into account implications of package operations like
 install, update and erase.
 
 A dependency match is performed by looking up the providers of the capability
-name. For versionless dependencies, any match is sufficient. For versioned
-dependencies, the ranges must overlap to be satisfied.
+name. For versionless dependencies, the a name match is sufficient. For
+versioned dependencies, the ranges must overlap as well.
+
+A match, or lack of thereof, means different things to different relation
+types:
+- Non-matched requires indicates an error
+- Non-matched conflicts and obsoletes are ignored
+- Matched conflicts indicate an error
+- Matched obsoletes indicate the package should replace another
 
 Note that there can be arbitrary number of provides for a given capability,
 and different dependencies can be resolved to different providers. This
 can lead to situations where seemingly nonsensical constraints such as
 *Requires: abc < 1.0* and *Requires: abc > 2.0* are simultaneously met.
 The boolean operators *with* and *without* can be used to pinpoint
-capabilities to certain packages.
-
-For most dependency types, satisfied is the desired state of things, but
-- A satisfied conflict indicates a problem
-- A satisfied obsolete indicates a package replaces another
+capabilities to certain packages to avoid such situations.
 
 ## Range overlap
 Both capabilities and dependencies can include a version range, which
