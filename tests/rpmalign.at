@@ -58,20 +58,98 @@ for alignment in -1 3 2097152; do
 	echo invalid-${alignment}-rejected
 done
 
-if runroot rpmbuild -bb --quiet \
-	--define "_binary_payload w.ufdio" \
-	--define "_payload_alignment 4096" \
-	/data/SPECS/aligntest.spec >/dev/null 2>&1; then
-	exit 1
-fi
-echo raw-rejected
 ],
 [0],
 [maximum-alignment-accepted
 invalid--1-rejected
 invalid-3-rejected
 invalid-2097152-rejected
-raw-rejected
+],
+[])
+RPMTEST_CLEANUP
+
+# Raw payload framing is physical representation data: primary digests and
+# size include it, while ALT describes the same canonical cpio as compression.
+RPMTEST_SETUP_RW([aligned raw payload representation])
+AT_KEYWORDS([align build payload raw digest])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 65536" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+rawalt=$(runroot rpm -qp --qf "%{payloadsha256alt}" ${pkg})
+rawprimary=$(runroot rpm -qp --qf "%{payloadsha256}" ${pkg})
+rawaltsize=$(runroot rpm -qp --qf "%{payloadsizealt}" ${pkg})
+test "$rawprimary" != "$rawalt" && echo framing-has-primary-identity
+runroot rpmkeys -K --nosignature ${pkg} >/dev/null && echo raw-digests-ok
+
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 65536" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+zstdalt=$(runroot rpm -qp --qf "%{payloadsha256alt}" ${pkg})
+zstdaltsize=$(runroot rpm -qp --qf "%{payloadsizealt}" ${pkg})
+test "$zstdalt" = "$rawalt" && echo alt-digest-canonical
+test "$zstdaltsize" = "$rawaltsize" && echo alt-size-canonical
+],
+[0],
+[framing-has-primary-identity
+raw-digests-ok
+alt-digest-canonical
+alt-size-canonical
+],
+[])
+RPMTEST_CLEANUP
+
+# Both RPM payload header formats install and verify from aligned raw cpio.
+RPMTEST_SETUP_RW([aligned raw payload install])
+AT_KEYWORDS([align install raw v4 v6])
+RPMTEST_CHECK([
+for format in 4 6; do
+	runroot rpmbuild -bb --quiet \
+		--define "_binary_payload w.ufdio" \
+		--define "_payload_alignment 4096" \
+		--define "_rpmformat ${format}" \
+		/data/SPECS/aligntest.spec
+	runroot rpm -U --replacepkgs --nodeps --nosignature \
+		/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+	runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null
+	echo verify-v${format}-ok
+done
+],
+[0],
+[verify-v4-ok
+verify-v6-ok
+],
+[])
+RPMTEST_CLEANUP
+
+# Aligned member padding is structural and must be entirely zero-filled.
+RPMTEST_SETUP_RW([aligned payload rejects nonzero padding])
+AT_KEYWORDS([align payload corrupt raw v4 v6])
+RPMTEST_CHECK([
+for format in 4 6; do
+	runroot rpmbuild -bb --quiet \
+		--define "_binary_payload w.ufdio" \
+		--define "_payload_alignment 4096" \
+		--define "_rpmformat ${format}" \
+		/data/SPECS/aligntest.spec
+	pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+	cp ${RPMTEST}${pkg} ${RPMTEST}/build/aligntest-v${format}-badpad.rpm
+	rpmcorruptpad ${RPMTEST}/build/aligntest-v${format}-badpad.rpm 4096
+	if runroot rpm2archive /build/aligntest-v${format}-badpad.rpm \
+		>/dev/null 2>&1; then
+		exit 1
+	fi
+	echo bad-padding-v${format}-rejected
+done
+],
+[0],
+[bad-padding-v4-rejected
+bad-padding-v6-rejected
 ],
 [])
 RPMTEST_CLEANUP

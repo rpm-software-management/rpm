@@ -31,8 +31,8 @@ off_t rpmcpioTell(rpmcpio_t cpio);
 
 /**
  * Enable content alignment on a write archive. When align is non-zero, regular
- * file content is padded to start on an @a align-aligned logical offset in the
- * cpio stream.
+ * file content is padded to start on an @a align-aligned offset. This is
+ * relative to compressed streams and absolute for a plain backing file.
  * @param cpio		cpio archive (opened for writing)
  * @param align		content alignment in bytes (0 disables)
  */

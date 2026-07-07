@@ -20,6 +20,7 @@
 #include "rpmio_internal.hh" 	/* fdSetBundle() */
 #include "rpmlead.hh"
 #include "header_internal.hh"
+#include "rpmalign.hh"
 #include "rpmvs.hh"
 
 #include "debug.h"
@@ -105,17 +106,117 @@ int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
     return res;
 }
 
-static int readFile(FD_t fd, char **msg)
+static int readFile(FD_t fd, DIGEST_CTX ctx, char **msg)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
 
     /* Read the payload from the package. */
-    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {
+	if (ctx && rpmDigestUpdate(ctx, buf, count)) {
+	    rasprintf(msg, _("payload digest update failed"));
+	    return 1;
+	}
+    }
     if (count < 0)
 	rasprintf(msg, _("Fread failed: %s"), Fstrerror(fd));
 
     return (count != 0);
+}
+
+/*
+ * Consume the stored payload through rpmvs digest contexts. A leading NUL
+ * denotes outer framing before aligned raw cpio; any other byte starts
+ * ordinary compressed data or zero-gap raw cpio.
+ *
+ * Primary contexts always cover bytes as stored. For framed raw payloads ALT
+ * contexts are reset after framing so they cover canonical cpio only.
+ */
+static int readPayload(struct rpmvs_s *vs, FD_t fd, hdrblob blob, char **msg)
+{
+    Header h = NULL;
+    char *importmsg = NULL;
+    off_t start = Ftell(fd);
+    off_t aligned = 0;
+    unsigned char first;
+    char magic[4];
+    int rc = 1;
+
+    /*
+     * An unimportable main header carries no usable alignment. Digest the
+     * payload as stored so verification reports the header damage itself.
+     */
+    if (hdrblobImport(blob, 0, &h, &importmsg) != RPMRC_OK) {
+	free(importmsg);
+	return readFile(fd, NULL, msg);
+    }
+    uint64_t align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+
+    /* This byte also enters all attached rpmvs payload digest contexts. */
+    ssize_t plen = (start < 0) ? -1 : Fread(&first, 1, 1, fd);
+    if (plen < 0) {
+	rasprintf(msg, _("Fread failed: %s"), Fstrerror(fd));
+	goto exit;
+    }
+    /* A missing payload still digests as stored. */
+    if (plen == 0) {
+	rc = 0;
+	goto exit;
+    }
+    if (first != '\0') {
+	if (readFile(fd, NULL, msg) == 0)
+	    rc = 0;
+	goto exit;
+    }
+
+    /*
+     * A leading NUL is outer framing. The alignment tag fixes the only valid
+     * cpio start; the first framing byte was already consumed.
+     */
+    if (!rpmAlignIsValid(align)) {
+	rasprintf(msg, _("invalid payload alignment"));
+	goto exit;
+    }
+
+    aligned = rpmAlignUp(start, align);
+    if (aligned <= start) {
+	rasprintf(msg, _("invalid aligned payload framing"));
+	goto exit;
+    }
+
+    /* Reject arbitrary data in the remaining structural framing. */
+    char buf[BUFSIZ];
+    for (off_t left = aligned - start - 1; left > 0; ) {
+	size_t n = left > (off_t)sizeof(buf) ? sizeof(buf) : (size_t)left;
+	if (Fread(buf, 1, n, fd) != (ssize_t)n) {
+	    rasprintf(msg, _("Fread failed: %s"), Fstrerror(fd));
+	    goto exit;
+	}
+	for (size_t i = 0; i < n; i++) {
+	    if (buf[i] != '\0') {
+		rasprintf(msg, _("invalid aligned payload framing"));
+		goto exit;
+	    }
+	}
+	left -= n;
+    }
+
+    /*
+     * Primary identity includes framing. Restart ALT contexts immediately
+     * before consuming canonical cpio magic.
+     */
+    rpmvsResetPayloadAlt(vs);
+    if (Fread(magic, 1, sizeof(magic), fd) != (ssize_t)sizeof(magic) ||
+	memcmp(magic, "0707", sizeof(magic)) != 0) {
+	rasprintf(msg, _("invalid aligned payload magic"));
+	goto exit;
+    }
+    if (readFile(fd, NULL, msg) == 0)
+	rc = 0;
+
+exit:
+    headerFree(h);
+    return rc;
 }
 
 namespace {
@@ -196,7 +297,7 @@ rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 	/* Initialize digests ranging over the payload only */
 	rpmvsInitRange(vs, RPMSIG_PAYLOAD);
 
-	if (readFile(fd, &msg))
+	if (readPayload(vs, fd, blob, &msg))
 	    goto exit;
 
 	/* Finalize payload range */

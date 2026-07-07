@@ -1685,6 +1685,13 @@ int Fcntl(FD_t fd, int op, void *lip)
     return fcntl(Fileno(fd), op, lip);
 }
 
+int fdIsPlain(FD_t fd)
+{
+    if (fd == NULL || fd->fps == NULL)
+	return 0;
+    return (fd->fps->io == fdio || fd->fps->io == ufdio);
+}
+
 int fdWriteZeros(FD_t fd, off_t size)
 {
     char zeros[BUFSIZ] = {};

@@ -122,9 +122,9 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
 
 /** \ingroup payload
  * Enable content alignment on a write archive. When enabled, regular file
- * content is padded to start on an @a align-aligned logical offset in the cpio
- * stream. The padding is an RPM-specific extension and requires an
- * alignment-aware reader.
+ * content is padded to start on an @a align-aligned offset. This is relative
+ * to a compressed stream and absolute for a plain backing file. The padding
+ * is an RPM-specific extension and requires an alignment-aware reader.
  * @param fi		archive writer (from rpmfiNewArchiveWriter)
  * @param align		content alignment in bytes (0 disables), a power of two
  *                      no greater than 1 MiB

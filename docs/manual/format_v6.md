@@ -145,6 +145,10 @@ so that regular file content starts on an alignment boundary:
 
 - The tag value is the alignment in bytes, a power of two, normally the
   filesystem block size (4096), with a supported maximum of 1 MiB.
+- For an uncompressed payload the canonical cpio stream starts on an alignment
+  boundary. The zero framing between the Header and cpio is covered by the
+  primary physical payload digests and size, but excluded from the canonical
+  uncompressed (ALT) payload digests and size.
 - Within the payload, the content of every regular file at least as large as
   the alignment starts on an alignment boundary. Smaller files, symlinks,
   directories and other members keep the ordinary 4-byte cpio alignment.
@@ -156,8 +160,7 @@ Aligned packages require `rpmlib(PayloadAlignment) <= 6.2.0-1` to keep older
 RPM versions from attempting to install an unsupported payload layout.
 
 The per-member zero padding is inside the payload compression, so it normally
-costs only a small encoding overhead in transit. Aligned uncompressed payloads
-are not supported.
+costs only a small encoding overhead in transit.
 
 ## Differences to V4
 

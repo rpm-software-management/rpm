@@ -19,6 +19,7 @@
 
 #include "misc.hh"
 #include "rpmplugins.hh"
+#include "rpmpayload.hh"
 #include "rpmte_internal.hh"
 /* strpool-related interfaces */
 #include "rpmfi_internal.hh"
@@ -639,12 +640,15 @@ static int rpmteClose(rpmte te, int reset_fi)
 FD_t rpmtePayload(rpmte te)
 {
     FD_t payload = NULL;
-    if (te->fd && te->h) {
-	const char *compr = headerGetString(te->h, RPMTAG_PAYLOADCOMPRESSOR);
-	char *ioflags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
-	payload = Fdopen(fdDup(Fileno(te->fd)), ioflags);
-	free(ioflags);
-    }
+    struct rpmPayloadInfo info;
+
+    if (te == NULL || te->fd == NULL || te->h == NULL ||
+	rpmPayloadProbe(te->fd, te->h, &info))
+	return NULL;
+
+    char *ioflags = rstrscat(NULL, "r.", info.io, NULL);
+    payload = Fdopen(fdDup(Fileno(te->fd)), ioflags);
+    free(ioflags);
     return payload;
 }
 

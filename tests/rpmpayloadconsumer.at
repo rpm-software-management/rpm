@@ -1,0 +1,51 @@
+#    rpmpayloadconsumer.at: aligned payload consumer tests
+
+AT_BANNER([RPM aligned payload consumers])
+
+# Ordinary compressed payloads do not need probing. Keep stdin streaming even
+# when creating a temporary file is impossible.
+RPMTEST_SETUP_RW([rpm2cpio streams ordinary stdin])
+AT_KEYWORDS([rpm2cpio stdin streaming])
+RPMTEST_CHECK([
+echo '%_tmppath /definitely/not/here' >> $RPMTEST/root/.config/rpm/macros
+cat ${RPMTEST}/data/RPMS/hello-2.0-1.x86_64.rpm | \
+	runroot rpm2cpio | cpio -t --quiet
+],
+[0],
+[./usr/bin/hello
+./usr/share/doc/hello-2.0
+./usr/share/doc/hello-2.0/COPYING
+./usr/share/doc/hello-2.0/FAQ
+./usr/share/doc/hello-2.0/README
+])
+RPMTEST_CLEANUP
+
+# An absent PAYLOADCOMPRESSOR is ambiguous between legacy gzip and a raw cpio
+# payload. Exercise file input through rpm2cpio and non-seekable stdin through
+# rpm2archive, covering both independent axes without duplicating the shared
+# probing path.
+RPMTEST_SETUP_RW([archive tools read aligned uncompressed payloads])
+AT_KEYWORDS([align rpm2archive rpm2cpio stdin])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 4096" \
+	/data/SPECS/aligntest.spec
+
+pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+hostpkg=${RPMTEST}${pkg}
+base=${RPMTEST}/tmp/payload-consumers
+mkdir -p ${base}/cpio-file ${base}/archive-stdin
+seq 1 20000 > ${base}/expected-big.txt
+
+runroot rpm2cpio ${pkg} | (cd ${base}/cpio-file && cpio -id --quiet)
+cmp ${base}/expected-big.txt ${base}/cpio-file/opt/aligntest/big.txt && echo rpm2cpio-file-ok
+cat ${hostpkg} | runroot rpm2archive | tar xzf - -C ${base}/archive-stdin
+cmp ${base}/expected-big.txt ${base}/archive-stdin/opt/aligntest/big.txt && echo rpm2archive-stdin-ok
+],
+[0],
+[rpm2cpio-file-ok
+rpm2archive-stdin-ok
+],
+[])
+RPMTEST_CLEANUP
