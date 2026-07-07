@@ -121,6 +121,16 @@ size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
 int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
 
 /** \ingroup payload
+ * Enable content alignment on a write archive. When enabled, regular file
+ * content is padded to start on an @a align -aligned absolute offset in the
+ * underlying file. The payload remains a valid cpio archive.
+ * @param fi		archive writer (from rpmfiNewArchiveWriter)
+ * @param align		content alignment in bytes (0 disables), a power of two
+ * @param base		absolute file offset of the payload start
+ */
+void rpmfiArchiveSetWriteAlign(rpmfi fi, size_t align, rpm_loff_t base);
+
+/** \ingroup payload
  * Read content from current file in archive
  * @param fi		file info
  * @param buf		pointer to buffer

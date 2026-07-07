@@ -120,6 +120,8 @@ for v6:
 - File type information is stored as MIME types instead of libmagic
   strings in RPMTAG_MIMEDICT and RPMTAG_FILEMIMEINDEX, retrievable
   with RPMTAG_FILEMIMES extension.
+- The optional RPMTAG_PAYLOADALIGNMENT records the payload content alignment,
+  see the Payload section.
 
 The Payload hashes in a signed Header are sufficient to establish
 cryptographic provenance of the package, without having to separately
@@ -133,6 +135,24 @@ The file header only contains the index number of the file in the RPM
 header as an 8 byte hex string. The payload may be compressed.
 
 Note: This is the format v4 uses for handling > 4GB files.
+
+### Aligned payloads
+
+When RPMTAG_PAYLOADALIGNMENT is present and non-zero, the payload is laid out
+so that regular file content starts on an alignment boundary:
+
+- The tag value is the alignment in bytes, a power of two, normally the
+  filesystem block size (4096).
+- For an uncompressed payload the payload itself starts on an alignment
+  boundary. The gap between the Header and the aligned payload start is zero
+  padding that is part of the payload for size and digest purposes and is
+  skipped by readers.
+- Within the payload, the content of every regular file at least as large as
+  the alignment starts on an alignment boundary. Smaller files, symlinks,
+  directories and other members keep the ordinary 4-byte cpio alignment.
+
+Readers that are unaware of the alignment can still process the payload as a
+plain (uncompressed) cpio archive after skipping the padding.
 
 ## Differences to V4
 

@@ -54,6 +54,7 @@ set(TESTSUITE_AT
 	rpmconfig2.at
 	rpmconfig3.at
 	rpmbrp.at
+	rpmalign.at
 )
 
 FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at)

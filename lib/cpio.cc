@@ -36,6 +36,8 @@ struct rpmcpio_s {
     char mode;
     off_t offset;
     off_t fileend;
+    off_t base;		/*!< absolute file offset of the payload start */
+    size_t align;	/*!< content alignment, 0 if disabled */
 };
 
 /*
@@ -98,6 +100,17 @@ off_t rpmcpioTell(rpmcpio_t cpio)
     return cpio->offset;
 }
 
+void rpmcpioSetWriteAlign(rpmcpio_t cpio, size_t align, off_t base)
+{
+    cpio->align = align;
+    cpio->base = base;
+}
+
+void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align)
+{
+    cpio->align = align;
+}
+
 
 /**
  * Convert string to unsigned integer (with buffer size check).
@@ -123,37 +136,61 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
 }
 
 
-static int rpmcpioWritePad(rpmcpio_t cpio)
+/* Zero-fill the write stream up to the next @a modulo boundary. */
+static int rpmcpioPadWrite(rpmcpio_t cpio, size_t modulo)
 {
-    const ssize_t modulo = 4;
-    char buf[modulo];
-    ssize_t left, written;
-    memset(buf, 0, modulo);
-    left = (modulo - ((cpio->offset) % modulo)) % modulo;
+    off_t left = (off_t)((modulo - (cpio->offset % modulo)) % modulo);
+    char zeros[BUFSIZ];
+
     if (left <= 0)
-        return 0;
-    written = Fwrite(&buf, left, 1, cpio->fd);
-    if (written != left) {
-        return RPMERR_WRITE_FAILED;
+	return 0;
+    memset(zeros, 0, sizeof(zeros));
+    while (left > 0) {
+	size_t n = left > (off_t)sizeof(zeros) ? sizeof(zeros) : (size_t)left;
+	if (Fwrite(zeros, n, 1, cpio->fd) != n)
+	    return RPMERR_WRITE_FAILED;
+	cpio->offset += n;
+	left -= n;
     }
-    cpio->offset += written;
     return 0;
 }
 
-static int rpmcpioReadPad(rpmcpio_t cpio)
+/* Skip the read stream up to the next @a modulo boundary. */
+static int rpmcpioPadRead(rpmcpio_t cpio, size_t modulo)
 {
-    const ssize_t modulo = 4;
-    char buf[modulo];
-    ssize_t left, read;
-    left = (modulo - (cpio->offset % modulo)) % modulo;
-    if (left <= 0)
-        return 0;
-    read = Fread(&buf, left, 1, cpio->fd);
-    cpio->offset += read;
-    if (read != left) {
-        return RPMERR_READ_FAILED;
+    off_t left = (off_t)((modulo - (cpio->offset % modulo)) % modulo);
+    char buf[BUFSIZ];
+
+    while (left > 0) {
+	size_t n = left > (off_t)sizeof(buf) ? sizeof(buf) : (size_t)left;
+	if (Fread(buf, n, 1, cpio->fd) != n)
+	    return RPMERR_READ_FAILED;
+	cpio->offset += n;
+	left -= n;
     }
     return 0;
+}
+
+/* Content padding modulo. Regular files at least as large as the configured
+ * alignment are padded to it; everything else keeps 4-byte cpio padding.
+ * Non-regular content (a symlink target) is read inline before its size is
+ * known, so aligning it would leave padding the reader cannot skip and desync
+ * the stream. */
+static size_t rpmcpioContentModulo(rpmcpio_t cpio, int isreg, off_t fsize)
+{
+    if (isreg && cpio->align >= 4 && fsize >= (off_t)cpio->align)
+	return cpio->align;
+    return 4;
+}
+
+static int rpmcpioWriteContentPad(rpmcpio_t cpio, int isreg, off_t fsize)
+{
+    return rpmcpioPadWrite(cpio, rpmcpioContentModulo(cpio, isreg, fsize));
+}
+
+static int rpmcpioReadContentPad(rpmcpio_t cpio, int isreg, off_t fsize)
+{
+    return rpmcpioPadRead(cpio, rpmcpioContentModulo(cpio, isreg, fsize));
 }
 
 #define GET_NUM_FIELD(phys, log) \
@@ -176,7 +213,7 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio);
+    rc = rpmcpioPadWrite(cpio, 4);
     if (rc)
         return rc;
 
@@ -206,7 +243,7 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
      * tape device(s) and/or concatenated cpio archives.
      */
 
-    rc = rpmcpioWritePad(cpio);
+    rc = rpmcpioPadWrite(cpio, 4);
 
     return rc;
 }
@@ -232,7 +269,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
 	return RPMERR_FILE_SIZE;
     }
 
-    rc = rpmcpioWritePad(cpio);
+    rc = rpmcpioPadWrite(cpio, 4);
     if (rc) {
         return rc;
     }
@@ -273,14 +310,15 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio);
+    /* Align the content when it is a regular file large enough to benefit. */
+    rc = rpmcpioWriteContentPad(cpio, S_ISREG(st->st_mode), st->st_size);
 
     cpio->fileend = cpio->offset + st->st_size;
 
     return rc;
 }
 
-int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
+int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, int isreg, off_t fsize)
 {
     struct cpioStrippedPhysicalHeader hdr_s;
     struct cpioStrippedPhysicalHeader * hdr = &hdr_s;
@@ -296,7 +334,7 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio);
+    rc = rpmcpioPadWrite(cpio, 4);
     if (rc) {
         return rc;
     }
@@ -315,7 +353,8 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
         return RPMERR_WRITE_FAILED;
     }
 
-    rc = rpmcpioWritePad(cpio);
+    /* Align the content when it is a regular file large enough to benefit. */
+    rc = rpmcpioWriteContentPad(cpio, isreg, fsize);
 
     cpio->fileend = cpio->offset + fsize;
 
@@ -348,6 +387,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     ssize_t read;
     char magic[6];
     rpm_loff_t fsize;
+    unsigned long fmode = 0;
 
     if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
         return RPMERR_READ_FAILED;
@@ -365,7 +405,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         }
     }
 
-    rc = rpmcpioReadPad(cpio);
+    rc = rpmcpioPadRead(cpio, 4);
     if (rc) return rc;
 
     read = Fread(&magic, 6, 1, cpio->fd);
@@ -383,7 +423,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
 	    return RPMERR_BAD_HEADER;
 
         GET_NUM_FIELD(shdr.fx, *fx);
-        rc = rpmcpioReadPad(cpio);
+        rc = rpmcpioPadRead(cpio, 4);
 
         if (!rc && *fx == -1)
             rc = RPMERR_ITER_END;
@@ -401,6 +441,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         return RPMERR_BAD_HEADER;
 
     GET_NUM_FIELD(hdr.filesize, fsize);
+    GET_NUM_FIELD(hdr.mode, fmode);
     GET_NUM_FIELD(hdr.namesize, nameSize);
     if (nameSize <= 0 || nameSize > CPIO_NAMESIZE_MAX) {
         return RPMERR_BAD_HEADER;
@@ -414,7 +455,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         return RPMERR_BAD_HEADER;
     }
 
-    rc = rpmcpioReadPad(cpio);
+    rc = rpmcpioReadContentPad(cpio, S_ISREG(fmode), fsize);
     cpio->fileend = cpio->offset + fsize;
 
     if (!rc && rstreq(name, CPIO_TRAILER))
@@ -426,9 +467,15 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     return rc;
 }
 
-void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize)
+int rpmcpioSetExpectedFileSize(rpmcpio_t cpio, int isreg, off_t fsize)
 {
+    int rc = 0;
+    /* Stripped headers carry no size, so the content alignment padding could not
+     * be skipped at header-read time; skip it now that the size is known. */
+    if (isreg && cpio->align && fsize >= (off_t)cpio->align)
+	rc = rpmcpioReadContentPad(cpio, isreg, fsize);
     cpio->fileend = cpio->offset + fsize;
+    return rc;
 }
 
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size)

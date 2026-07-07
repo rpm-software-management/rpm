@@ -18,6 +18,7 @@
 #include <rpm/rpmsign.h>
 
 #include "rpmio_internal.hh"	/* fdInitDigest, fdFiniDigest */
+#include "rpmalign.hh"		/* rpmAlignIsValid */
 #include "signature.hh"
 #include "rpmlead.hh"
 #include "rpmbuild_internal.hh"
@@ -27,11 +28,14 @@
 #include "debug.h"
 
 static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
-				  FD_t cfd, ARGV_t dpaths,
+				  FD_t cfd, ARGV_t dpaths, size_t align, off_t base,
 				  rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc = 0;
     rpmfi archive = rpmfiNewArchiveWriter(cfd, fi);
+
+    /* Enable block-aligned regular file content if requested */
+    rpmfiArchiveSetWriteAlign(archive, align, base);
 
     while (!rc && (rc = rpmfiNext(archive)) >= 0) {
         /* Copy file into archive. */
@@ -79,22 +83,41 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
     char *failedFile = NULL;
     FD_t cfd;
     int fsmrc;
+    size_t align = 0;
+    int uncompressed;
+    off_t base;
 
     (void) Fflush(fdo);
+    base = Ftell(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmodeMacro);
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    /* Calculate alternative (uncompressed) payload digest while writing */
-    fdInitDigestID(cfd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
-    fdInitDigestID(cfd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512ALT, 0);
-    fdInitDigestID(cfd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
+    align = rpmExpandNumeric("%{?_payload_alignment}");
+    if (!rpmAlignIsValid(align))
+	align = 0;
+    uncompressed = (strstr(fmodeMacro, "ufdio") != NULL);
+
+    /*
+     * Alt (uncompressed) payload digest, computed while writing. For an
+     * uncompressed payload it equals the primary digest (taken from writeRPM's
+     * re-read pass), so skip it and leave *pld NULL; only a compressed payload
+     * needs it computed here.
+     */
+    *pld = *pld512 = *pld3 = NULL;
+    if (!uncompressed) {
+	fdInitDigestID(cfd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
+	fdInitDigestID(cfd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512ALT, 0);
+	fdInitDigestID(cfd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
+    }
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
-				   cfd, pkg->dpaths,
+				   cfd, pkg->dpaths, align, base,
 				   archiveSize, &failedFile);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pld, NULL, 1);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA512ALT, (void **)pld512, NULL, 1);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA3_256ALT, (void **)pld3, NULL, 1);
+    if (!uncompressed) {
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pld, NULL, 1);
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA512ALT, (void **)pld512, NULL, 1);
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA3_256ALT, (void **)pld3, NULL, 1);
+    }
 
     if (fsmrc) {
 	char *emsg = rpmfileStrerror(fsmrc);
@@ -467,7 +490,10 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0; /* uncompressed */
     rpm_loff_t payloadSize = 0; /* compressed */
-    off_t sigStart, hdrStart, payloadStart, payloadEnd;
+    off_t sigStart, hdrStart, hdrEnd, payloadStart, payloadEnd;
+    size_t payload_align = 0;
+    int payload_pad = 0;
+    int uncompressed;
 
     if (pkgidp)
 	*pkgidp = NULL;
@@ -475,6 +501,24 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     rpmio_flags = getIOFlags(pkg);
     if (!rpmio_flags)
 	goto exit;
+
+    uncompressed = (strstr(rpmio_flags, "ufdio") != NULL);
+
+    /*
+     * Block-align regular file content and record the alignment for readers.
+     * An uncompressed payload also pads the payload start (payload_pad) so
+     * content lands on absolute block offsets; a compressed payload keeps the
+     * alignment inside the uncompressed stream.
+     */
+    {
+	size_t a = rpmExpandNumeric("%{?_payload_alignment}");
+	if (rpmAlignIsValid(a)) {
+	    uint32_t av = a;
+	    payload_align = a;
+	    payload_pad = uncompressed;
+	    headerPutUint32(pkg->header, RPMTAG_PAYLOADALIGNMENT, &av, 1);
+	}
+    }
 
     finalizeDeps(pkg);
 
@@ -555,6 +599,25 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write payload section (cpio archive) */
     payloadStart = Ftell(fd);
+    /*
+     * For an uncompressed aligned payload, pad so the cpio content starts on a
+     * block boundary (cpio_doio picks up the aligned position itself). The
+     * padding is part of the payload for size and digest purposes (payloadStart
+     * stays at the payload start) and is skipped by readers via
+     * RPMTAG_PAYLOADALIGNMENT. Compressed payloads don't need this: their
+     * alignment is recovered from the decompressed stream instead.
+     */
+    if (payload_pad) {
+	off_t aligned = (payloadStart + payload_align - 1) & ~((off_t)payload_align - 1);
+	if (aligned > payloadStart) {
+	    size_t padn = aligned - payloadStart;
+	    char *zeros = (char *)xcalloc(1, padn);
+	    int ok = (Fwrite(zeros, padn, 1, fd) == padn);
+	    free(zeros);
+	    if (!ok)
+		goto exit;
+	}
+    }
     if (cpio_doio(fd, pkg, rpmio_flags, &archiveSize, &upld, &upld512, &upld3))
 	goto exit;
     payloadEnd = Ftell(fd);
@@ -582,7 +645,14 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA512, (void **)&pld512, NULL, 1);
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA3_256, (void **)&pld3, NULL, 1);
 
-    /* Insert the payload digests + size in main header */
+    /*
+     * Insert the payload digests + size in main header. For an uncompressed
+     * payload the alternative uncompressed digests were not computed while
+     * writing, so they equal the compressed ones.
+     */
+    if (upld == NULL) upld = xstrdup(pld);
+    if (upld512 == NULL && pld512) upld512 = xstrdup(pld512);
+    if (upld3 == NULL && pld3) upld3 = xstrdup(pld3);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256, pld);
     headerPutString(pkg->header, RPMTAG_PAYLOADSHA256ALT, upld);
 
@@ -603,6 +673,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	goto exit;
     if (writeHdr(fd, pkg->header))
 	goto exit;
+    /* End of the header proper (any payload alignment padding follows). */
+    hdrEnd = Ftell(fd);
 
     /* Calculate the digests */
     if (rpmformat < 6) {
@@ -613,7 +685,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	fdInitDigestID(fd, RPM_HASH_SHA3_256, RPMTAG_SHA3_256HEADER, 0);
     }
     fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_SHA256HEADER, 0);
-    if (fdConsume(fd, hdrStart, payloadStart - hdrStart))
+    if (fdConsume(fd, hdrStart, hdrEnd - hdrStart))
 	goto exit;
     fdFiniDigest(fd, RPMTAG_SHA1HEADER, (void **)&SHA1, NULL, 1);
     fdFiniDigest(fd, RPMTAG_SHA256HEADER, (void **)&SHA256, NULL, 1);

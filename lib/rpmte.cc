@@ -19,6 +19,7 @@
 
 #include "misc.hh"
 #include "rpmplugins.hh"
+#include "rpmalign.hh"		/* rpmAlignIsValid, rpmAlignUp */
 #include "rpmte_internal.hh"
 /* strpool-related interfaces */
 #include "rpmfi_internal.hh"
@@ -636,10 +637,49 @@ static int rpmteClose(rpmte te, int reset_fi)
     return 1;
 }
 
+/*
+ * True if the payload at the descriptor's current position is a raw cpio
+ * stream. A missing compressor tag is ambiguous (a v3 package omits it but
+ * stores gzip), so check the cpio magic. Restores the position.
+ */
+static int rpmtePayloadUncompressed(FD_t fd)
+{
+    char magic[4];
+    off_t pos = Ftell(fd);
+    int israw = 0;
+
+    if (pos >= 0) {
+	if (Fread(magic, sizeof(magic), 1, fd) == (ssize_t)sizeof(magic))
+	    israw = (memcmp(magic, "0707", sizeof(magic)) == 0);
+	Fseek(fd, pos, SEEK_SET);
+    }
+    return israw;
+}
+
+/*
+ * Skip the alignment padding between the header and an aligned payload so the
+ * descriptor is positioned at the payload start. Only uncompressed payloads
+ * carry this gap; a compressed payload keeps its alignment inside the stream.
+ */
+static int rpmteSeekAlignedPayload(rpmte te)
+{
+    uint64_t align = headerGetNumber(te->h, RPMTAG_PAYLOADALIGNMENT);
+    const char *compr = headerGetString(te->h, RPMTAG_PAYLOADCOMPRESSOR);
+    if (rpmAlignIsValid(align) && (compr == NULL || compr[0] == '\0')) {
+	off_t pos = Ftell(te->fd);
+	off_t aligned = rpmAlignUp(pos, align);
+	if (aligned > pos && Fseek(te->fd, aligned, SEEK_SET) < 0)
+	    return -1;
+    }
+    return 0;
+}
+
 FD_t rpmtePayload(rpmte te)
 {
     FD_t payload = NULL;
     if (te->fd && te->h) {
+	if (rpmteSeekAlignedPayload(te))
+	    return NULL;
 	const char *compr = headerGetString(te->h, RPMTAG_PAYLOADCOMPRESSOR);
 	char *ioflags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
 	payload = Fdopen(fdDup(Fileno(te->fd)), ioflags);

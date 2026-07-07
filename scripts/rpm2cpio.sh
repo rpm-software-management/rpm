@@ -54,11 +54,22 @@ sigsize=$rsize
 calcsize $(($offset + (8 - ($sigsize % 8)) % 8))
 hdrsize=$rsize
 
+# An uncompressed aligned payload (RPMTAG_PAYLOADALIGNMENT) has NUL padding
+# between the header and the payload. Skip that padding so the payload starts at
+# its magic. No compression magic begins with a NUL byte, so this is a no-op for
+# compressed and unaligned payloads. Scan to the first non-NUL byte (awk exits
+# there, closing the pipe) so any alignment is handled, not just small ones.
+pad=$(_dd $offset |
+	od -An -v -tu1 |
+	awk '{for(i=1;i<=NF;i++){if($i!=0){print c+i-1; exit}} c+=NF}')
+offset=$(($offset + ${pad:-0}))
+
 case "$(_dd $offset bs=2 count=1 | tr -d '\0')" in
 	"$(printf '\102\132')") _dd $offset | bunzip2 ;; # '\x42\x5a'
 	"$(printf '\037\213')") _dd $offset | gunzip  ;; # '\x1f\x8b'
 	"$(printf '\375\067')") _dd $offset | xzcat   ;; # '\xfd\x37'
 	"$(printf '\135')") _dd $offset | unlzma      ;; # '\x5d\x00'
 	"$(printf '\050\265')") _dd $offset | unzstd  ;; # '\x28\xb5'
+	"$(printf '\060\067')") _dd $offset           ;; # '07' cpio (uncompressed)
 	*) fatal "Unrecognized payload compression format in rpm file: $pkg" ;;
 esac

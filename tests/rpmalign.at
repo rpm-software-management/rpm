@@ -1,0 +1,125 @@
+#    rpmalign.at: test block-aligned payloads
+#
+#    An aligned payload records RPMTAG_PAYLOADALIGNMENT and lays out regular
+#    file content on an alignment boundary, while remaining a plain cpio
+#    archive that builds, installs and verifies like any other package.
+
+AT_BANNER([RPM aligned payloads])
+
+# ------------------------------------------------------------------
+# An uncompressed aligned payload records RPMTAG_PAYLOADALIGNMENT, and because
+# its content is aligned in the payload itself the compressed and uncompressed
+# payload digests are equal.
+RPMTEST_SETUP_RW([aligned payload format])
+AT_KEYWORDS([align build payload])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 4096" \
+	/data/SPECS/aligntest.spec
+
+pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+runroot rpm -qp --qf "%{payloadcompressor} %{payloadalignment}\n" ${pkg}
+c=$(runroot rpm -qp --qf "%{payloadsha256}" ${pkg})
+u=$(runroot rpm -qp --qf "%{payloadsha256alt}" ${pkg})
+test "$c" = "$u" && echo digests-equal || echo digests-differ
+],
+[0],
+[(none) 4096
+digests-equal
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------------------------------------------
+# An aligned payload installs correctly (v6, stripped headers). rpm -V
+# recomputes and compares every file digest, so this validates that readers
+# skip the alignment padding and reconstruct the content correctly.
+RPMTEST_SETUP_RW([aligned payload install v6])
+AT_KEYWORDS([align install])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 4096" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+
+runroot rpm -U --nodeps --nosignature \
+	/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null && echo verify-ok
+],
+[0],
+[verify-ok
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------------------------------------------
+# The same with the v4 format, which uses full cpio headers.
+RPMTEST_SETUP_RW([aligned payload install v4])
+AT_KEYWORDS([align install])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 4096" \
+	--define "_rpmformat 4" \
+	/data/SPECS/aligntest.spec
+
+runroot rpm -U --nodeps --nosignature \
+	/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null && echo verify-ok
+],
+[0],
+[verify-ok
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------------------------------------------
+# Alignment is independent of compression: a compressed payload keeps the
+# alignment inside the uncompressed stream, recovered on decompression. It
+# still builds, installs and verifies like any package.
+RPMTEST_SETUP_RW([aligned compressed payload])
+AT_KEYWORDS([align build install])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 4096" \
+	/data/SPECS/aligntest.spec
+
+pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+runroot rpm -qp --qf "%{payloadcompressor} %{payloadalignment}\n" ${pkg}
+runroot rpm -U --nodeps --nosignature ${pkg}
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null && echo verify-ok
+],
+[0],
+[zstd 4096
+verify-ok
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------------------------------------------
+# A small alignment (smaller than a symlink target) on the v6 stripped format.
+# Only regular file content is block-aligned; symlink targets and hardlink
+# stubs keep the ordinary cpio padding. If a symlink target were aligned, the
+# stripped read path would read the padding as target bytes and desync the
+# whole payload, so a successful install+verify here is the regression guard.
+RPMTEST_SETUP_RW([aligned payload small alignment v6])
+AT_KEYWORDS([align install])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_payload_alignment 8" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+
+runroot rpm -U --nodeps --nosignature \
+	/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null && echo verify-ok
+],
+[0],
+[verify-ok
+],
+[])
+RPMTEST_CLEANUP

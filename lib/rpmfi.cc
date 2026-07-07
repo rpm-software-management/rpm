@@ -27,6 +27,7 @@
 #include "fsm.hh"	/* rpmpsm stuff for now */
 #include "rpmug.hh"
 #include "rpmio_internal.hh"   /* fdInit/FiniDigest */
+#include "rpmalign.hh"	/* rpmAlignIsValid */
 
 #include "debug.h"
 
@@ -113,6 +114,7 @@ struct rpmfiles_s {
     struct fingerPrint * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
+    uint32_t align;		/*!< Payload content alignment (0 = none) */
     uint32_t *signatureoffs;	/*!< File signature offsets */
     int veritysiglength;	/*!< Verity signature length */
     uint16_t verityalgo;	/*!< Verity algorithm */
@@ -1676,6 +1678,10 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 
     fi->magic = RPMFIMAGIC;
     fi->fiflags = flags;
+    /* alignment must be a power of two; ignore untrusted junk */
+    fi->align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+    if (!rpmAlignIsValid(fi->align))
+	fi->align = 0;
     /* private or shared pool? */
     fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
 
@@ -1981,6 +1987,9 @@ rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files, int itype)
     }
     if (fi) {
 	fi->archive = archive;
+	/* skip content alignment padding */
+	if (files->align)
+	    rpmcpioSetReadAlign(archive, files->align);
     } else {
 	rpmcpioFree(archive);
     }
@@ -2000,6 +2009,12 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files)
 	rpmcpioFree(archive);
     }
     return fi;
+}
+
+void rpmfiArchiveSetWriteAlign(rpmfi fi, size_t align, rpm_loff_t base)
+{
+    if (fi && fi->archive)
+	rpmcpioSetWriteAlign(fi->archive, align, (off_t)base);
 }
 
 int rpmfiArchiveClose(rpmfi fi)
@@ -2028,7 +2043,8 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
     rpmfiles files = fi->files;
 
     if (files->lfsizes) {
-	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), st.st_size);
+	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi),
+					 S_ISREG(st.st_mode), st.st_size);
     } else {
 	const char * dn = rpmfiDN(fi);
 	char * path = rstrscat(NULL, (dn[0] == '/' && !rpmExpandNumeric("%{_noPayloadPrefix}")) ? "." : "",
@@ -2232,7 +2248,8 @@ static int iterReadArchiveNext(rpmfi fi)
 	    /* XXX should we validate the payload matches? */
 	    free(buf);
 	}
-	rpmcpioSetExpectedFileSize(fi->archive, fsize);
+	if (rc == 0)
+	    rc = rpmcpioSetExpectedFileSize(fi->archive, S_ISREG(mode), fsize);
 	rpmfiSetFound(fi, fx);
     } else {
 	/* Mapping error */

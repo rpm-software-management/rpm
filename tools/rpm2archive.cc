@@ -158,9 +158,22 @@ static int process_package(rpmts ts, const char * filename)
 	break;
     }
 
-
     /* Retrieve payload size and compression type. */
     {	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
+	/* Skip alignment padding before an uncompressed payload (compressed
+	 * payloads have no such gap). */
+	uint64_t align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+	if (align & (align - 1))	/* only a power of two is valid */
+	    align = 0;
+	if (align > 0 && (compr == NULL || compr[0] == '\0')) {
+	    off_t pos = Ftell(fdi);
+	    off_t aligned = (pos + align - 1) & ~((off_t)align - 1);
+	    if (aligned > pos && Fseek(fdi, aligned, SEEK_SET) < 0) {
+		fprintf(stderr, _("cannot seek to payload start: %s\n"),
+			Fstrerror(fdi));
+		exit(EXIT_FAILURE);
+	    }
+	}
 	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
     }
 

@@ -29,6 +29,27 @@ int rpmcpioClose(rpmcpio_t cpio);
 RPM_GNUC_INTERNAL
 off_t rpmcpioTell(rpmcpio_t cpio);
 
+/**
+ * Enable content alignment on a write archive. When align is non-zero, regular
+ * file content is padded to start on an @a align-aligned absolute offset in the
+ * underlying file (base is the file offset at which the payload/cpio stream
+ * begins). Has no effect on stripped headers.
+ * @param cpio		cpio archive (opened for writing)
+ * @param align		content alignment in bytes (0 disables)
+ * @param base		absolute file offset of the payload start
+ */
+RPM_GNUC_INTERNAL
+void rpmcpioSetWriteAlign(rpmcpio_t cpio, size_t align, off_t base);
+
+/**
+ * Set the content alignment on a read archive so the alignment padding before
+ * aligned file content is skipped. Read from RPMTAG_PAYLOADALIGNMENT.
+ * @param cpio		cpio archive (opened for reading)
+ * @param align		content alignment in bytes (0 = none)
+ */
+RPM_GNUC_INTERNAL
+void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align);
+
 RPM_GNUC_INTERNAL
 rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 
@@ -42,7 +63,7 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 RPM_GNUC_INTERNAL
 int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
 RPM_GNUC_INTERNAL
-int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize);
+int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, int isreg, off_t fsize);
 
 RPM_GNUC_INTERNAL
 ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
@@ -69,7 +90,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx);
  * This is needed after reading a stripped cpio header! See above.
  */
 RPM_GNUC_INTERNAL
-void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
+int rpmcpioSetExpectedFileSize(rpmcpio_t cpio, int isreg, off_t fsize);
 
 RPM_GNUC_INTERNAL
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
