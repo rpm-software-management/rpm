@@ -377,6 +377,13 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
 #%_source_payload	w9.gzdio
 %_binary_payload	%[ %_rpmformat >=6 ? "w19.zstdio" : "w9.gzdio" ]
 
+#	Payload content alignment, in bytes. When set (typically to a filesystem
+#	block size such as 4096), regular file content is block-aligned within the
+#	canonical uncompressed payload stream. The physical payload must currently
+#	be compressed. 0 disables (the default). Must be a power of two no greater
+#	than 1048576 (1 MiB).
+%_payload_alignment	0
+
 #	Algorithm to use for generating file checksum digests on build.
 #	If not specified or 0, MD5 is used.
 #	WARNING: non-MD5 is backwards incompatible with rpm < 4.6!
@@ -1403,4 +1410,3 @@ end
 
 # \endverbatim
 #*/
-

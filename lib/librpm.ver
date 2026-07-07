@@ -135,6 +135,7 @@ LIBRPM_6.2 {
 	rpmfiArchiveHasContent;
 	rpmfiArchiveRead;
 	rpmfiArchiveReadToFile;
+	rpmfiArchiveSetWriteAlign;
 	rpmfiArchiveTell;
 	rpmfiArchiveWrite;
 	rpmfiArchiveWriteFile;

@@ -244,6 +244,7 @@ LIBRPMIO_6.2 {
 	fdFiniDigest*;
 	fdGetBundle*;
 	fdInitDigest*;
+	fdWriteZeros*;
 	rpmSetCloseOnExec*;
 	rpmioSlurp*;
 	rpmlogOnce*;
