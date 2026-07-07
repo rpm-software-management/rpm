@@ -1032,6 +1032,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload can be compressed using zstd.") },
 #endif
+    { "rpmlib(PayloadAlignment)",	"6.2.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload supports aligned regular file content.") },
     { NULL,				NULL, 0,	NULL }
 };
 
@@ -1505,4 +1508,3 @@ rpmRC rpmdsParseRichDep(rpmds dep, rpmds *leftds, rpmds *rightds, rpmrichOp *op,
     }
     return rc;
 }
-

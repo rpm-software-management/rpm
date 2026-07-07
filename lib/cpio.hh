@@ -29,6 +29,25 @@ int rpmcpioClose(rpmcpio_t cpio);
 RPM_GNUC_INTERNAL
 off_t rpmcpioTell(rpmcpio_t cpio);
 
+/**
+ * Enable content alignment on a write archive. When align is non-zero, regular
+ * file content is padded to start on an @a align-aligned logical offset in the
+ * cpio stream.
+ * @param cpio		cpio archive (opened for writing)
+ * @param align		content alignment in bytes (0 disables)
+ */
+RPM_GNUC_INTERNAL
+void rpmcpioSetWriteAlign(rpmcpio_t cpio, size_t align);
+
+/**
+ * Set the content alignment on a read archive so the alignment padding before
+ * aligned file content is skipped. Read from RPMTAG_PAYLOADALIGNMENT.
+ * @param cpio		cpio archive (opened for reading)
+ * @param align		content alignment in bytes (0 = none)
+ */
+RPM_GNUC_INTERNAL
+void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align);
+
 RPM_GNUC_INTERNAL
 rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 
@@ -42,7 +61,8 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 RPM_GNUC_INTERNAL
 int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
 RPM_GNUC_INTERNAL
-int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize);
+int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, mode_t fmode,
+			       off_t fsize);
 
 RPM_GNUC_INTERNAL
 ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
@@ -51,9 +71,9 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
  * Read cpio header. Iff fx is returned as -1 a cpio header was read
  * and the file name is found in path. Otherwise a stripped header was read
  * and the fx is the number of the file in the header/rpmfi. In this case
- * rpmcpioSetExpectedFileSize() needs to be called with the file size of the
- * payload content - with may be zero for hard links, directory or other
- * special files.
+ * rpmcpioSetExpectedFileSize() needs to be called with the file mode and size
+ * of the payload content, which may be zero for hard links, directories or
+ * other special files.
  * @param[out] fsm		file path and stat info
  * @param[out] path		path of the file
  * @param[out] fx		number in the header of the file read
@@ -63,13 +83,13 @@ RPM_GNUC_INTERNAL
 int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx);
 
 /**
- * Tell the cpio object the expected file size in the payload.
+ * Tell the cpio object the expected file mode and size in the payload.
  * The size must be zero for all but the last of hard linked files,
  * directories and special files.
  * This is needed after reading a stripped cpio header! See above.
  */
 RPM_GNUC_INTERNAL
-void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
+int rpmcpioSetExpectedFileSize(rpmcpio_t cpio, mode_t fmode, off_t fsize);
 
 RPM_GNUC_INTERNAL
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);

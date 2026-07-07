@@ -27,6 +27,9 @@ void fdFiniDigest(FD_t fd, int id,
 
 DIGEST_CTX fdDupDigest(FD_t fd, int id);
 
+/** Write exactly @a size zero bytes. */
+int fdWriteZeros(FD_t fd, off_t size);
+
 /**
  * Read an entire file into a buffer.
  * @param fn		file name to read
