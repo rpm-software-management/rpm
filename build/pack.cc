@@ -85,22 +85,29 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro,
     char *failedFile = NULL;
     FD_t cfd;
     int fsmrc;
+    int uncompressed = (strstr(fmodeMacro, "ufdio") != NULL);
 
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmodeMacro);
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    /* Calculate alternative (uncompressed) payload digests while writing. */
-    fdInitDigestID(cfd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
-    fdInitDigestID(cfd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512ALT, 0);
-    fdInitDigestID(cfd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
+    /* Compressed payloads calculate their canonical digests while writing.
+     * Raw payloads are digested in the post-write pass so direct kernel copies
+     * in later archive writers cannot bypass attached digest contexts. */
+    if (!uncompressed) {
+	fdInitDigestID(cfd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
+	fdInitDigestID(cfd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512ALT, 0);
+	fdInitDigestID(cfd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
+    }
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
 				   cfd, pkg->dpaths, align,
 				   archiveSize, &failedFile);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pld, NULL, 1);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA512ALT, (void **)pld512, NULL, 1);
-    fdFiniDigest(cfd, RPMTAG_PAYLOADSHA3_256ALT, (void **)pld3, NULL, 1);
+    if (!uncompressed) {
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA256ALT, (void **)pld, NULL, 1);
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA512ALT, (void **)pld512, NULL, 1);
+	fdFiniDigest(cfd, RPMTAG_PAYLOADSHA3_256ALT, (void **)pld3, NULL, 1);
+    }
 
     if (fsmrc) {
 	char *emsg = rpmfileStrerror(fsmrc);
@@ -473,7 +480,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpm_loff_t archiveSize = 0; /* uncompressed */
     rpm_loff_t payloadSize = 0; /* compressed */
-    off_t sigStart, hdrStart, payloadStart, payloadEnd;
+    off_t sigStart, hdrStart, payloadStart, archiveStart, payloadEnd;
     size_t payload_align = 0;
     int uncompressed;
 
@@ -494,11 +501,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	    goto exit;
 	}
 	payload_align = a;
-    }
-    if (payload_align && uncompressed) {
-	rpmlog(RPMLOG_ERR,
-	       _("payload alignment is not supported with uncompressed payloads\n"));
-	goto exit;
     }
     if (payload_align) {
 	uint32_t av = payload_align;
@@ -585,6 +587,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* Write payload section (cpio archive) */
     payloadStart = Ftell(fd);
+    if (payload_align && uncompressed) {
+	off_t aligned = rpmAlignUp(payloadStart, payload_align);
+	if (aligned < payloadStart || fdWriteZeros(fd, aligned - payloadStart))
+	    goto exit;
+    }
+    archiveStart = Ftell(fd);
     if (cpio_doio(fd, pkg, rpmio_flags, payload_align,
 		  &archiveSize, &upld, &upld512, &upld3))
 	goto exit;
@@ -603,12 +611,25 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	headerDel(pkg->header, RPMTAG_PAYLOADSHA3_256ALT);
     }
 
-    /* Re-read payload to calculate compressed digest */
+    /* Re-read the physical payload once. Primary digests include raw outer
+     * framing; ALT digests begin at the canonical cpio stream. */
     fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256, 0);
     fdInitDigestID(fd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512, 0);
     fdInitDigestID(fd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256, 0);
-    if (fdConsume(fd, payloadStart, payloadSize))
+    if (uncompressed) {
+	if (fdConsume(fd, payloadStart, archiveStart - payloadStart))
+	    goto exit;
+	fdInitDigestID(fd, RPM_HASH_SHA256, RPMTAG_PAYLOADSHA256ALT, 0);
+	fdInitDigestID(fd, RPM_HASH_SHA512, RPMTAG_PAYLOADSHA512ALT, 0);
+	fdInitDigestID(fd, RPM_HASH_SHA3_256, RPMTAG_PAYLOADSHA3_256ALT, 0);
+	if (fdConsume(fd, 0, payloadEnd - archiveStart))
+	    goto exit;
+	fdFiniDigest(fd, RPMTAG_PAYLOADSHA256ALT, (void **)&upld, NULL, 1);
+	fdFiniDigest(fd, RPMTAG_PAYLOADSHA512ALT, (void **)&upld512, NULL, 1);
+	fdFiniDigest(fd, RPMTAG_PAYLOADSHA3_256ALT, (void **)&upld3, NULL, 1);
+    } else if (fdConsume(fd, payloadStart, payloadSize)) {
 	goto exit;
+    }
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA256, (void **)&pld, NULL, 1);
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA512, (void **)&pld512, NULL, 1);
     fdFiniDigest(fd, RPMTAG_PAYLOADSHA3_256, (void **)&pld3, NULL, 1);

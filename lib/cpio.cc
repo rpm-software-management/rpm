@@ -26,7 +26,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmarchive.h>
 
-#include "rpmio_internal.hh"	/* fdWriteZeros */
+#include "rpmio_internal.hh"	/* fdIsPlain, fdWriteZeros */
 #include "rpmalign.hh"		/* rpmAlignIsValid */
 #include "cpio.hh"
 
@@ -38,6 +38,7 @@ struct rpmcpio_s {
     char mode;
     off_t offset;
     off_t fileend;
+    off_t base;		/*!< absolute backing-file offset of the cpio stream */
     size_t align;	/*!< content alignment, 0 if disabled */
 };
 
@@ -93,6 +94,12 @@ rpmcpio_t rpmcpioOpen(FD_t fd, char mode)
     cpio->fd = fdLink(fd);
     cpio->mode = mode;
     cpio->offset = 0;
+    /* Plain streams use physical file offsets. Compressed streams align the
+     * canonical cpio relative to its decompressed start. A nonseekable plain
+     * stream has no knowable offset; keep the failure so content alignment is
+     * refused rather than computed against a wrong base. */
+    if (fdIsPlain(fd))
+	cpio->base = Ftell(fd);
     return cpio;
 }
 
@@ -137,15 +144,16 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
 
 
 /* Zero-fill the write stream up to the next @a modulo boundary. */
-static off_t rpmcpioPadSize(rpmcpio_t cpio, size_t modulo)
+static off_t rpmcpioPadSize(rpmcpio_t cpio, size_t modulo, off_t base = 0)
 {
-    uint64_t rem = (uint64_t)cpio->offset % modulo;
+    uint64_t rem = ((uint64_t)cpio->offset % modulo +
+		    (uint64_t)base % modulo) % modulo;
     return (off_t)((modulo - rem) % modulo);
 }
 
-static int rpmcpioWritePad(rpmcpio_t cpio, size_t modulo)
+static int rpmcpioWritePad(rpmcpio_t cpio, size_t modulo, off_t base = 0)
 {
-    off_t left = rpmcpioPadSize(cpio, modulo);
+    off_t left = rpmcpioPadSize(cpio, modulo, base);
 
     if (fdWriteZeros(cpio->fd, left))
 	return RPMERR_WRITE_FAILED;
@@ -154,10 +162,10 @@ static int rpmcpioWritePad(rpmcpio_t cpio, size_t modulo)
 }
 
 /* Skip the read stream up to the next @a modulo boundary. */
-static int rpmcpioReadPad(rpmcpio_t cpio, size_t modulo,
+static int rpmcpioReadPad(rpmcpio_t cpio, size_t modulo, off_t base = 0,
 			  int require_zero = 0)
 {
-    off_t left = rpmcpioPadSize(cpio, modulo);
+    off_t left = rpmcpioPadSize(cpio, modulo, base);
     char buf[BUFSIZ];
 
     while (left > 0) {
@@ -189,16 +197,22 @@ static int rpmcpioContentAligned(rpmcpio_t cpio, mode_t fmode, off_t fsize)
 
 static int rpmcpioWriteContentPad(rpmcpio_t cpio, mode_t fmode, off_t fsize)
 {
-    size_t modulo = rpmcpioContentAligned(cpio, fmode, fsize) ?
-		    cpio->align : 4;
-    return rpmcpioWritePad(cpio, modulo);
+    int aligned = rpmcpioContentAligned(cpio, fmode, fsize);
+    size_t modulo = aligned ? cpio->align : 4;
+    off_t base = aligned ? cpio->base : 0;
+    if (base < 0)
+	return RPMERR_WRITE_FAILED;
+    return rpmcpioWritePad(cpio, modulo, base);
 }
 
 static int rpmcpioReadContentPad(rpmcpio_t cpio, mode_t fmode, off_t fsize)
 {
     int aligned = rpmcpioContentAligned(cpio, fmode, fsize);
     size_t modulo = aligned ? cpio->align : 4;
-    return rpmcpioReadPad(cpio, modulo, aligned);
+    off_t base = aligned ? cpio->base : 0;
+    if (base < 0)
+	return RPMERR_READ_FAILED;
+    return rpmcpioReadPad(cpio, modulo, base, aligned);
 }
 
 #define GET_NUM_FIELD(phys, log) \
@@ -436,7 +450,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
          * symlink target is read. In an aligned archive the remainder of an
          * aligned member's gap is validated once the size is known, so hold
          * this part to the same standard. */
-        rc = rpmcpioReadPad(cpio, 4, cpio->align >= 4);
+        rc = rpmcpioReadPad(cpio, 4, 0, cpio->align >= 4);
 
         if (!rc && *fx == -1)
             rc = RPMERR_ITER_END;

@@ -310,13 +310,15 @@ Tag Name          | Value| Type         | Description
 Dsaheader         | 267  | bin          | OpenPGP DSA signature of the header (if thus signed)
 Longsigsize       | 270  | int64        | Header+payload size if > 4GB.
 Openpgp           | 278  | string array | OpenPGP signature(s) of the header, base64 encoded
-Payloadsha256     | 5092 | string array | SHA256 digest of the compressed payload.
+Payloadsha256     | 5092 | string array | SHA256 digest of the physical payload representation, including outer framing.
 Payloadsha256algo | 5093 | int32        | ID of the SHA256 algorithm (obsolete)
-Payloadsha256alt  | 5097 | string array | SHA256 digest of the uncompressed payload.
-Payloadsha512     | 5121 | string       | SHA512 digest of the compressed payload.
-Payloadsha512alt  | 5122 | string       | SHA512 digest of the uncompressed payload.
-Payloadsha3_256   | 5123 | string       | SHA3-256 digest of the compressed payload.
-Payloadsha3_256alt| 5124 | string       | SHA3-256 digest of the uncompressed payload.
+Payloadsha256alt  | 5097 | string array | SHA256 digest of canonical uncompressed cpio, excluding outer framing.
+Payloadsha512     | 5121 | string       | SHA512 digest of the physical payload representation, including outer framing.
+Payloadsha512alt  | 5122 | string       | SHA512 digest of canonical uncompressed cpio, excluding outer framing.
+Payloadsha3_256   | 5123 | string       | SHA3-256 digest of the physical payload representation, including outer framing.
+Payloadsha3_256alt| 5124 | string       | SHA3-256 digest of canonical uncompressed cpio, excluding outer framing.
+Payloadsize       | 5112 | int64        | Size of the physical payload representation, including outer framing.
+Payloadsizealt    | 5113 | int64        | Size of canonical uncompressed cpio, excluding outer framing.
 Rsaheader         | 268  | bin          | OpenPGP RSA signature of the header (if thus signed).
 Sha1header        | 269  | string       | SHA1 digest of the header.
 Sha256header      | 273  | string       | SHA256 digest of the header.

@@ -450,6 +450,7 @@ LIBRPM_6.2 {
 	/* RPM internal APIs which are not in public headers */
 	rpmGenerateSignature*;
 	rpmLead*;
+	rpmPayloadProbe*;
 	rpmReadPackageManifest*;
 	rpmReadSignature*;
 	rpmWriteSignature*;

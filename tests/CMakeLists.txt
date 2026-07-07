@@ -55,6 +55,7 @@ set(TESTSUITE_AT
 	rpmconfig3.at
 	rpmbrp.at
 	rpmalign.at
+	rpmpayloadconsumer.at
 )
 
 FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at)
@@ -64,7 +65,7 @@ foreach(at ${TESTSUITE_AT})
 endforeach()
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint readpkgnullts rpmdig
-	      importkey oldtxn)
+	      importkey oldtxn rpmcorruptpad)
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpm)
