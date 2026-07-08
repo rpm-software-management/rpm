@@ -16,6 +16,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmstring.h>
+#include "rpmlog_internal.hh"
 #include "debug.h"
 
 struct pair_hash {
@@ -452,7 +453,7 @@ int rpmlogOnce (uint64_t domain, const char * key, int code, const char *fmt, ..
     return newkey;
 }
 
-void rpmlogReset(uint64_t domain, int mode=0)
+void rpmlogReset(uint64_t domain, int mode)
 {
     rpmlogCtx ctx = rpmlogCtxAcquire();
     wrlock lock(ctx->mutex);

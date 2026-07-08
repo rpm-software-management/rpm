@@ -1,5 +1,5 @@
 #ifndef H_RPMLOG_INTERNAL
-#define H_RPMLOG_INTERNAL 1
+#define H_RPMLOG_INTERNAL
 
 
 /** \ingroup rpmlog
