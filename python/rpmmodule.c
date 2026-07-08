@@ -299,6 +299,7 @@ static struct PyModuleDef moduledef = {
  * need a declaration in a header file.
  * Provide a declaration to avoid -Wmissing-prototypes warnings.
  */
+RPM_SYMBOL_EXPORT
 PyObject *
 PyInit__rpm(void);
 

@@ -241,6 +241,7 @@ static rpmRC fapolicyd_fsm_file_prepare(rpmPlugin plugin, rpmfi fi,
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s fapolicyd_hooks = {
     .init = fapolicyd_init,
     .cleanup = fapolicyd_cleanup,

@@ -45,6 +45,7 @@ typedef enum rpmdbCtrlOp_e {
  * @param opx           operation timestamp index
  * @return              pointer to operation timestamp.
  */
+RPM_PUBLIC_API
 rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
 
 /** \ingroup rpmdb
@@ -52,6 +53,7 @@ rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
  * @param db		rpm database
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmdbOpenAll (rpmdb db);
 
 /** \ingroup rpmdb
@@ -60,6 +62,7 @@ int rpmdbOpenAll (rpmdb db);
  * @param name		rpm package name
  * @return		number of instances
  */
+RPM_PUBLIC_API
 int rpmdbCountPackages(rpmdb db, const char * name);
 
 /** \ingroup rpmdb
@@ -67,6 +70,7 @@ int rpmdbCountPackages(rpmdb db, const char * name);
  * @param mi		rpm database iterator
  * @return		current header join key
  */
+RPM_PUBLIC_API
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -74,6 +78,7 @@ unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @return		number of elements
  */
+RPM_PUBLIC_API
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -81,6 +86,7 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @return		array index
  */
+RPM_PUBLIC_API
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -90,6 +96,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
+RPM_PUBLIC_API
 int rpmdbAppendIterator(rpmdbMatchIterator mi,
 			const unsigned int * hdrNums, unsigned int nHdrNums);
 
@@ -101,6 +108,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
 		rpmMireMode mode, const char * pattern);
 
@@ -111,6 +119,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
  * @param rewrite	new value of rewrite
  * @return		previous value
  */
+RPM_PUBLIC_API
 int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite);
 
 /** \ingroup rpmdb
@@ -119,6 +128,7 @@ int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite);
  * @param modified	new value of modified
  * @return		previous value
  */
+RPM_PUBLIC_API
 int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
 
 /** \ingroup rpmdb
@@ -128,6 +138,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
  * @param (*hdrchk)	headerCheck() vector
  * @return		0 always
  */
+RPM_PUBLIC_API
 int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
 	rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, char ** msg));
 
@@ -139,6 +150,7 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
+RPM_PUBLIC_API
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
@@ -147,6 +159,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * @param mi		rpm database iterator
  * @return		NULL on end of iteration.
  */
+RPM_PUBLIC_API
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -154,6 +167,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
@@ -162,6 +176,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
  * @param rpmtag	the index to iterate over
  * @return		the index iterator
  */
+RPM_PUBLIC_API
 rpmdbIndexIterator rpmdbIndexKeyIteratorInit(rpmdb db, rpmDbiTag rpmtag);
 
 /** \ingroup rpmdb
@@ -170,6 +185,7 @@ rpmdbIndexIterator rpmdbIndexKeyIteratorInit(rpmdb db, rpmDbiTag rpmtag);
  * @param rpmtag	the index to iterate over
  * @return		the index iterator
  */
+RPM_PUBLIC_API
 rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
 
 /** \ingroup rpmdb
@@ -180,6 +196,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
  * @param keylen	address to save the length of the key to
  * @return 		0 on success; != 0 on error or end of index
  */
+RPM_PUBLIC_API
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen);
 
 /** \ingroup rpmdb
@@ -190,6 +207,7 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
  * @param keytd		tag container to store the key in
  * @return 		0 on success; != 0 on error or end of index
  */
+RPM_PUBLIC_API
 int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd);
 
 /** \ingroup rpmdb
@@ -197,6 +215,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd);
  * @param ii            index iterator
  * @return		number of entries. 0 on error.
  */
+RPM_PUBLIC_API
 unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
@@ -205,6 +224,7 @@ unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
  * @param nr		number of the entry
  * @return		db offset of pkg
  */
+RPM_PUBLIC_API
 unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr);
 
 /** \ingroup rpmdb
@@ -213,6 +233,7 @@ unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr)
  * @param nr		number of the entry
  * @return		number of tag within the package
  */
+RPM_PUBLIC_API
 unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr);
 
 /** \ingroup rpmdb
@@ -220,6 +241,7 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr);
  * @param ii            index iterator
  * return 		NULL
  */
+RPM_PUBLIC_API
 rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
@@ -228,6 +250,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
  * @param ctrl		operation
  * @return 		0 on success; != 0 on error
  */
+RPM_PUBLIC_API
 int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl);
 
 /** \ingroup rpmdb
@@ -236,6 +259,7 @@ int rpmdbCtrl(rpmdb db, rpmdbCtrlOp ctrl);
  * @param db		rpm database
  * @return 		cookie string (malloced), or NULL on error
  */
+RPM_PUBLIC_API
 char *rpmdbCookie(rpmdb db);
 
 /** \ingroup rpmdb
@@ -244,6 +268,7 @@ char *rpmdbCookie(rpmdb db);
  * @param[out] statbuf	returned data from stat()
  * @return 		0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int rpmdbStat(const char *prefix, struct stat *statbuf);
 
 /** \ingroup rpmdb
@@ -252,6 +277,7 @@ int rpmdbStat(const char *prefix, struct stat *statbuf);
  * @param[out] statbuf	returned data from stat()
  * @return 		0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int rpmdbFStat(rpmdb db, struct stat *statbuf);
 
 #ifdef __cplusplus

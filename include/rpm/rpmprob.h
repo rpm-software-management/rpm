@@ -73,6 +73,7 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
  * @param prob		rpm problem
  * @return		rpm problem (NULL)
  */
+RPM_PUBLIC_API
 rpmProblem rpmProblemFree(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -80,6 +81,7 @@ rpmProblem rpmProblemFree(rpmProblem prob);
  * @param prob		rpm problem
  * @return		rpm problem
  */
+RPM_PUBLIC_API
 rpmProblem rpmProblemLink(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -88,6 +90,7 @@ rpmProblem rpmProblemLink(rpmProblem prob);
  * @param bp		2nd problem
  * @return		1 if the problems differ, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmProblemCompare(rpmProblem ap, rpmProblem bp);
 
 /** \ingroup rpmprob
@@ -96,12 +99,14 @@ int rpmProblemCompare(rpmProblem ap, rpmProblem bp);
  * @return		package NEVR
  */
 
+RPM_PUBLIC_API
 const char * rpmProblemGetPkgNEVR(rpmProblem prob);
 /** \ingroup rpmprob
  * Return related (e.g. through a dependency) package NEVR
  * @param prob		rpm problem
  * @return		related (e.g. through a dependency) package NEVR
  */
+RPM_PUBLIC_API
 const char * rpmProblemGetAltNEVR(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -110,6 +115,7 @@ const char * rpmProblemGetAltNEVR(rpmProblem prob);
  * @return		type of problem
  */
 
+RPM_PUBLIC_API
 rpmProblemType rpmProblemGetType(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -117,6 +123,7 @@ rpmProblemType rpmProblemGetType(rpmProblem prob);
  * @param prob		rpm problem
  * @return		filename or python object address
  */
+RPM_PUBLIC_API
 fnpyKey rpmProblemGetKey(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -125,6 +132,7 @@ fnpyKey rpmProblemGetKey(rpmProblem prob);
  * @return		a generic data string
  * @todo		needs a better name
  */
+RPM_PUBLIC_API
 const char * rpmProblemGetStr(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -134,6 +142,7 @@ const char * rpmProblemGetStr(rpmProblem prob);
  * @param prob		rpm problem
  * @return		disk requirement
  */
+RPM_PUBLIC_API
 rpm_loff_t rpmProblemGetDiskNeed(rpmProblem prob);
 
 /** \ingroup rpmprob
@@ -141,6 +150,7 @@ rpm_loff_t rpmProblemGetDiskNeed(rpmProblem prob);
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
  */
+RPM_PUBLIC_API
 char * rpmProblemString(rpmProblem prob);
 
 #ifdef __cplusplus

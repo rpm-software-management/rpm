@@ -223,6 +223,7 @@ static rpmRC syslog_scriptlet_post(rpmPlugin plugin,
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s syslog_hooks = {
     .init = syslog_init,
     .cleanup = syslog_cleanup,

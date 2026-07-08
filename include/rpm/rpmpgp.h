@@ -283,6 +283,7 @@ typedef enum pgpValType_e {
  * @param val		byte value to lookup
  * @return		string value of byte
  */
+RPM_PUBLIC_API
 const char * pgpValString(pgpValType type, uint8_t val);
 
 /** \ingroup rpmpgp
@@ -293,6 +294,7 @@ const char * pgpValString(pgpValType type, uint8_t val);
  * @param[out] fplen	public key fingerprint length
  * @return		0 on success, else -1
  */
+RPM_PUBLIC_API
 int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 			 uint8_t **fp, size_t *fplen);
 
@@ -303,6 +305,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
  * @param[out] keyid	public key Key ID
  * @return		0 on success, else -1
  */
+RPM_PUBLIC_API
 int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid);
 
 /** \ingroup rpmpgp
@@ -313,6 +316,7 @@ int pgpPubkeyKeyID(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid);
  * @param[out] ret	signature/pubkey packet parameters on success (alloced)
  * @return		-1 on error, 0 on success
  */
+RPM_PUBLIC_API
 int pgpPrtParams(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret);
 
@@ -325,6 +329,7 @@ int pgpPrtParams(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
  * @param[out] lints	error messages and lints
  * @return		-1 on error, 0 on success
  */
+RPM_PUBLIC_API
 int pgpPrtParams2(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
 		 pgpDigParams * ret, char **lints);
 
@@ -337,6 +342,7 @@ int pgpPrtParams2(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
  * @param subkeysCount	count of subkeys
  * @return		-1 on error, 0 on success
  */
+RPM_PUBLIC_API
 int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
 			pgpDigParams mainkey, pgpDigParams **subkeys,
 			int *subkeysCount);
@@ -348,6 +354,7 @@ int pgpPrtParamsSubkeys(const uint8_t *pkts, size_t pktlen,
  * @param[out] pktlen	dearmored OpenPGP packet(s) length in bytes
  * @return		type of armor found
  */
+RPM_PUBLIC_API
 pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
@@ -357,6 +364,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
  * @param[out] pktlen	dearmored OpenPGP packet(s) length in bytes
  * @return		type of armor found
  */
+RPM_PUBLIC_API
 pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
@@ -371,6 +379,7 @@ pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen);
  * @param certlen	length of the first certificate in the buffer
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int pgpPubKeyCertLen(const uint8_t *pkts, size_t pktslen, size_t *certlen);
 
 /** \ingroup rpmpgp
@@ -397,6 +406,7 @@ int pgpPubKeyCertLen(const uint8_t *pkts, size_t pktslen, size_t *certlen);
  * @param[out] explanation	An optional lint to display to the user.
  * @return 		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC pgpPubKeyLint(const uint8_t *pkts, size_t pktslen, char **explanation);
 
 /** \ingroup rpmpgp
@@ -406,6 +416,7 @@ rpmRC pgpPubKeyLint(const uint8_t *pkts, size_t pktslen, char **explanation);
  * @param ns		binary pkt data length
  * @return		formatted string
  */
+RPM_PUBLIC_API
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns);
 
 /** \ingroup rpmpgp
@@ -414,6 +425,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns);
  * param p2		2nd parameter container
  * return		1 if the parameters differ, 0 otherwise
  */
+RPM_PUBLIC_API
 int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2);
 
 /** \ingroup rpmpgp
@@ -422,6 +434,7 @@ int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2);
  * param algotype	PGPVAL_HASHALGO / PGPVAL_PUBKEYALGO
  * return		algorithm value, 0 on error
  */
+RPM_PUBLIC_API
 unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype);
 
 /** \ingroup rpmpgp
@@ -440,6 +453,7 @@ unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype);
  * return		an array of PGP_KEYID_LEN bytes.  If the issuer is
  * 			unknown, this returns an array with all zeros.
  */
+RPM_PUBLIC_API
 const uint8_t *pgpDigParamsSignID(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -460,6 +474,7 @@ const uint8_t *pgpDigParamsSignID(pgpDigParams digp);
  * param digp		parameter container
  * return		a string or NULL, if there is no primary User ID.
  */
+RPM_PUBLIC_API
 const char *pgpDigParamsUserID(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -479,6 +494,7 @@ const char *pgpDigParamsUserID(pgpDigParams digp);
  * param digp		parameter container
  * return		the object's version
  */
+RPM_PUBLIC_API
 int pgpDigParamsVersion(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -487,6 +503,7 @@ int pgpDigParamsVersion(pgpDigParams digp);
  * param digp		parameter container
  * return		seconds since the UNIX Epoch.
  */
+RPM_PUBLIC_API
 uint32_t pgpDigParamsCreationTime(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -496,6 +513,7 @@ uint32_t pgpDigParamsCreationTime(pgpDigParams digp);
  * @param[out] lenp	length of the salt
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int pgpDigParamsSalt(pgpDigParams digp, const uint8_t **datap, size_t *lenp);
 
 /** \ingroup rpmpgp
@@ -503,6 +521,7 @@ int pgpDigParamsSalt(pgpDigParams digp, const uint8_t **datap, size_t *lenp);
  * @param digp		parameter container
  * @return		NULL always
  */
+RPM_PUBLIC_API
 pgpDigParams pgpDigParamsFree(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -512,6 +531,7 @@ pgpDigParams pgpDigParamsFree(pgpDigParams digp);
  * @param hashctx	digest context
  * @return 		RPMRC_OK on success 
  */
+RPM_PUBLIC_API
 rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx);
 
 /** \ingroup rpmpgp
@@ -522,6 +542,7 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
  * @param lints	error messages and lints
  * @return 		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx,
                           char **lints);
 
@@ -532,6 +553,7 @@ rpmRC pgpVerifySignature2(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx
  * @param sig		signature
  * @return 		type of the signature
  */
+RPM_PUBLIC_API
 int pgpSignatureType(pgpDigParams sig);
 
 /** \ingroup rpmpgp
@@ -539,6 +561,7 @@ int pgpSignatureType(pgpDigParams sig);
  * @param digp		signature/pubkey container
  * @return		string describing the item and parameters
  */
+RPM_PUBLIC_API
 char *pgpIdentItem(pgpDigParams digp);
 
 /** \ingroup rpmpgp
@@ -556,6 +579,7 @@ char *pgpIdentItem(pgpDigParams digp);
  * @param flags		merge flags (currently not used, must be zero)
  * @return 		RPMRC_OK on success 
  */
+RPM_PUBLIC_API
 rpmRC pgpPubkeyMerge(const uint8_t *pkts1, size_t pkts1len, const uint8_t *pkts2, size_t pkts2len, uint8_t **pktsm, size_t *pktsmlen, int flags);
 
 #ifdef __cplusplus

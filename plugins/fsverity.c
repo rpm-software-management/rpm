@@ -165,6 +165,7 @@ static rpmRC fsverity_init(rpmPlugin plugin, rpmts ts)
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s fsverity_hooks = {
     .init = fsverity_init,
     .fsm_file_prepare = fsverity_fsm_file_prepare,

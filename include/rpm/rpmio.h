@@ -27,31 +27,37 @@ extern "C" {
 /** \ingroup rpmio
  * strerror(3) clone.
  */
+RPM_PUBLIC_API
 const char * Fstrerror(FD_t fd);
 
 /** \ingroup rpmio
  * Like fread(3) but with read(3)-style return values.
  */
+RPM_PUBLIC_API
 ssize_t Fread(void * buf, size_t size, size_t nmemb, FD_t fd);
 
 /** \ingroup rpmio
  * Like fwrite(3) but with write(3)-style return values.
  */
+RPM_PUBLIC_API
 ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd);
 
 /** \ingroup rpmio
  * fseek(3) clone.
  */
+RPM_PUBLIC_API
 int Fseek(FD_t fd, off_t offset, int whence);
 
 /** \ingroup rpmio
  * ftell(3) clone.
  */
+RPM_PUBLIC_API
 off_t Ftell(FD_t fd);
 
 /** \ingroup rpmio
  * fclose(3) clone.
  */
+RPM_PUBLIC_API
 int Fclose( FD_t fd);
 
 /** \ingroup rpmio
@@ -59,6 +65,7 @@ int Fclose( FD_t fd);
  *
  * See Fopen() for details.
  */
+RPM_PUBLIC_API
 FD_t	Fdopen(FD_t ofd, const char * fmode);
 
 /** \ingroup rpmio
@@ -68,6 +75,7 @@ FD_t	Fdopen(FD_t ofd, const char * fmode);
  * compression method (`type` and `flags`) to use when opening the stream.
  * See `rpm-payloadflags`(7) manual for details.
  */
+RPM_PUBLIC_API
 FD_t	Fopen(const char * path,
 			const char * fmode);
 
@@ -75,26 +83,31 @@ FD_t	Fopen(const char * path,
 /** \ingroup rpmio
  * fflush(3) clone.
  */
+RPM_PUBLIC_API
 int Fflush(FD_t fd);
 
 /** \ingroup rpmio
  * ferror(3) clone.
  */
+RPM_PUBLIC_API
 int Ferror(FD_t fd);
 
 /** \ingroup rpmio
  * fileno(3) clone.
  */
+RPM_PUBLIC_API
 int Fileno(FD_t fd);
 
 /** \ingroup rpmio
  * fcntl(2) clone.
  */
+RPM_PUBLIC_API
 int Fcntl(FD_t fd, int op, void *lip);
 
 /** \ingroup rpmio
  * Get informative description (eg file name) from fd for diagnostic output.
  */
+RPM_PUBLIC_API
 const char * Fdescr(FD_t fd);
 
 /** \ingroup rpmio
@@ -104,26 +117,31 @@ const char * Fdescr(FD_t fd);
 /** \ingroup rpmio
  * Return the size of the backing file of the descriptor.
  */
+RPM_PUBLIC_API
 off_t	fdSize(FD_t fd);
 
 /** \ingroup rpmio
  * dup(2) clone.
  */
+RPM_PUBLIC_API
 FD_t fdDup(int fdno);
 
 /** \ingroup rpmio
  * Reference a file descriptor.
  */
+RPM_PUBLIC_API
 FD_t fdLink(FD_t fd);
 
 /** \ingroup rpmio
  * Dereference a file descriptor. This does NOT close the file.
  */
+RPM_PUBLIC_API
 FD_t fdFree(FD_t fd);
 
 /**
  * Copy file descriptor into another.
  */
+RPM_PUBLIC_API
 off_t ufdCopy(FD_t sfd, FD_t tfd);
 
 /** \ingroup rpmio
@@ -141,6 +159,7 @@ typedef enum fdOpX_e {
 /** \ingroup rpmio
  * File operation statistics.
  */
+RPM_PUBLIC_API
 rpmop fdOp(FD_t fd, fdOpX opx);
 
 #ifdef __cplusplus

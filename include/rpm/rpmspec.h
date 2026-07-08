@@ -47,31 +47,43 @@ typedef rpmFlags rpmSpecFlags;
  * @param spec		spec file control structure
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmSpec rpmSpecFree(rpmSpec spec);
 
 /* Iterator for spec packages */
+RPM_PUBLIC_API
 rpmSpecPkgIter rpmSpecPkgIterInit(rpmSpec spec);
+RPM_PUBLIC_API
 rpmSpecPkg rpmSpecPkgIterNext(rpmSpecPkgIter iter);
+RPM_PUBLIC_API
 rpmSpecPkgIter rpmSpecPkgIterFree(rpmSpecPkgIter iter);
 
 /* Getters for spec package attributes */
+RPM_PUBLIC_API
 Header rpmSpecPkgHeader(rpmSpecPkg pkg);
 
 /*
  * Retrieve package specific parsed spec script section (RPMBUILD_FILE_LIST,
  * RPMBUILD_FILE_FILE, RPMBUILD_POLICY) as a malloc'ed string.
  */
+RPM_PUBLIC_API
 char * rpmSpecPkgGetSection(rpmSpecPkg pkg, int section);
 
 
 /* Iterator for spec sources */
+RPM_PUBLIC_API
 rpmSpecSrcIter rpmSpecSrcIterInit(rpmSpec spec);
+RPM_PUBLIC_API
 rpmSpecSrc rpmSpecSrcIterNext(rpmSpecSrcIter iter);
+RPM_PUBLIC_API
 rpmSpecSrcIter rpmSpecSrcIterFree(rpmSpecSrcIter iter);
 
 /* Getters for spec source attributes */
+RPM_PUBLIC_API
 rpmSourceFlags rpmSpecSrcFlags(rpmSpecSrc src);
+RPM_PUBLIC_API
 int rpmSpecSrcNum(rpmSpecSrc src);
+RPM_PUBLIC_API
 const char * rpmSpecSrcFilename(rpmSpecSrc src, int full);
 
 /*
@@ -79,6 +91,7 @@ const char * rpmSpecSrcFilename(rpmSpecSrc src, int full);
  * As a special case, RPMBUILD_NONE as section returns the entire spec in
  * preprocessed (macros expanded etc) format.
  */
+RPM_PUBLIC_API
 const char * rpmSpecGetSection(rpmSpec spec, int section);
 
 /** \ingroup rpmbuild
@@ -88,6 +101,7 @@ const char * rpmSpecGetSection(rpmSpec spec, int section);
  * @param arg		query argument
  * @return		0 on success, else no. of failures
  */
+RPM_PUBLIC_API
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg);
 
 #ifdef __cplusplus

@@ -107,6 +107,7 @@ exit:
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s audit_hooks = {
     .tsm_post = audit_tsm_post,
 };

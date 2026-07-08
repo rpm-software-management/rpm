@@ -2,6 +2,7 @@
 #define _RPMUTIL_H
 
 #include <unistd.h>
+#include <rpm/rpmtypes.h>
 
 /** \file rpmutil.h
  *
@@ -119,27 +120,36 @@ extern "C" {
 
 /* Rpm specific allocators which never return NULL but terminate on failure */
 RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE(1)
+RPM_PUBLIC_API
 void * rmalloc(size_t size);
 
 RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(1,2)
+RPM_PUBLIC_API
 void * rcalloc(size_t nmemb, size_t size);
 
 /* Like realloc() but with overflow protection */
 RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(2,3)
+RPM_PUBLIC_API
 void * rreallocn(void * ptr, size_t nmemb, size_t size);
 
 RPM_GNUC_ALLOC_SIZE(2)
+RPM_PUBLIC_API
 void * rrealloc(void *ptr, size_t size);
 
+RPM_PUBLIC_API
 char * rstrdup(const char *str);
 
+RPM_PUBLIC_API
 char * rstrndup(const char *str, size_t n);
 
 /* Rpm specific free() which returns NULL */
+RPM_PUBLIC_API
 void * rfree(void *ptr);
 
 /* Rpm specific wrappers for program name handling */
+RPM_PUBLIC_API
 const char *rgetprogname(void);
+RPM_PUBLIC_API
 void rsetprogname(const char *pn);
 
 /** \ingroup rpmutil
@@ -161,6 +171,7 @@ typedef void * (*rpmMemFailFunc) (size_t size, void *data);
  * @param data		User data (or NULL)
  * @return		Previous callback function
  */
+RPM_PUBLIC_API
 rpmMemFailFunc rpmSetMemFail(rpmMemFailFunc func, void *data);
 
 #ifdef __cplusplus

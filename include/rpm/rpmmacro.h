@@ -25,8 +25,10 @@ typedef struct rpmMacroBuf_s *rpmMacroBuf;
 
 typedef void (*macroFunc)(rpmMacroBuf mb, rpmMacroEntry me, ARGV_t argv, size_t *parsed);
 
+RPM_PUBLIC_API
 extern rpmMacroContext rpmGlobalMacroContext;
 
+RPM_PUBLIC_API
 extern rpmMacroContext rpmCLIMacroContext;
 
 /** \ingroup rpmrc
@@ -34,6 +36,7 @@ extern rpmMacroContext rpmCLIMacroContext;
  * This is a colon separated list of files. URI's are permitted as well,
  * identified by the token '://', so file paths must not begin with '//'.
  */
+RPM_PUBLIC_API
 extern const char * macrofiles;
 
 /**
@@ -73,6 +76,7 @@ typedef rpmFlags rpmMacroFlags;
  * @param mc		macro context (NULL uses global context).
  * @param fp		file stream (NULL uses stderr).
  */
+RPM_PUBLIC_API
 void	rpmDumpMacroTable	(rpmMacroContext mc,
 					FILE * fp);
 
@@ -84,6 +88,7 @@ void	rpmDumpMacroTable	(rpmMacroContext mc,
  * @param flags		flags (currently unused)
  * @return		negative on failure
  */
+RPM_PUBLIC_API
 int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
 				char ** obuf, int flags);
 
@@ -96,6 +101,7 @@ int	rpmExpandMacros	(rpmMacroContext mc, const char * sbuf,
  * @param flags		flags (currently unused)
  * @return		negative on failure
  */
+RPM_PUBLIC_API
 int	rpmExpandThisMacro (rpmMacroContext mc, const char *n,
 				ARGV_const_t args,
 				char ** obuf, int flags);
@@ -109,6 +115,7 @@ int	rpmExpandThisMacro (rpmMacroContext mc, const char *n,
  * @param level		macro recursion level (0 is entry API)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int	rpmPushMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
@@ -123,6 +130,7 @@ int	rpmPushMacro	(rpmMacroContext mc, const char * n,
  * @param flags		macro flags
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int	rpmPushMacroFlags	(rpmMacroContext mc, const char * n,
 					const char * o,
 					const char * b, int level,
@@ -141,6 +149,7 @@ int	rpmPushMacroFlags	(rpmMacroContext mc, const char * n,
  * @param flags		macro flags
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmPushMacroAux(rpmMacroContext mc,
 		    const char * n, const char * o,
 		    macroFunc f, void *priv, int nargs,
@@ -151,6 +160,7 @@ int rpmPushMacroAux(rpmMacroContext mc,
  * @param me		macro entry
  * @return		pointer to private data passed on define or NULL
  */
+RPM_PUBLIC_API
 void *rpmMacroEntryPriv(rpmMacroEntry me);
 
 /** \ingroup rpmmacro
@@ -158,6 +168,7 @@ void *rpmMacroEntryPriv(rpmMacroEntry me);
  * @param mb		macro buffer
  * @param c		character to append
  */
+RPM_PUBLIC_API
 void rpmMacroBufAppend(rpmMacroBuf mb, char c);
 
 /** \ingroup rpmmacro
@@ -165,6 +176,7 @@ void rpmMacroBufAppend(rpmMacroBuf mb, char c);
  * @param mb		macro buffer
  * @param str		string to append
  */
+RPM_PUBLIC_API
 void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str);
 
 /** \ingroup rpmmacro
@@ -174,6 +186,7 @@ void rpmMacroBufAppendStr(rpmMacroBuf mb, const char *str);
  * @param fmt		j
  */
 RPM_GNUC_PRINTF(3, 4)
+RPM_PUBLIC_API
 void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...);
 
 /** \ingroup rpmmacro
@@ -182,6 +195,7 @@ void rpmMacroBufErr(rpmMacroBuf mb, int error, const char *fmt, ...);
  * @param n		macro name
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int	rpmPopMacro	(rpmMacroContext mc, const char * n);
 
 /** \ingroup rpmmacro
@@ -192,6 +206,7 @@ int	rpmPopMacro	(rpmMacroContext mc, const char * n);
  * @param level		macro recursion level (0 is entry API)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
@@ -202,6 +217,7 @@ int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
  * @param n		macro name
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmUndefineMacro(rpmMacroContext mc, const char *n);
 
 /**
@@ -210,6 +226,7 @@ int rpmUndefineMacro(rpmMacroContext mc, const char *n);
  * @param n		macro name
  * @return		1 if defined, 0 if not
  */
+RPM_PUBLIC_API
 int rpmMacroIsDefined(rpmMacroContext mc, const char *n);
 
 /**
@@ -218,6 +235,7 @@ int rpmMacroIsDefined(rpmMacroContext mc, const char *n);
  * @param n		macro name
  * @return		1 if parametric, 0 if not
  */
+RPM_PUBLIC_API
 int rpmMacroIsParametric(rpmMacroContext mc, const char *n);
 
 /** \ingroup rpmmacro
@@ -225,6 +243,7 @@ int rpmMacroIsParametric(rpmMacroContext mc, const char *n);
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
+RPM_PUBLIC_API
 void	rpmLoadMacros	(rpmMacroContext mc, int level);
 
 /** \ingroup rpmmacro
@@ -232,6 +251,7 @@ void	rpmLoadMacros	(rpmMacroContext mc, int level);
  * @param mc		(unused)
  * @param fn		macro file name
  */
+RPM_PUBLIC_API
 int	rpmLoadMacroFile(rpmMacroContext mc, const char * fn);
 
 /** \ingroup rpmmacro
@@ -239,12 +259,14 @@ int	rpmLoadMacroFile(rpmMacroContext mc, const char * fn);
  * @param mc		macro context
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
+RPM_PUBLIC_API
 void	rpmInitMacros	(rpmMacroContext mc, const char * macrofiles);
 
 /** \ingroup rpmmacro
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
+RPM_PUBLIC_API
 void	rpmFreeMacros	(rpmMacroContext mc);
 
 /** \ingroup rpmmacro
@@ -252,6 +274,7 @@ void	rpmFreeMacros	(rpmMacroContext mc);
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmExpand	(const char * arg, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmmacro
@@ -261,6 +284,7 @@ char * rpmExpand	(const char * arg, ...) RPM_GNUC_NULL_TERMINATED;
  * @param arg		macro to expand
  * @return		numeric value
  */
+RPM_PUBLIC_API
 int	rpmExpandNumeric (const char * arg);
 
 /** \ingroup rpmmacro
@@ -272,6 +296,7 @@ int	rpmExpandNumeric (const char * arg);
  * on subsequent calls.
  * @return		rpm configuration directory name
  */
+RPM_PUBLIC_API
 const char *rpmConfigDir(void);
 
 /** \ingroup rpmmacro
@@ -280,6 +305,7 @@ const char *rpmConfigDir(void);
  * @param flags		parser flags
  * @return
  */
+RPM_PUBLIC_API
 int rpmExprBoolFlags(const char * expr, int flags);
 
 /** \ingroup rpmmacro
@@ -288,6 +314,7 @@ int rpmExprBoolFlags(const char * expr, int flags);
  * @param flags		parser flags
  * @return
  */
+RPM_PUBLIC_API
 char * rpmExprStrFlags(const char * expr, int flags);
 
 /** \ingroup rpmmacro
@@ -295,6 +322,7 @@ char * rpmExprStrFlags(const char * expr, int flags);
  * @param expr		expression to parse
  * @return
  */
+RPM_PUBLIC_API
 int rpmExprBool(const char * expr);
 
 /** \ingroup rpmmacro
@@ -302,6 +330,7 @@ int rpmExprBool(const char * expr);
  * @param expr		expression to parse
  * @return
  */
+RPM_PUBLIC_API
 char * rpmExprStr(const char * expr);
 
 #ifdef __cplusplus

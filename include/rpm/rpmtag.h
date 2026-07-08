@@ -517,6 +517,7 @@ typedef rpmFlags rpmTagReturnType;
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
+RPM_PUBLIC_API
 const char * rpmTagGetName(rpmTagVal tag);
 
 /** \ingroup rpmtag
@@ -524,6 +525,7 @@ const char * rpmTagGetName(rpmTagVal tag);
  * @param tag		tag value
  * @return		tag data type + return type, RPM_NULL_TYPE on not found.
  */
+RPM_PUBLIC_API
 rpmTagType rpmTagGetType(rpmTagVal tag);
 
 /** \ingroup rpmtag
@@ -531,6 +533,7 @@ rpmTagType rpmTagGetType(rpmTagVal tag);
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
+RPM_PUBLIC_API
 rpmTagType rpmTagGetTagType(rpmTagVal tag);
 
 /** \ingroup rpmtag
@@ -538,6 +541,7 @@ rpmTagType rpmTagGetTagType(rpmTagVal tag);
  * @param tag		tag value
  * @return		tag data return type, RPM_NULL_TYPE on not found.
  */
+RPM_PUBLIC_API
 rpmTagReturnType rpmTagGetReturnType(rpmTagVal tag);
 
 /** \ingroup rpmtag
@@ -545,6 +549,7 @@ rpmTagReturnType rpmTagGetReturnType(rpmTagVal tag);
  * @param tag		tag value
  * @return		tag data class, RPM_NULL_CLASS on not found.
  */
+RPM_PUBLIC_API
 rpmTagClass rpmTagGetClass(rpmTagVal tag);
 
 /** \ingroup rpmtag
@@ -552,6 +557,7 @@ rpmTagClass rpmTagGetClass(rpmTagVal tag);
  * @param tagstr	name of tag
  * @return		tag value, RPMTAG_NOT_FOUND on not found
  */
+RPM_PUBLIC_API
 rpmTagVal rpmTagGetValue(const char * tagstr);
 
 /** \ingroup rpmtag
@@ -559,6 +565,7 @@ rpmTagVal rpmTagGetValue(const char * tagstr);
  * @param type		tag type
  * @return		data class, RPM_NULL_CLASS on unknown.
  */
+RPM_PUBLIC_API
 rpmTagClass rpmTagTypeGetClass(rpmTagType type);
 
 /** \ingroup rpmtag
@@ -567,6 +574,7 @@ rpmTagClass rpmTagTypeGetClass(rpmTagType type);
  * @param fullname	return short or full name
  * @return		number of tag names, 0 on error
  */
+RPM_PUBLIC_API
 int rpmTagGetNames(rpmtd tagnames, int fullname);
 
 #ifdef __cplusplus

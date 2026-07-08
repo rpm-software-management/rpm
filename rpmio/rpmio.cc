@@ -154,6 +154,7 @@ static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen);
 static FD_t fdNew(int fdno, const char *descr);
 /**
  */
+RPM_PRIVATE_API
 int _rpmio_debug = 0;
 
 /* =============================================================== */

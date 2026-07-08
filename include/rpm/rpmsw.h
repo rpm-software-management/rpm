@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 #include <sys/time.h>
+#include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,6 +52,7 @@ struct rpmop_s {
  * @param *sw		time stamp
  * @return		0 on success
  */
+RPM_PUBLIC_API
 rpmsw rpmswNow(rpmsw sw);
 
 /** \ingroup rpmsw
@@ -59,12 +61,14 @@ rpmsw rpmswNow(rpmsw sw);
  * @param *begin	begin time stamp
  * @return		difference in micro-seconds
  */
+RPM_PUBLIC_API
 rpmtime_t rpmswDiff(rpmsw end, rpmsw begin);
 
 /** \ingroup rpmsw
  * Return benchmark time stamp overhead.
  * @return		overhead in micro-seconds
  */
+RPM_PUBLIC_API
 rpmtime_t rpmswInit(void);
 
 /** \ingroup rpmsw
@@ -73,6 +77,7 @@ rpmtime_t rpmswInit(void);
  * @param rc			-1 clears usec counter
  * @return			0 always
  */
+RPM_PUBLIC_API
 int rpmswEnter(rpmop op, ssize_t rc);
 
 /** \ingroup rpmsw
@@ -81,6 +86,7 @@ int rpmswEnter(rpmop op, ssize_t rc);
  * @param rc			per-operation data (e.g. bytes transferred)
  * @return			cumulative usecs for operation
  */
+RPM_PUBLIC_API
 rpmtime_t rpmswExit(rpmop op, ssize_t rc);
 
 /** \ingroup rpmsw
@@ -89,6 +95,7 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc);
  * @param from			operation statistics
  * @return			cumulative usecs for operation
  */
+RPM_PUBLIC_API
 rpmtime_t rpmswAdd(rpmop to, rpmop from);
 
 /** \ingroup rpmsw
@@ -97,6 +104,7 @@ rpmtime_t rpmswAdd(rpmop to, rpmop from);
  * @param from			operation statistics
  * @return			cumulative usecs for operation
  */
+RPM_PUBLIC_API
 rpmtime_t rpmswSub(rpmop to, rpmop from);
 
 #ifdef __cplusplus

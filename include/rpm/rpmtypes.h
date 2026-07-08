@@ -110,6 +110,15 @@ typedef	enum rpmRC_e {
     RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
 } rpmRC;
 
+#if    __GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
+#  define RPM_SYMBOL_EXPORT __attribute__((visibility("default")))
+#else
+#  define RPM_SYMBOL_EXPORT
+#endif
+
+#define RPM_PUBLIC_API RPM_SYMBOL_EXPORT
+
+
 #ifdef __cplusplus
 }
 #endif

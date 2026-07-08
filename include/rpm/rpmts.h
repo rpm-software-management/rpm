@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+RPM_PUBLIC_API
 extern int _rpmts_stats;
 
 /** \ingroup rpmts
@@ -230,6 +231,7 @@ typedef int (*rpmtsChangeFunction)
  * @param ts		transaction set
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsCheck(rpmts ts);
 
 /** \ingroup rpmts
@@ -251,6 +253,7 @@ int rpmtsCheck(rpmts ts);
  * @param ts		transaction set
  * @return		no. of (added) packages that could not be ordered
  */
+RPM_PUBLIC_API
 int rpmtsOrder(rpmts ts);
 
 /** \ingroup rpmts
@@ -270,6 +273,7 @@ int rpmtsOrder(rpmts ts);
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */
+RPM_PUBLIC_API
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
 
 /** \ingroup rpmts
@@ -277,6 +281,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
  * @param ts		transaction set
  * @return		new transaction set reference
  */
+RPM_PUBLIC_API
 rpmts rpmtsLink (rpmts ts);
 
 /** \ingroup rpmts
@@ -284,6 +289,7 @@ rpmts rpmtsLink (rpmts ts);
  * @param ts		transaction set
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsCloseDB(rpmts ts);
 
 /** \ingroup rpmts
@@ -292,6 +298,7 @@ int rpmtsCloseDB(rpmts ts);
  * @param dbmode	O_RDONLY or O_RDWR
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsOpenDB(rpmts ts, int dbmode);
 
 /** \ingroup rpmts
@@ -300,6 +307,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode);
  * @param perms		database permissions (ie mode bits)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsInitDB(rpmts ts, int perms);
 
 /** \ingroup rpmts
@@ -307,6 +315,7 @@ int rpmtsInitDB(rpmts ts, int perms);
  * @param ts		transaction set
  * @return		O_RDONLY, O_RDWR or -1 (lazy opens disabled)
  */
+RPM_PUBLIC_API
 int rpmtsGetDBMode(rpmts ts);
 
 /** \ingroup rpmts
@@ -316,6 +325,7 @@ int rpmtsGetDBMode(rpmts ts);
  * @param dbmode	O_RDONLY, O_RDWR or -1 (disable lazy opens)
  * @return		0 on success, 1 on error 
  */
+RPM_PUBLIC_API
 int rpmtsSetDBMode(rpmts ts, int dbmode);
 
 /** \ingroup rpmts
@@ -323,6 +333,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode);
  * @param ts		transaction set
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsRebuildDB(rpmts ts);
 
 /** \ingroup rpmts
@@ -330,6 +341,7 @@ int rpmtsRebuildDB(rpmts ts);
  * @param ts		transaction set
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsParkDB(rpmts ts);
 
 /** \ingroup rpmts
@@ -337,6 +349,7 @@ int rpmtsParkDB(rpmts ts);
  * @param ts		transaction set
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsVerifyDB(rpmts ts);
 
 /** \ingroup rpmts
@@ -347,6 +360,7 @@ int rpmtsVerifyDB(rpmts ts);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
+RPM_PUBLIC_API
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
@@ -357,6 +371,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
  * @param flags		(unused)
  * @return              RPMRC_OK/RPMRC_FAIL
  */
+RPM_PUBLIC_API
 rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags);
 
 /** \ingroup rpmts
@@ -366,6 +381,7 @@ rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags);
  * @param pktlen        pgp pubkey length
  * @return              RPMRC_OK/RPMRC_FAIL
  */
+RPM_PUBLIC_API
 rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
@@ -375,6 +391,7 @@ rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
  * @param pktlen        pgp pubkey length
  * @return              RPMRC_OK/RPMRC_FAIL
  */
+RPM_PUBLIC_API
 rpmRC rpmtxnImportPubkey(rpmtxn kxn, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
@@ -385,6 +402,7 @@ rpmRC rpmtxnImportPubkey(rpmtxn kxn, const unsigned char * pkt, size_t pktlen);
  * 			RPMRC_NOTFOUND if key not found
  * 			RPMRC_FAIL on other failure
  */
+RPM_PUBLIC_API
 rpmRC rpmtxnDeletePubkey(rpmtxn kxn, rpmPubkey key);
 
 /** \ingroup rpmts
@@ -393,6 +411,7 @@ rpmRC rpmtxnDeletePubkey(rpmtxn kxn, rpmPubkey key);
  * @param from		backend to get the keys from
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmtxnRebuildKeystore(rpmtxn kxn, const char * from);
 
 /** \ingroup rpmts
@@ -401,6 +420,7 @@ rpmRC rpmtxnRebuildKeystore(rpmtxn kxn, const char * from);
  * @param autoload	load default keyring if keyring is not set
  * @return              keyring handle (or NULL)
  */
+RPM_PUBLIC_API
 rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload);
 
 /** \ingroup rpmts
@@ -411,6 +431,7 @@ rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload);
  * @param keyring	keyring handle (NULL to free current keyring)
  * @return              0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);
 
 /** \ingroup rpmts
@@ -420,6 +441,7 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);
  * @param solveData	dependency solver callback data (opaque)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds ds, const void * data),
 		const void * solveData);
@@ -429,24 +451,28 @@ int rpmtsSetSolveCallback(rpmts ts,
  * @param ts		transaction set
  * @return		current problem set (or NULL if no problems)
  */
+RPM_PUBLIC_API
 rpmps rpmtsProblems(rpmts ts);
 
 /** \ingroup rpmts
  * Clean current transaction problem set.
  * @param ts		transaction set
  */
+RPM_PUBLIC_API
 void rpmtsCleanProblems(rpmts ts);
 
 /** \ingroup rpmts
  * Free memory needed only for dependency checks and ordering.
  * @param ts		transaction set
  */
+RPM_PUBLIC_API
 void rpmtsClean(rpmts ts);
 
 /** \ingroup rpmts
  * Re-create an empty transaction set.
  * @param ts		transaction set
  */
+RPM_PUBLIC_API
 void rpmtsEmpty(rpmts ts);
 
 /** \ingroup rpmts
@@ -454,6 +480,7 @@ void rpmtsEmpty(rpmts ts);
  * @param ts		transaction set
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmts rpmtsFree(rpmts ts);
 
 /** \ingroup rpmts
@@ -461,6 +488,7 @@ rpmts rpmtsFree(rpmts ts);
  * @param ts		transaction set
  * @return		verify signatures flags
  */
+RPM_PUBLIC_API
 rpmVSFlags rpmtsVSFlags(rpmts ts);
 
 /** \ingroup rpmts
@@ -469,6 +497,7 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
  * @param vsflags	new verify signatures flags
  * @return		previous value
  */
+RPM_PUBLIC_API
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
 
 /** \ingroup rpmts
@@ -476,6 +505,7 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
  * @param ts		transaction set
  * @return		verify signatures flags
  */
+RPM_PUBLIC_API
 rpmVSFlags rpmtsVfyFlags(rpmts ts);
 
 /** \ingroup rpmts
@@ -484,6 +514,7 @@ rpmVSFlags rpmtsVfyFlags(rpmts ts);
  * @param vfyflags	new package verify flags
  * @return		old package verify flags
  */
+RPM_PUBLIC_API
 rpmVSFlags rpmtsSetVfyFlags(rpmts ts, rpmVSFlags vfyflags);
 
 /** \ingroup rpmts
@@ -491,6 +522,7 @@ rpmVSFlags rpmtsSetVfyFlags(rpmts ts, rpmVSFlags vfyflags);
  * @param ts		transaction set
  * @return		package verify level
  */
+RPM_PUBLIC_API
 int rpmtsVfyLevel(rpmts ts);
 
 /** \ingroup rpmts
@@ -499,6 +531,7 @@ int rpmtsVfyLevel(rpmts ts);
  * @param vfylevel	new package verify level
  * @return		old package verify level
  */
+RPM_PUBLIC_API
 int rpmtsSetVfyLevel(rpmts ts, int vfylevel);
 
 /** \ingroup rpmts
@@ -506,6 +539,7 @@ int rpmtsSetVfyLevel(rpmts ts, int vfylevel);
  * @param ts		transaction set
  * @return		transaction rootDir
  */
+RPM_PUBLIC_API
 const char * rpmtsRootDir(rpmts ts);
 
 /** \ingroup rpmts
@@ -519,6 +553,7 @@ const char * rpmtsRootDir(rpmts ts);
  * @param rootDir	new transaction rootDir (or NULL)
  * @return		0 on success, -1 on error (invalid rootDir)
  */
+RPM_PUBLIC_API
 int rpmtsSetRootDir(rpmts ts, const char * rootDir);
 
 /** \ingroup rpmts
@@ -526,6 +561,7 @@ int rpmtsSetRootDir(rpmts ts, const char * rootDir);
  * @param ts		transaction set
  * @return		transaction script file handle
  */
+RPM_PUBLIC_API
 FD_t rpmtsScriptFd(rpmts ts);
 
 /** \ingroup rpmts
@@ -533,6 +569,7 @@ FD_t rpmtsScriptFd(rpmts ts);
  * @param ts		transaction set
  * @param scriptFd	new script file handle (or NULL)
  */
+RPM_PUBLIC_API
 void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd);
 
 /** \ingroup rpmts
@@ -540,6 +577,7 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd);
  * @param ts		transaction set
  * @return		transaction id
  */
+RPM_PUBLIC_API
 rpm_tid_t rpmtsGetTid(rpmts ts);
 
 /** \ingroup rpmts
@@ -548,6 +586,7 @@ rpm_tid_t rpmtsGetTid(rpmts ts);
  * @param tid		new transaction id
  * @return		previous transaction id
  */
+RPM_PUBLIC_API
 rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
 
 /** \ingroup rpmts
@@ -555,6 +594,7 @@ rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
  * @param ts		transaction set
  * @return		transaction database handle
  */
+RPM_PUBLIC_API
 rpmdb rpmtsGetRdb(rpmts ts);
 
 /** \ingroup rpmts
@@ -566,6 +606,7 @@ rpmdb rpmtsGetRdb(rpmts ts);
  * @param total		final value
  * @return		callback dependent pointer
  */
+RPM_PUBLIC_API
 void * rpmtsNotify(rpmts ts, rpmte te,
                 rpmCallbackType what, rpm_loff_t amount, rpm_loff_t total);
 
@@ -574,6 +615,7 @@ void * rpmtsNotify(rpmts ts, rpmte te,
  * @param ts		transaction set
  * @return		no. of transaction set elements
  */
+RPM_PUBLIC_API
 int rpmtsNElements(rpmts ts);
 
 /** \ingroup rpmts
@@ -582,6 +624,7 @@ int rpmtsNElements(rpmts ts);
  * @param ix		transaction element index
  * @return		transaction element (or NULL)
  */
+RPM_PUBLIC_API
 rpmte rpmtsElement(rpmts ts, int ix);
 
 /** \ingroup rpmts
@@ -589,6 +632,7 @@ rpmte rpmtsElement(rpmts ts, int ix);
  * @param ts		transaction set
  * @return		ignore bit mask
  */
+RPM_PUBLIC_API
 rpmprobFilterFlags rpmtsFilterFlags(rpmts ts);
 
 /** \ingroup rpmts
@@ -596,6 +640,7 @@ rpmprobFilterFlags rpmtsFilterFlags(rpmts ts);
  * @param ts		transaction set
  * @return		transaction flags
  */
+RPM_PUBLIC_API
 rpmtransFlags rpmtsFlags(rpmts ts);
 
 /** \ingroup rpmts
@@ -604,6 +649,7 @@ rpmtransFlags rpmtsFlags(rpmts ts);
  * @param transFlags	new transaction flags
  * @return		previous transaction flags
  */
+RPM_PUBLIC_API
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags);
 
 /** \ingroup rpmts
@@ -611,6 +657,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags);
  * @param ts		transaction set
  * @return		color bits
  */
+RPM_PUBLIC_API
 rpm_color_t rpmtsColor(rpmts ts);
 
 /** \ingroup rpmts
@@ -618,6 +665,7 @@ rpm_color_t rpmtsColor(rpmts ts);
  * @param ts		transaction set
  * @return		color bits
  */
+RPM_PUBLIC_API
 rpm_color_t rpmtsPrefColor(rpmts ts);
 
 /** \ingroup rpmts
@@ -626,6 +674,7 @@ rpm_color_t rpmtsPrefColor(rpmts ts);
  * @param color		new color bits
  * @return		previous color bits
  */
+RPM_PUBLIC_API
 rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color);
 
 /** \ingroup rpmts
@@ -634,6 +683,7 @@ rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color);
  * @param color		new color bits
  * @return		previous color bits
  */
+RPM_PUBLIC_API
 rpm_color_t rpmtsSetPrefColor(rpmts ts, rpm_color_t color);
 
 /** \ingroup rpmts
@@ -642,6 +692,7 @@ rpm_color_t rpmtsSetPrefColor(rpmts ts, rpm_color_t color);
  * @param opx		operation timestamp index
  * @return		pointer to operation timestamp.
  */
+RPM_PUBLIC_API
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx);
 
 /** \ingroup rpmts
@@ -649,6 +700,7 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx);
  * @param ts		transaction set
  * @return		plugins
  */
+RPM_PUBLIC_API
 rpmPlugins rpmtsPlugins(rpmts ts);
 
 /** \ingroup rpmts
@@ -662,6 +714,7 @@ rpmPlugins rpmtsPlugins(rpmts ts);
  * @param notifyData	progress callback private data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify,
 		rpmCallbackData notifyData);
@@ -674,6 +727,7 @@ int rpmtsSetNotifyCallback(rpmts ts,
  * 			as the first argument
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsSetNotifyStyle(rpmts ts, int style);
 
 /** \ingroup rpmts
@@ -682,6 +736,7 @@ int rpmtsSetNotifyStyle(rpmts ts, int style);
  * @param ts		transaction set
  * @return		current callback style (see above)
  */
+RPM_PUBLIC_API
 int rpmtsGetNotifyStyle(rpmts ts);
 
 /** \ingroup rpmts
@@ -695,12 +750,14 @@ int rpmtsGetNotifyStyle(rpmts ts);
  * @param data		element change callback private data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsSetChangeCallback(rpmts ts, rpmtsChangeFunction notify, void *data);
 
 /** \ingroup rpmts
  * Create an empty transaction set.
  * @return		new transaction set
  */
+RPM_PUBLIC_API
 rpmts rpmtsCreate(void);
 
 /** \ingroup rpmts
@@ -717,6 +774,7 @@ rpmts rpmtsCreate(void);
  * @return		0 on success, 1 on I/O error, 2 needs capabilities,
  * 			3 on unsupported format
  */
+RPM_PUBLIC_API
 int rpmtsAddInstallElement(rpmts ts, Header h,
 		const fnpyKey key, int upgrade,
 		rpmRelocation * relocs);
@@ -729,6 +787,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @param key		package retrieval key (e.g. file name)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
 
 /** \ingroup rpmts
@@ -737,6 +796,7 @@ int rpmtsAddReinstallElement(rpmts ts, Header h, const fnpyKey key);
  * @param h		header
  * @return		0 on success, 1 on error (not installed)
  */
+RPM_PUBLIC_API
 int rpmtsAddRestoreElement(rpmts ts, Header h);
 
 /** \ingroup rpmts
@@ -746,6 +806,7 @@ int rpmtsAddRestoreElement(rpmts ts, Header h);
  * @param dboffset	ununsed
  * @return		0 on success, 1 on error (not installed)
  */
+RPM_PUBLIC_API
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
 /** \ingroup rpmts
@@ -754,6 +815,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
  * @param flags		flags
  * @return		transaction handle
  */
+RPM_PUBLIC_API
 rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags);
 
 /** \ingroup rpmts
@@ -762,6 +824,7 @@ rpmtxn rpmkxnBegin(rpmts ts, rpmtxnFlags flags);
  * @param flags		flags
  * @return		transaction handle
  */
+RPM_PUBLIC_API
 rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags);
 
 /** \ingroup rpmts
@@ -769,6 +832,7 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags);
  * @param txn		transaction handle
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmtxn rpmtxnEnd(rpmtxn txn);
 
 /** \ingroup rpmte
@@ -776,6 +840,7 @@ rpmtxn rpmtxnEnd(rpmtxn txn);
  * @param tsi		transaction element iterator
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmtsi rpmtsiFree(rpmtsi tsi);
 
 /** \ingroup rpmte
@@ -783,6 +848,7 @@ rpmtsi rpmtsiFree(rpmtsi tsi);
  * @param ts		transaction set
  * @return		transaction element iterator
  */
+RPM_PUBLIC_API
 rpmtsi rpmtsiInit(rpmts ts);
 
 /** \ingroup rpmte
@@ -791,6 +857,7 @@ rpmtsi rpmtsiInit(rpmts ts);
  * @param types		transaction element type selector (0 for any)
  * @return		next transaction element of type, NULL on termination
  */
+RPM_PUBLIC_API
 rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
 
 #ifdef __cplusplus

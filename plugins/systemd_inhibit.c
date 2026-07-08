@@ -106,6 +106,7 @@ static rpmRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s systemd_inhibit_hooks = {
     .init = systemd_inhibit_init,
     .tsm_pre = systemd_inhibit_tsm_pre,

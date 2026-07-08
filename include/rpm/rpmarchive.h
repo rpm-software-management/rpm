@@ -61,6 +61,7 @@ extern "C" {
  * @param rc		error code
  * @return		formatted error string (malloced)
  */
+RPM_PUBLIC_API
 char * rpmfileStrerror(int rc);
 
 /** \ingroup payload
@@ -74,6 +75,7 @@ char * rpmfileStrerror(int rc);
  * @param files         file info
  * @return		new rpmfi
  */
+RPM_PUBLIC_API
 rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
 
 /** \ingroup payload
@@ -87,6 +89,7 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
  * @param itype		how to handle hard links. See rpmFileIter.
  * @return		new rpmfi
  */
+RPM_PUBLIC_API
     rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files, int itype);
 
 /** \ingroup payload
@@ -94,6 +97,7 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
  * @param fi		file info
  * @return		> 0 on error
  */
+RPM_PUBLIC_API
 int rpmfiArchiveClose(rpmfi fi);
 
 /** \ingroup payload
@@ -101,6 +105,7 @@ int rpmfiArchiveClose(rpmfi fi);
  * @param fi		file info
  * @return		position
  */
+RPM_PUBLIC_API
 rpm_loff_t rpmfiArchiveTell(rpmfi fi);
 
 /** \ingroup payload
@@ -110,6 +115,7 @@ rpm_loff_t rpmfiArchiveTell(rpmfi fi);
  * @param size		number of bytes to write
  * @return		bytes actually written
  */
+RPM_PUBLIC_API
 size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
 
 /** \ingroup payload
@@ -118,6 +124,7 @@ size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
  * @param fd		file descriptor of file to read
  * @return		> 0 on error
  */
+RPM_PUBLIC_API
 int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
 
 /** \ingroup payload
@@ -127,6 +134,7 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
  * @param size		number of bytes to read
  * @return		bytes actually read, -1 on error
  */
+RPM_PUBLIC_API
 ssize_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
 
 /** \ingroup payload
@@ -134,6 +142,7 @@ ssize_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
  * @param fi            file info
  * @ return		1 for regular files but 0 for hardlinks without content
  */
+RPM_PUBLIC_API
 int rpmfiArchiveHasContent(rpmfi fi);
 
 /** \ingroup payload
@@ -143,6 +152,7 @@ int rpmfiArchiveHasContent(rpmfi fi);
  * @param nodigest	omit checksum check if 1
  * @return		> 0 on error
  */
+RPM_PUBLIC_API
 int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest);
 
 #ifdef __cplusplus

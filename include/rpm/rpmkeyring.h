@@ -30,12 +30,14 @@ typedef enum rpmKeyringModifyMode_e {
  * Create a new, empty keyring
  * @return	new keyring handle
  */
+RPM_PUBLIC_API
 rpmKeyring rpmKeyringNew(void);
 
 /** \ingroup rpmkeyring
  * Free keyring and the keys within it
  * @return	NULL always
  */
+RPM_PUBLIC_API
 rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
@@ -44,6 +46,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring);
  * @param key		pubkey handle
  * @return		0 on success, -1 on error, 1 if key already present
  */
+RPM_PUBLIC_API
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -52,6 +55,7 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
  * @param unused	reserved for future use, must be 0
  * @return		iterator or NULL
  */
+RPM_PUBLIC_API
 rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused);
 
 /** \ingroup rpmkeyring
@@ -60,6 +64,7 @@ rpmKeyringIterator rpmKeyringInitIterator(rpmKeyring keyring, int unused);
  * @return		weak reference to next public key
  *			or NULL if end is reached
  */
+RPM_PUBLIC_API
 rpmPubkey rpmKeyringIteratorNext(rpmKeyringIterator iterator);
 
 /** \ingroup rpmkeyring
@@ -67,6 +72,7 @@ rpmPubkey rpmKeyringIteratorNext(rpmKeyringIterator iterator);
  * @param iterator	iterator handle
  * @return		NULL
  */
+RPM_PUBLIC_API
 rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator);
 
 /** \ingroup rpmkeyring
@@ -76,6 +82,7 @@ rpmKeyringIterator rpmKeyringIteratorFree(rpmKeyringIterator iterator);
  * @param ctx		signature hash context
  * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
  */
+RPM_PUBLIC_API
 rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx);
 
 /** \ingroup rpmkeyring
@@ -86,6 +93,7 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx);
  * @param keyptr	matching key (refcounted)
  * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
  */
+RPM_PUBLIC_API
 rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,  rpmPubkey * keyptr);
 
 /** \ingroup rpmkeyring
@@ -97,6 +105,7 @@ rpmRC rpmKeyringVerifySig2(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
  * @param lints		lints (if any)
  * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
  */
+RPM_PUBLIC_API
 rpmRC rpmKeyringVerifySig3(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
 			   rpmPubkey * keyptr, ARGV_t *lints);
 
@@ -105,6 +114,7 @@ rpmRC rpmKeyringVerifySig3(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx,
  * @param keyring	keyring handle
  * @return		new keyring reference
  */
+RPM_PUBLIC_API
 rpmKeyring rpmKeyringLink(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
@@ -113,6 +123,7 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring);
  * @param pktlen	Data length
  * @return		new pubkey handle
  */
+RPM_PUBLIC_API
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
 
 /** \ingroup rpmkeyring
@@ -121,6 +132,7 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen);
  * param count		count of returned subkeys
  * @return		an array of subkey's handles
  */
+RPM_PUBLIC_API
 rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count);
 
 /** \ingroup rpmkeyring
@@ -128,6 +140,7 @@ rpmPubkey *rpmGetSubkeys(rpmPubkey primarykey, int *count);
  * @param filename	Path to pubkey file
  * @return		new pubkey handle
  */
+RPM_PUBLIC_API
 rpmPubkey rpmPubkeyRead(const char *filename);
 
 /** \ingroup rpmkeyring
@@ -135,6 +148,7 @@ rpmPubkey rpmPubkeyRead(const char *filename);
  * @param key		Pubkey to free
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmPubkey rpmPubkeyFree(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -142,6 +156,7 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key);
  * @param key		Pubkey
  * @return		new pubkey reference
  */
+RPM_PUBLIC_API
 rpmPubkey rpmPubkeyLink(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -149,6 +164,7 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key);
  * @param key           Pubkey
  * @return              base64 encoded pubkey (malloced), NULL on error
  */
+RPM_PUBLIC_API
 char * rpmPubkeyBase64(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -156,6 +172,7 @@ char * rpmPubkeyBase64(rpmPubkey key);
  * @param key           Pubkey
  * @return              armored pubkey (malloced), NULL on error
  */
+RPM_PUBLIC_API
 char * rpmPubkeyArmorWrap(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -165,6 +182,7 @@ char * rpmPubkeyArmorWrap(rpmPubkey key);
  * @param fplen		Length of Fingerprint
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen);
 
 /** \ingroup rpmkeyring
@@ -172,6 +190,7 @@ int rpmPubkeyFingerprint(rpmPubkey key, uint8_t **fp, size_t *fplen);
  * @param key		Pubkey
  * @return		string or NULL on failure
  */
+RPM_PUBLIC_API
 const char * rpmPubkeyFingerprintAsHex(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -179,6 +198,7 @@ const char * rpmPubkeyFingerprintAsHex(rpmPubkey key);
  * @param key		Pubkey
  * @return		string or NULL on failure
  */
+RPM_PUBLIC_API
 const char * rpmPubkeyKeyIDAsHex(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -186,6 +206,7 @@ const char * rpmPubkeyKeyIDAsHex(rpmPubkey key);
  * @param key		Pubkey
  * @return		pgp params, NULL on error
  */
+RPM_PUBLIC_API
 pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -194,6 +215,7 @@ pgpDigParams rpmPubkeyPgpDigParams(rpmPubkey key);
  * @param key          Pubkey to find in keyring
  * @return             pubkey handle, NULL if not found
  */
+RPM_PUBLIC_API
 rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key);
 
 /** \ingroup rpmkeyring
@@ -205,6 +227,7 @@ rpmPubkey rpmKeyringLookupKey(rpmKeyring keyring, rpmPubkey key);
  *                      change anything (key already present for RPMKEYRING_ADD,
  *                      key not found for RPMKEYRING_DELETE)
  */
+RPM_PUBLIC_API
 int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mode);
 
 /** \ingroup rpmkeyring
@@ -214,6 +237,7 @@ int rpmKeyringModify(rpmKeyring keyring, rpmPubkey key, rpmKeyringModifyMode mod
  * @param mergedkeyp   merged Pubkey, NULL if identical to old Pubkey
  * @return             RPMRC_OK / RPMRC_FAIL
  */
+RPM_PUBLIC_API
 rpmRC rpmPubkeyMerge(rpmPubkey oldkey, rpmPubkey newkey, rpmPubkey *mergedkeyp);
 
 #ifdef __cplusplus

@@ -18,6 +18,7 @@ extern "C" {
  * Create a new, empty string pool.
  * @return		new string pool
  */
+RPM_PUBLIC_API
 rpmstrPool rpmstrPoolCreate(void);
 
 /** \ingroup rpmstrpool
@@ -26,6 +27,7 @@ rpmstrPool rpmstrPoolCreate(void);
  * @param pool		string pool
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmstrPool rpmstrPoolFree(rpmstrPool pool);
 
 /** \ingroup rpmstrpool
@@ -33,6 +35,7 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool);
  * @param pool		string pool
  * @return		new string pool reference
  */
+RPM_PUBLIC_API
 rpmstrPool rpmstrPoolLink(rpmstrPool pool);
 
 /** \ingroup rpmstrpool
@@ -43,6 +46,7 @@ rpmstrPool rpmstrPoolLink(rpmstrPool pool);
  * @param pool		string pool
  * @param keephash	should string -> id hash be kept around?
  */
+RPM_PUBLIC_API
 void rpmstrPoolFreeze(rpmstrPool pool, int keephash);
 
 /** \ingroup rpmstrpool
@@ -51,6 +55,7 @@ void rpmstrPoolFreeze(rpmstrPool pool, int keephash);
  * the entire pool contents.
  * @param pool		string pool
  */
+RPM_PUBLIC_API
 void rpmstrPoolUnfreeze(rpmstrPool pool);
 
 /** \ingroup rpmstrpool
@@ -62,6 +67,7 @@ void rpmstrPoolUnfreeze(rpmstrPool pool);
  * @param create	should an id be created if not already present?
  * @return		id of the string or 0 for not found
  */
+RPM_PUBLIC_API
 rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create);
 
 /** \ingroup rpmstrpool
@@ -75,6 +81,7 @@ rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create);
  * @param create	should an id be created if not already present?
  * @return		id of the string or 0 for not found
  */
+RPM_PUBLIC_API
 rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create);
 
 /** \ingroup rpmstrpool
@@ -83,6 +90,7 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create);
  * @param sid		pool id of a string
  * @return		pointer to the string or NULL for invalid id
  */
+RPM_PUBLIC_API
 const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid);
 
 /** \ingroup rpmstrpool
@@ -93,6 +101,7 @@ const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid);
  * @param sid		pool id of a string
  * @return		length of the string, 0 for invalid pool or id
  */
+RPM_PUBLIC_API
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
 
 /** \ingroup rpmstrpool
@@ -105,6 +114,7 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
  * @param sidB		pool id of the second string
  * @return		1 if strings are equal, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
                     rpmstrPool poolB, rpmsid sidB);
 
@@ -114,6 +124,7 @@ int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
  * @param pool		string pool
  * @return		number of strings in the pool
  */
+RPM_PUBLIC_API
 rpmsid rpmstrPoolNumStr(rpmstrPool pool);
 
 #ifdef __cplusplus

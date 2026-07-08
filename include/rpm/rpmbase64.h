@@ -8,6 +8,7 @@
  */
 
 #include <sys/types.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,6 +22,7 @@ extern "C" {
  * the returned string is empty when len == 0
  * returns NULL on failures
  */
+RPM_PUBLIC_API
 char *rpmBase64Encode(const void *data, size_t len, int linelen);
 
 /**
@@ -33,12 +35,14 @@ char *rpmBase64Encode(const void *data, size_t len, int linelen);
  *  3 - invalid characters on input
  *  4 - malloc failed
  */
+RPM_PUBLIC_API
 int rpmBase64Decode(const char *in, void **out, size_t *outlen);
 
 /**
  * counts CRC24 and base64 encodes it in a malloced string
  * returns NULL on failures
  */
+RPM_PUBLIC_API
 char *rpmBase64CRC(const unsigned char *data, size_t len);
 
 #ifdef __cplusplus

@@ -133,22 +133,26 @@ static inline int rstreqn(const char *s1, const char *s2, size_t n)
  * Locale insensitive strcasecmp(3).
  */
 RPM_GNUC_PURE
+RPM_PUBLIC_API
 int rstrcasecmp(const char * s1, const char * s2)		;
 
 /** \ingroup rpmstring
  * Locale insensitive strncasecmp(3).
  */
 RPM_GNUC_PURE
+RPM_PUBLIC_API
 int rstrncasecmp(const char *s1, const char * s2, size_t n)	;
 
 /** \ingroup rpmstring
  * asprintf() clone
  */
+RPM_PUBLIC_API
 int rasprintf(char **strp, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
 
 /** \ingroup rpmstring
  * vasprintf() clone
  */
+RPM_PUBLIC_API
 int rvasprintf(char **strp, const char *fmt, va_list ap);
 
 /** \ingroup rpmstring
@@ -157,6 +161,7 @@ int rvasprintf(char **strp, const char *fmt, va_list ap);
  * @param src		source string
  * @return		realloc'd dest with src appended
  */
+RPM_PUBLIC_API
 char *rstrcat(char **dest, const char *src);
 
 /** \ingroup rpmstring
@@ -165,6 +170,7 @@ char *rstrcat(char **dest, const char *src);
  * @param arg		NULL terminated list of strings to concatenate
  * @return		realloc'd dest with strings appended
  */
+RPM_PUBLIC_API
 char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmstring
@@ -177,6 +183,7 @@ char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
  * @param n		destination buffer size
  * @return		length of src string
  */
+RPM_PUBLIC_API
 size_t rstrlcpy(char *dest, const char *src, size_t n);
 
 /** \ingroup rpmstring
@@ -185,6 +192,7 @@ size_t rstrlcpy(char *dest, const char *src, size_t n);
  * @return		hash id
  */
 RPM_GNUC_PURE
+RPM_PUBLIC_API
 unsigned int rstrhash(const char * string);
 
 /** \ingroup rpmstring
@@ -193,6 +201,7 @@ unsigned int rstrhash(const char * string);
  * @param plen		no. of bytes
  * @return		hex formatted string (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmhex(const uint8_t *p, size_t plen);
 
 #ifdef __cplusplus

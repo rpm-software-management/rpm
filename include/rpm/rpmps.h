@@ -24,6 +24,7 @@ typedef struct rpmpsi_s * rpmpsi;
  * @param ps		transaction set
  * @return		new transaction set reference
  */
+RPM_PUBLIC_API
 rpmps rpmpsLink (rpmps ps);
 
 /** \ingroup rpmps
@@ -31,6 +32,7 @@ rpmps rpmpsLink (rpmps ps);
  * @param ps		problem set
  * @return		number of problems
  */
+RPM_PUBLIC_API
 int rpmpsNumProblems(rpmps ps);
 
 /** \ingroup rpmps
@@ -38,6 +40,7 @@ int rpmpsNumProblems(rpmps ps);
  * @param ps		problem set
  * @return		problem set iterator
  */
+RPM_PUBLIC_API
 rpmpsi rpmpsInitIterator(rpmps ps);
 
 /** \ingroup rpmps
@@ -45,6 +48,7 @@ rpmpsi rpmpsInitIterator(rpmps ps);
  * @param psi		problem set iterator
  * @return		problem set iterator (NULL)
  */
+RPM_PUBLIC_API
 rpmpsi rpmpsFreeIterator(rpmpsi psi);
 
 /** \ingroup rpmps
@@ -52,6 +56,7 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi);
  * @param psi		problem set iterator
  * @return		next problem (weak ref), NULL on termination
  */
+RPM_PUBLIC_API
 rpmProblem rpmpsiNext(rpmpsi psi);
 
 /** \ingroup rpmps
@@ -59,6 +64,7 @@ rpmProblem rpmpsiNext(rpmpsi psi);
  * @param psi		problem set iterator
  * @return		iterator index, -1 on termination
  */
+RPM_PUBLIC_API
 int rpmpsNextIterator(rpmpsi psi);
 
 /** \ingroup rpmps
@@ -66,12 +72,14 @@ int rpmpsNextIterator(rpmpsi psi);
  * @param psi		problem set iterator
  * @return		current rpmProblem 
  */
+RPM_PUBLIC_API
 rpmProblem rpmpsGetProblem(rpmpsi psi);
 
 /** \ingroup rpmps
  * Create a problem set.
  * @return		new problem set
  */
+RPM_PUBLIC_API
 rpmps rpmpsCreate(void);
 
 /** \ingroup rpmps
@@ -79,6 +87,7 @@ rpmps rpmpsCreate(void);
  * @param ps		problem set
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmps rpmpsFree(rpmps ps);
 
 /** \ingroup rpmps
@@ -86,6 +95,7 @@ rpmps rpmpsFree(rpmps ps);
  * @param fp		file handle (NULL uses stderr)
  * @param ps		problem set
  */
+RPM_PUBLIC_API
 void rpmpsPrint(FILE *fp, rpmps ps);
 
 /** \ingroup rpmps
@@ -93,6 +103,7 @@ void rpmpsPrint(FILE *fp, rpmps ps);
  * @param ps		problem set
  * @param prob		rpmProblem 
  */
+RPM_PUBLIC_API
 void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
 
 /** \ingroup rpmps
@@ -101,6 +112,7 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
  * @param src		source problem set
  * @return		number of problems merged
  */
+RPM_PUBLIC_API
 int rpmpsMerge(rpmps dest, rpmps src);
 
 #ifdef __cplusplus

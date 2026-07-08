@@ -29,6 +29,7 @@ typedef enum urltype_e {
  * @param url		url string
  * @return		type of url
  */
+RPM_PUBLIC_API
 urltype	urlIsURL(const char * url);
 
 /** \ingroup rpmurl
@@ -37,6 +38,7 @@ urltype	urlIsURL(const char * url);
  * @param[out] pathp	pointer to path component of url
  * @return		type of url
  */
+RPM_PUBLIC_API
 urltype	urlPath(const char * url, const char ** pathp);
 
 /** \ingroup rpmurl
@@ -45,6 +47,7 @@ urltype	urlPath(const char * url, const char ** pathp);
  * @param dest		file name of destination
  * @return		0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int urlGetFile(const char * url, const char * dest);
 
 #ifdef __cplusplus

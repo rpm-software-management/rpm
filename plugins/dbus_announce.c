@@ -250,6 +250,7 @@ static rpmRC dbus_announce_tsm_post(rpmPlugin plugin, rpmts ts, int res)
     return rc;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s dbus_announce_hooks = {
     .init = dbus_announce_init,
     .cleanup = dbus_announce_cleanup,

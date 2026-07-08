@@ -1,6 +1,7 @@
 #ifndef H_RPMLOG_INTERNAL
 #define H_RPMLOG_INTERNAL
 
+#include <rpm/rpmtypes.h>
 
 /** \ingroup rpmlog
  * Generate a log message using FMT string and option arguments.
@@ -11,6 +12,7 @@
  * @param fmt		format string and parameter to render
  * @return		1 if actually logging 0 otherwise
  */
+RPM_PRIVATE_API
 int rpmlogOnce (uint64_t domain, const char * key, int code, const char *fmt, ...) RPM_GNUC_PRINTF(4, 5);
 
 /** \ingroup rpmlog
@@ -18,6 +20,7 @@ int rpmlogOnce (uint64_t domain, const char * key, int code, const char *fmt, ..
  * @param domain	group of messages to be reset together
  * @param mode		curretnly only 0 supported whihc drops everything
  */
+RPM_PRIVATE_API
 void rpmlogReset(uint64_t domain, int mode=0);
 
 #endif

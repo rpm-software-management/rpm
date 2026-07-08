@@ -28,6 +28,7 @@
 #include "debug.h"
 
 #define	_FSM_DEBUG	0
+RPM_PRIVATE_API
 int _fsm_debug = _FSM_DEBUG;
 
 /* XXX Failure to remove is not (yet) cause for failure. */

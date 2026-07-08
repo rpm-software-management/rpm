@@ -46,6 +46,7 @@ struct rpmtd_s {
  * Create new tag data container
  * @return		New, initialized tag data container.
  */
+RPM_PUBLIC_API
 rpmtd rpmtdNew(void);
 
 /** \ingroup rpmtd
@@ -53,6 +54,7 @@ rpmtd rpmtdNew(void);
  * @param td		Tag data container
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmtd rpmtdFree(rpmtd td);
  
 /** \ingroup rpmtd
@@ -60,6 +62,7 @@ rpmtd rpmtdFree(rpmtd td);
  * and iteration index reset.
  * @param td		Tag data container
  */
+RPM_PUBLIC_API
 void rpmtdReset(rpmtd td);
 
 /** \ingroup rpmtd
@@ -67,6 +70,7 @@ void rpmtdReset(rpmtd td);
  * if data was malloc'ed or not. Container is reinitialized.
  * @param td		Tag data container
  */
+RPM_PUBLIC_API
 void rpmtdFreeData(rpmtd td);
 
 /** \ingroup rpmtd
@@ -74,6 +78,7 @@ void rpmtdFreeData(rpmtd td);
  * @param td		Tag data container
  * @return		Number of entries in contained data.
  */
+RPM_PUBLIC_API
 rpm_count_t rpmtdCount(rpmtd td);
 
 /** \ingroup rpmtd
@@ -82,6 +87,7 @@ rpm_count_t rpmtdCount(rpmtd td);
  * @param td		Tag data container
  * @return		Data size in bytes.
  */
+RPM_PUBLIC_API
 rpm_count_t rpmtdSize(rpmtd td);
 
 /** \ingroup rpmtd
@@ -89,6 +95,7 @@ rpm_count_t rpmtdSize(rpmtd td);
  * @param td		Tag data container
  * @return		Rpm tag.
  */
+RPM_PUBLIC_API
 rpmTagVal rpmtdTag(rpmtd td);
 
 /** \ingroup rpmtd
@@ -96,6 +103,7 @@ rpmTagVal rpmtdTag(rpmtd td);
  * @param td		Tag data container
  * @return		Rpm tag type.
  */
+RPM_PUBLIC_API
 rpmTagType rpmtdType(rpmtd td);
 
 /** \ingroup rpmtd
@@ -103,6 +111,7 @@ rpmTagType rpmtdType(rpmtd td);
  * @param td		Tag data container
  * @return		Rpm tag class
  */
+RPM_PUBLIC_API
 rpmTagClass rpmtdClass(rpmtd td);
 
 /** \ingroup rpmtd
@@ -110,6 +119,7 @@ rpmTagClass rpmtdClass(rpmtd td);
  * @param td		Tag data container
  * @return		Container flags
  */
+RPM_PUBLIC_API
 rpmtdFlags rpmtdGetFlags(rpmtd td);
 
 /** \ingroup rpmtd
@@ -117,6 +127,7 @@ rpmtdFlags rpmtdGetFlags(rpmtd td);
  * @param td		Tag data container
  * @return		Iteration index (or -1 if not iterating)
  */
+RPM_PUBLIC_API
 int rpmtdGetIndex(rpmtd td);
 
 /** \ingroup rpmtd
@@ -127,6 +138,7 @@ int rpmtdGetIndex(rpmtd td);
  * @param index		New index
  * @return		New index, or -1 if index out of bounds
  */
+RPM_PUBLIC_API
 int rpmtdSetIndex(rpmtd td, int index);
 
 /** \ingroup rpmtd
@@ -134,6 +146,7 @@ int rpmtdSetIndex(rpmtd td, int index);
  * @param td		Tag data container
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmtdInit(rpmtd td);
 
 /** \ingroup rpmtd
@@ -141,6 +154,7 @@ int rpmtdInit(rpmtd td);
  * @param td		Tag data container
  * @return		Tag data container iterator index, -1 on termination
  */
+RPM_PUBLIC_API
 int rpmtdNext(rpmtd td);
 
 /** \ingroup rpmtd
@@ -148,6 +162,7 @@ int rpmtdNext(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
+RPM_PUBLIC_API
 uint32_t *rpmtdNextUint32(rpmtd td);
 
 /** \ingroup rpmtd
@@ -155,6 +170,7 @@ uint32_t *rpmtdNextUint32(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
+RPM_PUBLIC_API
 uint64_t *rpmtdNextUint64(rpmtd td);
 
 /** \ingroup rpmtd
@@ -162,6 +178,7 @@ uint64_t *rpmtdNextUint64(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
  */
+RPM_PUBLIC_API
 const char *rpmtdNextString(rpmtd td);
 
 /** \ingroup rpmtd
@@ -172,6 +189,7 @@ const char *rpmtdNextString(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint16_t, NULL on error
  */
+RPM_PUBLIC_API
 char *rpmtdGetChar(rpmtd td);
 
 /** \ingroup rpmtd
@@ -182,6 +200,7 @@ char *rpmtdGetChar(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint16_t, NULL on error
  */
+RPM_PUBLIC_API
 uint16_t * rpmtdGetUint16(rpmtd td);
 
 /** \ingroup rpmtd
@@ -192,6 +211,7 @@ uint16_t * rpmtdGetUint16(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint32_t, NULL on error
  */
+RPM_PUBLIC_API
 uint32_t * rpmtdGetUint32(rpmtd td);
 
 /** \ingroup rpmtd
@@ -202,6 +222,7 @@ uint32_t * rpmtdGetUint32(rpmtd td);
  * @param td		Tag data container
  * @return		Pointer to uint64_t, NULL on error
  */
+RPM_PUBLIC_API
 uint64_t * rpmtdGetUint64(rpmtd td);
 
 /** \ingroup rpmtd
@@ -212,6 +233,7 @@ uint64_t * rpmtdGetUint64(rpmtd td);
  * @param td		Tag data container
  * @return		String constant from container, NULL on error
  */
+RPM_PUBLIC_API
 const char * rpmtdGetString(rpmtd td);
 
 /** \ingroup rpmtd
@@ -223,6 +245,7 @@ const char * rpmtdGetString(rpmtd td);
  * @return		Value of current iteration item as uint64_t,
  * 			0 for non-numeric types (error)
  */
+RPM_PUBLIC_API
 uint64_t rpmtdGetNumber(rpmtd td);
 
 /**
@@ -268,6 +291,7 @@ typedef enum rpmtdFormats_e {
  * @return		String representation of current data (malloc'ed), 
  * 			NULL on error
  */
+RPM_PUBLIC_API
 char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
 
 /** \ingroup rpmtd
@@ -278,6 +302,7 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
  * @param tag		New tag
  * @return		1 on success, 0 on error
  */
+RPM_PUBLIC_API
 int rpmtdSetTag(rpmtd td, rpmTagVal tag);
 
 /** \ingroup rpmtd
@@ -291,6 +316,7 @@ int rpmtdSetTag(rpmtd td, rpmTagVal tag);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromUint8(rpmtd td, rpmTagVal tag, uint8_t *data, rpm_count_t count);
 
 /** \ingroup rpmtd
@@ -303,6 +329,7 @@ int rpmtdFromUint8(rpmtd td, rpmTagVal tag, uint8_t *data, rpm_count_t count);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromUint16(rpmtd td, rpmTagVal tag, uint16_t *data, rpm_count_t count);
 
 /** \ingroup rpmtd
@@ -315,6 +342,7 @@ int rpmtdFromUint16(rpmtd td, rpmTagVal tag, uint16_t *data, rpm_count_t count);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromUint32(rpmtd td, rpmTagVal tag, uint32_t *data, rpm_count_t count);
 
 /** \ingroup rpmtd
@@ -327,6 +355,7 @@ int rpmtdFromUint32(rpmtd td, rpmTagVal tag, uint32_t *data, rpm_count_t count);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromUint64(rpmtd td, rpmTagVal tag, uint64_t *data, rpm_count_t count);
 
 /** \ingroup rpmtd
@@ -337,6 +366,7 @@ int rpmtdFromUint64(rpmtd td, rpmTagVal tag, uint64_t *data, rpm_count_t count);
  * @param data		String to use
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromString(rpmtd td, rpmTagVal tag, const char *data);
 
 /** \ingroup rpmtd
@@ -349,6 +379,7 @@ int rpmtdFromString(rpmtd td, rpmTagVal tag, const char *data);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromStringArray(rpmtd td, rpmTagVal tag, const char **data, rpm_count_t count);
 
 /** \ingroup rpmtd
@@ -360,6 +391,7 @@ int rpmtdFromStringArray(rpmtd td, rpmTagVal tag, const char **data, rpm_count_t
  * @param argv		ARGV array
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromArgv(rpmtd td, rpmTagVal tag, ARGV_t argv);
 
 /** \ingroup rpmtd
@@ -371,6 +403,7 @@ int rpmtdFromArgv(rpmtd td, rpmTagVal tag, ARGV_t argv);
  * @param argi		ARGI array
  * @return		1 on success, 0 on error (eg wrong type)
  */
+RPM_PUBLIC_API
 int rpmtdFromArgi(rpmtd td, rpmTagVal tag, ARGI_t argi);
 
 /** \ingroup rpmtd
@@ -381,6 +414,7 @@ int rpmtdFromArgi(rpmtd td, rpmTagVal tag, ARGI_t argi);
  * @param td		Container to copy
  * @return		New container or NULL on error
  */
+RPM_PUBLIC_API
 rpmtd rpmtdDup(rpmtd td);
 
 /** \ingroup rpmtd
@@ -389,6 +423,7 @@ rpmtd rpmtdDup(rpmtd td);
  * @param pool		String pool
  * @return		Array of string id's (malloced)
  */
+RPM_PUBLIC_API
 rpmsid * rpmtdToPool(rpmtd td, rpmstrPool pool);
 
 #ifdef __cplusplus

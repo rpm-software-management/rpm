@@ -21,6 +21,7 @@ char * rpmPermsString(int mode)
  * @param[out] argvPtr	args themselves
  * @return		RPMRC_OK on success
  */
+RPM_PRIVATE_API
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr);
 
 #endif	/* H_MANIFEST */

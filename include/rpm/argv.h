@@ -31,6 +31,7 @@ typedef	struct ARGI_s const * const ARGI_const_t;
  * @param argv		argv array
  * @param fp		output file handle (NULL uses stderr)
  */
+RPM_PUBLIC_API
 void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp);
 
 /** \ingroup rpmargv
@@ -38,6 +39,7 @@ void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp);
  * @param argi		argi array
  * @return		NULL always
  */
+RPM_PUBLIC_API
 ARGI_t argiFree(ARGI_t argi);
 
 
@@ -45,6 +47,7 @@ ARGI_t argiFree(ARGI_t argi);
  * Create an empty argv array.
  * @return		pointer to empty argv
  */
+RPM_PUBLIC_API
 ARGV_t argvNew(void);
 
 /** \ingroup rpmargv
@@ -52,6 +55,7 @@ ARGV_t argvNew(void);
  * @param argv		argv array
  * @return		NULL always
  */
+RPM_PUBLIC_API
 ARGV_t argvFree(ARGV_t argv);
 
 /** \ingroup rpmargv
@@ -59,6 +63,7 @@ ARGV_t argvFree(ARGV_t argv);
  * @param argi		argi array
  * @return		no. of elements
  */
+RPM_PUBLIC_API
 int argiCount(ARGI_const_t argi);
 
 /** \ingroup rpmargv
@@ -66,6 +71,7 @@ int argiCount(ARGI_const_t argi);
  * @param argi		argi array
  * @return		argi array data address
  */
+RPM_PUBLIC_API
 ARGint_t argiData(ARGI_const_t argi);
 
 /** \ingroup rpmargv
@@ -73,6 +79,7 @@ ARGint_t argiData(ARGI_const_t argi);
  * @param argv		argv array
  * @return		no. of elements
  */
+RPM_PUBLIC_API
 int argvCount(ARGV_const_t argv);
 
 /** \ingroup rpmargv
@@ -80,6 +87,7 @@ int argvCount(ARGV_const_t argv);
  * @param argv		argv array
  * @return		argv array data address
  */
+RPM_PUBLIC_API
 ARGV_t argvData(ARGV_t argv);
 
 /** \ingroup rpmargv
@@ -88,6 +96,7 @@ ARGV_t argvData(ARGV_t argv);
  * @param b		2nd instance address
  * @return		result of comparison
  */
+RPM_PUBLIC_API
 int argvCmp(const void * a, const void * b);
 
 /** \ingroup rpmargv
@@ -96,6 +105,7 @@ int argvCmp(const void * a, const void * b);
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
 
 /** \ingroup rpmargv
@@ -105,6 +115,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		found string (NULL on failure)
  */
+RPM_PUBLIC_API
 ARGV_t argvSearch(ARGV_const_t argv, const char *val,
 		int (*compar)(const void *, const void *));
 
@@ -115,6 +126,7 @@ ARGV_t argvSearch(ARGV_const_t argv, const char *val,
  * @param val		int arg to add
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argiAdd(ARGI_t * argip, int ix, int val);
 
 /** \ingroup rpmargv
@@ -123,6 +135,7 @@ int argiAdd(ARGI_t * argip, int ix, int val);
  * @param val		string arg to append
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvAdd(ARGV_t * argvp, const char *val);
 
 /** \ingroup rpmargv
@@ -132,6 +145,7 @@ int argvAdd(ARGV_t * argvp, const char *val);
  * @param len		string arg length
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvAddN(ARGV_t * argvp, const char *val, size_t len);
 
 /** \ingroup rpmargv
@@ -140,6 +154,7 @@ int argvAddN(ARGV_t * argvp, const char *val, size_t len);
  * @param val		numeric arg to append
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvAddNum(ARGV_t * argvp, int val);
 
 /** \ingroup rpmargv
@@ -148,6 +163,7 @@ int argvAddNum(ARGV_t * argvp, int val);
  * @param av		argv array to append
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvAppend(ARGV_t * argvp, ARGV_const_t av);
 
 enum argvFlags_e {
@@ -164,6 +180,7 @@ typedef rpmFlags argvFlags;
  * @param flags		flags to control behavior
  * @return		argv array
  */
+RPM_PUBLIC_API
 ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags);
 
 /** \ingroup rpmargv
@@ -173,6 +190,7 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags);
  * @param seps		separator characters
  * @return		0 always
  */
+RPM_PUBLIC_API
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
 
 /** \ingroup rpmargv
@@ -181,6 +199,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
  * @param sep		separator string to use
  * @return		malloc'ed string
  */
+RPM_PUBLIC_API
 char *argvJoin(ARGV_const_t argv, const char *sep);
 
 #ifdef __cplusplus

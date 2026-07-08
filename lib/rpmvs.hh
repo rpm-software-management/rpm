@@ -49,22 +49,31 @@ typedef int (*rpmsinfoCb)(struct rpmsinfo_s *sinfo, void *cbdata);
 
 const char *rpmsinfoDescr(struct rpmsinfo_s *sinfo);
 
+RPM_PRIVATE_API
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
+RPM_PRIVATE_API
 struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring);
 
+RPM_PRIVATE_API
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
 
+RPM_PRIVATE_API
 rpmVSFlags rpmvsFlags(struct rpmvs_s *vs);
 
+RPM_PRIVATE_API
 struct rpmvs_s *rpmvsFree(struct rpmvs_s *sis);
 
+RPM_PRIVATE_API
 void rpmvsAppendTag(struct rpmvs_s *sis, hdrblob blob, rpmTagVal tag);
 
+RPM_PRIVATE_API
 void rpmvsInitRange(struct rpmvs_s *sis, int range);
 
+RPM_PRIVATE_API
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
+RPM_PRIVATE_API
 int rpmvsRange(struct rpmvs_s *vs);
 
 /*
@@ -87,11 +96,14 @@ int rpmvsRange(struct rpmvs_s *vs);
  * To make matters worse, callbacks (need to) modify some results to
  * get the desired behavior in some cases.
  */
+RPM_PRIVATE_API
 int rpmvsVerify(struct rpmvs_s *sis, int type,
                        rpmsinfoCb cb, void *cbdata);
 
+RPM_PRIVATE_API
 void rpmvsForeach(struct rpmvs_s *sis, rpmsinfoCb cb, void *cbdata);
 
+RPM_PRIVATE_API
 rpmRC rpmpkgRead(struct rpmvs_s *vs, FD_t fd,
 		hdrblob *sigblobp, hdrblob *blobp, char **emsg);
 

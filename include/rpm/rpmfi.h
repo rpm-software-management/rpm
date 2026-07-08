@@ -20,6 +20,7 @@ extern "C" {
  * @param fi		file info set iterator
  * @return		new file info set iterator reference
  */
+RPM_PUBLIC_API
 rpmfi rpmfiLink (rpmfi fi);
 
 /** \ingroup rpmfi
@@ -27,6 +28,7 @@ rpmfi rpmfiLink (rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file count
  */
+RPM_PUBLIC_API
 rpm_count_t rpmfiFC(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -34,6 +36,7 @@ rpm_count_t rpmfiFC(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file index
  */
+RPM_PUBLIC_API
 int rpmfiFX(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -42,6 +45,7 @@ int rpmfiFX(rpmfi fi);
  * @param fx		new file index
  * @return		new file index, -1 on error
  */
+RPM_PUBLIC_API
 int rpmfiSetFX(rpmfi fi, int fx);
 
 /** \ingroup rpmfi
@@ -49,6 +53,7 @@ int rpmfiSetFX(rpmfi fi, int fx);
  * @param fi		file info set iterator
  * @return		current directory count
  */
+RPM_PUBLIC_API
 rpm_count_t rpmfiDC(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -56,6 +61,7 @@ rpm_count_t rpmfiDC(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current directory index
  */
+RPM_PUBLIC_API
 int rpmfiDX(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -63,6 +69,7 @@ int rpmfiDX(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current base name, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiBN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -70,6 +77,7 @@ const char * rpmfiBN(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current directory, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiDN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -78,6 +86,7 @@ const char * rpmfiDN(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file name
  */
+RPM_PUBLIC_API
 const char * rpmfiFN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -88,6 +97,7 @@ const char * rpmfiFN(rpmfi fi);
  * @param fn		file name
  * @return              file index or -1
  */
+RPM_PUBLIC_API
 int rpmfiFindFN(rpmfi fi, const char * fn);
 
 /** \ingroup rpmfi
@@ -95,6 +105,7 @@ int rpmfiFindFN(rpmfi fi, const char * fn);
  * @param fi		file info set iterator
  * @return		current base name, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiOBN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -102,6 +113,7 @@ const char * rpmfiOBN(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current directory, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiODN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -110,6 +122,7 @@ const char * rpmfiODN(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file name
  */
+RPM_PUBLIC_API
 const char * rpmfiOFN(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -120,6 +133,7 @@ const char * rpmfiOFN(rpmfi fi);
  * @param fn		file name
  * @return              file index or -1
  */
+RPM_PUBLIC_API
 int rpmfiFindOFN(rpmfi fi, const char * fn);
 
 /** \ingroup rpmfi
@@ -127,6 +141,7 @@ int rpmfiFindOFN(rpmfi fi, const char * fn);
  * @param fi		file info set iterator
  * @return		current file flags, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmfileAttrs rpmfiFFlags(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -134,6 +149,7 @@ rpmfileAttrs rpmfiFFlags(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file verify flags, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmVerifyAttrs rpmfiVFlags(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -141,6 +157,7 @@ rpmVerifyAttrs rpmfiVFlags(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file mode, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_mode_t rpmfiFMode(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -148,6 +165,7 @@ rpm_mode_t rpmfiFMode(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file state, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmfileState rpmfiFState(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -155,6 +173,7 @@ rpmfileState rpmfiFState(rpmfi fi);
  * @param fi		file info set iterator
  * @return		digest algorithm of file info set iterator, 0 on invalid
  */
+RPM_PUBLIC_API
 int rpmfiDigestAlgo(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -164,6 +183,7 @@ int rpmfiDigestAlgo(rpmfi fi);
  * @param[out] diglen	digest hash length (pass NULL to ignore)
  * @return		current file digest, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
 
 /** \ingroup rpmfi
@@ -175,6 +195,7 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
  * @param[out] algo	digest hash algorithm used (pass NULL to ignore)
  * @return		current file digest (malloc'ed), NULL on invalid
  */
+RPM_PUBLIC_API
 char * rpmfiFDigestHex(rpmfi fi, int *algo);
 
 /** \ingroup rpmfi
@@ -183,6 +204,7 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo);
  * @param[out] siglen	signature length (pass NULL to ignore)
  * @return		current file signature, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfiFSignature(rpmfi fi, size_t *siglen);
 
 /** \ingroup rpmfi
@@ -192,6 +214,7 @@ const unsigned char * rpmfiFSignature(rpmfi fi, size_t *siglen);
  * @param[out] algo	fsverity algorithm
  * @return		current verity signature, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfiVSignature(rpmfi fi, size_t *siglen, uint16_t *algo);
 
 /** \ingroup rpmfi
@@ -199,6 +222,7 @@ const unsigned char * rpmfiVSignature(rpmfi fi, size_t *siglen, uint16_t *algo);
  * @param fi		file info set iterator
  * @return		current file linkto, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFLink(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -206,6 +230,7 @@ const char * rpmfiFLink(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file size, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_loff_t rpmfiFSize(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -213,6 +238,7 @@ rpm_loff_t rpmfiFSize(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file rdev, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_rdev_t rpmfiFRdev(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -220,6 +246,7 @@ rpm_rdev_t rpmfiFRdev(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file inode, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_ino_t rpmfiFInode(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -227,6 +254,7 @@ rpm_ino_t rpmfiFInode(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmfiColor(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -234,6 +262,7 @@ rpm_color_t rpmfiColor(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmfiFColor(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -241,6 +270,7 @@ rpm_color_t rpmfiFColor(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file class, 0 on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFClass(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -248,6 +278,7 @@ const char * rpmfiFClass(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file mime type, 0 on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFMime(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -264,6 +295,7 @@ uint32_t rpmfiFDepends(rpmfi fi,
  * @param fi		file info set iterator
  * @return		current file nlink count, 0 on invalid
  */
+RPM_PUBLIC_API
 uint32_t rpmfiFNlink(rpmfi fi);
 
 
@@ -274,6 +306,7 @@ uint32_t rpmfiFNlink(rpmfi fi);
 			NULL for nlink count == 1
  * @return		current file nlink count, 0 on invalid
  */
+RPM_PUBLIC_API
 uint32_t rpmfiFLinks(rpmfi fi, const int ** files);
 
 /** \ingroup rpmfi
@@ -281,6 +314,7 @@ uint32_t rpmfiFLinks(rpmfi fi, const int ** files);
  * @param fi		file info set iterator
  * @return		current file modify time, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_time_t rpmfiFMtime(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -288,6 +322,7 @@ rpm_time_t rpmfiFMtime(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file owner, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFUser(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -295,6 +330,7 @@ const char * rpmfiFUser(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file group, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFGroup(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -304,6 +340,7 @@ const char * rpmfiFGroup(rpmfi fi);
  * @return		file capability description, "" for no capabilities
  * 			and NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFCaps(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -311,6 +348,7 @@ const char * rpmfiFCaps(rpmfi fi);
  * @param fi		file info set iterator
  * @return		current file language(s), NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfiFLangs(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -319,6 +357,7 @@ const char * rpmfiFLangs(rpmfi fi);
  * @param flags		flags
  * @param[out] sb	mapped stat(2) data
  */
+RPM_PUBLIC_API
 int rpmfiStat(rpmfi fi, int flags, struct stat *sb);
 
 /** \ingroup rpmfi
@@ -326,6 +365,7 @@ int rpmfiStat(rpmfi fi, int flags, struct stat *sb);
  * @param fi		file info set iterator
  * @return		file iterator index, -1 on termination
  */
+RPM_PUBLIC_API
 int rpmfiNext(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -334,6 +374,7 @@ int rpmfiNext(rpmfi fi);
  * @param fx		file iterator index
  * @return		file info set iterator
  */
+RPM_PUBLIC_API
 rpmfi rpmfiInit(rpmfi fi, int fx);
 
 /** \ingroup rpmfi
@@ -341,6 +382,7 @@ rpmfi rpmfiInit(rpmfi fi, int fx);
  * @param fi		file info set iterator
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmfi rpmfiFree(rpmfi fi);
 
 /** \ingroup rpmfi
@@ -351,6 +393,7 @@ rpmfi rpmfiFree(rpmfi fi);
  * @param flags		Flags to control what information is loaded.
  * @return		new file info set iterator
  */
+RPM_PUBLIC_API
 rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
@@ -361,6 +404,7 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
  * @param flags		Flags to control what information is loaded.
  * @return		new file info set iterator
  */
+RPM_PUBLIC_API
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
@@ -368,6 +412,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags);
  * @param mode		file mode bits (from header)
  * @return		file type
  */
+RPM_PUBLIC_API
 rpmFileTypes rpmfiWhatis(rpm_mode_t mode);
 
 /** \ingroup rpmfi
@@ -376,6 +421,7 @@ rpmFileTypes rpmfiWhatis(rpm_mode_t mode);
  * @param bfi		2nd file info
  * @return		0 if identical
  */
+RPM_PUBLIC_API
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
 
 /** \ingroup rpmfi
@@ -384,6 +430,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
  * @param omitMask	bit(s) to disable verify checks
  * @return		bit(s) to indicate failure (ie 0 for passed verify)
  */
+RPM_PUBLIC_API
 rpmVerifyAttrs rpmfiVerify(rpmfi fi, rpmVerifyAttrs omitMask);
 
 #ifdef __cplusplus
