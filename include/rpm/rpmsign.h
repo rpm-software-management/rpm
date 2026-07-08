@@ -37,6 +37,7 @@ struct rpmSignArgs {
  * @param args		signing parameters (or NULL for defaults)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmPkgSign(const char *path, const struct rpmSignArgs * args);
 
 /** \ingroup rpmsign
@@ -45,6 +46,7 @@ int rpmPkgSign(const char *path, const struct rpmSignArgs * args);
  * @param args		signing parameters (or NULL for defaults)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args);
 
 
@@ -54,6 +56,7 @@ int rpmPkgDelSign(const char *path, const struct rpmSignArgs * args);
  * @param args		signing parameters (or NULL for defaults)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmPkgDelFileSign(const char *path, const struct rpmSignArgs * args);
 
 #ifdef __cplusplus

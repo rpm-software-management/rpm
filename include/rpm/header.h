@@ -24,6 +24,7 @@ extern "C" {
 /** \ingroup header 
  * Header magic value
  */ 
+RPM_PUBLIC_API
 extern const unsigned char rpm_header_magic[8];
 
 /** \ingroup header
@@ -38,6 +39,7 @@ enum hMagic {
  * Create new (empty) header instance.
  * @return		header
  */
+RPM_PUBLIC_API
 Header headerNew(void);
 
 /** \ingroup header
@@ -45,6 +47,7 @@ Header headerNew(void);
  * @param h		header
  * @return		NULL always
  */
+RPM_PUBLIC_API
 Header headerFree( Header h);
 
 /** \ingroup header
@@ -52,6 +55,7 @@ Header headerFree( Header h);
  * @param h		header
  * @return		new header reference
  */
+RPM_PUBLIC_API
 Header headerLink(Header h);
 
 /** \ingroup header
@@ -60,6 +64,7 @@ Header headerLink(Header h);
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
+RPM_PUBLIC_API
 unsigned int headerSizeof(Header h, int magicp);
 
 /** \ingroup header
@@ -68,6 +73,7 @@ unsigned int headerSizeof(Header h, int magicp);
  * @param[out] bsize	on-disk header blob size in bytes
  * @return		on-disk header blob (i.e. with offsets)
  */
+RPM_PUBLIC_API
 void * headerExport(Header h, unsigned int * bsize);
 
 /** \ingroup header
@@ -77,6 +83,7 @@ void * headerExport(Header h, unsigned int * bsize);
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
+RPM_PUBLIC_API
 Header headerReload(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -84,6 +91,7 @@ Header headerReload(Header h, rpmTagVal tag);
  * @param h		header
  * @return		new header instance
  */
+RPM_PUBLIC_API
 Header headerCopy(Header h);
 
 enum headerImportFlags_e {
@@ -100,6 +108,7 @@ typedef rpmFlags headerImportFlags;
  * @param flags		flags to control operation
  * @return		header
  */
+RPM_PUBLIC_API
 Header headerImport(void *blob, unsigned int bsize, headerImportFlags flags);
 
 /** \ingroup header
@@ -108,6 +117,7 @@ Header headerImport(void *blob, unsigned int bsize, headerImportFlags flags);
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
+RPM_PUBLIC_API
 Header headerRead(FD_t fd, int magicp);
 
 /** \ingroup header
@@ -117,6 +127,7 @@ Header headerRead(FD_t fd, int magicp);
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
+RPM_PUBLIC_API
 int headerWrite(FD_t fd, Header h, int magicp);
 
 /** \ingroup header
@@ -125,6 +136,7 @@ int headerWrite(FD_t fd, Header h, int magicp);
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerIsEntry(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -155,6 +167,7 @@ typedef rpmFlags headerGetFlags;
  * @param flags		retrieval modifier flags
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags);
 
 
@@ -173,6 +186,7 @@ typedef rpmFlags headerPutFlags;
  * @param flags		flags to control operation
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerPut(Header h, rpmtd td, headerPutFlags flags);
 
 /** \ingroup header 
@@ -198,13 +212,21 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  * @return		1 on success, 0 on failure
  * 
  */
+RPM_PUBLIC_API
 int headerPutBin(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutString(Header h, rpmTagVal tag, const char *val);
+RPM_PUBLIC_API
 int headerPutStringArray(Header h, rpmTagVal tag, const char **val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutChar(Header h, rpmTagVal tag, const char *val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutUint8(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutUint16(Header h, rpmTagVal tag, const uint16_t *val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutUint32(Header h, rpmTagVal tag, const uint32_t *val, rpm_count_t size);
+RPM_PUBLIC_API
 int headerPutUint64(Header h, rpmTagVal tag, const uint64_t *val, rpm_count_t size);
 /** @} */
 
@@ -228,6 +250,7 @@ int headerPutUint64(Header h, rpmTagVal tag, const uint64_t *val, rpm_count_t si
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 		const char * lang);
 
@@ -238,6 +261,7 @@ int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
  * @param td		tag data container
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerMod(Header h, rpmtd td);
 
 /** \ingroup header
@@ -249,6 +273,7 @@ int headerMod(Header h, rpmtd td);
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
+RPM_PUBLIC_API
 int headerDel(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -260,6 +285,7 @@ int headerDel(Header h, rpmTagVal tag);
  * @param[out] errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
+RPM_PUBLIC_API
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
 
 /** \ingroup header
@@ -268,6 +294,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
+RPM_PUBLIC_API
 void headerCopyTags(Header headerFrom, Header headerTo, 
 		    const rpmTagVal * tagstocopy);
 
@@ -276,6 +303,7 @@ void headerCopyTags(Header headerFrom, Header headerTo,
  * @param hi		header tag iterator
  * @return		NULL always
  */
+RPM_PUBLIC_API
 HeaderIterator headerFreeIterator(HeaderIterator hi);
 
 /** \ingroup header
@@ -283,6 +311,7 @@ HeaderIterator headerFreeIterator(HeaderIterator hi);
  * @param h		header
  * @return		header tag iterator
  */
+RPM_PUBLIC_API
 HeaderIterator headerInitIterator(Header h);
 
 /** \ingroup header
@@ -291,6 +320,7 @@ HeaderIterator headerInitIterator(Header h);
  * @param[out] td	tag data container
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerNext(HeaderIterator hi, rpmtd td);
 
 /** \ingroup header
@@ -298,6 +328,7 @@ int headerNext(HeaderIterator hi, rpmtd td);
  * @param hi		header tag iterator
  * @return		next tag, RPMTAG_NOT_FOUND to stop iteration
  */
+RPM_PUBLIC_API
 rpmTagVal headerNextTag(HeaderIterator hi);
 
 /** \ingroup header
@@ -306,6 +337,7 @@ rpmTagVal headerNextTag(HeaderIterator hi);
  * @param tag		tag to retrieve
  * @return 		string pointer (malloced) or NULL on failure
  */
+RPM_PUBLIC_API
 char * headerGetAsString(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -314,6 +346,7 @@ char * headerGetAsString(Header h, rpmTagVal tag);
  * @param tag		tag to retrieve
  * @return		string pointer (to header memory) or NULL on failure
  */
+RPM_PUBLIC_API
 const char * headerGetString(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -322,6 +355,7 @@ const char * headerGetString(Header h, rpmTagVal tag);
  * @param tag		tag to retrieve
  * @return		numeric tag value or 0 on failure
  */
+RPM_PUBLIC_API
 uint64_t headerGetNumber(Header h, rpmTagVal tag);
 
 /** \ingroup header
@@ -329,6 +363,7 @@ uint64_t headerGetNumber(Header h, rpmTagVal tag);
  * @param h		header
  * @return		0 == binary, 1 == source
  */
+RPM_PUBLIC_API
 int headerIsSource(Header h);
 
 /** \ingroup header
@@ -336,6 +371,7 @@ int headerIsSource(Header h);
  * @param h		header
  * @return		rpmdb record number or 0
  */
+RPM_PUBLIC_API
 unsigned int headerGetInstance(Header h);
 
 typedef enum headerConvOps_e {
@@ -350,6 +386,7 @@ typedef enum headerConvOps_e {
  * @param op		one of headerConvOps operations
  * @return		1 on success, 0 on failure
  */
+RPM_PUBLIC_API
 int headerConvert(Header h, int op);
 
 #ifdef __cplusplus

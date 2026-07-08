@@ -82,4 +82,6 @@ extern int fdatasync(int fildes);
 
 #define N_(Text) Text
 
+#define RPM_PRIVATE_API RPM_SYMBOL_EXPORT
+
 #endif	/* H_SYSTEM */

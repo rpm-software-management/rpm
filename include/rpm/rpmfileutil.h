@@ -50,6 +50,7 @@ typedef rpmFlags rpmglobFlags;
  * @param[out] digest	address of calculated digest
  * @return		0 on success, 1 on error
  */
+RPM_PUBLIC_API
 int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest);
 
 /** \ingroup rpmfileutil
@@ -57,6 +58,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii, unsigned char * digest);
  * @param templ			template for temporary filename
  * @return 			file handle or NULL on error
  */
+RPM_PUBLIC_API
 FD_t rpmMkTemp(char *templ);
 
 /** \ingroup rpmfileutil
@@ -69,6 +71,7 @@ FD_t rpmMkTemp(char *templ);
  * @param[out] fn		temp file name (or NULL)
  * @return fdptr	open file handle or NULL on error
  */
+RPM_PUBLIC_API
 FD_t rpmMkTempFile(const char * prefix, char **fn);
 
 /** \ingroup rpmfileutil
@@ -79,6 +82,7 @@ FD_t rpmMkTempFile(const char * prefix, char **fn);
  * @param gid		directory uid (if created), or -1 to skip
  * @return		0 on success, errno (or -1) on error
  */
+RPM_PUBLIC_API
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 
 /** \ingroup rpmfileutil
@@ -89,6 +93,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
  * @return		0 if all directories were successfully created
  * 			(or already existed), non-zero otherwise
  */
+RPM_PUBLIC_API
 int rpmMkdirs(const char *root, const char *pathstr);
 
 /** \ingroup rpmfileutil
@@ -96,6 +101,7 @@ int rpmMkdirs(const char *root, const char *pathstr);
  * @param path		path to canonicalize (in-place)
  * @return		pointer to path
  */
+RPM_PUBLIC_API
 char * rpmCleanPath	(char * path);
 
 /** \ingroup rpmfileutil
@@ -107,6 +113,7 @@ char * rpmCleanPath	(char * path);
  * @param urlfile	file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmGenPath	(const char * urlroot,
 			const char * urlmdir,
 			const char * urlfile);
@@ -116,6 +123,7 @@ char * rpmGenPath	(const char * urlroot,
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmfileutil
@@ -128,6 +136,7 @@ char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
  * @param[out] *argvPtr	ARGV_t array of paths
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmGlobPath(const char * pattern, rpmglobFlags flags,
 		int * argcPtr, ARGV_t * argvPtr);
 
@@ -138,6 +147,7 @@ int rpmGlobPath(const char * pattern, rpmglobFlags flags,
  * @param[out] *argvPtr	ARGV_t array of paths
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr);
 
 /** \ingroup rpmfileutil
@@ -145,6 +155,7 @@ int rpmGlob(const char * pattern, int * argcPtr, ARGV_t * argvPtr);
  * @param s             string
  * @return              escaped string
  */
+RPM_PUBLIC_API
 char * rpmEscapeSpaces(const char * s);
 
 /** \ingroup rpmfileutil
@@ -153,6 +164,7 @@ char * rpmEscapeSpaces(const char * s);
  * @param accept        chars to escape
  * @return              escaped string
  */
+RPM_PUBLIC_API
 char * rpmEscape(const char *s, const char *accept);
 
 /** \ingroup rpmfileutil
@@ -160,6 +172,7 @@ char * rpmEscape(const char *s, const char *accept);
  * @param s		string
  * @param accept	chars to unescape (NULL for all)
  */
+RPM_PUBLIC_API
 void rpmUnescape(char *s, const char *accept);
 
 /** \ingroup rpmfileutil
@@ -168,6 +181,7 @@ void rpmUnescape(char *s, const char *accept);
  * @param[out] compressed	address of compression type
  * @return		0 on success, 1 on I/O error
  */
+RPM_PUBLIC_API
 int rpmFileIsCompressed (const char * file, rpmCompressedMagic * compressed);
 
 /** \ingroup rpmfileutil
@@ -176,12 +190,14 @@ int rpmFileIsCompressed (const char * file, rpmCompressedMagic * compressed);
  * @param suffix	suffix string to check for
  * @return		1 if true, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmFileHasSuffix(const char *path, const char *suffix);
 
 /** \ingroup rpmfileutil
  * Like getcwd() but the result is malloced.
  * @return              current working directory (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmGetCwd(void);
 
 #ifdef __cplusplus

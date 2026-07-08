@@ -51,7 +51,7 @@ namespace rpm {
  * Generally the method names and arguments map to the C API in obvious ways,
  * exceptions noted below.
  */
-class macros {
+class RPM_PRIVATE_API macros {
 public:
     /* Clear all macro definitions in this context, like rpmFreeMacros() */
     void clear();
@@ -89,13 +89,16 @@ private:
 };
 
 /* Join args into a / separated normalized path. Optionally expand args first */
+RPM_PRIVATE_API
 std::string join_path(const std::initializer_list<std::string> & args,
 			bool expand = true);
 
 /* Same as expand() but return as normalized path */
+RPM_PRIVATE_API
 std::string expand_path(const std::initializer_list<std::string> & args);
 
 /* Normalize a path. */
+RPM_PRIVATE_API
 std::string normalize_path(const std::string & args);
 
 }; /* namespace rpm */

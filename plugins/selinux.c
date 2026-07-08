@@ -185,6 +185,7 @@ static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin, rpmfi fi, int fd,
     return rc;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s selinux_hooks = {
     .tsm_pre = selinux_tsm_pre,
     .tsm_post = selinux_tsm_post,

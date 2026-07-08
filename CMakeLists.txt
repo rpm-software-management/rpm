@@ -434,7 +434,7 @@ if (ENABLE_ASAN OR ENABLE_UBSAN)
 endif()
 
 # try to ensure some compiler sanity and hardening options where supported
-foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened)
+foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened -fvisibility=hidden)
 	check_c_compiler_flag(${flag} compiler-supports${flag})
 	if (compiler-supports${flag})
 		add_compile_options(${flag})

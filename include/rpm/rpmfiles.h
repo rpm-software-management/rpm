@@ -211,6 +211,7 @@ extern "C" {
  * @param flags		Flags to control what information is loaded.
  * @return		new file info set
  */
+RPM_PUBLIC_API
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfiles
@@ -218,6 +219,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
  * @param fi		file info set
  * @return		new file info set reference
  */
+RPM_PUBLIC_API
 rpmfiles rpmfilesLink(rpmfiles fi);
 
 /** \ingroup rpmfiles
@@ -225,6 +227,7 @@ rpmfiles rpmfilesLink(rpmfiles fi);
  * @param fi		file info set
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmfiles rpmfilesFree(rpmfiles fi);
 
 /** \ingroup rpmfiles
@@ -232,6 +235,7 @@ rpmfiles rpmfilesFree(rpmfiles fi);
  * @param fi		file info set
  * @return		file count
  */
+RPM_PUBLIC_API
 rpm_count_t rpmfilesFC(rpmfiles fi);
 
 /** \ingroup rpmfiles
@@ -239,6 +243,7 @@ rpm_count_t rpmfilesFC(rpmfiles fi);
  * @param fi		file info set
  * @return		directory count
  */
+RPM_PUBLIC_API
 rpm_count_t rpmfilesDC(rpmfiles fi);
 
 /** \ingroup rpmfiles
@@ -249,6 +254,7 @@ rpm_count_t rpmfilesDC(rpmfiles fi);
  * @param fn		file name
  * @return              file index or -1
  */
+RPM_PUBLIC_API
 int rpmfilesFindFN(rpmfiles files, const char * fn);
 
 /** \ingroup rpmfiles
@@ -259,8 +265,10 @@ int rpmfilesFindFN(rpmfiles files, const char * fn);
  * @param fn		file name
  * @return              file index or -1
  */
+RPM_PUBLIC_API
 int rpmfilesFindOFN(rpmfiles files, const char * fn);
 
+RPM_PUBLIC_API
 rpmfi rpmfilesIter(rpmfiles files, int itype);
 
 /** \ingroup rpmfiles
@@ -268,6 +276,7 @@ rpmfi rpmfilesIter(rpmfiles files, int itype);
  * @param fi		file info set
  * @return		digest algorithm of file info set, 0 on invalid
  */
+RPM_PUBLIC_API
 int rpmfilesDigestAlgo(rpmfiles fi);
 
 /** \ingroup rpmfiles
@@ -275,6 +284,7 @@ int rpmfilesDigestAlgo(rpmfiles fi);
  * @param files		file info set
  * @return		color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmfilesColor(rpmfiles files);
 
 /** \ingroup rpmfiles
@@ -285,6 +295,7 @@ rpm_color_t rpmfilesColor(rpmfiles files);
  * @param bix		index of the 2nd file
  * @return		0 if identical
  */
+RPM_PUBLIC_API
 int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
 
 /** \ingroup rpmfiles
@@ -293,6 +304,7 @@ int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
  * @param ix		file index
  * @return		base name, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesBN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -306,6 +318,7 @@ const char * rpmfilesBN(rpmfiles fi, int ix);
  * @param jx		directory index
  * @return		directory, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesDN(rpmfiles fi, int jx);
 
 /** \ingroup rpmfiles
@@ -314,6 +327,7 @@ const char * rpmfilesDN(rpmfiles fi, int jx);
  * @param ix		file index
  * @return		directory index, -1 on invalid
  */
+RPM_PUBLIC_API
 int rpmfilesDI(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -322,6 +336,7 @@ int rpmfilesDI(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file name (malloced)
  */
+RPM_PUBLIC_API
 char * rpmfilesFN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -330,6 +345,7 @@ char * rpmfilesFN(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		directory index, -1 on invalid
  */
+RPM_PUBLIC_API
 int rpmfilesODI(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -338,6 +354,7 @@ int rpmfilesODI(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		base name, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesOBN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -351,6 +368,7 @@ const char * rpmfilesOBN(rpmfiles fi, int ix);
  * @param jx		directory index
  * @return		directory, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesODN(rpmfiles fi, int jx);
 
 /** \ingroup rpmfiles
@@ -359,6 +377,7 @@ const char * rpmfilesODN(rpmfiles fi, int jx);
  * @param ix		file index
  * @return		file name
  */
+RPM_PUBLIC_API
 char * rpmfilesOFN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -367,6 +386,7 @@ char * rpmfilesOFN(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file verify flags, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -375,6 +395,7 @@ rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file state, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmfileState rpmfilesFState(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -383,6 +404,7 @@ rpmfileState rpmfilesFState(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file linkto, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFLink(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -391,6 +413,7 @@ const char * rpmfilesFLink(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file size, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -399,6 +422,7 @@ rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -407,6 +431,7 @@ rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file class, 0 on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFClass(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -415,6 +440,7 @@ const char * rpmfilesFClass(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file mime type, 0 on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFMime(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -424,6 +450,7 @@ const char * rpmfilesFMime(rpmfiles fi, int ix);
  * @param[out] *fddictp	file depends dictionary array (or NULL)
  * @return		no. of file depends entries, 0 on invalid
  */
+RPM_PUBLIC_API
 uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp);
 
 /** \ingroup rpmfiles
@@ -432,6 +459,7 @@ uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp);
  * @param ix		file index
  * @return		file nlink count, 0 on invalid
  */
+RPM_PUBLIC_API
 uint32_t rpmfilesFNlink(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -442,6 +470,7 @@ uint32_t rpmfilesFNlink(rpmfiles fi, int ix);
 			NULL for nlink count == 1
  * @return		file nlink count, 0 on invalid
  */
+RPM_PUBLIC_API
 uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files);
 
 /** \ingroup rpmfiles
@@ -450,6 +479,7 @@ uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files);
  * @param ix		file index
  * @return		file language(s), NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFLangs(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -458,6 +488,7 @@ const char * rpmfilesFLangs(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file flags, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -466,6 +497,7 @@ rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file mode, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -476,6 +508,7 @@ rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
  * @param[out] len	digest hash length (pass NULL to ignore)
  * @return		file digest, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);
 
 /** \ingroup rpmfiles
@@ -485,6 +518,7 @@ const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *le
  * @param[out] len      signature length (pass NULL to ignore)
  * @return              file signature, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);
 
 /** \ingroup rpmfiles
@@ -495,6 +529,7 @@ const unsigned char * rpmfilesFSignature(rpmfiles fi, int ix, size_t *len);
  * @param[out] algo	signature algorithm
  * @return              verity signature, NULL on invalid
  */
+RPM_PUBLIC_API
 const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len,
 					 uint16_t *algo);
 
@@ -504,6 +539,7 @@ const unsigned char * rpmfilesVSignature(rpmfiles fi, int ix, size_t *len,
  * @param ix		file index
  * @return		file rdev, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -512,6 +548,7 @@ rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file inode, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -520,6 +557,7 @@ rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file modify time, 0 on invalid
  */
+RPM_PUBLIC_API
 rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -528,6 +566,7 @@ rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file owner, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFUser(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -536,6 +575,7 @@ const char * rpmfilesFUser(rpmfiles fi, int ix);
  * @param ix		file index
  * @return		file group, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFGroup(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
@@ -546,6 +586,7 @@ const char * rpmfilesFGroup(rpmfiles fi, int ix);
  * @return		file capability description, "" for no capabilities
  * 			and NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmfilesFCaps(rpmfiles fi, int ix);
 
 /** \ingroup rpmfi
@@ -556,6 +597,7 @@ const char * rpmfilesFCaps(rpmfiles fi, int ix);
  * @param[out] sb	mapped stat(2) data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb);
 
 /** \ingroup rpmfiles
@@ -565,6 +607,7 @@ int rpmfilesStat(rpmfiles fi, int ix, int flags, struct stat *sb);
  * @param omitMask	bit(s) to disable verify checks
  * @return		bit(s) to indicate failure (ie 0 for passed verify)
  */
+RPM_PUBLIC_API
 rpmVerifyAttrs rpmfilesVerify(rpmfiles fi, int ix, rpmVerifyAttrs omitMask);
 
 #ifdef __cplusplus

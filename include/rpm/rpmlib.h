@@ -26,12 +26,16 @@ extern struct rpmMacroContext_s * rpmGlobalMacroContext;
 
 extern struct rpmMacroContext_s * rpmCLIMacroContext;
 
+RPM_PUBLIC_API
 extern const char * const RPMVERSION;
 
+RPM_PUBLIC_API
 extern const char * const rpmNAME;
 
+RPM_PUBLIC_API
 extern const char * const rpmEVR;
 
+RPM_PUBLIC_API
 extern const int rpmFLAGS;
 
 /* ==================================================================== */
@@ -55,6 +59,7 @@ enum rpm_machtable_e {
  * @param target	target platform (NULL uses default)
  * @return		0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int rpmReadConfigFiles(const char * file,
 		const char * target);
 
@@ -64,6 +69,7 @@ int rpmReadConfigFiles(const char * file,
  * @param[out] name	address of arch name (or NULL)
  * @param[out] num	address of arch number (or NULL)
  */
+RPM_PUBLIC_API
 void rpmGetArchInfo( const char ** name,
 		int * num);
 
@@ -72,6 +78,7 @@ void rpmGetArchInfo( const char ** name,
  * @param arch		name of an architecture
  * @return color        color of arch, -1 if the arch couldn't be determined
  */
+RPM_PUBLIC_API
 int rpmGetArchColor(const char *arch);
 
 /** \ingroup rpmrc
@@ -80,6 +87,7 @@ int rpmGetArchColor(const char *arch);
  * @param[out] name	address of os name (or NULL)
  * @param[out] num	address of os number (or NULL)
  */
+RPM_PUBLIC_API
 void rpmGetOsInfo( const char ** name,
 		int * num);
 
@@ -96,6 +104,7 @@ void rpmGetOsInfo( const char ** name,
  * @param name		name
  * @return		arch score (0 is no match, lower is preferred)
  */
+RPM_PUBLIC_API
 int rpmMachineScore(int type, const char * name);
 
 /** \ingroup rpmrc
@@ -103,12 +112,14 @@ int rpmMachineScore(int type, const char * name);
  * @param fp		output file handle
  * @return		0 always
  */
+RPM_PUBLIC_API
 int rpmShowRC(FILE * fp);
 
 /** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.
  * @todo Eliminate from API.
  */
+RPM_PUBLIC_API
 void rpmFreeRpmrc(void);
 
 /**
@@ -117,6 +128,7 @@ void rpmFreeRpmrc(void);
  * @param second	2nd header
  * @return		result of comparison
  */
+RPM_PUBLIC_API
 int rpmVersionCompare(Header first, Header second);
 
 /**  \ingroup header
@@ -132,6 +144,7 @@ int rpmVersionCompare(Header first, Header second);
  * @param[out] *msg	verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg);
 
 /**  \ingroup header
@@ -142,6 +155,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg);
  * @param[out] *msg	verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 
 /** \ingroup header
@@ -152,6 +166,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
  * @param[out] hdrp	address of header (or NULL)
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp);
 
@@ -163,6 +178,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
  * @param[out] cookie	address of cookie pointer (or NULL)
  * @return		rpmRC return code
  */
+RPM_PUBLIC_API
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			char ** specFilePtr,
 			char ** cookie);

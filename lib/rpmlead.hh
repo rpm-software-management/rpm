@@ -1,6 +1,8 @@
 #ifndef _H_RPMLEAD
 #define _H_RPMLEAD
 
+#include <rpm/rpmtypes.h>
+
 /** \ingroup lead
  * \file rpmlead.h
  * Routines to read and write an rpm lead structure for a a package.
@@ -21,6 +23,7 @@
  * @param h		package header
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
+RPM_PRIVATE_API
 rpmRC rpmLeadWrite(FD_t fd, Header h);
 
 /** \ingroup lead
@@ -29,6 +32,7 @@ rpmRC rpmLeadWrite(FD_t fd, Header h);
  * @param[out] emsg		failure message on error (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
+RPM_PRIVATE_API
 rpmRC rpmLeadRead(FD_t fd, char **emsg);
 
 #endif	/* _H_RPMLEAD */

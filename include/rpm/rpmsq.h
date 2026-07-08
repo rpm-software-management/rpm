@@ -20,6 +20,7 @@ extern "C" {
  * @param op		SIG_BLOCK/SIG_UNBLOCK
  * @return		0 on success, -1 on error
  */
+RPM_PUBLIC_API
 int rpmsqBlock(int op);
 
 #ifdef __cplusplus

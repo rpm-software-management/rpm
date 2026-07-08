@@ -8,23 +8,29 @@
 #include <rpm/rpmio.h>
 #include <rpm/rpmpgp.h>
 
+RPM_PRIVATE_API
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle);
+RPM_PRIVATE_API
 rpmDigestBundle fdGetBundle(FD_t fd, int create);
 
 /** \ingroup rpmio
  * Attach digest to fd.
  */
+RPM_PRIVATE_API
 void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags);
 
+RPM_PRIVATE_API
 void fdInitDigestID(FD_t fd, int hashalgo, int id, rpmDigestFlags flags);
 
 /** \ingroup rpmio
  */
+RPM_PRIVATE_API
 void fdFiniDigest(FD_t fd, int id,
 		void ** datap,
 		size_t * lenp,
 		int asAscii);
 
+RPM_PRIVATE_API
 DIGEST_CTX fdDupDigest(FD_t fd, int id);
 
 /**
@@ -34,6 +40,7 @@ DIGEST_CTX fdDupDigest(FD_t fd, int id);
  * @param[out] *blenp	(malloc'd) buffer length
  * @return		0 on success
  */
+RPM_PRIVATE_API
 int rpmioSlurp(const char * fn,
                 uint8_t ** bp, ssize_t * blenp);
 
@@ -41,6 +48,7 @@ int rpmioSlurp(const char * fn,
  * Set close-on-exec flag for all opened file descriptors, except
  * stdin/stdout/stderr.
  */
+RPM_PRIVATE_API
 void rpmSetCloseOnExec(void);
 
 typedef const struct FDIO_s * FDIO_t;

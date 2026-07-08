@@ -91,6 +91,7 @@ extern "C" {
  * @param plugin	plugin handle
  * @return		plugin name string
  */
+RPM_PUBLIC_API
 const char *rpmPluginName(rpmPlugin plugin);
 
 /** \ingroup rpmplugin
@@ -98,6 +99,7 @@ const char *rpmPluginName(rpmPlugin plugin);
  * @param plugin	plugin handle
  * @return		plugin options string (or NULL if none)
  */
+RPM_PUBLIC_API
 const char *rpmPluginOpts(rpmPlugin plugin);
 
 /** \ingroup rpmplugin
@@ -105,6 +107,7 @@ const char *rpmPluginOpts(rpmPlugin plugin);
  * @param plugin	plugin handle
  * @param data		pointer to plugin private data
  */
+RPM_PUBLIC_API
 void rpmPluginSetData(rpmPlugin plugin, void *data);
 
 /** \ingroup rpmplugin
@@ -112,6 +115,7 @@ void rpmPluginSetData(rpmPlugin plugin, void *data);
  * @param plugin	plugin handle
  * @return 		pointer to plugin private data
  */
+RPM_PUBLIC_API
 void * rpmPluginGetData(rpmPlugin plugin);
 
 #ifdef __cplusplus

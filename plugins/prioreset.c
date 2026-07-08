@@ -46,6 +46,7 @@ static rpmRC prioreset_scriptlet_fork_post(rpmPlugin plugin, const char *path, i
     return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s prioreset_hooks = {
     .scriptlet_fork_post = prioreset_scriptlet_fork_post,
 };

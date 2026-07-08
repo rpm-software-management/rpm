@@ -15,6 +15,7 @@ extern "C" {
  * @param b		2nd string
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
+RPM_PUBLIC_API
 int rpmvercmp(const char * a, const char * b);
 
 /** \ingroup rpmver
@@ -23,6 +24,7 @@ int rpmvercmp(const char * a, const char * b);
  * @param evr		[epoch:]version[-release] string
  * @return		rpm version, NULL on invalid evr
  */
+RPM_PUBLIC_API
 rpmver rpmverParse(const char *evr);
 
 /** \ingroup rpmver
@@ -33,6 +35,7 @@ rpmver rpmverParse(const char *evr);
  * @param r		release (or NULL)
  * @return		rpm version, NULL on invalid
  */
+RPM_PUBLIC_API
 rpmver rpmverNew(const char *e, const char *v, const char *r);
 
 /** \ingroup rpmver
@@ -41,36 +44,42 @@ rpmver rpmverNew(const char *e, const char *v, const char *r);
  * @param rv		rpm version handle
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmver rpmverFree(rpmver rv);
 
 /** \ingroup rpmver
  * @param rv		rpm version handle
  * @return		numerical value of epoch
  */
+RPM_PUBLIC_API
 uint32_t rpmverEVal(rpmver rv);
 
 /** \ingroup rpmver
  * @param rv		rpm version handle
  * @return		epoch portion
  */
+RPM_PUBLIC_API
 const char *rpmverE(rpmver rv);
 
 /** \ingroup rpmver
  * @param rv		rpm version handle
  * @return		version portion
  */
+RPM_PUBLIC_API
 const char *rpmverV(rpmver rv);
 
 /** \ingroup rpmver
  * @param rv		rpm version handle
  * @return		release portion
  */
+RPM_PUBLIC_API
 const char *rpmverR(rpmver rv);
 
 /** \ingroup rpmver
  * @param rv		rpm version handle
  * @return		formatted [E:]V[-R] string (malloced)
  */
+RPM_PUBLIC_API
 char *rpmverEVR(rpmver rv);
 
 /** \ingroup rpmver
@@ -80,6 +89,7 @@ char *rpmverEVR(rpmver rv);
  * @param v2		2nd version handle
  * @return		0 if equal, -1 if v1 smaller, 1 if greater, than v2
  */
+RPM_PUBLIC_API
 int rpmverCmp(rpmver v1, rpmver v2);
 
 /** \ingroup rpmver
@@ -90,6 +100,7 @@ int rpmverCmp(rpmver v1, rpmver v2);
  * @param f2		2nd sense flags
  * @return		1 if ranges overlap, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmverOverlap(rpmver v1, rpmsenseFlags f1, rpmver v2, rpmsenseFlags f2);
 
 #ifdef __cplusplus
