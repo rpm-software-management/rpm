@@ -436,6 +436,7 @@ LIBRPM_6.2 {
 	rpmtxnEnd;
 	rpmtxnImportPubkey;
 	rpmtxnRebuildKeystore;
+	rpmUncompressPackage;
 	rpmVerifyPoptTable;
 	rpmVerifySignatures;
 	rpmVersionCompare;
@@ -453,6 +454,7 @@ LIBRPM_6.2 {
 	rpmPayloadProbe*;
 	rpmReadPackageManifest*;
 	rpmReadSignature*;
+	rpmUnwrapSignature*;
 	rpmWriteSignature*;
 	rpmpkgRead*;
 	rpmsinfoMsg*;
