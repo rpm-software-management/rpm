@@ -60,7 +60,9 @@ void rpmteCleanFiles(rpmte te);
 
 FD_t rpmteSetFd(rpmte te, FD_t fd);
 
-FD_t rpmtePayload(rpmte te);
+/* Open the payload reader and, for a raw payload, return its descriptor and
+ * canonical cpio offset for clone/range copying. */
+FD_t rpmtePayload(rpmte te, int *rawfd, rpm_loff_t *base);
 
 int rpmteProcess(rpmte te, pkgGoal goal, int num);
 
@@ -106,4 +108,3 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
 int rpmteAddOp(rpmte te);
 
 #endif	/* _RPMTE_INTERNAL_H */
-
