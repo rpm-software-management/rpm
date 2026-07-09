@@ -11,7 +11,13 @@ BuildArch:      noarch
 %install
 mkdir -p %{buildroot}/opt/aligntest/sub
 # A file larger than a filesystem block, so its content can be block-aligned.
+%if 0%{?_progress_test}
+truncate -s 67108864 %{buildroot}/opt/aligntest/big.txt
+printf progress-range-start | dd of=%{buildroot}/opt/aligntest/big.txt \
+	conv=notrunc status=none
+%else
 seq 1 20000 > %{buildroot}/opt/aligntest/big.txt
+%endif
 # A sub-block file and a nested one, which keep the ordinary cpio padding.
 echo hello > %{buildroot}/opt/aligntest/small.txt
 seq 1 5000 > %{buildroot}/opt/aligntest/sub/nested.txt

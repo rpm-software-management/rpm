@@ -20,6 +20,7 @@
 
 #include "rpmio_internal.hh"	/* fdInit/FiniDigest */
 #include "fsm.hh"
+#include "cpio.hh"		/* RPMCPIO_COPY_FALLBACK */
 #include "rpmte_internal.hh"	/* XXX rpmfs */
 #include "rpmfi_internal.hh" /* rpmfiSetOnChdir */
 #include "rpmplugins.hh"	/* rpm plugins hooks */
@@ -166,8 +167,12 @@ static int fsmClose(int *wfdp)
 static int fsmOpen(int *wfdp, int dirfd, const char *dest)
 {
     int rc = 0;
-    /* Create the file with 0200 permissions (write by owner). */
-    int fd = openat(dirfd, dest, O_WRONLY|O_EXCL|O_CREAT, 0200);
+    /*
+     * Clone and range-copy operations bypass the userspace digest path, so
+     * verified installs need to read the copied bytes back through this
+     * descriptor.
+     */
+    int fd = openat(dirfd, dest, O_RDWR|O_EXCL|O_CREAT, 0200);
 
     if (fd < 0)
 	rc = RPMERR_OPEN_FAILED;
@@ -181,10 +186,30 @@ static int fsmOpen(int *wfdp, int dirfd, const char *dest)
     return rc;
 }
 
-static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
+static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest,
+		     int payloadfd, rpm_loff_t payloadbase)
 {
+    int rc;
+
+    /* Try to copy content straight out of the package first */
+    if (payloadfd >= 0) {
+	rc = rpmfiArchiveWriteFileTo(fi, fdno, payloadfd, payloadbase,
+				     nodigest, psm);
+	if (rc != RPMCPIO_COPY_FALLBACK) {
+	    if (_fsm_debug) {
+		char *emsg = (rc < 0) ? rpmfileStrerror(rc) : NULL;
+		rpmlog(RPMLOG_DEBUG, " %8s (%s %" PRIu64 " bytes [%d]) range copy %s\n",
+		       __func__, rpmfiFN(fi), rpmfiFSize(fi), fdno,
+		       (emsg ? emsg : ""));
+		free(emsg);
+	    }
+	    return rc;
+	}
+	/* Fall through to the streaming copy */
+    }
+
     FD_t fd = fdDup(fdno);
-    int rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
+    rc = rpmfiArchiveReadToFilePsm(fi, fd, nodigest, psm);
     if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s %" PRIu64 " bytes [%d]) %s\n", __func__,
 	       rpmfiFN(fi), rpmfiFSize(fi), Fileno(fd),
@@ -197,7 +222,8 @@ static int fsmUnpack(rpmfi fi, int fdno, rpmpsm psm, int nodigest)
 static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
 		     rpmpsm psm, int nodigest,
 		     struct filedata_s ** firstlink, int *firstlinkfile,
-		     int *firstdir, int *fdp)
+		     int *firstdir, int *fdp,
+		     int payloadfd, rpm_loff_t payloadbase)
 {
     int rc = 0;
     int fd = -1;
@@ -222,7 +248,7 @@ static int fsmMkfile(int dirfd, rpmfi fi, struct filedata_s *fp, rpmfiles files,
     /* If the file has content, unpack it */
     if (rpmfiArchiveHasContent(fi)) {
 	if (!rc)
-	    rc = fsmUnpack(fi, fd, psm, nodigest);
+	    rc = fsmUnpack(fi, fd, psm, nodigest, payloadfd, payloadbase);
 	/* Last file of hardlink set, ensure metadata gets set */
 	if (*firstlink) {
 	    fp->setmeta = 1;
@@ -879,7 +905,15 @@ static rpmfi fsmIterFini(rpmfi fi, struct diriter_s *di)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
-    FD_t payload = rpmtePayload(te);
+    /*
+     * For an uncompressed payload, content can be copied straight out of the
+     * package with a clone or range copy. Capture the raw descriptor and
+     * payload start offset here, before any content is read. payloadfd < 0
+     * disables.
+     */
+    rpm_loff_t payloadbase = 0;
+    int payloadfd = -1;
+    FD_t payload = rpmtePayload(te, &payloadfd, &payloadbase);
     rpmfi fi = NULL;
     rpmfs fs = rpmteGetFileStates(te);
     rpmPlugins plugins = rpmtsPlugins(ts);
@@ -994,7 +1028,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files,
 		if (rc == RPMERR_ENOENT) {
 		    rc = fsmMkfile(di.dirfd, fi, fp, files, psm, nodigest,
 				   &firstlink, &firstlinkfile, &di.firstdir,
-				   &fd);
+				   &fd, payloadfd, payloadbase);
 		}
             } else if (S_ISDIR(fp->sb.st_mode)) {
                 if (rc == RPMERR_ENOENT) {
@@ -1211,5 +1245,4 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     return rc;
 }
-
 

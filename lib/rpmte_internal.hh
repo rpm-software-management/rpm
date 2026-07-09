@@ -64,8 +64,10 @@ void rpmteCleanFiles(rpmte te);
 RPM_GNUC_INTERNAL
 FD_t rpmteSetFd(rpmte te, FD_t fd);
 
+/* Open the payload reader and, for a raw payload, return its descriptor and
+ * canonical cpio offset for clone/range copying. */
 RPM_GNUC_INTERNAL
-FD_t rpmtePayload(rpmte te);
+FD_t rpmtePayload(rpmte te, int *rawfd, rpm_loff_t *base);
 
 RPM_GNUC_INTERNAL
 int rpmteProcess(rpmte te, pkgGoal goal, int num);
@@ -124,4 +126,3 @@ RPM_GNUC_INTERNAL
 int rpmteAddOp(rpmte te);
 
 #endif	/* _RPMTE_INTERNAL_H */
-

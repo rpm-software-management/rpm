@@ -519,12 +519,19 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
 
     /* Move to next file */
     if (cpio->fileend != cpio->offset) {
-        /* XXX try using Fseek() - which is currently broken */
-        char buf[8*BUFSIZ];
-        while (cpio->fileend != cpio->offset) {
-            read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
-            if (rpmcpioRead(cpio, &buf, read) != read) {
-                return RPMERR_READ_FAILED;
+        /* On a seekable plain stream with no attached digest, seek past the
+         * leftover content instead of reading it back to discard it. A
+         * compressed, digested, or nonseekable stream must read it instead. */
+        if (fdIsPlain(cpio->fd) && fdGetBundle(cpio->fd, 0) == NULL &&
+            Fseek(cpio->fd, cpio->fileend - cpio->offset, SEEK_CUR) >= 0) {
+            cpio->offset = cpio->fileend;
+        } else {
+            char buf[8*BUFSIZ];
+            while (cpio->fileend != cpio->offset) {
+                read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
+                if (rpmcpioRead(cpio, &buf, read) != read) {
+                    return RPMERR_READ_FAILED;
+                }
             }
         }
     }
