@@ -155,6 +155,28 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp);
 
+/** \ingroup header
+ * Rewrite a package with its payload uncompressed. The lead and signed main
+ * header are preserved byte-for-byte. Header-only signatures remain valid,
+ * while signature-header entries covering the old physical payload are
+ * removed. The decompressed canonical payload is verified against the signed
+ * ALT digest. When the package was built with a content alignment, zero
+ * framing is inserted before the payload so file content lands on absolute
+ * block offsets, letting tools clone regular file content out of the payload,
+ * falling back to copy_file_range(2), then verify the destination directly.
+ * Without one the payload is materialized with no framing and can only be
+ * copied, not cloned. Signed compressor and primary payload metadata continue
+ * to describe the original representation; readers select the physical raw
+ * cpio and ALT digest without modifying the authenticated header.
+ *
+ * @param ts		transaction set (controls verification of the input)
+ * @param fdi		unfiltered input regular file handle (at the start)
+ * @param fdo		distinct, unfiltered output regular file handle, opened
+ * 		for update; contents are unspecified on failure
+ * @return		RPMRC_OK on success
+ */
+rpmRC rpmUncompressPackage(rpmts ts, FD_t fdi, FD_t fdo);
+
 /** \ingroup rpmts
  * Install source package.
  * @param ts		transaction set

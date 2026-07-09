@@ -29,6 +29,13 @@ By default, *rpmuncompress* outputs _FILE_ to standard output similar
 to *cat*(1), but transparently decompressing many popular compression
 formats, similar to *zcat*(1).
 
+When _FILE_ is an *rpm*(8) package, the whole package is written to
+standard output with its payload stored uncompressed instead,
+preserving the package's signatures and payload digests. This requires
+a package carrying a digest of the uncompressed payload (any v6
+package, or a v4 package built with rpm >= 4.16). Packages cannot be
+extracted with *--extract*; use *rpm2archive*(1) for that.
+
 *-x*,
 *--extract*
 	Extract the _ARCHIVE_ passed as argument into the current directory,
@@ -62,6 +69,6 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	_myproject_ directory, regardless of it's internal structure.
 
 # SEE ALSO
-*rpm-common*(8), *rpmbuild*(1), *popt*(3)
+*rpm-common*(8), *rpm2archive*(1), *rpmbuild*(1), *popt*(3)
 
 *http://www.rpm.org/*

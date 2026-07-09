@@ -521,29 +521,6 @@ exit:
     return rc;
 }
 
-static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
-{
-    struct rpmtd_s td;
-    Header oh = NULL;
-
-    if (headerGet(*hdrp, tag, &td, HEADERGET_DEFAULT)) {
-	oh = headerImport(td.data, td.count, HEADERIMPORT_COPY);
-	rpmtdFreeData(&td);
-    } else {
-	/* XXX should we warn if the immutable region is corrupt/missing? */
-	oh = headerLink(*hdrp);
-    }
-
-    if (oh) {
-	/* Perform a copy to eliminate crud from buggy signing tools etc */
-	Header nh = headerCopy(oh);
-	headerFree(*hdrp);
-	*hdrp = headerLink(nh);
-	headerFree(nh);
-	headerFree(oh);
-    }
-}
-
 static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
 {
 #ifdef WITH_IMAEVM
@@ -736,7 +713,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 
     /* Adjust for the region index entry + data getting stripped: 32 bytes */
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES) - 32;
-    unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
+    rpmUnwrapSignature(&sigh);
 
     if (flags & RPMSIGN_FLAG_IMA) {
 	if (includeFileSignatures(&sigh, &h))

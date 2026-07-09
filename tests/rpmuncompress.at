@@ -1,0 +1,241 @@
+#    rpmuncompress.at: signature-preserving payload materialization tests
+
+AT_BANNER([RPM uncompressed payload materialization])
+
+# Materialization works for both v4 and v6 payload headers. Content alignment
+# is an optimization recorded at build time: aligned packages gain outer zero
+# framing so file content lands on block offsets, unaligned packages are
+# materialized without framing.
+RPMTEST_SETUP_RW([aligned payload conversion])
+AT_KEYWORDS([align payload uncompress v4 v6])
+RPMTEST_CHECK([
+set -e
+expect_rejection()
+{
+	name=$1
+	input=$2
+	output=$3
+	diagnostic=$4
+	shift 4
+	log=${RPMTEST}/tmp/aligntest-${name}.log
+	if rpmuncompresspkg "${input}" "${output}" "$@" >"${log}" 2>&1; then
+		exit 1
+	fi
+	grep -q "${diagnostic}" "${log}"
+}
+
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 4096" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+
+pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+source=${RPMTEST}/build/aligntest-v6-source.rpm
+cp ${RPMTEST}${pkg} ${source}
+rpmuncompress "${source}" > ${RPMTEST}/build/aligntest-converted.rpm
+expect_rejection transformed "${source}" \
+	${RPMTEST}/build/aligntest-transform-output.rpm \
+	'package materialization requires distinct unfiltered regular files' \
+	transformed
+runroot rpm -U --replacepkgs --nodeps --nosignature \
+	/build/aligntest-converted.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null
+rpmuncompress ${RPMTEST}/build/aligntest-converted.rpm > \
+	${RPMTEST}/build/aligntest-converted-again.rpm
+cmp ${RPMTEST}/build/aligntest-converted.rpm \
+	${RPMTEST}/build/aligntest-converted-again.rpm
+
+# The test helper drives rpmUncompressPackage() directly and must produce
+# the same bytes as the tool.
+rpmuncompresspkg "${source}" ${RPMTEST}/build/aligntest-api.rpm
+cmp ${RPMTEST}/build/aligntest-converted.rpm \
+	${RPMTEST}/build/aligntest-api.rpm
+rpmuncompress --dry-run "${source}" \
+	2> ${RPMTEST}/tmp/aligntest-cli-dryrun.log
+grep -q 'uncompressing rpm package' \
+	${RPMTEST}/tmp/aligntest-cli-dryrun.log
+if rpmuncompress -x "${source}" \
+	> ${RPMTEST}/tmp/aligntest-cli-extract.log 2>&1; then
+	exit 1
+fi
+grep -q 'cannot be extracted' ${RPMTEST}/tmp/aligntest-cli-extract.log
+
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 4096" \
+	--define "_rpmformat 4" \
+	/data/SPECS/aligntest.spec
+rpmuncompress ${RPMTEST}${pkg} > \
+	${RPMTEST}/build/aligntest-v4-converted.rpm
+runroot rpm -U --replacepkgs --nodeps --nosignature \
+	/build/aligntest-v4-converted.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null
+
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 1" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+rpmuncompress ${RPMTEST}${pkg} > \
+	${RPMTEST}/build/aligntest-zero-gap.rpm
+runroot rpmkeys -K --nosignature /build/aligntest-zero-gap.rpm >/dev/null
+
+# Packages without canonical content alignment are materialized without
+# framing: the output cannot be cloned from, but installs and verifies.
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 0" \
+	--define "_rpmformat 6" \
+	/data/SPECS/aligntest.spec
+rpmuncompress ${RPMTEST}${pkg} > \
+	${RPMTEST}/build/aligntest-unaligned.rpm
+runroot rpmkeys -K --nosignature /build/aligntest-unaligned.rpm >/dev/null
+runroot rpm -U --replacepkgs --nodeps --nosignature \
+	/build/aligntest-unaligned.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null
+
+# Same for a v4 package built without alignment, the shape of current
+# distribution packages.
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w3.zstdio" \
+	--define "_payload_alignment 0" \
+	--define "_rpmformat 4" \
+	/data/SPECS/aligntest.spec
+rpmuncompress ${RPMTEST}${pkg} > \
+	${RPMTEST}/build/aligntest-v4-unaligned.rpm
+runroot rpm -U --replacepkgs --nodeps --nosignature \
+	/build/aligntest-v4-unaligned.rpm
+runroot rpm -V --nodeps --nouser --nogroup aligntest >/dev/null
+
+# Unknown signature-header entries cannot safely be classified for retention.
+unknown=${RPMTEST}/build/aligntest-unknown-sig.rpm
+cp "${source}" "${unknown}"
+expect_rejection unknown-sig "${unknown}" \
+	${RPMTEST}/build/aligntest-unknown-sig-out.rpm \
+	'unsupported signature header tag' unknownsig
+
+# Even when ordinary header verification is disabled for this deliberately
+# modified fixture, conversion must verify the canonical ALT payload digest.
+smallsize=${RPMTEST}/build/aligntest-small-alt-size.rpm
+cp "${source}" "${smallsize}"
+expect_rejection small-alt-size "${smallsize}" \
+	${RPMTEST}/build/aligntest-small-alt-size-output.rpm \
+	'uncompressed payload ALT size mismatch' smallaltsize
+
+# A primary payload digest requires its matching ALT digest.
+missingalt=${RPMTEST}/build/aligntest-missing-alt.rpm
+cp "${source}" "${missingalt}"
+expect_rejection missing-alt "${missingalt}" \
+	${RPMTEST}/build/aligntest-missing-alt-out.rpm \
+	'source package has no matching ALT payload digest' missingalt
+
+# Every enabled ALT digest must describe the materialized payload, not only the
+# strongest one.
+secondary=${RPMTEST}/build/aligntest-secondary-alt.rpm
+cp "${source}" "${secondary}"
+alt512=$(runroot rpm -qp --qf '%{payloadsha512alt}' \
+	/build/aligntest-v6-source.rpm)
+alt512off=$(LC_ALL=C grep -aob "${alt512}" "${secondary}" | \
+	head -n 1 | cut -d: -f1)
+test -n "${alt512off}"
+case ${alt512} in
+	0*) bad512=1 ;;
+	*)  bad512=0 ;;
+esac
+printf '%s' "${bad512}" | dd of="${secondary}" bs=1 seek="${alt512off}" \
+	conv=notrunc status=none
+expect_rejection secondary-alt "${secondary}" \
+	${RPMTEST}/build/aligntest-secondary-alt-out.rpm \
+	'uncompressed payload ALT digest mismatch' noheader
+
+# SHA-256 payload digests are arrays: every value must verify.
+multialt=${RPMTEST}/build/aligntest-multi-alt.rpm
+cp "${source}" "${multialt}"
+expect_rejection multi-alt "${multialt}" \
+	${RPMTEST}/build/aligntest-multi-alt-out.rpm \
+	'uncompressed payload ALT digest mismatch' multialt
+
+# Aliased descriptors are rejected without touching the source.
+cp "${source}" ${RPMTEST}/build/aligntest-alias.rpm
+expect_rejection alias ${RPMTEST}/build/aligntest-alias.rpm \
+	${RPMTEST}/build/aligntest-alias.rpm \
+	'package materialization requires distinct unfiltered regular files'
+cmp "${source}" ${RPMTEST}/build/aligntest-alias.rpm
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
+# The signed header, including ALT digest and alignment, is retained across
+# conversion. Exercise v4 as deployed by current distributions and v6 with
+# all three ALT digest algorithms, using Sequoia for signing.
+RPMTEST_SETUP_RW([signed aligned payload conversion])
+AT_KEYWORDS([align rpmsign sequoia signature payload v4 v6])
+RPMTEST_SKIP_IF([test x$PGP = xdummy])
+RPMTEST_CHECK([
+set -e
+cat << EOF >> $RPMTEST/root/.config/rpm/macros
+%_openpgp_sign sq
+%_sq_path ${HOME}/.config/rpm/sq
+%_openpgp_autosign_id %{nil}
+EOF
+runroot sq --home ${HOME}/.config/rpm/sq key import \
+	/data/keys/rpm.org-rsa-2048-test.secret >/dev/null 2>&1
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub \
+	>/dev/null 2>&1
+
+for format in 4 6; do
+	align=4096
+	if test ${format} = 4; then
+		align=1
+	fi
+	runroot rpmbuild -bb --quiet \
+		--define "_binary_payload w3.zstdio" \
+		--define "_payload_alignment ${align}" \
+		--define "_rpmformat ${format}" \
+		/data/SPECS/aligntest.spec
+
+	pkg=/build/RPMS/noarch/aligntest-1.0-1.noarch.rpm
+	if test ${format} = 6; then
+		runroot rpmsign \
+			--key-id 771B18D3D7BAA28734333C424344591E1964C5FC \
+			--digest-algo sha256 \
+			--rpmv6 --addsign ${pkg}
+	else
+		runroot rpmsign \
+			--key-id 771B18D3D7BAA28734333C424344591E1964C5FC \
+			--digest-algo sha256 \
+			--rpmv3 --addsign ${pkg}
+	fi
+
+	if test ${format} = 4; then
+		cp ${RPMTEST}${pkg} ${RPMTEST}/build/aligntest-legacy-only.rpm
+		legacylog=${RPMTEST}/tmp/aligntest-legacy-only.log
+		if rpmuncompresspkg \
+			${RPMTEST}/build/aligntest-legacy-only.rpm \
+			${RPMTEST}/build/aligntest-legacy-only-out.rpm \
+			legacyonly >${legacylog} 2>&1; then
+			exit 1
+		fi
+		grep -q 'legacy header+payload signature cannot be preserved' \
+			${legacylog}
+	fi
+
+	out=/build/aligntest-v${format}-converted.rpm
+	runroot rpmuncompress ${pkg} > ${RPMTEST}${out}
+	runroot rpmkeys --define "_pkgverify_flags 0" -Kv ${out} \
+		> /tmp/verify-v${format}
+	grep -q 'signature.*: OK' /tmp/verify-v${format}
+	grep -q 'Payload SHA256 ALT digest: OK' /tmp/verify-v${format}
+	if test ${format} = 6; then
+		grep -q 'Payload SHA512 ALT digest: OK' /tmp/verify-v${format}
+		grep -q 'Payload SHA3-256 ALT digest: OK' /tmp/verify-v${format}
+	fi
+done
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP

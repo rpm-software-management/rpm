@@ -162,6 +162,18 @@ RPM versions from attempting to install an unsupported payload layout.
 The per-member zero padding is inside the payload compression, so it normally
 costs only a small encoding overhead in transit.
 
+A signature-preserving local materialization keeps the signed main header and
+ALT digest unchanged, replaces the compressed bytes with canonical raw cpio,
+and for an aligned package adds the outer zero framing only on disk.
+Header-only signatures remain valid; signature-header records covering the old
+physical payload are removed. The compressor and primary payload digest/size
+tags in the signed main header intentionally continue to describe the original
+transport representation, while RPM verifies the physical payload against the
+ALT tags. A package built without content alignment can still be materialized,
+but its file content lands on arbitrary offsets, so it can only be copied
+from, not cloned. Re-alignment is not permitted because it would change the
+signed canonical bytes.
+
 Aligning the content this way lets tools clone regular file content into and
 out of the package with `FICLONERANGE`, sharing extents on filesystems that
 support reflinks (btrfs, XFS, ...). Where cloning is unavailable, RPM falls
