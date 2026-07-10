@@ -1206,8 +1206,19 @@ assert(zstd);
 	/* Re-fill compressed data buffer. */
 	if (zstd->zib.pos >= zstd->zib.size) {
 	    zstd->zib.size = fread(zstd->b.data(), 1, zstd->b.size(), zstd->fp);
-	    if (zstd->zib.size == 0)
+	    if (zstd->zib.size == 0) {
+		ZSTD_inBuffer zib_end = { NULL, 0, 0 };
+		size_t ret2;
+		do {
+		    ret2 = ZSTD_decompressStream(zstd->stream.d,
+				 &zob, &zib_end);
+		    if (ZSTD_isError(ret2)) {
+			fps->errcookie = ZSTD_getErrorName(ret2);
+			return -1;
+		    }
+		} while (ret2 > 0 && zob.pos < zob.size);
 		break;		/* EOF */
+	    }
 	    zstd->zib.src  = zstd->b.data();
 	    zstd->zib.pos  = 0;
 	}
