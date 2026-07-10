@@ -1,4 +1,4 @@
-#!/bin/sh -efu
+#!/bin/sh -fu
 
 fatal() {
 	echo "$*" >&2
@@ -59,6 +59,6 @@ case "$(_dd $offset bs=2 count=1 | tr -d '\0')" in
 	"$(printf '\037\213')") _dd $offset | gunzip  ;; # '\x1f\x8b'
 	"$(printf '\375\067')") _dd $offset | xzcat   ;; # '\xfd\x37'
 	"$(printf '\135')") _dd $offset | unlzma      ;; # '\x5d\x00'
-	"$(printf '\050\265')") _dd $offset | unzstd  ;; # '\x28\xb5'
+	"$(printf '\050\265')") _dd $offset | unzstd -f ;; # '\x28\xb5'
 	*) fatal "Unrecognized payload compression format in rpm file: $pkg" ;;
 esac
