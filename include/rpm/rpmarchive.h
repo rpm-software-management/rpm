@@ -119,7 +119,10 @@ RPM_PUBLIC_API
 size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
 
 /** \ingroup payload
- * Write content from given file into current file in archive
+ * Write content from given file into current file in archive. When the archive
+ * is a plain (uncompressed) file the content is cloned straight into the
+ * package where possible, then falls back to copy_file_range(2) and finally a
+ * userspace copy.
  * @param fi		file info
  * @param fd		file descriptor of file to read
  * @return		> 0 on error

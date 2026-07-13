@@ -2168,6 +2168,17 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     if (fi == NULL || fi->archive == NULL || fd == NULL)
 	return -1;
 
+    /* A raw copy bypasses the source FD_t stack too, so only use it when the
+     * source is untransformed and has no digest consumers of its own. */
+
+    if (rpmfiFSize(fi) <= (rpm_loff_t)std::numeric_limits<off_t>::max() &&
+	fdIsPlain(fd) && fdGetBundle(fd, 0) == NULL) {
+	rc = rpmcpioWriteFile(fi->archive, Fileno(fd), rpmfiFSize(fi));
+	if (rc != RPMCPIO_COPY_FALLBACK)
+	    return rc;
+	rc = 0;
+    }
+
     left = rpmfiFSize(fi);
 
     while (left) {

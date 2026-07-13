@@ -162,11 +162,11 @@ RPM versions from attempting to install an unsupported payload layout.
 The per-member zero padding is inside the payload compression, so it normally
 costs only a small encoding overhead in transit.
 
-Aligning the content this way lets tools clone regular file content out of the
-package with `FICLONERANGE`, sharing extents on filesystems that support
-reflinks (btrfs, XFS, ...). Where cloning is unavailable, RPM falls back to
-`copy_file_range(2)`. Verified installs read back and hash the exact bytes
-placed in the destination.
+Aligning the content this way lets tools clone regular file content into and
+out of the package with `FICLONERANGE`, sharing extents on filesystems that
+support reflinks (btrfs, XFS, ...). Where cloning is unavailable, RPM falls
+back to `copy_file_range(2)`. Verified installs read back and hash the exact
+bytes placed in the destination.
 
 ## Differences to V4
 
