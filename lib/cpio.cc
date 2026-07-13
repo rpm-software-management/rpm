@@ -224,6 +224,61 @@ next:
     return 0;
 }
 
+int rpmcpioWriteFile(rpmcpio_t cpio, int src_fd, off_t size)
+{
+    const off_t maxoff = std::numeric_limits<off_t>::max();
+    off_t pos, src_off;
+    int rc;
+
+    if ((cpio->mode & O_ACCMODE) != O_WRONLY)
+	return RPMERR_WRITE_FAILED;
+
+    /* Range copies write at raw file offsets, so only a plain (uncompressed)
+     * archive can use them. */
+    if (!fdIsPlain(cpio->fd))
+	return RPMCPIO_COPY_FALLBACK;
+
+    /* Range copies bypass Fwrite(), so an attached digest would not see the
+     * content; fall back so the digest stays correct. */
+    if (fdGetBundle(cpio->fd, 0) != NULL)
+	return RPMCPIO_COPY_FALLBACK;
+
+    /* Read the source from its current position, matching the fallback below. */
+    src_off = lseek(src_fd, 0, SEEK_CUR);
+    if (src_off < 0)
+	return RPMCPIO_COPY_FALLBACK;
+
+    /* Absolute offset in the package where this file's content begins. */
+    if (size < 0 || cpio->base > maxoff - cpio->offset)
+	return RPMCPIO_COPY_FALLBACK;
+    pos = cpio->base + cpio->offset;
+    if (size > maxoff - src_off || size > maxoff - pos)
+	return RPMCPIO_COPY_FALLBACK;
+
+    /* Flush buffered writes so the file reflects the payload so far. */
+    if (Fflush(cpio->fd))
+	return RPMERR_WRITE_FAILED;
+
+    rc = rpmcpioCopyRange(Fileno(cpio->fd), src_fd, src_off, pos, size,
+			  NULL, NULL);
+    if (rc)
+	return rc;	/* RPMCPIO_COPY_FALLBACK or a hard error */
+
+    /* An explicit source offset leaves the source fd's position unchanged;
+     * the fallback consumes it. Advance it to match so a caller writing
+     * several members from one fd reads the same bytes either way. */
+    if (lseek(src_fd, src_off + size, SEEK_SET) < 0)
+	return RPMERR_READ_FAILED;
+
+    /* Move the write position past the content written directly. */
+    if (Fseek(cpio->fd, size, SEEK_CUR) < 0)
+	return RPMERR_WRITE_FAILED;
+    cpio->offset += size;
+
+    return 0;
+}
+
+
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string

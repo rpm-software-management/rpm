@@ -56,6 +56,21 @@ void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align);
 typedef void (*rpmcpioCopyNotify)(void *data, off_t copied);
 
 /**
+ * Copy a source file's content into the archive at the current content
+ * position with a clone or copy_file_range(2). Usable only when the archive is
+ * a plain (uncompressed) file; falls back otherwise. Must be called with the
+ * archive positioned at the start of the file content (i.e. right after
+ * rpmfiArchiveWriteHeader).
+ * @param cpio		cpio archive (opened for writing)
+ * @param src_fd	source file descriptor (regular file, read from current offset)
+ * @param size		file size in bytes
+ * @return		0 on success, RPMCPIO_COPY_FALLBACK if an accelerated
+ *			copy cannot be used, < 0 (RPMERR_*) on hard error
+ */
+RPM_GNUC_INTERNAL
+int rpmcpioWriteFile(rpmcpio_t cpio, int src_fd, off_t size);
+
+/**
  * Copy a byte range from one file to another. First attempt to clone the whole
  * range with FICLONERANGE. If cloning is unavailable, copy in bounded
  * copy_file_range(2) chunks so callers can report progress, with positional

@@ -1,17 +1,45 @@
-#    rpmcfrpython.at: archive skip fallback API test
+#    rpmcfrpython.at: copy_file_range fallback API tests
 
-AT_BANNER([RPM archive skip fallback])
+AT_BANNER([RPM copy_file_range API fallbacks])
 
-# A plain but nonseekable archive reader must fall back to reading skipped
-# content instead of failing lseek(2).
-RPMPY_TEST([archive skip handles nonseekable input],[
+# A transformed source FD must go through Fread() instead of copying bytes from
+# its compressed backing file. A plain but nonseekable archive reader must fall
+# back to reading skipped content instead of failing lseek(2).
+RPMPY_TEST([copy_file_range preserves FD_t semantics],[
 import os
 
 pkg = rpm.fd.open('${RPMDATA}/RPMS/hello-2.0-1.x86_64.rpm')
 h = ts.hdrFromFdno(pkg)
 payload = rpm.fd.open(pkg, flags=h['payloadcompressor'])
 files = rpm.files(h)
-raw = payload.read()
+reader = files.archive(payload)
+contents = {}
+
+for f in reader:
+    if reader.hascontent():
+        contents[f.fx] = reader.read()
+
+out = rpm.fd('copy-range.cpio', 'w', 'ufdio')
+writer = files.archive(out, write=True)
+for f in writer:
+    compressed = rpm.fd('copy-range-member.gz', 'w', 'gzdio')
+    compressed.write(contents[f.fx])
+    compressed.close()
+    compressed = rpm.fd('copy-range-member.gz', 'r', 'gzdio')
+    writer.writeto(compressed)
+    compressed.close()
+writer.close()
+out.close()
+
+checkfd = rpm.fd('copy-range.cpio', 'r', 'ufdio')
+check = files.archive(checkfd)
+for f in check:
+    if check.hascontent() and check.read() != contents[f.fx]:
+        raise RuntimeError('transformed source content mismatch')
+print('transformed-source-ok')
+
+with open('copy-range.cpio', 'rb') as archive:
+    raw = archive.read()
 readfd, writefd = os.pipe()
 pid = os.fork()
 if pid == 0:
@@ -30,5 +58,6 @@ _, status = os.waitpid(pid, 0)
 if status != 0:
     raise RuntimeError('pipe writer failed')
 print('pipe-skip-ok')
-],[pipe-skip-ok
+],[transformed-source-ok
+pipe-skip-ok
 ],[])
