@@ -7,7 +7,7 @@ insert_final_newline = true
 # XXX: Too common in existing source
 # trim_trailing_whitespace = true
 
-[*.{c,h,h.in,pc,pc.in}]
+[*.{c,cc,h,hh,h.in,pc,pc.in}]
 indent_size = 4
 indent_style = tab
 tab_width = 8
