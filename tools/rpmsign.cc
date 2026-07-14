@@ -97,8 +97,9 @@ static int flags_sign_files(int flags)
 static char *get_fskpass(void)
 {
     struct termios flags, tmp_flags;
-    int passlen = 64;
-    char *password = (char *)xmalloc(passlen);
+    size_t passlen = 0;
+    ssize_t nread = -1;
+    char *password = NULL;
     char *pwd = NULL;
 
     tcgetattr(fileno(stdin), &flags);
@@ -112,7 +113,8 @@ static char *get_fskpass(void)
     }
 
     printf("PEM password: ");
-    pwd = fgets(password, passlen, stdin);
+    if ((nread = getline(&password, &passlen, stdin)) >= 0)
+	pwd = password;
 
     if (tcsetattr(fileno(stdin), TCSANOW, &flags) != 0) {
 	perror("tcsetattr");
@@ -121,10 +123,12 @@ static char *get_fskpass(void)
     }
 
 exit:
-    if (pwd)
-	pwd[strlen(pwd) - 1] = '\0';  /* remove newline */
-    else
+    if (pwd) {
+	if (nread && pwd[nread - 1] == '\n')
+	    pwd[nread - 1] = '\0';
+    } else {
 	free(password);
+    }
     return pwd;
 }
 #endif
