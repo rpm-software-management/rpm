@@ -863,6 +863,9 @@ static void checkInstDeps(rpmts ts, depCache *dcache, rpmte te,
 
     if (depds)
 	dep = rpmdsN(depds);
+    /* Shut up scanners, this would be a bug somewhere else */
+    assert(dep != NULL);
+
     if (neg) {
 	ndep = (char *)xmalloc(strlen(dep) + 2);
 	ndep[0] = '!';
