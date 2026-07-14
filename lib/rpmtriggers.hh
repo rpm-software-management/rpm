@@ -16,8 +16,9 @@ struct triggerInfo {
 
     bool operator < (const triggerInfo & o) const
     {
-	return std::tie(priority, hdrNum, tix) <
-	       std::tie(o.priority, o.hdrNum, o.tix);
+	if (priority != o.priority)
+	    return priority > o.priority;
+	return std::tie(hdrNum, tix) < std::tie(o.hdrNum, o.tix);
     }
     triggerInfo(unsigned int _hnum, unsigned int _tix, unsigned int _prio) :
 		hdrNum(_hnum), tix(_tix), priority(_prio)
