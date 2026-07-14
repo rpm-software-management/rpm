@@ -650,6 +650,26 @@ transfiletriggerpostun(/foo*):
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([transaction file trigger priority order])
+AT_KEYWORDS([filetrigger script priority])
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb /data/SPECS/filetrigger-priority.spec
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+
+RPMTEST_CHECK([
+runroot rpm -U \
+    /build/RPMS/noarch/filetrigger-priority-1.0-1.noarch.rpm \
+    /build/RPMS/noarch/filetrigger-priority-data-1.0-1.noarch.rpm
+],
+[0],
+[priority 200
+priority 100
+],
+[])
+
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([basic file triggers: failures])
 AT_KEYWORDS([filetrigger script])
 
