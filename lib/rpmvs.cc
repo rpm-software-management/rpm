@@ -249,6 +249,7 @@ static rpmRC rpmsinfoInit(const struct vfyinfo_s *vinfo,
 	    rpmlog(RPMLOG_WARNING, "%s\n", lints);
 	    free(lints);
 	}
+	sinfo->sigalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_PUBKEYALGO);
 	sinfo->hashalgo = pgpDigParamsAlgo(sinfo->sig, PGPVAL_HASHALGO);
 	sinfo->keyid = rpmhex(pgpDigParamsSignID(sinfo->sig), PGP_KEYID_LEN);
     } else if (sinfo->type == RPMSIG_DIGEST_TYPE) {
