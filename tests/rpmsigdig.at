@@ -1745,8 +1745,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -1768,22 +1768,22 @@ runroot rpmkeys -Kv /tmp/hello-corrupt-2.0-1.x86_64.rpm; echo $?
 ],
 [0],
 [/tmp/hello-corrupt-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: BAD
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 1
 /tmp/hello-corrupt-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: BAD
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 1
 /tmp/hello-corrupt-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: BAD
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: BAD
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -1797,8 +1797,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key ID b0645aec757bf69e: NOKEY
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2093,8 +2093,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: NOTTRUSTED
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2130,8 +2130,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2163,8 +2163,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [0],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: OK
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2196,8 +2196,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: NOTTRUSTED
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2208,8 +2208,8 @@ RPMTEST_CHECK([
 grep "^error:" stderr
 ],
 [0],
-[error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
-error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+[error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
 error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
 ],
 [])
@@ -2226,8 +2226,8 @@ RPMTEST_CHECK([
 grep "^error:" stderr
 ],
 [0],
-[error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
-error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+[error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature using certificate E8A62C0512B06B5D2183BA207F1C21F95F65BBE8 (rpm.org NIST P-256 testkey <nistp256@rpm.org>):
 error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
 ],
 [])
@@ -2239,7 +2239,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 ECDSA/SHA512 signature, key fingerprint: e8a62c0512b06b5d2183ba207f1c21f95f65bbe8: NOTTRUSTED
+[	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
 ])
 
 # remove the ECDSA key from RPM DB -- should report UNTRUSTED instead of NOKEY
@@ -2249,8 +2249,8 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 ],
 [1],
 [/tmp/hello-2.0-1.x86_64.rpm:
-    Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
+    Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: NOTTRUSTED
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
@@ -2261,8 +2261,8 @@ RPMTEST_CHECK([
 grep "^error:" stderr
 ],
 [0],
-[error: Verifying a signature, but no certificate was provided:
-error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+[error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature, but no certificate was provided:
 error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
 ],
 [])
@@ -2279,8 +2279,8 @@ RPMTEST_CHECK([
 grep "^error:" stderr
 ],
 [0],
-[error: Verifying a signature, but no certificate was provided:
-error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+[error: Verifying a signature using certificate 152BB32FD9CA982797E835CFB0645AEC757BF69E (rpm.org ed25519 testkey <ed25519@rpm.org>):
+error: Verifying a signature, but no certificate was provided:
 error: Verifying a signature using certificate 771B18D3D7BAA28734333C424344591E1964C5FC (rpm.org RSA testkey <rsa@rpm.org>):
 ],
 [])
@@ -2292,7 +2292,7 @@ runroot rpm -Uv --test --nodeps /tmp/hello-2.0-1.x86_64.rpm
 [Verifying packages...
 Preparing packages...
 ],
-[	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 ECDSA/SHA512 signature, key ID 7f1c21f95f65bbe8: NOTTRUSTED
+[	package hello-2.0-1.x86_64 does not verify: Header OpenPGP V4 EdDSA/SHA512 signature, key fingerprint: 152bb32fd9ca982797e835cfb0645aec757bf69e: NOTTRUSTED
 ])
 RPMTEST_CLEANUP
 
@@ -3181,8 +3181,8 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm:
-    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header OpenPGP V6 ML-DSA-87+Ed448/SHA512 signature, key ID db11ab41d7ae9cd3: NOTTRUSTED
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
 ],
