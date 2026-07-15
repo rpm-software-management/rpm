@@ -188,6 +188,7 @@ include(CheckLibraryExists)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckCCompilerFlag)
+include(CheckLinkerFlag)
 include(CheckVariableExists)
 
 set(OPTFUNCS
@@ -434,12 +435,15 @@ if (ENABLE_ASAN OR ENABLE_UBSAN)
 endif()
 
 # try to ensure some compiler sanity and hardening options where supported
-foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened)
+foreach (flag -fno-strict-overflow -fno-delete-null-pointer-checks -fhardened -fvisibility=hidden)
 	check_c_compiler_flag(${flag} compiler-supports${flag})
 	if (compiler-supports${flag})
 		add_compile_options(${flag})
 	endif()
 endforeach()
+
+check_linker_flag(CXX "-Wl,--version-script=${CMAKE_SOURCE_DIR}/lib/librpm.ver"
+		  HAVE_LINKER_VERSION_SCRIPT)
 
 # generated sources
 include_directories(${CMAKE_BINARY_DIR})

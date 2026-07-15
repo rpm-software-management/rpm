@@ -62,3 +62,33 @@ runroot importkey /data/keys/rpm.org-nistp256-test.pub
   Policy rejects 7F1C21F95F65BBE8: Policy rejected asymmetric algorithm, because NistP256 is not considered secure
 ])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP([API symbol exports])
+AT_KEYWORDS([api])
+RPMTEST_CHECK([[
+cd ${RPMTEST}/${RPMLIBDIR}
+for f in librpm*.so.*.*; do
+    echo ${f}:
+    nm -D --defined-only ${f} | awk '/ T [[:alpha:]]/ { print("\t"$3) }' | head -3
+done
+]],
+[0],
+[librpm.so.10.8.0:
+	headerAddI18NString@@LIBRPM_6.2
+	headerCheck@@LIBRPM_6.2
+	headerConvert@@LIBRPM_6.2
+librpmbuild.so.10.8.0:
+	rpmSpecBuild@@LIBRPMBUILD_6.2
+	rpmSpecCheckDeps@@LIBRPMBUILD_6.2
+	rpmSpecDS@@LIBRPMBUILD_6.2
+librpmio.so.10.8.0:
+	Fclose@@LIBRPMIO_6.2
+	Fcntl@@LIBRPMIO_6.2
+	Fdescr@@LIBRPMIO_6.2
+librpmsign.so.10.8.0:
+	rpmPkgDelFileSign@@LIBRPMSIGN_6.2
+	rpmPkgDelSign@@LIBRPMSIGN_6.2
+	rpmPkgSign@@LIBRPMSIGN_6.2
+],
+[])
+RPMTEST_CLEANUP

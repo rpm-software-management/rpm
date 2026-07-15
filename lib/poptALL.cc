@@ -31,6 +31,7 @@ extern int _print_pkts;
 extern int _psm_debug;
 
 /* XXX avoid -lrpmbuild linkage. */
+RPM_PRIVATE_API
        int _rpmfc_debug;
 
 extern int _rpmts_stats;

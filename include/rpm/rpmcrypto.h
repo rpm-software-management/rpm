@@ -48,11 +48,13 @@ typedef rpmFlags rpmDigestFlags;
  * general rpm initialization routines.
  * @return		0 on success, -1 on failure
  */
+RPM_PUBLIC_API
 int rpmInitCrypto(void);
 
 /** \ingroup rpmcrypto
  * Shutdown cryptography
  */
+RPM_PUBLIC_API
 int rpmFreeCrypto(void);
 
 /** \ingroup rpmcrypto
@@ -60,6 +62,7 @@ int rpmFreeCrypto(void);
  * @param octx		existing digest context
  * @return		duplicated digest context
  */
+RPM_PUBLIC_API
 DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
 
 /** \ingroup rpmcrypto
@@ -67,6 +70,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
  * @param hashalgo	type of digest
  * @return		digest length, zero on invalid algorithm
  */
+RPM_PUBLIC_API
 size_t rpmDigestLength(int hashalgo);
 
 /** \ingroup rpmcrypto
@@ -76,6 +80,7 @@ size_t rpmDigestLength(int hashalgo);
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */
+RPM_PUBLIC_API
 DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags);
 
 /** \ingroup rpmcrypto
@@ -85,6 +90,7 @@ DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags);
  * @param len		no. bytes of data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
 
 /** \ingroup rpmcrypto
@@ -98,12 +104,14 @@ int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t * lenp, int asAscii);
 
 /** \ingroup rpmcrypto
  * Create a new digest bundle.
  * @return		New digest bundle
  */
+RPM_PUBLIC_API
 rpmDigestBundle rpmDigestBundleNew(void);
 
 /** \ingroup rpmcrypto
@@ -111,6 +119,7 @@ rpmDigestBundle rpmDigestBundleNew(void);
  * @param bundle	digest bundle
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
 
 /** \ingroup rpmcrypto
@@ -121,6 +130,7 @@ rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
  * @param flags		bit(s) to control digest operation
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
 			rpmDigestFlags flags);
 
@@ -132,6 +142,7 @@ int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
  * @param flags		bit(s) to control digest operation
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
 			 rpmDigestFlags flags);
 
@@ -142,6 +153,7 @@ int rpmDigestBundleAddID(rpmDigestBundle bundle, int algo, int id,
  * @param len		no. bytes of data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
 
 /** \ingroup rpmcrypto
@@ -152,6 +164,7 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
  * @param len		no. bytes of data
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestBundleUpdateID(rpmDigestBundle bundle, int id,
 			const void *data, size_t len);
 
@@ -165,6 +178,7 @@ int rpmDigestBundleUpdateID(rpmDigestBundle bundle, int id,
  * @param asAscii	return digest as ascii string?
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
 			 void ** datap, size_t * lenp, int asAscii);
 
@@ -174,6 +188,7 @@ int rpmDigestBundleFinal(rpmDigestBundle bundle, int id,
  * @param id		id of digest to dup
  * @return		duplicated digest context
  */
+RPM_PUBLIC_API
 DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int id);
 
 

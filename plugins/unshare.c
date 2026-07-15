@@ -78,6 +78,7 @@ exit:
     return rc;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s unshare_hooks = {
     .init = unshare_init,
     .cleanup = unshare_cleanup,

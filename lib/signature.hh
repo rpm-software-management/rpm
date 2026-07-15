@@ -15,6 +15,7 @@
  * @param[out] msg		failure msg
  * @return		rpmRC return code
  */
+RPM_PRIVATE_API
 rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
 
 /** \ingroup signature
@@ -23,6 +24,7 @@ rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
  * @param h		(signature) header
  * @return		0 on success, 1 on error
  */
+RPM_PRIVATE_API
 int rpmWriteSignature(FD_t fd, Header h);
 
 /** \ingroup signature
@@ -36,6 +38,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param fd		output file
  * @param rpmver	rpm format version (4 or 6)
  */
+RPM_PRIVATE_API
 rpmRC rpmGenerateSignature(char *SHA3_256, char *SHA256,
 			char *SHA1, uint8_t *MD5,
 			rpm_loff_t size, rpm_loff_t payloadSize, FD_t fd,

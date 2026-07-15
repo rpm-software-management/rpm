@@ -21,19 +21,15 @@
  * @param str           pointer to the character after the initial '%'
  * @return              pointer to the next character after the macro
  */
-RPM_GNUC_INTERNAL
 const char *findMacroEnd(const char *str);
 
 typedef int (*rgetoptcb)(int c, const char *oarg, int oint, void *data);
 
-RPM_GNUC_INTERNAL
 int rgetopt(int argc, char * const argv[], const char *opts,
 		rgetoptcb callback, void *data);
 
-RPM_GNUC_INTERNAL
 void splitQuoted(ARGV_t *av, const char * str, const char * seps);
 
-RPM_GNUC_INTERNAL
 char *unsplitQuoted(ARGV_const_t av, const char *sep);
 
 namespace rpm {
@@ -51,7 +47,7 @@ namespace rpm {
  * Generally the method names and arguments map to the C API in obvious ways,
  * exceptions noted below.
  */
-class macros {
+class RPM_PRIVATE_API macros {
 public:
     /* Clear all macro definitions in this context, like rpmFreeMacros() */
     void clear();
@@ -89,13 +85,16 @@ private:
 };
 
 /* Join args into a / separated normalized path. Optionally expand args first */
+RPM_PRIVATE_API
 std::string join_path(const std::initializer_list<std::string> & args,
 			bool expand = true);
 
 /* Same as expand() but return as normalized path */
+RPM_PRIVATE_API
 std::string expand_path(const std::initializer_list<std::string> & args);
 
 /* Normalize a path. */
+RPM_PRIVATE_API
 std::string normalize_path(const std::string & args);
 
 }; /* namespace rpm */

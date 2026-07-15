@@ -103,6 +103,7 @@ typedef rpmFlags rpmsenseFlags;
  * @param Flags		flags
  * @return		flags filtered to allowed bits
  */
+RPM_PUBLIC_API
 rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
@@ -111,6 +112,7 @@ rpmsenseFlags rpmSanitizeDSFlags(rpmTagVal tagN, rpmsenseFlags Flags);
  * @param len		length of the string
  * @return		flags, zero for unknown relations
  */
+RPM_PUBLIC_API
 rpmsenseFlags rpmParseDSFlags(const char *str, size_t len);
 
 /** \ingroup rpmds
@@ -118,6 +120,7 @@ rpmsenseFlags rpmParseDSFlags(const char *str, size_t len);
  * @param ds		dependency set
  * @return		new dependency set reference
  */
+RPM_PUBLIC_API
 rpmds rpmdsLink(rpmds ds);
 
 /** \ingroup rpmds
@@ -125,6 +128,7 @@ rpmds rpmdsLink(rpmds ds);
  * @param ds		dependency set
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmds rpmdsFree(rpmds ds);
 
 /** \ingroup rpmds
@@ -134,6 +138,7 @@ rpmds rpmdsFree(rpmds ds);
  * @param flags		unused
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags);
 
 /** \ingroup rpmds
@@ -142,6 +147,7 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags);
  * @param ds		dependency set
  * @return		new formatted dependency (malloc'ed)
  */
+RPM_PUBLIC_API
 char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
 
 /** \ingroup rpmds
@@ -151,6 +157,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
@@ -161,6 +168,7 @@ rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
@@ -168,6 +176,7 @@ rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlag
  * @param ds		dependency set
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsCurrent(rpmds ds);
 
 /** \ingroup rpmds
@@ -176,6 +185,7 @@ rpmds rpmdsCurrent(rpmds ds);
  * @param h             header
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmdsPutToHeader(rpmds ds, Header h);
 
 /** \ingroup rpmds
@@ -183,6 +193,7 @@ int rpmdsPutToHeader(rpmds ds, Header h);
  * @param ds		dependency set
  * @return		current count
  */
+RPM_PUBLIC_API
 int rpmdsCount(const rpmds ds);
 
 /** \ingroup rpmds
@@ -190,6 +201,7 @@ int rpmdsCount(const rpmds ds);
  * @param ds		dependency set
  * @return		current index
  */
+RPM_PUBLIC_API
 int rpmdsIx(const rpmds ds);
 
 /** \ingroup rpmds
@@ -198,6 +210,7 @@ int rpmdsIx(const rpmds ds);
  * @param ix		new index
  * @return		new index, -1 on error
  */
+RPM_PUBLIC_API
 int rpmdsSetIx(rpmds ds, int ix);
 
 /** \ingroup rpmds
@@ -205,6 +218,7 @@ int rpmdsSetIx(rpmds ds, int ix);
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmdsDNEVR(const rpmds ds);
 
 /** \ingroup rpmds
@@ -212,6 +226,7 @@ const char * rpmdsDNEVR(const rpmds ds);
  * @param ds		dependency set
  * @return		character
  */
+RPM_PUBLIC_API
 char rpmdsD(const rpmds ds);
 
 /** \ingroup rpmds
@@ -219,6 +234,7 @@ char rpmdsD(const rpmds ds);
  * @param deptype	character
  * @return		type of dependency
  */
+RPM_PUBLIC_API
 rpmTagVal rpmdsDToTagN(char deptype);
 
 /** \ingroup rpmds
@@ -226,6 +242,7 @@ rpmTagVal rpmdsDToTagN(char deptype);
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmdsN(const rpmds ds);
 
 /** \ingroup rpmds
@@ -233,6 +250,7 @@ const char * rpmdsN(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
  */
+RPM_PUBLIC_API
 const char * rpmdsEVR(const rpmds ds);
 
 /** \ingroup rpmds
@@ -240,6 +258,7 @@ const char * rpmdsEVR(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency trigger index, -1 on invalid
  */
+RPM_PUBLIC_API
 int rpmdsTi(const rpmds ds);
 
 /** \ingroup rpmds
@@ -247,6 +266,7 @@ int rpmdsTi(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmsenseFlags rpmdsFlags(const rpmds ds);
 
 /** \ingroup rpmds
@@ -254,6 +274,7 @@ rpmsenseFlags rpmdsFlags(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency type, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmTagVal rpmdsTagN(const rpmds ds);
 
 /** \ingroup rpmds
@@ -261,6 +282,7 @@ rpmTagVal rpmdsTagN(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency type version tag, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmTagVal rpmdsTagEVR(const rpmds ds);
 
 /** \ingroup rpmds
@@ -268,6 +290,7 @@ rpmTagVal rpmdsTagEVR(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency type flags tag, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmTagVal rpmdsTagF(const rpmds ds);
 
 /** \ingroup rpmds
@@ -275,6 +298,7 @@ rpmTagVal rpmdsTagF(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency type trigger index tag, 0 on invalid
  */
+RPM_PUBLIC_API
 rpmTagVal rpmdsTagTi(const rpmds ds);
 
 /** \ingroup rpmds
@@ -283,6 +307,7 @@ rpmTagVal rpmdsTagTi(const rpmds ds);
  * @param ds		dependency set
  * @return		header instance of dependency (0 for not installed)
  */
+RPM_PUBLIC_API
 unsigned int rpmdsInstance(rpmds ds);
 
 /** \ingroup rpmds
@@ -290,6 +315,7 @@ unsigned int rpmdsInstance(rpmds ds);
  * @param ds		dependency set
  * @return		1 if weak, 0 if not
  */
+RPM_PUBLIC_API
 int rpmdsIsWeak(rpmds ds);
 
 /** \ingroup rpmds
@@ -297,6 +323,7 @@ int rpmdsIsWeak(rpmds ds);
  * @param ds		dependency set
  * @return		1 if reversed, 0 if not
  */
+RPM_PUBLIC_API
 int rpmdsIsReverse(rpmds ds);
 
 /** \ingroup rpmds
@@ -305,6 +332,7 @@ int rpmdsIsReverse(rpmds ds);
  * @param[out] sysuser	sysusers.d line if true (malloced), may be NULL
  * @return		1 if reversed, 0 if not
  */
+RPM_PUBLIC_API
 int rpmdsIsSysuser(rpmds ds, char **sysuser);
 
 /** \ingroup rpmds
@@ -312,6 +340,7 @@ int rpmdsIsSysuser(rpmds ds, char **sysuser);
  * @param ds		dependency set
  * @return		current dependency color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmdsColor(const rpmds ds);
 
 /** \ingroup rpmds
@@ -320,6 +349,7 @@ rpm_color_t rpmdsColor(const rpmds ds);
  * @param color		new dependency color
  * @return		previous dependency color
  */
+RPM_PUBLIC_API
 rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color);
 
 /** \ingroup rpmds
@@ -327,6 +357,7 @@ rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color);
  * @param ds		dependency set
  * @return		dependency set iterator index, -1 on termination
  */
+RPM_PUBLIC_API
 int rpmdsNext(rpmds ds);
 
 /** \ingroup rpmds
@@ -334,6 +365,7 @@ int rpmdsNext(rpmds ds);
  * @param ds		dependency set
  * @return		dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsInit(rpmds ds);
 
 /** \ingroup rpmds
@@ -342,6 +374,7 @@ rpmds rpmdsInit(rpmds ds);
  * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
+RPM_PUBLIC_API
 int rpmdsFind(rpmds ds, const rpmds ods);
 
 /** \ingroup rpmds
@@ -350,6 +383,7 @@ int rpmdsFind(rpmds ds, const rpmds ods);
  * @param ods		dependency set to merge
  * @return		number of merged dependencies, -1 on error
  */
+RPM_PUBLIC_API
 int rpmdsMerge(rpmds * dsp, rpmds ods);
 
 /** \ingroup rpmds
@@ -360,6 +394,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods);
  * @param ods           dependency set element to find.
  * @return              dependency index (or -1 if not found)
  **/
+RPM_PUBLIC_API
 int rpmdsSearch(rpmds ds, rpmds ods);
 
 /** \ingroup rpmds
@@ -368,6 +403,7 @@ int rpmdsSearch(rpmds ds, rpmds ods);
  * @param B		2nd dependency
  * @return		1 if dependencies overlap, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmdsCompare(const rpmds A, const rpmds B);
 
 /** \ingroup rpmds
@@ -377,6 +413,7 @@ int rpmdsCompare(const rpmds A, const rpmds B);
  * @param nopromote	unused
  * @return		1 if any dependency overlaps, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
 
 /** \ingroup rpmds
@@ -387,6 +424,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
  * @param nopromote	unused
  * @return		1 if any dependency overlaps, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
 
 /** \ingroup rpmds
@@ -396,6 +434,7 @@ int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
  * @param nopromote	unused
  * @return		1 if dependency overlaps, 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
 
 /**
@@ -404,6 +443,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmdsRpmlib(rpmds * dsp, const void * tblp);
 
 /** \ingroup rpmds
@@ -414,6 +454,7 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp);
  * @param flags		unused
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags);
 
 /** \ingroup rpmds
@@ -424,6 +465,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsThisPool(rpmstrPool pool,
 		    Header h, rpmTagVal tagN, rpmsenseFlags Flags);
 
@@ -436,6 +478,7 @@ rpmds rpmdsThisPool(rpmstrPool pool,
  * @param Flags		comparison flags
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
 		      const char * N, const char * EVR, rpmsenseFlags Flags);
 
@@ -449,6 +492,7 @@ rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
  * @param triggerIndex	trigger index
  * @return		new dependency set
  */
+RPM_PUBLIC_API
 rpmds rpmdsSinglePoolTix(rpmstrPool pool, rpmTagVal tagN,
 			    const char * N, const char * EVR, 
 			    rpmsenseFlags Flags, int triggerIndex);
@@ -460,6 +504,7 @@ rpmds rpmdsSinglePoolTix(rpmstrPool pool, rpmTagVal tagN,
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
+RPM_PUBLIC_API
 int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
 
 
@@ -494,6 +539,7 @@ typedef rpmRC (*rpmrichParseFunction) (void *cbdata, rpmrichParseType type,
  * @param cbdata	callback function data
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata);
 
 /**
@@ -505,6 +551,7 @@ rpmRC rpmrichParse(const char **dstrp, char **emsg, rpmrichParseFunction cb, voi
  * @param tagN		type of dependency
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmrichParseForTag(const char **dstrp, char **emsg, rpmrichParseFunction cb, void *cbdata, rpmTagVal tagN);
 
 
@@ -513,6 +560,7 @@ rpmRC rpmrichParseForTag(const char **dstrp, char **emsg, rpmrichParseFunction c
  * @param dep		the dependency
  * @return		1 is dependency is a rich 0 otherwise
  */
+RPM_PUBLIC_API
 int rpmdsIsRich(rpmds dep);
 
 /**
@@ -520,6 +568,7 @@ int rpmdsIsRich(rpmds dep);
  * @param op		the dependency op
  * @return		constant string, do not free
  */
+RPM_PUBLIC_API
 const char *rpmrichOpStr(rpmrichOp op);
 
 /**
@@ -531,6 +580,7 @@ const char *rpmrichOpStr(rpmrichOp op);
  * @param emsg		returns the error string
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmdsParseRichDep(rpmds dep, rpmds *leftds, rpmds *rightds, rpmrichOp *op, char **emsg);
 
 #ifdef __cplusplus

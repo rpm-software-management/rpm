@@ -46,6 +46,7 @@ enum FCOLOR_e {
  * @param fc		file classifier
  * @param fp		output file handle (NULL for stderr)
  */
+RPM_PUBLIC_API
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp);
 
 /** \ingroup rpmfc
@@ -53,6 +54,7 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp);
  * @param fc		file classifier
  * @return		NULL always
  */
+RPM_PUBLIC_API
 rpmfc rpmfcFree(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -61,6 +63,7 @@ rpmfc rpmfcFree(rpmfc fc);
  * @param flags		(unused)
  * @return		new file classifier
  */
+RPM_PUBLIC_API
 rpmfc rpmfcCreate(const char *rootDir, rpmFlags flags);
 
 /** \ingroup rpmfc
@@ -70,6 +73,7 @@ rpmfc rpmfcCreate(const char *rootDir, rpmFlags flags);
  * @param fmode		files mode_t array (or NULL)
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode);
 
 /** \ingroup rpmfc
@@ -77,6 +81,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode);
  * @param fc		file classifier
  * @return		RPMRC_OK on success
  */
+RPM_PUBLIC_API
 rpmRC rpmfcApply(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -84,6 +89,7 @@ rpmRC rpmfcApply(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc provides
  */
+RPM_PUBLIC_API
 rpmds rpmfcProvides(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -91,6 +97,7 @@ rpmds rpmfcProvides(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc requires
  */
+RPM_PUBLIC_API
 rpmds rpmfcRequires(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -98,6 +105,7 @@ rpmds rpmfcRequires(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc recommends
  */
+RPM_PUBLIC_API
 rpmds rpmfcRecommends(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -105,6 +113,7 @@ rpmds rpmfcRecommends(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc suggests
  */
+RPM_PUBLIC_API
 rpmds rpmfcSuggests(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -112,6 +121,7 @@ rpmds rpmfcSuggests(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc supplements
  */
+RPM_PUBLIC_API
 rpmds rpmfcSupplements(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -119,6 +129,7 @@ rpmds rpmfcSupplements(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc enhances
  */
+RPM_PUBLIC_API
 rpmds rpmfcEnhances(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -126,6 +137,7 @@ rpmds rpmfcEnhances(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc conflicts
  */
+RPM_PUBLIC_API
 rpmds rpmfcConflicts(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -133,6 +145,7 @@ rpmds rpmfcConflicts(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc obsoletes
  */
+RPM_PUBLIC_API
 rpmds rpmfcObsoletes(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -140,6 +153,7 @@ rpmds rpmfcObsoletes(rpmfc fc);
  * @param fc		file classifier
  * @return		rpmds dependency set of fc obsoletes
  */
+RPM_PUBLIC_API
 rpmds rpmfcOrderWithRequires(rpmfc fc);
 
 /** \ingroup rpmfc
@@ -148,6 +162,7 @@ rpmds rpmfcOrderWithRequires(rpmfc fc);
  * @param tagN		name tag of the wanted dependency
  * @return		rpmds dependency set of fc requires
  */
+RPM_PUBLIC_API
 rpmds rpmfcDependencies(rpmfc fc, rpmTagVal tagN);
 
 #ifdef __cplusplus

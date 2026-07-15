@@ -96,6 +96,7 @@ static rpmRC ima_init(rpmPlugin plugin, rpmts ts)
 	return RPMRC_OK;
 }
 
+RPM_SYMBOL_EXPORT
 struct rpmPluginHooks_s ima_hooks = {
         .init = ima_init,
 	.fsm_file_prepare = ima_fsm_file_prepare,

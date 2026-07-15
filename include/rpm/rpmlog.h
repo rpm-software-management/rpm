@@ -72,6 +72,7 @@ typedef struct rpmlogRec_s * rpmlogRec;
  * @param rec		rpmlog record
  * @return		log message
  */
+RPM_PUBLIC_API
 const char * rpmlogRecMessage(rpmlogRec rec);
 
 /** \ingroup rpmlog
@@ -79,6 +80,7 @@ const char * rpmlogRecMessage(rpmlogRec rec);
  * @param rec		rpmlog record
  * @return		log priority
  */
+RPM_PUBLIC_API
 rpmlogLvl rpmlogRecPriority(rpmlogRec rec);
 
 typedef void * rpmlogCallbackData;
@@ -98,12 +100,14 @@ typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data);
  * @param mask		log mask to filter by (0 is no filtering)
  * @return		number of messages matching the mask
  */
+RPM_PUBLIC_API
 int rpmlogGetNrecsByMask(unsigned mask);
 
 /** \ingroup rpmlog
  * Return number of rpmError() ressages.
  * @return		number of messages
  */
+RPM_PUBLIC_API
 int rpmlogGetNrecs(void)	;
 
 /** \ingroup rpmlog
@@ -111,24 +115,28 @@ int rpmlogGetNrecs(void)	;
  * @param f		file handle (NULL uses stderr)
  * @param mask		log mask to filter by (0 is no filtering)
  */
+RPM_PUBLIC_API
 void rpmlogPrintByMask(FILE *f, unsigned mask);
 
 /** \ingroup rpmlog
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
+RPM_PUBLIC_API
 void rpmlogPrint(FILE *f);
 
 /** \ingroup rpmlog
  * Close desriptor used to write to system logger.
  * @todo Implement.
  */
+RPM_PUBLIC_API
 void rpmlogClose (void);
 
 /** \ingroup rpmlog
  * Open connection to system logger.
  * @todo Implement.
  */
+RPM_PUBLIC_API
 void rpmlogOpen (const char * ident, int option, int facility);
 
 /** \ingroup rpmlog
@@ -136,17 +144,20 @@ void rpmlogOpen (const char * ident, int option, int facility);
  * @param mask		log mask (0 is no operation)
  * @return		previous log mask
  */
+RPM_PUBLIC_API
 int rpmlogSetMask (int mask);
 
 /** \ingroup rpmlog
  * Generate a log message using FMT string and option arguments.
  */
+RPM_PUBLIC_API
 void rpmlog (int code, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
 
 /** \ingroup rpmlog
  * Return text of last rpmError() message.
  * @return		text of last message
  */
+RPM_PUBLIC_API
 const char * rpmlogMessage(void);
 
 /** \ingroup rpmlog
@@ -156,6 +167,7 @@ const char * rpmlogMessage(void);
  *	and parsed IMHO.
  * @return		code from last message
  */
+RPM_PUBLIC_API
 int rpmlogCode(void);
 
 /** \ingroup rpmlog
@@ -163,6 +175,7 @@ int rpmlogCode(void);
  * @param pri		log priority
  * @return		message prefix (or "" for none)
  */
+RPM_PUBLIC_API
 const char * rpmlogLevelPrefix(rpmlogLvl pri);
 
 /** \ingroup rpmlog
@@ -171,6 +184,7 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri);
  * @param data		callback private (user) data
  * @return		previous rpmlog callback function
  */
+RPM_PUBLIC_API
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data);
 
 /** \ingroup rpmlog
@@ -178,6 +192,7 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data);
  * @param fp		rpmlog file handle (NULL uses stdout/stderr)
  * @return		previous rpmlog file handle
  */
+RPM_PUBLIC_API
 FILE * rpmlogSetFile(FILE * fp);
 
 #define	rpmSetVerbosity(_lvl)	\

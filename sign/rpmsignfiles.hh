@@ -25,7 +25,6 @@ extern "C" {
  *                      Subject Key ID from an x509 certificate.
  * @return		RPMRC_OK on success
  */
-RPM_GNUC_INTERNAL
 rpmRC rpmSignFiles(Header sigh, Header h, const char *key, char *keypass, uint32_t keyid);
 
 #endif /* H_RPMSIGNFILES */

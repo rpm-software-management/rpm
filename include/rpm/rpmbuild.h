@@ -81,6 +81,7 @@ typedef	struct rpmBuildArguments_s *	BTA_t;
  * @param buildRoot	buildRoot override or NULL for default
  * @return		new spec control structure
  */
+RPM_PUBLIC_API
 rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot);
 
@@ -89,6 +90,7 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
  * @param spec		path to spec file
  * @return		Header
  */
+RPM_PUBLIC_API
 Header rpmSpecSourceHeader(rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -97,6 +99,7 @@ Header rpmSpecSourceHeader(rpmSpec spec);
  * @param spec		parsed spec control structure
  * @return		rpm problem set or NULL on no problems
  */
+RPM_PUBLIC_API
 rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
 
 /** \ingroup rpmbuild
@@ -105,6 +108,7 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
  * @param tag		dependency tag
  * @return		dependency set of tag (or NULL)
  */
+RPM_PUBLIC_API
 rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag);
 
 /** \ingroup rpmbuild
@@ -116,6 +120,7 @@ rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag);
  *			RPMRC_MISSINGBUILDREQUIRES on missing build
  *			requirements
  */
+RPM_PUBLIC_API
 int rpmSpecBuild(rpmts ts, rpmSpec spec, BTA_t buildArgs);
 
 #ifdef __cplusplus

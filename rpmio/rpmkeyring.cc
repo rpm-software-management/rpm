@@ -17,6 +17,7 @@
 
 #include "debug.h"
 
+RPM_PRIVATE_API
 int _print_pkts = 0;
 
 struct rpmPubkey_s {
