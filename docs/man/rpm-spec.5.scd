@@ -408,7 +408,7 @@ An example is shown in an indented block where applicable.
 	Release: 1
 	```
 
-*RemovePathPostfixes:* _POSTFIX1_[;_POSTFIX2_ ...]
+*RemovePathPostfixes:* _POSTFIX1_[:_POSTFIX2_ ...]
 	Colon separated lists of path postfixes that are removed from the
 	end of filenames when adding those files to the package.
 	Used on sub-package level.
