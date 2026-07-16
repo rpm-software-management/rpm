@@ -1170,6 +1170,15 @@ rpm --eval '%{lua: rpm.undefine("define")}'
 [[error: Macro %define is a built-in (%undefine)
 error: lua script failed: [string "<lua>"]:1: error undefining macro
 ]])
+
+RPMTEST_CHECK([
+rpm --eval '%{lua: macros.define = nil}'
+],
+[1],
+[],
+[[error: Macro %define is a built-in (%undefine)
+error: lua script failed: [string "<lua>"]:1: error undefining macro define
+]])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([lua rpm extensions 2])
