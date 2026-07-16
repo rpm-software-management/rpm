@@ -3163,17 +3163,8 @@ runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
 RPMTEST_CHECK([[
 runroot rpmkeys --import /data/keys/unknown/rpm.org-v6-mldsa87-test.asc
 ]],
-[1],
-[],
-[stderr])
-
-RPMTEST_CHECK([
-grep "^error:" stderr
-],
 [0],
-[error: Certificate AED054589CBF8584:
-error: /data/keys/unknown/rpm.org-v6-mldsa87-test.asc: key 1 import failed.
-],
+[],
 [])
 
 RPMTEST_CHECK([
@@ -3181,7 +3172,7 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm
 ],
 [0],
 [/data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm:
-    Header OpenPGP V6 ML-DSA-87+Ed448/SHA512 signature, key ID db11ab41d7ae9cd3: NOTTRUSTED
+    Header OpenPGP V6 ML-DSA-87+Ed448/SHA512 signature, key fingerprint: aed054589cbf858445cfea63e827a16cc45ee27ff4b97d8eb8ec71d34684f4e6: OK
     Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
     Header SHA256 digest: OK
     Payload SHA256 digest: OK
