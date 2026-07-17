@@ -311,9 +311,6 @@ endif()
 find_program(AWK gawk mawk nawk awk REQUIRED)
 mark_as_advanced(AWK)
 
-find_program(FIND_DEBUGINFO find-debuginfo)
-mark_as_advanced(FIND_DEBUGINFO)
-
 find_program(PODMAN podman)
 mark_as_advanced(PODMAN)
 
