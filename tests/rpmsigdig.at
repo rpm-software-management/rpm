@@ -2513,6 +2513,20 @@ gpg2 --import /data/keys/rpm.org-rsa-2048-test.secret
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem /tmp/hello-2.0-1.x86_64.rpm
 
 RPMTEST_CHECK([[
+fskpass=0123456789012345678901234567890123456789012345678901234567890123456789
+openssl pkey -in /data/keys/privkey.pem -aes-256-cbc \
+	-passout pass:"$fskpass" -out /tmp/privkey-encrypted.pem
+cp /data/RPMS/hello-2.0-1.x86_64.rpm /tmp/hello-encrypted-key.rpm
+printf '%s\n' "$fskpass" | \
+    script -qec "rpmsign --key-id 4344591E1964C5FC --addsign --signfiles \
+	--fskpass --fskpath=/tmp/privkey-encrypted.pem \
+	/tmp/hello-encrypted-key.rpm" /dev/null >/dev/null
+]],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([[
 rpmsign --key-id 4344591E1964C5FC --addsign --signfiles --fskpath=/data/keys/privkey.pem --define "_file_signing_key_id 9000000000" /tmp/hello-2.0-1.x86_64.rpm
 ]],
 [1],
