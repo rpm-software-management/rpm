@@ -237,7 +237,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 
 rpmstrPool rpmstrPoolCreate(void)
 {
-    rpmstrPool pool = (rpmstrPool)xcalloc(1, sizeof(*pool));
+    rpmstrPool pool = new rpmstrPool_s{};
 
     pool->offs_alloced = STROFFS_CHUNK;
     pool->offs = (const char **)xcalloc(pool->offs_alloced, sizeof(*pool->offs));
@@ -267,7 +267,7 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 	pool->chunks[i] = _free(pool->chunks[i]);
     }
     free(pool->chunks);
-    free(pool);
+    delete pool;
 
     return NULL;
 }
