@@ -6,6 +6,7 @@ add_executable(rpmkeys rpmkeys.cc cliutils)
 add_executable(rpmsign rpmsign.cc cliutils)
 add_executable(rpmbuild rpmbuild.cc cliutils)
 add_executable(rpmspec rpmspec.cc cliutils)
+add_executable(rpminspector rpminspector.cc cliutils)
 
 add_executable(rpmdeps rpmdeps.cc)
 add_executable(rpmgraph rpmgraph.cc)
@@ -33,6 +34,7 @@ endif()
 
 target_include_directories(rpmlua PRIVATE ${CMAKE_SOURCE_DIR}/rpmio)
 target_include_directories(rpmgraph PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_include_directories(rpminspector PRIVATE ${CMAKE_SOURCE_DIR}/lib)
 
 if (READLINE_FOUND)
 	target_link_libraries(rpmspec PRIVATE PkgConfig::READLINE)
@@ -64,7 +66,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rpm2cpio TYPE BIN)
 
 install(TARGETS
 	rpm rpmdb rpmkeys rpmsign rpmbuild rpmspec
-	rpmlua rpmgraph rpmuncompress
+	rpmlua rpmgraph rpmuncompress rpminspector
 )
 install(TARGETS rpmdeps rpmdump DESTINATION ${RPM_CONFIGDIR})
 

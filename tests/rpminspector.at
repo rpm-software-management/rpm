@@ -1,0 +1,76 @@
+AT_BANNER([rpminspector])
+
+RPMTEST_SETUP([rpminspector basic])
+AT_KEYWORDS([rpminspector])
+
+RPMTEST_CHECK([
+runroot rpminspector
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpminspector /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpminspector --lead --payload /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpminspector --lead /etc/hostname
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpminspector --lead /data/RPMS/hello-2.0-1.x86_64.rpm | wc -c
+],
+[0],
+[96
+],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpminspector outdir])
+AT_KEYWORDS([rpminspector])
+
+RPMTEST_CHECK([
+runroot rpminspector --outdir /tmp/inspect /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot ls /tmp/inspect/ | sort
+],
+[0],
+[lead
+main_header
+payload
+signature
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpminspector --lead --signature --outdir /tmp/inspect2 /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot ls /tmp/inspect2/ | sort
+],
+[0],
+[lead
+signature
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpminspector --outdir /tmp/inspect3 /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot sh -c 'cat /tmp/inspect3/lead /tmp/inspect3/signature /tmp/inspect3/main_header /tmp/inspect3/payload | cmp -s /data/RPMS/hello-2.0-1.x86_64.rpm - && echo match'
+],
+[0],
+[match
+],
+[])
+RPMTEST_CLEANUP
