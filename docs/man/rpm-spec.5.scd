@@ -581,6 +581,7 @@ An example is shown in an indented block where applicable.
 		Additional files manifest to be read from disk after
 		the build scripts have completed.
 		May be supplied multiple times.
+		See *READ-IN FILES* for details.
 
 	*-n*
 		Interpret _SUBNAME_ as the full package name.
@@ -863,6 +864,7 @@ RPM-specific environment variables are set:
 - *RPM_PACKAGE_RELEASE*: Rpm release of the source package
 - *RPM_SOURCE_DIR*: The source directory of the package
 - *RPM_SPECPARTS_DIR*: The directory of dynamically generated spec parts
+- *RPM_READINS_DIR*: The directory of *READ-IN FILES*
 
 Note: many of these have macro counterparts which may seem more convenient
 and consistent with the rest of the spec, but one should always use the
@@ -948,6 +950,21 @@ script.
 
 	Properties: Ot
 
+# READ-IN FILES
+Some sections, such as *%files* manifests or transaction scriptlets, can have (a
+part of) their contents generated on-the-fly during the build, written to a file
+on disk and finally read in using the *-f* _FILE_ option.
+
+The file(s) should be written into the *$RPM_READINS_DIR* directory (created at
+the start of the build automatically) by a build scriptlet and referred to by a
+_FILE_ relative to that directory.
+
+For backwards compatibility, _FILE_ can also be absolute (with the leading */*).
+If a relative _FILE_ is not found, the *%{builddir}/%{?buildsubdir}* directory
+is used in place of *$RPM_READINS_DIR* for the lookup.
+
+Added: 6.2.0
+
 # CONDITIONALS
 The spec supports several conditionals which can appear anywhere in the
 spec, and can nest.
@@ -1007,7 +1024,8 @@ _EXPRESSION_
 	See *Expression expansion* in *rpm-macros*(7).
 
 _FILE_
-	A relative filename, typically just the basename component.
+	A relative filename, typically just the basename component, unless
+	stated otherwise.
 
 _LANG_
 	*locale*(7) language name.
