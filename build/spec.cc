@@ -223,6 +223,7 @@ rpmSpec newSpec(void)
     
     spec->buildRoot = NULL;
     spec->buildDir = NULL;
+    spec->readinPath = NULL;
 
     spec->buildRestrictions = headerNew();
     spec->BANames = NULL;
@@ -251,6 +252,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->buildRoot = _free(spec->buildRoot);
     spec->buildDir = _free(spec->buildDir);
     spec->specFile = _free(spec->specFile);
+    spec->readinPath = _free(spec->readinPath);
 
     closeSpec(spec);
 

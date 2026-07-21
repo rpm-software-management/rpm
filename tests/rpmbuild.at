@@ -489,6 +489,7 @@ runroot find /build/BUILD|sort
 /build/BUILD/simple-1.0-build/BUILDROOT/opt
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/READINS
 /build/BUILD/simple-1.0-build/SPECPARTS
 /build/BUILD/simple-1.0-build/rpmbuild.env
 /build/BUILD/simple-1.0-build/simple
@@ -509,6 +510,7 @@ runroot find /build/BUILD|sort
 /build/BUILD/simple-1.0-build/BUILDROOT/opt
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/READINS
 /build/BUILD/simple-1.0-build/SPECPARTS
 /build/BUILD/simple-1.0-build/rpmbuild.env
 /build/BUILD/simple-1.0-build/simple-1.0
@@ -4185,4 +4187,15 @@ runroot rpmbuild -bb --quiet --target x86_64 --with hello32 \
 [warning: Binaries not matching package arch (hello-1.0-1.x86_64):
     /usr/local/bin/hello (ELF 32-bit)
 ])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmbuild read-in files])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+rpmbuild -bb --quiet ${RPMDATA}/SPECS/readin.spec
+rpmbuild -bb --quiet --with setup ${RPMDATA}/SPECS/readin.spec
+],
+[0],
+[],
+[ignore])
 RPMTEST_CLEANUP

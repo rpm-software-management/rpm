@@ -66,6 +66,7 @@ _PATHPREFIX_
 
 *-f* _PATH_
 	Read the scriptlet body from the file at _PATH_ (during build).
+	See *READ-IN FILES* in *rpm-spec*(5) for details.
 
 *-n*
 	Interpret _NAME_ as a full package name.
