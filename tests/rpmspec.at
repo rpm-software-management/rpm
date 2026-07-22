@@ -421,6 +421,15 @@ rpmspec --sources ${abs_srcdir}/data/SPECS/hello-sources.spec
 ],
 [0],
 [hello-1.0 %tar.gz
+hello-addon ! tar\.gz
+],
+[])
+
+RPMTEST_CHECK([
+rpmspec --sources ${abs_srcdir}/data/SPECS/hello-sources.spec --full
+],
+[0],
+[hello-1.0 %tar.gz
 https://example.com/hello-addon ! tar\.gz
 ],
 [])
@@ -430,8 +439,35 @@ rpmspec --patches ${abs_srcdir}/data/SPECS/hello-sources.spec
 ],
 [0],
 [hello-1.0-m<o>dernize&renew.patch
+hello-1.0-inst(a);;.patch
+],
+[])
+
+RPMTEST_CHECK([
+rpmspec --patches ${abs_srcdir}/data/SPECS/hello-sources.spec --full
+],
+[0],
+[hello-1.0-m<o>dernize&renew.patch
 http://example.com/hello-1.0-inst(a);;.patch
 ],
 [])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP([rpmspec --full option without --soruces/patches])
+RPMTEST_CHECK([
+rpmspec --full ${abs_srcdir}/data/SPECS/hello-sources.spec
+],
+[1],
+[],
+[rpmspec: --full is only valid for --sources/patches modes
+])
+
+RPMTEST_CHECK([
+rpmspec --full
+],
+[1],
+[],
+[rpmspec: --full is only valid for --sources/patches modes
+])
 
 RPMTEST_CLEANUP

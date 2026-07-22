@@ -35,12 +35,15 @@ generated during a build of a package like auto generated dependencies.
 	after parsing a spec. Mainly useful for troubleshooting.
 
 *--sources*
-	List all source files and URLs defined in the spec file(s).
+	List all source file URLs defined in the spec file(s).
 	Output separated by newlines.
 
 *--patches*
-	List all patch files and URLs defined in the spec file(s).
+	List all patch file URLs defined in the spec file(s).
 	Output separated by newlines.
+
+*--full*
+	Switch used with --patches or --sources to list absolute paths.
 	
 # ARGUMENTS
 _SPECFILE_
