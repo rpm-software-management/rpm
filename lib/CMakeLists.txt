@@ -33,7 +33,7 @@ target_sources(librpm PRIVATE
 	rpmdb.cc rpmdb_internal.hh
 	fprint.cc fprint.hh tagname.cc rpmtd.cc tagtbl.inc
 	cpio.cc cpio.hh depends.cc order.cc formats.cc tagexts.cc fsm.cc fsm.hh
-	manifest.cc manifest.hh package.cc
+	manifest.cc manifest.hh package.cc rpmpayload.cc rpmpayload.hh
 	poptALL.cc poptI.cc poptQV.cc psm.cc query.cc
 	rpmal.cc rpmal.hh rpmchecksig.cc rpmds.cc rpmds_internal.hh
 	rpmfi.cc rpmfi_internal.hh

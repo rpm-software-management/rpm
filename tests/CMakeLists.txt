@@ -54,7 +54,17 @@ set(TESTSUITE_AT
 	rpmconfig2.at
 	rpmconfig3.at
 	rpmbrp.at
+	rpmalign.at
+	rpmpayloadconsumer.at
+	rpmcfrpython.at
+	rpmuncompress.at
 )
+
+# These tests exercise the optional copy_file_range() path, including reflink
+# optimization and bounded fallback progress.
+if (HAVE_COPY_FILE_RANGE)
+	list(APPEND TESTSUITE_AT rpmcfr.at)
+endif()
 
 FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at)
 FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rpmtests.at "m4_define([RPM_PGP], [${PGP}])\n")
@@ -63,7 +73,10 @@ foreach(at ${TESTSUITE_AT})
 endforeach()
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint readpkgnullts rpmdig
-	      importkey oldtxn)
+	      importkey oldtxn rpmcorruptpad rpmuncompresspkg)
+if (HAVE_COPY_FILE_RANGE)
+	list(APPEND TESTPROGS rpmcfrprobe)
+endif()
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpm)

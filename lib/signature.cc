@@ -89,6 +89,28 @@ exit:
     return rc;
 }
 
+void rpmUnwrapSignature(Header *sighp)
+{
+    struct rpmtd_s td;
+    Header oh = NULL;
+
+    if (headerGet(*sighp, RPMTAG_HEADERSIGNATURES, &td,
+		  HEADERGET_DEFAULT)) {
+	oh = headerImport(td.data, td.count, HEADERIMPORT_COPY);
+	rpmtdFreeData(&td);
+    } else {
+	oh = headerLink(*sighp);
+    }
+
+    if (oh) {
+	Header nh = headerCopy(oh);
+	headerFree(*sighp);
+	*sighp = headerLink(nh);
+	headerFree(nh);
+	headerFree(oh);
+    }
+}
+
 int rpmWriteSignature(FD_t fd, Header sigh)
 {
     static const uint8_t zeros[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -244,5 +266,4 @@ exit:
     headerFree(sig);
     return rc;
 }
-
 

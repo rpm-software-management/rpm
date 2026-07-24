@@ -17,6 +17,9 @@
  */
 rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
 
+/* Convert an imported signature header into an independently mutable copy. */
+void rpmUnwrapSignature(Header *sighp);
+
 /** \ingroup signature
  * Write signature header.
  * @param fd		file handle

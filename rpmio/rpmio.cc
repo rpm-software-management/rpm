@@ -1685,6 +1685,26 @@ int Fcntl(FD_t fd, int op, void *lip)
     return fcntl(Fileno(fd), op, lip);
 }
 
+int fdIsPlain(FD_t fd)
+{
+    if (fd == NULL || fd->fps == NULL)
+	return 0;
+    return (fd->fps->io == fdio || fd->fps->io == ufdio);
+}
+
+int fdWriteZeros(FD_t fd, off_t size)
+{
+    char zeros[BUFSIZ] = {};
+
+    while (size > 0) {
+	size_t n = size > (off_t)sizeof(zeros) ? sizeof(zeros) : (size_t)size;
+	if (Fwrite(zeros, 1, n, fd) != (ssize_t)n)
+	    return -1;
+	size -= n;
+    }
+    return 0;
+}
+
 rpmop fdOp(FD_t fd, fdOpX opx)
 {
     rpmop op = NULL;

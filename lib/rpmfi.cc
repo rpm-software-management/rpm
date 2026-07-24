@@ -9,8 +9,10 @@
 #include <vector>
 #include <memory>
 #include <atomic>
+#include <limits>
 
 #include <rpm/rpmlog.h>
+#include <rpm/rpmcrypto.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>	/* XXX rpmDoDigest */
 #include <rpm/rpmstring.h>
@@ -20,6 +22,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <unistd.h>
 
 #include "rpmfi_internal.hh"
 #include "rpmte_internal.hh"	/* relocations */
@@ -27,6 +30,7 @@
 #include "fsm.hh"	/* rpmpsm stuff for now */
 #include "rpmug.hh"
 #include "rpmio_internal.hh"   /* fdInit/FiniDigest */
+#include "rpmalign.hh"	/* rpmAlignIsValid */
 
 #include "debug.h"
 
@@ -113,6 +117,7 @@ struct rpmfiles_s {
     struct fingerPrint * fps;	/*!< File fingerprint(s). */
 
     int digestalgo;		/*!< File digest algorithm */
+    uint32_t align;		/*!< Payload content alignment (0 = none) */
     uint32_t *signatureoffs;	/*!< File signature offsets */
     int veritysiglength;	/*!< Verity signature length */
     uint16_t verityalgo;	/*!< Verity algorithm */
@@ -1676,6 +1681,10 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 
     fi->magic = RPMFIMAGIC;
     fi->fiflags = flags;
+    /* alignment must be a power of two; ignore untrusted junk */
+    fi->align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+    if (!rpmAlignIsValid(fi->align))
+	fi->align = 0;
     /* private or shared pool? */
     fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
 
@@ -1981,6 +1990,9 @@ rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files, int itype)
     }
     if (fi) {
 	fi->archive = archive;
+	/* skip content alignment padding */
+	if (files->align)
+	    rpmcpioSetReadAlign(archive, files->align);
     } else {
 	rpmcpioFree(archive);
     }
@@ -2000,6 +2012,12 @@ rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files)
 	rpmcpioFree(archive);
     }
     return fi;
+}
+
+void rpmfiArchiveSetWriteAlign(rpmfi fi, size_t align)
+{
+    if (fi && fi->archive)
+	rpmcpioSetWriteAlign(fi->archive, align);
 }
 
 int rpmfiArchiveClose(rpmfi fi)
@@ -2028,7 +2046,8 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
     rpmfiles files = fi->files;
 
     if (files->lfsizes) {
-	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), st.st_size);
+	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi),
+					 st.st_mode, st.st_size);
     } else {
 	const char * dn = rpmfiDN(fi);
 	char * path = rstrscat(NULL, (dn[0] == '/' && !rpmExpandNumeric("%{_noPayloadPrefix}")) ? "." : "",
@@ -2149,6 +2168,17 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     if (fi == NULL || fi->archive == NULL || fd == NULL)
 	return -1;
 
+    /* A raw copy bypasses the source FD_t stack too, so only use it when the
+     * source is untransformed and has no digest consumers of its own. */
+
+    if (rpmfiFSize(fi) <= (rpm_loff_t)std::numeric_limits<off_t>::max() &&
+	fdIsPlain(fd) && fdGetBundle(fd, 0) == NULL) {
+	rc = rpmcpioWriteFile(fi->archive, Fileno(fd), rpmfiFSize(fi));
+	if (rc != RPMCPIO_COPY_FALLBACK)
+	    return rc;
+	rc = 0;
+    }
+
     left = rpmfiFSize(fi);
 
     while (left) {
@@ -2232,7 +2262,8 @@ static int iterReadArchiveNext(rpmfi fi)
 	    /* XXX should we validate the payload matches? */
 	    free(buf);
 	}
-	rpmcpioSetExpectedFileSize(fi->archive, fsize);
+	if (rc == 0)
+	    rc = rpmcpioSetExpectedFileSize(fi->archive, mode, fsize);
 	rpmfiSetFound(fi, fx);
     } else {
 	/* Mapping error */
@@ -2325,20 +2356,75 @@ ssize_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
     return rpmcpioRead(fi->archive, buf, size);
 }
 
+/* Compare streamed content against the recorded digest; fail closed. */
+static int checkFileDigest(rpmfi fi, const void *digest, int digestalgo)
+{
+    const unsigned char *fidigest =
+	rpmfilesFDigest(fi->files, rpmfiFX(fi), NULL, NULL);
+    size_t diglen = rpmDigestLength(digestalgo);
+
+    if (digest == NULL || fidigest == NULL)
+	return RPMERR_DIGEST_MISMATCH;
+    if (memcmp(digest, fidigest, diglen) == 0)
+	return 0;
+    /* ...but in old packages, empty files have zeros for digest */
+    if (rpmfiFSize(fi) == 0 && digestalgo == RPM_HASH_MD5) {
+	std::vector<uint8_t> zeros(diglen, 0);
+	if (memcmp(zeros.data(), fidigest, diglen) == 0)
+	    return 0;
+    }
+    return RPMERR_DIGEST_MISMATCH;
+}
+
+/* Hash exactly the bytes the accelerated copy placed in the destination. */
+static int checkFileDigestFd(rpmfi fi, int fd, off_t size)
+{
+    int digestalgo = rpmfiDigestAlgo(fi);
+    DIGEST_CTX ctx = rpmDigestInit(digestalgo, RPMDIGEST_NONE);
+    void *digest = NULL;
+    off_t offset = 0;
+    int rc = RPMERR_READ_FAILED;
+    char buf[BUFSIZ * 4];
+
+    if (ctx == NULL)
+	return RPMERR_DIGEST_MISMATCH;
+
+    while (offset < size) {
+	size_t len = (size - offset > (off_t)sizeof(buf)) ?
+		     sizeof(buf) : (size_t)(size - offset);
+	ssize_t n = pread(fd, buf, len, offset);
+	if (n < 0 && errno == EINTR)
+	    continue;
+	if (n <= 0 || rpmDigestUpdate(ctx, buf, n))
+	    goto exit;
+	offset += n;
+    }
+
+    if (rpmDigestFinal(ctx, &digest, NULL, 0)) {
+	ctx = NULL;
+	goto exit;
+    }
+    ctx = NULL;
+    rc = checkFileDigest(fi, digest, digestalgo);
+
+exit:
+    rpmDigestFinal(ctx, NULL, NULL, 0);
+    free(digest);
+    return rc;
+}
+
 int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 {
     if (fi == NULL || fi->archive == NULL || fd == NULL)
 	return -1;
 
     rpm_loff_t left = rpmfiFSize(fi);
-    const unsigned char * fidigest = NULL;
     int digestalgo = 0;
     int rc = 0;
     char buf[BUFSIZ*4];
 
     if (!nodigest) {
 	digestalgo = rpmfiDigestAlgo(fi);
-	fidigest = rpmfilesFDigest(fi->files, rpmfiFX(fi), NULL, NULL);
 	fdInitDigest(fd, digestalgo, 0);
     }
 
@@ -2363,22 +2449,7 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 
 	(void) Fflush(fd);
 	fdFiniDigest(fd, digestalgo, &digest, NULL, 0);
-
-	if (digest != NULL && fidigest != NULL) {
-	    size_t diglen = rpmDigestLength(digestalgo);
-	    if (memcmp(digest, fidigest, diglen)) {
-		rc = RPMERR_DIGEST_MISMATCH;
-
-		/* ...but in old packages, empty files have zeros for digest */
-		if (rpmfiFSize(fi) == 0 && digestalgo == RPM_HASH_MD5) {
-		    std::vector<uint8_t> zeros(diglen, 0);
-		    if (memcmp(zeros.data(), fidigest, diglen) == 0)
-			rc = 0;
-		}
-	    }
-	} else {
-	    rc = RPMERR_DIGEST_MISMATCH;
-	}
+	rc = checkFileDigest(fi, digest, digestalgo);
 	free(digest);
     }
 
@@ -2389,6 +2460,50 @@ exit:
 int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 {
     return rpmfiArchiveReadToFilePsm(fi, fd, nodigest, NULL);
+}
+
+struct copyProgress_s {
+    rpmpsm psm;
+    rpm_loff_t start;
+};
+
+static void copyProgress(void *data, off_t copied)
+{
+    struct copyProgress_s *progress = (struct copyProgress_s *)data;
+    rpmpsmNotify(progress->psm, RPMCALLBACK_INST_PROGRESS,
+		 progress->start + copied);
+}
+
+int rpmfiArchiveWriteFileTo(rpmfi fi, int dst_fd, int src_fd,
+			    rpm_loff_t base, int nodigest, rpmpsm psm)
+{
+    /* Copy content out of the uncompressed package with a clone or range copy.
+     * The archive stream is left in place and skipped on the next header read. */
+    off_t size, src_off;
+    struct copyProgress_s progress = { psm, 0 };
+
+    if (fi == NULL || fi->archive == NULL)
+	return -1;
+
+    /* No payload start offset or no representable raw range. */
+    if (base == 0 || base > (rpm_loff_t)std::numeric_limits<off_t>::max() ||
+	rpmfiArchiveTell(fi) > (rpm_loff_t)std::numeric_limits<off_t>::max() ||
+	rpmfiFSize(fi) > (rpm_loff_t)std::numeric_limits<off_t>::max())
+	return RPMCPIO_COPY_FALLBACK;
+
+    size = rpmfiFSize(fi);
+    progress.start = rpmfiArchiveTell(fi);
+    /* Absolute offset of this file's content within the package. */
+    if (rpmfiArchiveTell(fi) >
+	(rpm_loff_t)std::numeric_limits<off_t>::max() - base)
+	return RPMCPIO_COPY_FALLBACK;
+    src_off = (off_t)(base + rpmfiArchiveTell(fi));
+
+    int rc = rpmcpioCopyRange(dst_fd, src_fd, src_off, 0, size,
+			      copyProgress, &progress);
+    if (rc == 0 && !nodigest)
+	rc = checkFileDigestFd(fi, dst_fd, size);
+    return rc;
 }
 
 char * rpmfileStrerror(int rc)
