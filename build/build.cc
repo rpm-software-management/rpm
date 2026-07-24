@@ -333,6 +333,7 @@ static rpmRC doBuildDir(rpmSpec spec, int test, int inPlace, StringBuf *sbp)
 			       "%{__rm} -rf '", spec->buildDir, "'\n",
 			       "%{__mkdir_p} '", spec->buildDir, "'\n",
 			       "%{__mkdir_p} '%{specpartsdir}'\n",
+			       "%{__mkdir_p} '%{readinsdir}'\n",
 			   });
 
     if (inPlace) {

@@ -2209,6 +2209,29 @@ exit:
     return rc;
 }
 
+static char *lookupReadinFile(rpmSpec spec, const char *path)
+{
+    char *filename = NULL;
+    ARGV_t dirs;
+
+    if (*path == '/')
+	return rpmGetPath(path, NULL);
+
+    dirs = argvSplitString(spec->readinPath, ":", ARGV_SKIPEMPTY);
+    for (ARGV_t d = dirs; *d; d++) {
+	char *fn = rpmGetPath(*d, "/", path, NULL);
+	struct stat sb;
+	if (stat(fn, &sb) == 0 && S_ISREG(sb.st_mode)) {
+	    filename = fn;
+	    break;
+	}
+	free(fn);
+    }
+    argvFree(dirs);
+
+    return filename;
+}
+
 int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
 		ARGV_t *avp, StringBuf *sbp)
 {
@@ -2217,15 +2240,12 @@ int readManifest(rpmSpec spec, const char *path, const char *descr, int flags,
     int lineno = 0;
     int nlines = -1;
 
-    if (*path == '/') {
-	fn = rpmGetPath(path, NULL);
-    } else {
-	fn = rpmGenPath("%{builddir}", "%{?buildsubdir}", path);
-    }
-    fd = fopen(fn, "r");
-
+    fn = lookupReadinFile(spec, path);
+    if (fn)
+	fd = fopen(fn, "r");
     if (fd == NULL) {
-	rpmlog(RPMLOG_ERR, _("Could not open %s file %s: %m\n"), descr, fn);
+	rpmlog(RPMLOG_ERR, _("Could not open %s file %s: %m\n"),
+		descr, fn ? fn : path);
 	goto exit;
     }
 

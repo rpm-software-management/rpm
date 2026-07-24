@@ -145,6 +145,10 @@
 #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 %__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
 
+# location of debuginfo manifest files, comment out to revert to original path
+#%_debuginfo_manifests_dir  %{builddir}/%{?buildsubdir}
+%_debuginfo_manifests_dir   %{readinsdir}
+
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
@@ -168,6 +172,7 @@
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
     %{?_find_debuginfo_vendor_opts} \\\
+    @FIND_DEBUGINFO_OPTS@ \\\
     %{?_debugsource_packages:-S debugsourcefiles.list} \\\
     "%{builddir}/%{?buildsubdir}"\
 %{nil}
@@ -780,7 +785,8 @@ Supplements:   (%{name} = %{version}-%{release} and langpacks-%{1})\
   RPM_OS=\"%{_os}\"\
   RPM_BUILD_NCPUS=\"%{_smp_build_ncpus}\"\
   RPM_SPECPARTS_DIR=\"%{specpartsdir}\"\
-  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS RPM_SPECPARTS_DIR RPM_LD_FLAGS\
+  RPM_READINS_DIR=\"%{readinsdir}\"\
+  export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS RPM_BUILD_NCPUS RPM_SPECPARTS_DIR RPM_READINS_DIR RPM_LD_FLAGS\
   RPM_DOC_DIR=\"%{_docdir}\"\
   export RPM_DOC_DIR\
   RPM_PACKAGE_NAME=\"%{NAME}\"\

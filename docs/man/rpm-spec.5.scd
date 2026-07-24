@@ -574,13 +574,14 @@ An example is shown in an indented block where applicable.
 	Development libraries and headers for %{NAME}.
 	```
 
-*%files* [*-n*] [_SUBNAME_] [*-f* _FILE_ [*-f* _FILE_ ...]]
+*%files* [*-n*] [_SUBNAME_] [*-f* _PATH_ [*-f* _PATH_ ...]]
 	A manifest describing the files in the (sub-)package.
 
-	*-f* _FILE_
+	*-f* _PATH_
 		Additional files manifest to be read from disk after
 		the build scripts have completed.
 		May be supplied multiple times.
+		See *READ-IN FILES* for details.
 
 	*-n*
 		Interpret _SUBNAME_ as the full package name.
@@ -863,6 +864,7 @@ RPM-specific environment variables are set:
 - *RPM_PACKAGE_RELEASE*: Rpm release of the source package
 - *RPM_SOURCE_DIR*: The source directory of the package
 - *RPM_SPECPARTS_DIR*: The directory of dynamically generated spec parts
+- *RPM_READINS_DIR*: The directory of *READ-IN FILES*
 
 Note: many of these have macro counterparts which may seem more convenient
 and consistent with the rest of the spec, but one should always use the
@@ -947,6 +949,19 @@ script.
 	Used to clean up temporary files after the build.
 
 	Properties: Ot
+
+# READ-IN FILES
+Some sections, such as *%files* manifests or transaction scriptlets, can have (a
+part of) their contents generated on-the-fly during the build, written to a file
+on disk and finally read in using the *-f* _PATH_ option.
+
+The file(s) should be written into the *$RPM_READINS_DIR* directory (created by
+*rpmbuild*(1) automatically) by a build scriptlet and referred to by a _PATH_
+relative to that directory.
+
+For backwards compatibility, _PATH_ can also be absolute (with the leading */*).
+If a relative _PATH_ is not found, it is looked up in the
+*%{builddir}/%{?buildsubdir}* directory instead.
 
 # CONDITIONALS
 The spec supports several conditionals which can appear anywhere in the

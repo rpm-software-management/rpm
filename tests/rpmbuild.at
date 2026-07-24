@@ -489,6 +489,7 @@ runroot find /build/BUILD|sort
 /build/BUILD/simple-1.0-build/BUILDROOT/opt
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/READINS
 /build/BUILD/simple-1.0-build/SPECPARTS
 /build/BUILD/simple-1.0-build/rpmbuild.env
 /build/BUILD/simple-1.0-build/simple
@@ -509,6 +510,7 @@ runroot find /build/BUILD|sort
 /build/BUILD/simple-1.0-build/BUILDROOT/opt
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin
 /build/BUILD/simple-1.0-build/BUILDROOT/opt/bin/simple
+/build/BUILD/simple-1.0-build/READINS
 /build/BUILD/simple-1.0-build/SPECPARTS
 /build/BUILD/simple-1.0-build/rpmbuild.env
 /build/BUILD/simple-1.0-build/simple-1.0
@@ -615,6 +617,44 @@ hello-debuginfo-2.0-1
 [])
 
 # finally, see that we left the tree intact 
+RPMTEST_CHECK([
+runroot find hello-2.0 | sort
+],
+[0],
+[hello-2.0
+hello-2.0/COPYING
+hello-2.0/FAQ
+hello-2.0/Makefile
+hello-2.0/README
+hello-2.0/hello
+hello-2.0/hello.c
+],
+[])
+
+# check that read-in files are in the expected location
+RPMTEST_CHECK([
+runroot find /build/BUILD/hello-2.0-build/READINS | sort
+],
+[0],
+[/build/BUILD/hello-2.0-build/READINS
+/build/BUILD/hello-2.0-build/READINS/debugfiles.list
+/build/BUILD/hello-2.0-build/READINS/debuglinks.list
+/build/BUILD/hello-2.0-build/READINS/debugsources.list
+/build/BUILD/hello-2.0-build/READINS/elfbins.list
+],
+[])
+
+# revert to the original debuginfo manifest location
+RPMTEST_CHECK([
+runroot --chdir hello-2.0 rpmbuild -bb --build-in-place \
+    --define "_debuginfo_manifests_dir %{builddir}/%{?buildsubdir}" \
+    ../hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+# check that read-in files are in the expected location
 RPMTEST_CHECK([
 runroot find hello-2.0 | sort
 ],
@@ -4185,4 +4225,15 @@ runroot rpmbuild -bb --quiet --target x86_64 --with hello32 \
 [warning: Binaries not matching package arch (hello-1.0-1.x86_64):
     /usr/local/bin/hello (ELF 32-bit)
 ])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmbuild read-in files])
+AT_KEYWORDS([build])
+RPMTEST_CHECK([
+rpmbuild -bb --quiet ${RPMDATA}/SPECS/readin.spec
+rpmbuild -bb --quiet --with setup ${RPMDATA}/SPECS/readin.spec
+],
+[0],
+[],
+[ignore])
 RPMTEST_CLEANUP
