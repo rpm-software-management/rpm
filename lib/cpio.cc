@@ -20,6 +20,14 @@
 #endif
 #include <string.h>
 #include <fcntl.h>
+#include <unistd.h>		/* copy_file_range */
+#include <errno.h>		/* EINTR */
+#include <sys/stat.h>
+
+#if defined(__linux__)
+#include <linux/fs.h>		/* FICLONERANGE */
+#include <sys/ioctl.h>
+#endif
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
@@ -118,6 +126,103 @@ void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align)
     cpio->align = rpmAlignIsValid(align) ? align : 0;
 }
 
+static bool cloneRange(int dst_fd, int src_fd, off_t src_off,
+		       off_t dst_off, off_t len)
+{
+#if defined(__linux__) && defined(FICLONERANGE)
+    struct file_clone_range range = {
+	.src_fd = src_fd,
+	.src_offset = (uint64_t)src_off,
+	.src_length = (uint64_t)len,
+	.dest_offset = (uint64_t)dst_off,
+    };
+
+    return ioctl(dst_fd, FICLONERANGE, &range) == 0;
+#else
+    return false;
+#endif
+}
+
+int rpmcpioCopyRange(int dst_fd, int src_fd,
+		     off_t src_off, off_t dst_off, off_t len,
+		     rpmcpioCopyNotify notify, void *data)
+{
+    const off_t maxoff = std::numeric_limits<off_t>::max();
+
+    if (src_off < 0 || dst_off < 0 || len < 0 ||
+	len > maxoff - src_off || len > maxoff - dst_off)
+	return RPMERR_COPY_FAILED;
+    if (len == 0)
+	return 0;
+
+    if (cloneRange(dst_fd, src_fd, src_off, dst_off, len)) {
+	if (notify)
+	    notify(data, len);
+	return 0;
+    }
+
+    char buf[BUFSIZ * 4];
+    off_t copied = 0;
+#ifdef HAVE_COPY_FILE_RANGE
+    const off_t chunkmax = 16 * 1024 * 1024;
+    bool try_cfr = true;
+#endif
+
+    while (copied < len) {
+	off_t left = len - copied;
+	ssize_t n;
+
+#ifdef HAVE_COPY_FILE_RANGE
+	/* First try bounded range copies so progress remains observable. */
+	if (try_cfr) {
+	    off_t in = src_off + copied, out = dst_off + copied;
+	    size_t want = left > chunkmax ? (size_t)chunkmax : (size_t)left;
+
+	    n = copy_file_range(src_fd, &in, dst_fd, &out, want, 0);
+	    if (n < 0) {
+		if (errno == EINTR)
+		    continue;
+		if (errno != EINVAL && errno != ENOSYS && errno != EXDEV &&
+		    errno != EBADF && errno != EOPNOTSUPP)
+		    return RPMERR_COPY_FAILED;
+		try_cfr = false;
+	    } else if (n > 0) {
+		goto next;
+	    } else {
+		return RPMERR_READ_FAILED;
+	    }
+	}
+#endif
+
+	/* Otherwise, copy through a userspace buffer. */
+	{
+	    size_t want = left > (off_t)sizeof(buf) ?
+			  sizeof(buf) : (size_t)left;
+	    n = pread(src_fd, buf, want, src_off + copied);
+	    if (n < 0 && errno == EINTR)
+		continue;
+	    if (n <= 0)
+		return RPMERR_READ_FAILED;
+
+	    ssize_t written = 0;
+	    while (written < n) {
+		ssize_t nw = pwrite(dst_fd, buf + written, n - written,
+				    dst_off + copied + written);
+		if (nw < 0 && errno == EINTR)
+		    continue;
+		if (nw <= 0)
+		    return RPMERR_WRITE_FAILED;
+		written += nw;
+	    }
+	}
+
+next:
+	copied += n;
+	if (notify)
+	    notify(data, copied);
+    }
+    return 0;
+}
 
 /**
  * Convert string to unsigned integer (with buffer size check).

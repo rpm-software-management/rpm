@@ -48,6 +48,27 @@ void rpmcpioSetWriteAlign(rpmcpio_t cpio, size_t align);
 RPM_GNUC_INTERNAL
 void rpmcpioSetReadAlign(rpmcpio_t cpio, size_t align);
 
+/** Returned by range-copy wrappers when raw descriptor copying is unsuitable
+ * and the caller should copy through the FD_t stream instead. */
+#define RPMCPIO_COPY_FALLBACK 1
+
+/** Optional notification after bytes have been copied by rpmcpioCopyRange(). */
+typedef void (*rpmcpioCopyNotify)(void *data, off_t copied);
+
+/**
+ * Copy a byte range from one file to another. First attempt to clone the whole
+ * range with FICLONERANGE. If cloning is unavailable, copy in bounded
+ * copy_file_range(2) chunks so callers can report progress, with positional
+ * userspace I/O as the fallback.
+ * @param notify	optional cumulative progress notification
+ * @param data		opaque data passed to @a notify
+ * @return		0 on success, < 0 (RPMERR_*) on hard error
+ */
+RPM_GNUC_INTERNAL
+int rpmcpioCopyRange(int dst_fd, int src_fd,
+		     off_t src_off, off_t dst_off, off_t len,
+		     rpmcpioCopyNotify notify, void *data);
+
 RPM_GNUC_INTERNAL
 rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
 
