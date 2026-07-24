@@ -313,6 +313,17 @@ mark_as_advanced(AWK)
 
 find_program(FIND_DEBUGINFO find-debuginfo)
 mark_as_advanced(FIND_DEBUGINFO)
+if (FIND_DEBUGINFO AND AWK)
+	execute_process(COMMAND ${FIND_DEBUGINFO} --version
+			COMMAND ${AWK} "{print \$2}"
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			OUTPUT_VARIABLE FIND_DEBUGINFO_VERSION)
+endif()
+if (FIND_DEBUGINFO_VERSION GREATER_EQUAL 5.3)
+	set(FIND_DEBUGINFO_OPTS "--output-dir \"%{_debuginfo_manifests_dir}\"")
+else()
+	set(FIND_DEBUGINFO_OPTS "")
+endif()
 
 find_program(PODMAN podman)
 mark_as_advanced(PODMAN)

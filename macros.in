@@ -145,6 +145,10 @@
 #%__systemd_sysusers	@__SYSTEMD_SYSUSERS@
 %__systemd_sysusers	%{_rpmconfigdir}/sysusers.sh
 
+# location of debuginfo manifest files, comment out to revert to original path
+#%_debuginfo_manifests_dir  %{builddir}/%{?buildsubdir}
+%_debuginfo_manifests_dir   %{readinsdir}
+
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
@@ -168,6 +172,7 @@
     %{?_find_debuginfo_dwz_opts} \\\
     %{?_find_debuginfo_opts} \\\
     %{?_find_debuginfo_vendor_opts} \\\
+    @FIND_DEBUGINFO_OPTS@ \\\
     %{?_debugsource_packages:-S debugsourcefiles.list} \\\
     "%{builddir}/%{?buildsubdir}"\
 %{nil}
