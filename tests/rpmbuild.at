@@ -626,6 +626,44 @@ hello-2.0/COPYING
 hello-2.0/FAQ
 hello-2.0/Makefile
 hello-2.0/README
+hello-2.0/hello
+hello-2.0/hello.c
+],
+[])
+
+# check that read-in files are in the expected location
+RPMTEST_CHECK([
+runroot find /build/BUILD/hello-2.0-build/READINS | sort
+],
+[0],
+[/build/BUILD/hello-2.0-build/READINS
+/build/BUILD/hello-2.0-build/READINS/debugfiles.list
+/build/BUILD/hello-2.0-build/READINS/debuglinks.list
+/build/BUILD/hello-2.0-build/READINS/debugsources.list
+/build/BUILD/hello-2.0-build/READINS/elfbins.list
+],
+[])
+
+# revert to the original debuginfo manifest location
+RPMTEST_CHECK([
+runroot --chdir hello-2.0 rpmbuild -bb --build-in-place \
+    --define "_debuginfo_manifests_dir %{builddir}/%{?buildsubdir}" \
+    ../hello.spec
+],
+[0],
+[ignore],
+[ignore])
+
+# check that read-in files are in the expected location
+RPMTEST_CHECK([
+runroot find hello-2.0 | sort
+],
+[0],
+[hello-2.0
+hello-2.0/COPYING
+hello-2.0/FAQ
+hello-2.0/Makefile
+hello-2.0/README
 hello-2.0/debugfiles.list
 hello-2.0/debuglinks.list
 hello-2.0/debugsources.list
