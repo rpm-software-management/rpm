@@ -87,14 +87,14 @@ enum parseAttrs_e {
 /**
  */
 struct FileListRec_s {
-    struct stat fl_st;
-#define	fl_dev	fl_st.st_dev
-#define	fl_ino	fl_st.st_ino
-#define	fl_mode	fl_st.st_mode
-#define	fl_nlink fl_st.st_nlink
-#define	fl_rdev	fl_st.st_rdev
-#define	fl_size	fl_st.st_size
-#define	fl_mtime fl_st.st_mtime
+    /* struct stat fl_st; ~140 bytes - allocate less by using only fields we need: */
+    dev_t      fl_dev;
+    ino_t      fl_ino;
+    mode_t     fl_mode;
+    nlink_t    fl_nlink;
+    dev_t      fl_rdev;
+    off_t      fl_size;
+    time_t     fl_mtime;
 
     char *diskPath;		/* get file from here       */
     char *cpioPath;		/* filename in cpio archive */
@@ -113,6 +113,21 @@ struct FileListRec_s {
 };
 
 typedef struct FileListRec_s * FileListRec;
+
+#define FILL_STAT_IN_FileListRec_except_mode(rec, st) \
+do { \
+	(rec).fl_dev   = (st).st_dev  ; \
+	(rec).fl_ino   = (st).st_ino  ; \
+	(rec).fl_nlink = (st).st_nlink; \
+	(rec).fl_rdev  = (st).st_rdev ; \
+	(rec).fl_size  = (st).st_size ; \
+	(rec).fl_mtime = (st).st_mtime; \
+} while (0)
+#define FILL_STAT_IN_FileListRec(rec, st) \
+do { \
+	FILL_STAT_IN_FileListRec_except_mode(rec, st); \
+	(rec).fl_mode  = (st).st_mode ; \
+} while (0)
 
 /**
  */
@@ -1537,7 +1552,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    
     {	FileListRec flp = &fl->files.back();
 
-	flp->fl_st = *statp;	/* structure assignment */
+	FILL_STAT_IN_FileListRec_except_mode(*flp, *statp);
 	flp->fl_mode = fileMode;
 	if (S_ISDIR(fileMode))
 	    flp->fl_size = 0;
@@ -2670,6 +2685,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     fl.pkgFlags = pkgFlags;
 
     for (ARGV_const_t fp = files; *fp != NULL; fp++) {
+	struct stat sb;
 	const char *diskPath = *fp;
 	char *tmp;
 	FileListRec flp;
@@ -2695,11 +2711,12 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	flp->verifyFlags = RPMVERIFY_ALL;
 	free(tmp);
 
-	if (stat(diskPath, &flp->fl_st)) {
+	if (stat(diskPath, &sb)) {
 	    rpmlog(RPMLOG_ERR, _("Bad file: %s: %s\n"),
 		diskPath, strerror(errno));
 	    fl.processingFailed = 1;
 	} else {
+	    FILL_STAT_IN_FileListRec(*flp, sb);
 	    if (S_ISREG(flp->fl_mode) && flp->fl_size >= UINT32_MAX)
 		fl.largeFiles = 1;
 	}
