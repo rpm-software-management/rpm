@@ -14,6 +14,7 @@ struct rootState_s {
     char *rootDir;
     int chrootDone;
     int cwd;
+    int root_fd;	/* pre-chroot root dir fd, for chroot(".") restore */
 };
 
 /* Process global chroot state */
@@ -21,6 +22,7 @@ static struct rootState_s rootState = {
    .rootDir = NULL,
    .chrootDone = 0,
    .cwd = -1,
+   .root_fd = -1,
 }; 
 
 #if defined(HAVE_UNSHARE) && defined(CLONE_NEWUSER)
@@ -94,12 +96,23 @@ int rpmChrootSet(const char *rootDir)
 	close(rootState.cwd);
 	rootState.cwd = -1;
     }
+    if (rootState.root_fd >= 0) {
+	close(rootState.root_fd);
+	rootState.root_fd = -1;
+    }
 
     if (rootDir != NULL) {
 	rootState.rootDir = rstrdup(rootDir);
 	rootState.cwd = open(".", O_RDONLY);
 	if (rootState.cwd < 0) {
 	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
+	    rc = -1;
+	}
+	/* Remember the pre-chroot root so rpmChrootOut() can restore it
+	 * with chroot("."). */
+	rootState.root_fd = open("/", O_RDONLY);
+	if (rootState.root_fd < 0) {
+	    rpmlog(RPMLOG_ERR, _("Unable to open root directory: %m\n"));
 	    rc = -1;
 	}
 
@@ -131,7 +144,12 @@ int rpmChrootIn(void)
 	    try_become_root();
 
 	rpmlog(RPMLOG_DEBUG, "entering chroot %s\n", rootState.rootDir);
-	if (chdir("/") == 0 && chroot(rootState.rootDir) == 0) {
+	/* chdir("/") must come AFTER chroot(): doing it before leaves the
+	 * cwd pointing at the old root's inode, which is not reachable
+	 * from inside the new root — every relative path resolution
+	 * (realpath/getcwd, e.g. fprint.c canonDir) then fails and rpm
+	 * crashes (SIGSEGV 0xF069) during --root transactions. */
+	if (chroot(rootState.rootDir) == 0 && chdir("/") == 0) {
 	    rootState.chrootDone = 1;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
@@ -157,7 +175,13 @@ int rpmChrootOut(void)
 	rootState.chrootDone--;
     } else if (rootState.chrootDone == 1) {
 	rpmlog(RPMLOG_DEBUG, "exiting chroot %s\n", rootState.rootDir);
-	if (chroot(".") == 0 && fchdir(rootState.cwd) == 0) {
+	/* Restore the pre-chroot root: since rpmChrootIn() chdir()s into
+	 * the new root, the cwd is no longer the old-root inode, so
+	 * chroot(".") alone would re-chroot to the target root. Step back
+	 * to the saved old root fd first, then chroot(".") makes that the
+	 * root again, then restore the original working directory. */
+	if (fchdir(rootState.root_fd) == 0 && chroot(".") == 0 &&
+	    fchdir(rootState.cwd) == 0) {
 	    rootState.chrootDone = 0;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unable to restore root directory: %m\n"));
