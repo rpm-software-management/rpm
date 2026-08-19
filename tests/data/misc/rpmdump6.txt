@@ -235,103 +235,103 @@ Tag #27 [region]
 Tag #28 [region]
 	tagno:  1080 (Changelogtime)
 	type:      4 (int32)
-	offset: 1572
+	offset: 1568
 	count:     1
 
 Tag #29 [region]
 	tagno:  1081 (Changelogname)
 	type:      8 (argv)
-	offset: 1576
+	offset: 1572
 	count:     1
 
 Tag #30 [region]
 	tagno:  1082 (Changelogtext)
 	type:      8 (argv)
-	offset: 1614
+	offset: 1610
 	count:     1
 
 Tag #31 [region]
 	tagno:  1094 (Cookie)
 	type:      6 (string)
-	offset: 1632
+	offset: 1628
 	count:     1
 
 Tag #32 [region]
 	tagno:  1095 (Filedevices)
 	type:      4 (int32)
-	offset: 1652
+	offset: 1648
 	count:    20
 
 Tag #33 [region]
 	tagno:  1096 (Fileinodes)
 	type:      4 (int32)
-	offset: 1732
+	offset: 1728
 	count:    20
 
 Tag #34 [region]
 	tagno:  1097 (Filelangs)
 	type:      8 (argv)
-	offset: 1812
+	offset: 1808
 	count:    20
 
 Tag #35 [region]
 	tagno:  1112 (Provideflags)
 	type:      4 (int32)
-	offset: 1832
+	offset: 1828
 	count:     1
 
 Tag #36 [region]
 	tagno:  1113 (Provideversion)
 	type:      8 (argv)
-	offset: 1836
+	offset: 1832
 	count:     1
 
 Tag #37 [region]
 	tagno:  1116 (Dirindexes)
 	type:      4 (int32)
-	offset: 1844
+	offset: 1840
 	count:    20
 
 Tag #38 [region]
 	tagno:  1117 (Basenames)
 	type:      8 (argv)
-	offset: 1924
+	offset: 1920
 	count:    20
 
 Tag #39 [region]
 	tagno:  1118 (Dirnames)
 	type:      8 (argv)
-	offset: 2014
+	offset: 2010
 	count:    10
 
 Tag #40 [region]
 	tagno:  1122 (Optflags)
 	type:      6 (string)
-	offset: 2054
+	offset: 2050
 	count:     1
 
 Tag #41 [region]
 	tagno:  1124 (Payloadformat)
 	type:      6 (string)
-	offset: 2061
+	offset: 2057
 	count:     1
 
 Tag #42 [region]
 	tagno:  1126 (Payloadflags)
 	type:      6 (string)
-	offset: 2066
+	offset: 2062
 	count:     1
 
 Tag #43 [region]
 	tagno:  1132 (Platform)
 	type:      6 (string)
-	offset: 2067
+	offset: 2063
 	count:     1
 
 Tag #44 [region]
 	tagno:  1140 (Filecolors)
 	type:      4 (int32)
-	offset: 2080
+	offset: 2076
 	count:    20
 
 Tag #45 [region]
