@@ -7,7 +7,7 @@ rpm-design - RPM design philosophy
 RPM is a general purpose software manager. It has
 two major parts: rpmbuild that combines upstream sources with a meta
 data and build instructions in a "spec file" and additional files and
-patches. It allows to bundle all this up into a source package and
+patches. It allows for bundling all this up into a source package and
 build the software into a binary package. The second part - the rpm
 utility - can then install, update or remove the packages after
 checking for consistency.
@@ -101,7 +101,7 @@ inside the packages instead of relying on conventions like package
 names. This way 3rd party packages can be checked for compatibility
 beyond them just claiming that they target the distribution in question.
 
-For proprietary softerware nosource packages allow to not ship the
+For proprietary software nosource packages allow for not shipping the
 sources but only the build instructions to keep proprietary source
 private. They still can be used to generate binary packages in
 combination with the sources.
