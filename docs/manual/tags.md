@@ -302,7 +302,7 @@ Transfiletriggerversion     | 5081 | string array
 
 ## Signatures and digests
 
-[Signatures](signatures.md) allow to verify the origin of a package.
+[Signatures](signatures.md) allow for verifying the origin of a package.
 
 Tag Name          | Value| Type         | Description
 ------------------|------|--------------|------------

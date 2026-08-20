@@ -7,7 +7,7 @@ rpm-plugin-ima - IMA plugin for the RPM Package Manager
 # DESCRIPTION
 
 Integrity Measurement Architecture (IMA) and the Linux Extended
-Verification Module (EVM) allow to detect when files have been
+Verification Module (EVM) allow for detecting when files have been
 accidentally or maliciously altered. This plugin puts IMA/EVM signatures
 in the *security.ima* extended file attribute during installation. This
 requires packages to contain the signatures - typically by being signed
