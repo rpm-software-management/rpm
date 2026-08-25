@@ -52,7 +52,14 @@ RUN dnf -y install \
   scdoc \
   scd2html \
   sequoia-sq \
-  nss-altfiles
+  nss-altfiles \
+  gcc \
+  gcc-c++ \
+  libasan \
+  libubsan \
+  clang \
+  compiler-rt \
+  libomp-devel
 # If updates to specific packages are needed, do it here
 RUN dnf -y --enablerepo=updates install "rpm-sequoia-devel >= 1.10.2-4"
 
@@ -62,24 +69,6 @@ RUN dnf -y install \
     gdb \
     strace \
     valgrind
-
-# Install the requested toolchain
-ARG TOOLCHAIN=gcc
-RUN case "$TOOLCHAIN" in \
-        gcc) \
-            dnf -y install \
-                gcc \
-                gcc-c++ \
-                libasan \
-                libubsan \
-        ;; \
-        clang) \
-            dnf -y install \
-                clang \
-                compiler-rt \
-                libomp-devel \
-        ;; \
-    esac
 
 RUN dnf clean all
 
