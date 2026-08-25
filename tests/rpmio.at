@@ -2,6 +2,16 @@
 
 AT_BANNER([I/O])
 
+RPMTEST_SETUP([argvSplitString empty field handling])
+AT_KEYWORDS([api argv])
+RPMTEST_CHECK([
+argvcheck
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 # test too unstable for production
 #RPMTEST_SETUP_RW([SIGPIPE from --pipe])
 #AT_KEYWORDS([signals])

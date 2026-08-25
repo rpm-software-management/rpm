@@ -198,7 +198,8 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
 
     argv = (ARGV_t)xmalloc( (argc + 1) * sizeof(*argv));
 
-    for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
+    /* Final field starts at t when empty: str empty or ends with a separator */
+    for (c = 0, s = dest; s <= t; s+= strlen(s) + 1) {
 	if (*s == '\0' && (flags & ARGV_SKIPEMPTY))
 	    continue;
 	argv[c] = xstrdup(s);

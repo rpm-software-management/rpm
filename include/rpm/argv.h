@@ -175,10 +175,14 @@ typedef rpmFlags argvFlags;
 
 /** \ingroup rpmargv
  * Split a string into an argv array.
+ * The result has one field per separator occurrence plus one, ie empty
+ * fields are preserved, leading and trailing ones alike, and an empty
+ * string splits into a single empty field. Pass ARGV_SKIPEMPTY to omit
+ * empty fields instead.
  * @param str		string arg to split
  * @param seps		separator characters
  * @param flags		flags to control behavior
- * @return		argv array
+ * @return		argv array, NULL on NULL str or seps
  */
 RPM_PUBLIC_API
 ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags);

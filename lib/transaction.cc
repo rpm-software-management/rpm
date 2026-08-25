@@ -1233,7 +1233,7 @@ static ARGI_t initPkgDigests(FD_t fd)
 {
     ARGI_t ids = NULL;
     char *digests = rpmExpand("%{?_pkgverify_digests}", NULL);
-    ARGV_t vals = argvSplitString(digests, ":", 0);
+    ARGV_t vals = argvSplitString(digests, ":", ARGV_NONE);
 
     for (ARGV_t v = vals; v && *v; v++) {
 	uint32_t alg = atoi(*v);
