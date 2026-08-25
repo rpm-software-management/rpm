@@ -1,4 +1,4 @@
-.[^dockerignore]*
+.[^containerignore]*
 !.tx
 !.gitignore
 !.mailmap

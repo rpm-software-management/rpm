@@ -34,7 +34,7 @@ jobs:
 
       - name: Build image
         run: |
-          podman build --target base --tag rpm -f tests/Dockerfile .
+          podman build --target base --tag rpm -f tests/Containerfile .
 
       - name: Generate Jekyll pages
         run: |
