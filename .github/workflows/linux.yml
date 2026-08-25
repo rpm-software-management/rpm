@@ -19,11 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Fedora testing environment (Clang)
-        run: ./mktree.oci build --toolchain clang
+        run: sudo ./mktree.oci build --toolchain clang
         working-directory: ./tests
       - name: Build the Fedora testing environment (GNU C/C++)
         # This replaces the previous Clang based image
-        run: ./mktree.oci build --toolchain gcc
+        run: sudo ./mktree.oci build --toolchain gcc
         working-directory: ./tests
       - name: Fix kernel mmap rnd bits
         # High entropy setting in GH runner images >= 20240310.1.0
@@ -31,8 +31,5 @@ jobs:
         # https://github.com/actions/runner-images/issues/9491
         run: sudo sysctl vm.mmap_rnd_bits=28
       - name: Run the test suite
-        run: ./mktree.oci check --interactive=false -j$(nproc)
+        run: sudo ./mktree.oci check --interactive=false -j$(nproc)
         working-directory: ./tests
-
-    env:
-      MKTREE_ENGINE: docker

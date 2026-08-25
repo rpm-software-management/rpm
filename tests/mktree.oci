@@ -17,7 +17,7 @@ else
     CMAKE=no
     NATIVE=no
     TOOLCHAIN=
-    PODMAN=${MKTREE_ENGINE:-podman}
+    PODMAN=podman
     CONTEXT=..
 fi
 
@@ -25,8 +25,8 @@ DEST_DIR="$PWD/mktree.destdir"
 CACHE_DIR="mktree.cache"
 IID_FILE="$CACHE_DIR/image-id"
 IMAGE_ID=$(cat $IID_FILE 2>/dev/null || echo "")
-BASE_TAG="rpm/base:$(sha256sum Dockerfile | head -c8)"
-ARGS="-f Dockerfile $CONTEXT"
+BASE_TAG="rpm/base:$(sha256sum Containerfile | head -c8)"
+ARGS="-f Containerfile $CONTEXT"
 ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
 CMD=$1; shift
 

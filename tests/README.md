@@ -9,10 +9,8 @@ interactive shell (via `make shell`).
 
 ## Prerequisites
 
-To use this test-suite, you need either of:
-
-1. [Podman](https://github.com/containers/podman/)
-2. [Docker](https://github.com/docker/)
+To use this test-suite, you need
+[Podman](https://github.com/containers/podman/).
 
 > [!IMPORTANT]
 > CMake integration (*native* mode) is currently only available on **Fedora
@@ -89,7 +87,7 @@ To only build the OCI image, use:
 
     make tree
 
-You can now also tag the image and then use it with Podman or Docker as normal:
+You can now also tag the image and then use it with Podman as normal:
 
     cd tests/
     ./mktree tag <image-name>
@@ -122,10 +120,10 @@ run as `--privileged` in order to allow the creation of nested namespaces.
 
 ### Layout
 
-The OCI image is built from a `Dockerfile.<osname>` where `<osname>` is the
-host OS name (e.g. `fedora`).  Currently, we only have `Dockerfile.fedora`,
-contributions for other distros are welcome.  The `Dockerfile` symlink points
-to the file that should be used in non-native mode (see above).
+The OCI image is built from a `Containerfile.<osname>` where `<osname>` is the
+host OS name (e.g. `fedora`).  Currently, we only have `Containerfile.fedora`,
+contributions for other distros are welcome.  The `Containerfile` symlink
+points to the file that should be used in non-native mode (see above).
 
 The test script that's executed in the OCI container is written in [GNU
 Autotest](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.71/autoconf.html#Using-Autotest)
