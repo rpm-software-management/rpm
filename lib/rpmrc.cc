@@ -45,6 +45,10 @@
 
 #include "debug.h"
 
+#if defined(__linux__) && defined(__sparc__)
+#include <sys/personality.h>
+#endif
+
 using wrlock = std::unique_lock<std::shared_mutex>;
 using rdlock = std::shared_lock<std::shared_mutex>;
 
@@ -1225,7 +1229,6 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 	    #define PERS_LINUX_32BIT	0x00800000
 	    #define PERS_LINUX32	0x00000008
 
-	    extern int personality(unsigned long);
 	    int oldpers;
 	    
 	    oldpers = personality(PERS_LINUX_32BIT);
