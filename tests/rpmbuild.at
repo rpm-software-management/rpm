@@ -885,6 +885,27 @@ runroot rpm -q --qf "%{packager}\n" /build/SRPMS/hello-2.0-1.src.rpm
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil)])
+AT_KEYWORDS([build])
+
+runroot /data/misc/CVE-2026-78367.py
+
+RPMTEST_CHECK([
+runroot --setenv RPM_POC_PATH /tmp/gotcha \
+	rpmbuild --quiet -ts evil.tar.gz
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/tmp/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
 # weird filename survival test
 RPMTEST_SETUP_RW([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])

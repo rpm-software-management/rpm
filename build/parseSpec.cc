@@ -1311,7 +1311,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
 
-    spec->specFile = rpmGetPath(specFile, NULL);
+    spec->specFile = rpmCleanPath(xstrdup(specFile));
     pushOFI(spec, spec->specFile);
     /* If explicit --buildroot was passed, grab hold of it */
     if (buildRoot)
