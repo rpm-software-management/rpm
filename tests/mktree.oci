@@ -25,7 +25,7 @@ DEST_DIR="$PWD/mktree.destdir"
 CACHE_DIR="mktree.cache"
 IID_FILE="$CACHE_DIR/image-id"
 IMAGE_ID=$(cat $IID_FILE 2>/dev/null || echo "")
-BASE_TAG="rpm/base:$(sha256sum Containerfile | head -c8)"
+BASE_TAG="localhost/rpm/base:$(sha256sum Containerfile | head -c8)"
 ARGS="-f Containerfile $CONTEXT"
 ROOTLESS=$([ $(id -u) == 0 ] && echo 0 || echo 1)
 CMD=$1; shift
@@ -76,6 +76,7 @@ case $CMD in
         [ -n "$TOOLCHAIN" ] && ARGS="--build-arg TOOLCHAIN=$TOOLCHAIN $ARGS"
 
         # Build base image
+        $PODMAN image exists $BASE_TAG || \
         $PODMAN build --target base -t $BASE_TAG $ARGS
 
         # Add RPM install on top
@@ -92,7 +93,8 @@ case $CMD in
             $PODMAN commit -q $id --iidfile=$IID_FILE
         else
             # Standalone build
-            $PODMAN build --target full --iidfile=$IID_FILE $ARGS
+            $PODMAN build --target full --iidfile=$IID_FILE \
+                          --build-arg BASE_IMAGE=$BASE_TAG $ARGS
         fi
     ;;
     check)
