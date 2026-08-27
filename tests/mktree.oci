@@ -97,6 +97,12 @@ case $CMD in
                           --build-arg BASE_IMAGE=$BASE_TAG $ARGS
         fi
     ;;
+    save)
+        $PODMAN save -o "$1" $BASE_TAG
+    ;;
+    load)
+        $PODMAN load -i "$1"
+    ;;
     check)
         rpmtests "$@"
     ;;

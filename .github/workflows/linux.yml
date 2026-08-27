@@ -18,18 +18,39 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Cache base image
+        id: image-cache
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/base-image.tar
+          key: base-image-${{ hashFiles('tests/Containerfile.fedora') }}
+
+      - name: Load cached base image
+        if: steps.image-cache.outputs.cache-hit == 'true'
+        run: sudo ./mktree.oci load $RUNNER_TEMP/base-image.tar
+        working-directory: ./tests
+
       - name: Build the Fedora testing environment (Clang)
         run: sudo ./mktree.oci build --toolchain clang
         working-directory: ./tests
+
       - name: Build the Fedora testing environment (GNU C/C++)
         # This replaces the previous Clang based image
         run: sudo ./mktree.oci build --toolchain gcc
         working-directory: ./tests
+
+      - name: Save base image to cache
+        if: steps.image-cache.outputs.cache-hit != 'true'
+        run: sudo ./mktree.oci save $RUNNER_TEMP/base-image.tar
+        working-directory: ./tests
+
       - name: Fix kernel mmap rnd bits
         # High entropy setting in GH runner images >= 20240310.1.0
         # causes ASAN blowing up here and there:
         # https://github.com/actions/runner-images/issues/9491
         run: sudo sysctl vm.mmap_rnd_bits=28
+
       - name: Run the test suite
         run: sudo ./mktree.oci check --interactive=false -j$(nproc)
         working-directory: ./tests
