@@ -1,4 +1,5 @@
 ARG OS_RELEASE=fedora:44
+ARG BASE_IMAGE=base
 
 FROM quay.io/fedora/${OS_RELEASE} AS base
 LABEL com.github.containers.toolbox="true"
@@ -98,7 +99,7 @@ RUN rpm -e --nodeps --nodb \
 WORKDIR /
 CMD /bin/bash
 
-FROM base AS full
+FROM ${BASE_IMAGE} AS full
 ARG TOOLCHAIN=gcc
 
 WORKDIR /srv/rpm
