@@ -5,10 +5,6 @@ MAINTAINER rpm-maint@lists.rpm.org
 RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
 RUN rpm --quiet -q fedora-repos-modular && rpm -e fedora-repos-modular ||:
 RUN sed -i -e "s:^enabled=.$:enabled=0:g" /etc/yum.repos.d/*openh264.repo
-# updates disabled for a stable environment
-RUN sed -i -e "s:^enabled=.$:enabled=0:g" /etc/yum.repos.d/*updates*.repo
-# dummy for controlling per-repo gpgcheck via Semaphore setup
-RUN sed -i -e "s:^gpgcheck=.$:gpgcheck=1:g" /etc/yum.repos.d/*.repo
 RUN dnf -y install \
   autoconf \
   bubblewrap \
