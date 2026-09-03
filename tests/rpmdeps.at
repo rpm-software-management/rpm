@@ -2,6 +2,78 @@
 
 AT_BANNER([RPM dependencies])
 
+RPMTEST_SETUP([rpmdeps operations])
+AT_KEYWORDS([rpmdeps])
+
+RPMTEST_CHECK([
+for operation in \
+    provides requires recommends suggests supplements enhances \
+    conflicts obsoletes orderwithrequires
+do
+    runroot ${RPM_CONFIGDIR_PATH}/rpmdeps \
+	--${operation} /data/SOURCES/hello.c || exit $?
+done
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --alldeps /data/SOURCES/hello.c
+],
+[0],
+[ignore],
+[])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --requires -R /data/SOURCES/hello.c
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps -P -R /data/SOURCES/hello.c
+],
+[1],
+[],
+[rpmdeps: only one major mode may be specified
+])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --alldeps --requires /data/SOURCES/hello.c
+],
+[1],
+[],
+[rpmdeps: only one major mode may be specified
+])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps /data/SOURCES/hello.c
+],
+[1],
+[],
+[rpmdeps: no operation specified
+])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --version
+],
+[0],
+[RPM version AT_PACKAGE_VERSION
+],
+[])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpmdeps --provides --requires /data/SOURCES/hello.c
+],
+[1],
+[],
+[rpmdeps: only one major mode may be specified
+])
+
+RPMTEST_CLEANUP
+
 # ------------------------------
 RPMTEST_SETUP_RW([unversioned requires])
 AT_KEYWORDS([install depends])
