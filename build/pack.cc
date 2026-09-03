@@ -848,8 +848,8 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	{
 	pkg->rc = packageBinary(spec, pkg, cookie, cheating, &pkg->filename);
 	rpmlog(RPMLOG_DEBUG,
-		_("Finished binary package job, result %d, filename %s\n"),
-		pkg->rc, pkg->filename);
+		_("Finished binary package job, priority %d, result %d, filename %s\n"),
+		i, pkg->rc, pkg->filename);
 	if (pkg->rc) {
 	    #pragma omp critical
 	    rc = pkg->rc;
