@@ -1341,6 +1341,19 @@ rpm.call("test", "foo", 6, 29 / 4)
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([lua statvfs])
+AT_KEYWORDS([macros lua])
+RPMTEST_CHECK([
+rpm --eval '%{lua:st=posix.statvfs("/"); print(st.bsize, st.flag.nosuid)}' \
+    --eval '%{lua:print(posix.statvfs("/", "namemax") == math.tointeger(posix.pathconf("/", "name_max")))}'
+],
+[0],
+[4096	false
+true
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([%define + %undefine in nested levels 1])
 AT_KEYWORDS([macros define undefine])
 RPMTEST_CHECK([

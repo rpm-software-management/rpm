@@ -831,6 +831,37 @@ calls refer to the system manual, eg *access*(3) for *posix.access()*.
 	end
 	```
 
+*statvfs(*_PATH_*)*
+	Get filesystem *statvfs*(3) information about the filesystem at _PATH_.
+	The optional _SELECTOR_ may be one of
+	- *bsize*
+	- *blocks*
+	- *bfree*
+	- *bavail*
+	- *favail*
+	- *ffree*
+	- *files*
+	- *flag*
+	- *frsize*
+	- *fsid*
+	- *namemax*
+
+	If omitted, a table with all these fields is returned.
+
+	*flag* is table with known flag names as keys and booleans as
+	values. This way it's possible to differentiate unsupported flags
+	from unset flags.
+
+	Example:
+	```
+	print(posix.statvfs('/', 'bavail'))
+
+	st = posix.statvfs('/srv')
+	if st.flag.rdonly == true then
+	    ...
+	end
+	```
+
 *symlink(*_OLDPATH_, _NEWPATH_*)*
 	Create a symbolic link at _NEWPATH_ to _OLDPATH_.
 	See also *symlink*(2).
