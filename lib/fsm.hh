@@ -29,6 +29,18 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
 int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm);
 
+/*
+ * Copy the current archive file's content straight out of the (uncompressed)
+ * package with a reflink or copy_file_range(). src_fd is a raw descriptor for
+ * the package, base its payload start offset. Verified installs read the
+ * destination back through its O_RDWR descriptor and compare the file digest.
+ * Returns 0 on success,
+ * RPMCPIO_COPY_FALLBACK if the content cannot be copied that way (caller should
+ * use rpmfiArchiveReadToFilePsm), < 0 on hard error.
+ */
+int rpmfiArchiveWriteFileTo(rpmfi fi, int dst_fd, int src_fd,
+			    rpm_loff_t base, int nodigest, rpmpsm psm);
+
 void rpmpsmNotify(rpmpsm psm, rpmCallbackType what, rpm_loff_t amount);
 
 #endif	/* H_FSM */

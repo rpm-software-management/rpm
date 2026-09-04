@@ -18,6 +18,7 @@
 #include "header_internal.hh"
 #include <libfsverity.h>
 #include "rpmio_internal.hh"
+#include "rpmpayload.hh"
 #include "rpmvs.hh"
 
 #include "rpmsignverity.hh"
@@ -107,7 +108,7 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     rpmts ts = rpmtsCreate();
     struct rpmtd_s td;
     off_t offset = Ftell(fd);
-    const char *compr;
+    struct rpmPayloadInfo payload;
     char *rpmio_flags = NULL;
     char *sig_hex;
     char **signatures = NULL;
@@ -129,8 +130,13 @@ rpmRC rpmSignVerity(FD_t fd, Header sigh, Header h, char *key,
     rpmlog(RPMLOG_DEBUG, _("key: %s\n"), key);
     rpmlog(RPMLOG_DEBUG, _("cert: %s\n"), cert);
 
-    compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
-    rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
+    if (rpmPayloadProbe(fd, h, &payload)) {
+	rpmlog(RPMLOG_ERR, _("invalid payload alignment or payload magic: %s\n"),
+	       strerror(errno));
+	rc = RPMRC_FAIL;
+	goto out;
+    }
+    rpmio_flags = rstrscat(NULL, "r.", payload.io, NULL);
 
     gzdi = Fdopen(fdDup(Fileno(fd)), rpmio_flags);
     free(rpmio_flags);

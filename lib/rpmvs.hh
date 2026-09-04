@@ -73,7 +73,10 @@ void rpmvsInitRange(struct rpmvs_s *sis, int range);
 RPM_PRIVATE_API
 void rpmvsFiniRange(struct rpmvs_s *sis, int range);
 
+/* Restart alternative payload digests at the canonical payload start. */
 RPM_PRIVATE_API
+void rpmvsResetPayloadAlt(struct rpmvs_s *sis);
+
 int rpmvsRange(struct rpmvs_s *vs);
 
 /*

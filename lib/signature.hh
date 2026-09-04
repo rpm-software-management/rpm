@@ -18,6 +18,11 @@
 RPM_PRIVATE_API
 rpmRC rpmReadSignature(FD_t fd, Header *sighp, char ** msg);
 
+/* Convert an imported signature header into an independently mutable copy.
+ * Returns 0 on success, leaving *sighp unchanged on failure. */
+RPM_PRIVATE_API
+int rpmUnwrapSignature(Header *sighp);
+
 /** \ingroup signature
  * Write signature header.
  * @param fd		file handle

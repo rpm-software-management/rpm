@@ -135,6 +135,7 @@ LIBRPM_6.2 {
 	rpmfiArchiveHasContent;
 	rpmfiArchiveRead;
 	rpmfiArchiveReadToFile;
+	rpmfiArchiveSetWriteAlign;
 	rpmfiArchiveTell;
 	rpmfiArchiveWrite;
 	rpmfiArchiveWriteFile;
@@ -435,6 +436,7 @@ LIBRPM_6.2 {
 	rpmtxnEnd;
 	rpmtxnImportPubkey;
 	rpmtxnRebuildKeystore;
+	rpmUncompressPackage;
 	rpmVerifyPoptTable;
 	rpmVerifySignatures;
 	rpmVersionCompare;
@@ -449,8 +451,10 @@ LIBRPM_6.2 {
 	/* RPM internal APIs which are not in public headers */
 	rpmGenerateSignature*;
 	rpmLead*;
+	rpmPayloadProbe*;
 	rpmReadPackageManifest*;
 	rpmReadSignature*;
+	rpmUnwrapSignature*;
 	rpmWriteSignature*;
 	rpmpkgRead*;
 	rpmsinfoMsg*;
