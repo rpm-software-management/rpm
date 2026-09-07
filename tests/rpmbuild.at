@@ -909,7 +909,6 @@ RPMTEST_CLEANUP
 # CVE-2026-84837: macro shell expansion
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 2)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpmbuild --quiet -ts \
@@ -930,7 +929,6 @@ RPMTEST_CLEANUP
 # CVE-2026-84837: shell injection
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 3)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpmbuild --quiet -ts \
@@ -952,7 +950,6 @@ RPMTEST_CLEANUP
 # CVE-2026-84837: shell injection (subshell)
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 4)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpmbuild --quiet -ts '$(touch gotcha).tar.gz'
@@ -974,7 +971,6 @@ RPMTEST_CLEANUP
 # popen(3) call in getTarSpec() to the one in rpmuncompress
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 5)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 cp /data/SOURCES/hello-2.0.tar.gz $RPMTEST/"\"'; touch gotcha; #.gz'\""

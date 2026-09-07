@@ -16,6 +16,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
+#include "cliutils.hh"
 #include "debug.h"
 
 namespace fs = std::filesystem;
@@ -88,14 +89,14 @@ static archiveType *getArchiver(const char *fn)
     return archiver;
 }
 
-static char *doUncompress(archiveType *at, const char *fn)
+static char *doUncompress(archiveType *at, const char *fn, const char *arg)
 {
     char *cmd = NULL;
     if (at) {
 	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			at->cmd, " ", at->unpack, NULL);
 	/* path must not be expanded */
-	cmd = rstrscat(&cmd, " '", fn, "'", NULL);
+	cmd = rstrscat(&cmd, " ", arg, NULL);
     }
     return cmd;
 }
@@ -163,7 +164,7 @@ afree:
 	return ret;
 }
 
-static char *doUntar(archiveType *at, int sr, const char *fn)
+static char *doUntar(archiveType *at, int sr, const char *fn, const char *arg)
 {
     char *buf = NULL;
     char *tar = NULL;
@@ -216,21 +217,21 @@ static char *doUntar(archiveType *at, int sr, const char *fn)
 			   at->cmd, " ", at->unpack, " ",
 			   rpmIsVerbose() ? "" : at->quiet, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s %s '%s' | %s %s - %s", mkdir, zipper, fn, tar, taropts, stripcd);
+	    rasprintf(&buf, "%s %s %s | %s %s - %s", mkdir, zipper, arg, tar, taropts, stripcd);
 	} else if (at->compressed == COMPRESSED_GEM) {
 	    auto bn = fs::path(fn).stem();
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 
-	    rasprintf(&buf, "%s '%s' && %s spec '%s' --ruby > '%s.gemspec'",
-			zipper, fn, gem, fn, bn.c_str());
+	    rasprintf(&buf, "%s %s && %s spec %s --ruby > '%s.gemspec'",
+			zipper, arg, gem, arg, bn.c_str());
 
 	    free(gem);
 	} else {
-	    rasprintf(&buf, "%s%s '%s' %s", mkdir, zipper, fn, stripcd);
+	    rasprintf(&buf, "%s%s %s %s", mkdir, zipper, arg, stripcd);
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s '%s' %s", mkdir, tar, taropts, fn, stripcd);
+	rasprintf(&buf, "%s %s %s %s %s", mkdir, tar, taropts, arg, stripcd);
     }
 
 exit:
@@ -245,6 +246,7 @@ int main(int argc, char *argv[])
     int ec = EXIT_FAILURE;
     poptContext optCon = NULL;
     const char *arg = NULL;
+    const char *fnarg = "\"$1\"";
     char *cmd = NULL;
     archiveType *at = NULL;
     int sr = 0;
@@ -260,28 +262,36 @@ int main(int argc, char *argv[])
     if (extract) {
 	if (dstpath)
 	    sr = singleRoot(arg);
-	cmd = doUntar(at, sr, arg);
+	cmd = doUntar(at, sr, arg, fnarg);
     } else {
-	cmd = doUncompress(at, arg);
+	cmd = doUncompress(at, arg, fnarg);
     }
 
     if (cmd) {
 	FILE *inp = NULL;
 
-	if (rpmIsVerbose() || dryrun)
-	    fprintf(stderr, "%s\n", cmd);
+	if (rpmIsVerbose() || dryrun) {
+	    char *dryarg = NULL;
+	    char *drycmd = NULL;
+	    rasprintf(&dryarg, "'%s'", arg);
+	    drycmd = extract ? doUntar(at, sr, arg, dryarg) :
+			       doUncompress(at, arg, dryarg);
+	    fprintf(stderr, "%s\n", drycmd);
+	    free(drycmd);
+	    free(dryarg);
+	}
 
 	if (dryrun) {
 	    ec = EXIT_SUCCESS;
 	    goto exit;
 	}
 
-	inp = popen(cmd, "r");
+	inp = rpopen(cmd, arg);
 	if (inp) {
 	    int status, c;
 	    while ((c = fgetc(inp)) != EOF)
 		fputc(c, stdout);
-	    status = pclose(inp);
+	    status = rpclose(inp);
 	    if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		ec = EXIT_SUCCESS;
 	}
