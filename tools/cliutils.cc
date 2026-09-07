@@ -83,3 +83,51 @@ int finishPipe(void)
     }
     return rc;
 }
+
+FILE* rpopen(const char *cmd, const char *arg)
+{
+    FILE *stream = NULL;
+    ARGV_t argv = NULL;
+    int pipefd[2];
+    pid_t pid;
+
+    if (pipe(pipefd) < 0)
+	goto exit;
+
+    argvAdd(&argv, "/bin/sh");
+    argvAdd(&argv, "-c");
+    argvAdd(&argv, cmd);
+    argvAdd(&argv, "sh");
+    argvAdd(&argv, arg);
+
+    if ((pid = fork()) == 0) {
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[0]);
+	execv(argv[0], argv);
+	_exit(EXIT_FAILURE);
+    } else if (pid == -1) {
+	goto exit;
+    }
+
+    close(pipefd[1]);
+    stream = fdopen(pipefd[0], "r");
+
+exit:
+    argvFree(argv);
+    return stream;
+}
+
+int rpclose(FILE *stream)
+{
+    int rc = -1;
+    int status;
+
+    if ((waitpid(-1, &status, 0) == -1) || !WIFEXITED(status))
+	goto exit;
+
+    rc = WEXITSTATUS(status);
+
+exit:
+    fclose(stream);
+    return rc;
+}

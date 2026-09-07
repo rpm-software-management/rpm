@@ -22,4 +22,11 @@ int initPipe(void);
 
 int finishPipe(void);
 
+/*
+ * A safe, read-only variant of popen(3) that passes untrusted input (arg) as a
+ * positional argument to sh(1) where the command (cmd) can read it via $1.
+ */
+FILE *rpopen(const char *cmd, const char *arg);
+int rpclose(FILE *stream);
+
 #endif /* _CLIUTIL_H */
