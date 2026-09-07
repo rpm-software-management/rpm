@@ -908,7 +908,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 2)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpmbuild --quiet -ts \
@@ -928,7 +927,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 3)])
 AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpmbuild --quiet -ts \
