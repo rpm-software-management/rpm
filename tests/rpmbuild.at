@@ -906,6 +906,93 @@ test -f $RPMTEST/tmp/gotcha
 [])
 RPMTEST_CLEANUP
 
+# CVE-2026-84837: macro shell expansion
+RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 2)])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -ts \
+    "/data/SOURCES/hello-2.0.tar.gz}%(touch gotcha)%{nil"
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
+# CVE-2026-84837: shell injection
+RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 3)])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -ts \
+    "/data/SOURCES/hello-2.0.tar.gz > hello.tar}; \
+     touch gotcha; cat hello.tar %{nil"
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
+# CVE-2026-84837: shell injection (subshell)
+RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 4)])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+runroot rpmbuild --quiet -ts '$(touch gotcha).tar.gz'
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
+# CVE-2026-84837: shell injection via rpmuncompress
+# This one needs actual files on disk and double quotes to pass through the
+# popen(3) call in getTarSpec() to the one in rpmuncompress
+RPMTEST_SETUP_RW([rpmbuild -ts <spec> (evil 5)])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+cp /data/SOURCES/hello-2.0.tar.gz $RPMTEST/"\"'; touch gotcha; #.gz'\""
+cp /data/SOURCES/hello-2.0.tar.gz $RPMTEST/"'; touch gotcha; #.gz'"
+runroot rpmbuild --quiet -ts "\"'; touch gotcha; #.gz'\""
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
 # weird filename survival test
 RPMTEST_SETUP_RW([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
