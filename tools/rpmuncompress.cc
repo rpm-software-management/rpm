@@ -94,7 +94,7 @@ static char *doUncompress(const char *fn)
 	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			at->cmd, " ", at->unpack, NULL);
 	/* path must not be expanded */
-	cmd = rstrscat(&cmd, " ", fn, NULL);
+	cmd = rstrscat(&cmd, " '", fn, "'", NULL);
     }
     return cmd;
 }
