@@ -88,10 +88,9 @@ static archiveType *getArchiver(const char *fn)
     return archiver;
 }
 
-static char *doUncompress(const char *fn)
+static char *doUncompress(archiveType *at, const char *fn)
 {
     char *cmd = NULL;
-    archiveType *at = getArchiver(fn);
     if (at) {
 	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			at->cmd, " ", at->unpack, NULL);
@@ -164,9 +163,8 @@ afree:
 	return ret;
 }
 
-static char *doUntar(const char *fn)
+static char *doUntar(archiveType *at, int sr, const char *fn)
 {
-    archiveType *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = rpmIsVerbose() ? "-xvvof" : "-xof";
@@ -174,14 +172,12 @@ static char *doUntar(const char *fn)
     char *stripcd = NULL;
     int needtar = 0;
 
-    if ((at = getArchiver(fn)) == NULL)
+    if (at == NULL)
 	goto exit;
 
     needtar = (at->extractable == 0);
 
     if (dstpath) {
-	int sr = singleRoot(fn);
-
 	/* if the archive has multiple entries, just extract it into the
 	 * specified destination path, otherwise also strip the first path
 	 * entry
@@ -250,6 +246,8 @@ int main(int argc, char *argv[])
     poptContext optCon = NULL;
     const char *arg = NULL;
     char *cmd = NULL;
+    archiveType *at = NULL;
+    int sr = 0;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
@@ -258,7 +256,15 @@ int main(int argc, char *argv[])
 	goto exit;
     }
 
-    cmd = extract ? doUntar(arg) : doUncompress(arg);
+    at = getArchiver(arg);
+    if (extract) {
+	if (dstpath)
+	    sr = singleRoot(arg);
+	cmd = doUntar(at, sr, arg);
+    } else {
+	cmd = doUncompress(at, arg);
+    }
+
     if (cmd) {
 	FILE *inp = NULL;
 
