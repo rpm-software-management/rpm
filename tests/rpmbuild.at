@@ -4144,7 +4144,7 @@ rpmuncompress -n /data/SOURCES/hello-2.0.tar.gz
 ],
 [0],
 [],
-[/usr/bin/gzip -dc /data/SOURCES/hello-2.0.tar.gz
+[/usr/bin/gzip -dc '/data/SOURCES/hello-2.0.tar.gz'
 ])
 
 RPMTEST_CHECK([
@@ -4156,8 +4156,27 @@ rpmuncompress --macros=macros.aux -n /data/SOURCES/hello-2.0.tar.gz
 ],
 [0],
 [],
-[/an/alternative/gzip -dc /data/SOURCES/hello-2.0.tar.gz
+[/an/alternative/gzip -dc '/data/SOURCES/hello-2.0.tar.gz'
 ])
+
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP([rpmuncompress filename with spaces])
+AT_KEYWORDS([build tools])
+RPMTEST_CHECK([
+cp /data/SOURCES/hello-2.0.tar.gz "hello world-2.0.tar.gz"
+rpmuncompress "hello world-2.0.tar.gz" | tar tf -
+],
+[0],
+[hello-2.0/
+hello-2.0/COPYING
+hello-2.0/hello.spec
+hello-2.0/hello.c
+hello-2.0/Makefile
+hello-2.0/README
+hello-2.0/FAQ
+],
+[])
 
 RPMTEST_CLEANUP
 
