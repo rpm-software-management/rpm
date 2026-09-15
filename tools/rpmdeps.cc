@@ -5,27 +5,24 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfc.h>
 
+#include "cliutils.hh"
 #include "debug.h"
 
-static int print_provides;
+enum modes {
+    MODE_NONE			= 0,
+    MODE_PROVIDES		= (1 << 0),
+    MODE_REQUIRES		= (1 << 1),
+    MODE_RECOMMENDS		= (1 << 2),
+    MODE_SUGGESTS		= (1 << 3),
+    MODE_SUPPLEMENTS		= (1 << 4),
+    MODE_ENHANCES		= (1 << 5),
+    MODE_CONFLICTS		= (1 << 6),
+    MODE_OBSOLETES		= (1 << 7),
+    MODE_ORDERWITHREQUIRES	= (1 << 8),
+    MODE_ALLDEPS		= (1 << 9),
+};
 
-static int print_requires;
-
-static int print_recommends;
-
-static int print_suggests;
-
-static int print_supplements;
-
-static int print_enhances;
-
-static int print_conflicts;
-
-static int print_obsoletes;
-
-static int print_orderwithrequires;
-
-static int print_alldeps;
+static int mode = MODE_NONE;
 
 static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
 {
@@ -45,25 +42,26 @@ static struct poptOption optionsTable[] = {
 	N_("Common options for all rpm modes and executables:"),
 	NULL }, 
 
- { "provides", 'P', POPT_ARG_VAL, &print_provides, -1,
+ { "provides", 'P', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_PROVIDES,
         NULL, NULL },
- { "requires", 'R', POPT_ARG_VAL, &print_requires, -1,
+ { "requires", 'R', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_REQUIRES,
         NULL, NULL },
- { "recommends", '\0', POPT_ARG_VAL, &print_recommends, -1,
+ { "recommends", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_RECOMMENDS,
         NULL, NULL },
- { "suggests", '\0', POPT_ARG_VAL, &print_suggests, -1,
+ { "suggests", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_SUGGESTS,
         NULL, NULL },
- { "supplements", '\0', POPT_ARG_VAL, &print_supplements, -1,
+ { "supplements", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_SUPPLEMENTS,
         NULL, NULL },
- { "enhances", '\0', POPT_ARG_VAL, &print_enhances, -1,
+ { "enhances", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ENHANCES,
         NULL, NULL },
- { "conflicts", '\0', POPT_ARG_VAL, &print_conflicts, -1,
+ { "conflicts", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CONFLICTS,
         NULL, NULL },
- { "obsoletes", '\0', POPT_ARG_VAL, &print_obsoletes, -1,
+ { "obsoletes", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_OBSOLETES,
         NULL, NULL },
- { "orderwithrequires", '\0', POPT_ARG_VAL, &print_orderwithrequires, -1,
+ { "orderwithrequires", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+        &mode, MODE_ORDERWITHREQUIRES,
         NULL, NULL },
- { "alldeps", '\0', POPT_ARG_VAL, &print_alldeps, -1,
+ { "alldeps", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ALLDEPS,
         NULL, NULL },
 
    POPT_AUTOALIAS
@@ -83,6 +81,12 @@ main(int argc, char *argv[])
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
 	goto exit;
+
+    if (mode == MODE_NONE)
+	argerror(_("no operation specified"));
+
+    if (mode & (mode - 1))
+	argerror(_("only one major mode may be specified"));
 
     /* normally files get passed through stdin but also accept files as args */
     if (poptPeekArg(optCon)) {
@@ -106,28 +110,40 @@ main(int argc, char *argv[])
     if (rpmfcClassify(fc, av, NULL) || rpmfcApply(fc))
 	goto exit;
 
-    if (print_alldeps || _rpmfc_debug)
-	rpmfcPrint(NULL, fc, print_alldeps ? stdout : NULL);
+    if (_rpmfc_debug && mode != MODE_ALLDEPS)
+	rpmfcPrint(NULL, fc, NULL);
 
-    if (!print_alldeps) {
-	if (print_provides)
-	    rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
-	if (print_requires)
-	    rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
-	if (print_recommends)
-	    rpmdsPrint(NULL, rpmfcRecommends(fc), stdout);
-	if (print_suggests)
-	    rpmdsPrint(NULL, rpmfcSuggests(fc), stdout);
-	if (print_supplements)
-	    rpmdsPrint(NULL, rpmfcSupplements(fc), stdout);
-	if (print_enhances)
-	    rpmdsPrint(NULL, rpmfcEnhances(fc), stdout);
-	if (print_conflicts)
-	    rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
-	if (print_obsoletes)
-	    rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
-	if (print_orderwithrequires)
-	    rpmdsPrint(NULL, rpmfcOrderWithRequires(fc), stdout);
+    switch (mode) {
+    case MODE_PROVIDES:
+	rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
+	break;
+    case MODE_REQUIRES:
+	rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
+	break;
+    case MODE_RECOMMENDS:
+	rpmdsPrint(NULL, rpmfcRecommends(fc), stdout);
+	break;
+    case MODE_SUGGESTS:
+	rpmdsPrint(NULL, rpmfcSuggests(fc), stdout);
+	break;
+    case MODE_SUPPLEMENTS:
+	rpmdsPrint(NULL, rpmfcSupplements(fc), stdout);
+	break;
+    case MODE_ENHANCES:
+	rpmdsPrint(NULL, rpmfcEnhances(fc), stdout);
+	break;
+    case MODE_CONFLICTS:
+	rpmdsPrint(NULL, rpmfcConflicts(fc), stdout);
+	break;
+    case MODE_OBSOLETES:
+	rpmdsPrint(NULL, rpmfcObsoletes(fc), stdout);
+	break;
+    case MODE_ORDERWITHREQUIRES:
+	rpmdsPrint(NULL, rpmfcOrderWithRequires(fc), stdout);
+	break;
+    case MODE_ALLDEPS:
+	rpmfcPrint(NULL, fc, stdout);
+	break;
     }
 
     ec = 0;
