@@ -512,6 +512,18 @@ void rpmvsFiniRange(struct rpmvs_s *sis, int range)
     }
 }
 
+void rpmvsResetPayloadAlt(struct rpmvs_s *sis)
+{
+    for (int i = 0; i < sis->nsigs; i++) {
+	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+	if (sinfo->range == RPMSIG_PAYLOAD && sinfo->alt &&
+	    sinfo->rc == RPMRC_OK) {
+	    rpmDigestBundleFinal(sis->bundle, sinfo->id, NULL, NULL, 0);
+	    rpmDigestBundleAddID(sis->bundle, sinfo->hashalgo, sinfo->id, 0);
+	}
+    }
+}
+
 int rpmvsRange(struct rpmvs_s *vs)
 {
     int range = 0;
@@ -550,7 +562,8 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
 {
     for (int i = 0; i < vs->nsigs; i++) {
 	const struct rpmsinfo_s *alt = &vs->sigs[i];
-	if ((sinfo->id != alt->id) && (sinfo->disabler == alt->disabler))
+	if (sinfo->alt != alt->alt && sinfo->hashalgo == alt->hashalgo &&
+	    sinfo->disabler == alt->disabler && alt->rc == RPMRC_OK)
 	    return alt;
     }
     return NULL;

@@ -40,6 +40,7 @@ if (READLINE_FOUND)
 endif()
 
 add_executable(rpm2archive rpm2archive.cc)
+target_include_directories(rpm2archive PRIVATE ${CMAKE_SOURCE_DIR}/lib)
 target_link_libraries(rpm2archive PRIVATE PkgConfig::LIBARCHIVE)
 install(TARGETS rpm2archive)
 
@@ -67,4 +68,3 @@ install(TARGETS
 	rpmlua rpmgraph rpmuncompress
 )
 install(TARGETS rpmdeps rpmdump DESTINATION ${RPM_CONFIGDIR})
-

@@ -89,6 +89,36 @@ exit:
     return rc;
 }
 
+int rpmUnwrapSignature(Header *sighp)
+{
+    struct rpmtd_s td;
+    Header oh = NULL;
+    Header nh = NULL;
+
+    if (headerGet(*sighp, RPMTAG_HEADERSIGNATURES, &td,
+		  HEADERGET_DEFAULT)) {
+	oh = headerImport(td.data, td.count, HEADERIMPORT_COPY);
+	rpmtdFreeData(&td);
+    } else {
+	oh = headerLink(*sighp);
+    }
+
+    /* A corrupt region leaves the caller's header untouched and wrapped,
+     * which callers cannot use, so report it instead of continuing. */
+    if (oh == NULL)
+	return -1;
+
+    /* Perform a copy to eliminate crud from buggy signing tools etc */
+    nh = headerCopy(oh);
+    headerFree(oh);
+    if (nh == NULL)
+	return -1;
+
+    headerFree(*sighp);
+    *sighp = nh;
+    return 0;
+}
+
 int rpmWriteSignature(FD_t fd, Header sigh)
 {
     static const uint8_t zeros[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -244,5 +274,4 @@ exit:
     headerFree(sig);
     return rc;
 }
-
 
