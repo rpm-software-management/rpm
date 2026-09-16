@@ -40,8 +40,9 @@ is, to explore the codebase, review the patch before submission, or as a fancy
 autocomplete of the text that you would otherwise write by hand.
 
 In other words, we treat the AI technologies the same way as we do the standard
-text editor or IDE features: It's none of our business what tools you have used
-to produce the patch. You always take full accountability for every line in it.
+text editor or IDE features: It's none of our business what editor you
+used to produce the patch, but you need to write it, and take full
+accountability for every line of it.
 
 ## Submitting Patches
 
