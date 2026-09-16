@@ -4,6 +4,7 @@
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
 #include <rpm/rpmfi.h>
+#include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmio.h>
@@ -18,6 +19,7 @@
 #include <errno.h>
 #include <libgen.h>
 
+#include "rpmpayload.hh"
 #include "debug.h"
 
 #define BUFSIZE (128*1024)
@@ -112,6 +114,29 @@ static void set_archive_utf8(struct archive * a)
 #endif
 }
 
+/* Preserve the logical package offset while making only the payload seekable. */
+static FD_t spool_payload(FD_t fd, off_t payload_start)
+{
+    char *tmpfn = NULL;
+    FD_t tmp = rpmMkTempFile(NULL, &tmpfn);
+
+    if (tmpfn) {
+	unlink(tmpfn);
+	free(tmpfn);
+    }
+    if (tmp == NULL || Fseek(tmp, payload_start, SEEK_SET) < 0 ||
+	ufdCopy(fd, tmp) < 0 || Ferror(fd) || Fflush(tmp) ||
+	Fseek(tmp, payload_start, SEEK_SET) < 0) {
+	int myerrno = errno;
+	if (tmp)
+	    Fclose(tmp);
+	tmp = NULL;
+	errno = myerrno;
+    }
+    Fclose(fd);
+    return tmp;
+}
+
 static int process_package(rpmts ts, const char * filename)
 {
     FD_t fdi;
@@ -158,10 +183,37 @@ static int process_package(rpmts ts, const char * filename)
 	break;
     }
 
-
-    /* Retrieve payload size and compression type. */
-    {	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
-	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
+    /* Ordinary compressed stdin remains streaming. Aligned or compressor-less
+     * payloads need probing, so spool only the unread payload at its logical
+     * offset. */
+    {
+	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
+	off_t payload_start = Ftell(fdi);
+	int needs_probe = headerIsEntry(h, RPMTAG_PAYLOADALIGNMENT) ||
+			  !(compr && compr[0]);
+	if (payload_start < 0 && needs_probe) {
+	    rpmop op = fdOp(fdi, FDSTAT_READ);
+	    off_t logical = op ? (off_t)op->bytes : -1;
+	    if (logical < 0 || (size_t)logical != op->bytes ||
+		(fdi = spool_payload(fdi, logical)) == NULL) {
+		fprintf(stderr, _("cannot buffer payload: %s\n"),
+			strerror(errno));
+		exit(EXIT_FAILURE);
+	    }
+	    payload_start = Ftell(fdi);
+	}
+	if (payload_start >= 0) {
+	    struct rpmPayloadInfo payload;
+	    if (rpmPayloadProbe(fdi, h, &payload)) {
+		fprintf(stderr,
+			_("invalid payload alignment or payload magic: %s\n"),
+			strerror(errno));
+		exit(EXIT_FAILURE);
+	    }
+	    compr = payload.io;
+	}
+	rpmio_flags = rstrscat(NULL, "r.",
+		(compr && compr[0]) ? compr : "gzip", NULL);
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
