@@ -25,7 +25,7 @@ RUN dnf -y install \
   libzstd-devel \
   elfutils-libelf-devel \
   elfutils-devel \
-  openssl-devel \
+  openssl openssl-devel \
   libgcrypt-devel \
   rpm-sequoia-devel \
   file-devel \
@@ -46,6 +46,7 @@ RUN dnf -y install \
   which \
   elfutils binutils \
   findutils sed grep gawk diffutils file patch \
+  util-linux-script \
   tar unzip gzip bzip2 cpio xz 7zip 7zip-standalone \
   pkgconfig \
   /usr/bin/systemd-sysusers \
