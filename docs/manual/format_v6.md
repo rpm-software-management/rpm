@@ -2,7 +2,7 @@
 layout: default
 title: rpm.org - RPM V6 Package format
 ---
-# V6 Package format DRAFT
+# V6 Package format
 
 This document describes the RPM file format version 6, which is used
 by RPM versions 6.x and with limitations, readable with 4.x.
