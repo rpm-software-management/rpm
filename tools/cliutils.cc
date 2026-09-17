@@ -1,5 +1,6 @@
 #include "system.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 
 #include <rpm/rpmlog.h>
@@ -82,4 +83,40 @@ int finishPipe(void)
 	    rc = 1;
     }
     return rc;
+}
+
+int printOutput(const char *file, const char *cmd, const char *arg)
+{
+    pid_t pid;
+    int wstatus;
+
+    pid = fork();
+    if (pid == 0) {
+	ARGV_t argv = NULL;
+	int fd = 0;
+
+	if (file) {
+	    fd = open(file, O_WRONLY);
+	    dup2(fd, STDOUT_FILENO);
+	    close(fd);
+	}
+
+	argvAdd(&argv, cmd);
+	argvAdd(&argv, arg);
+
+	execvp(argv[0], argv);
+	_exit(EXIT_FAILURE);
+    } else if (pid == -1) {
+	rpmlog(RPMLOG_ERR, _("Couldn't fork \"%s\": %s\n"),
+			   cmd, strerror(errno));
+	return 1;
+    }
+
+    if ((waitpid(pid, &wstatus, 0) == -1)) {
+	rpmlog(RPMLOG_ERR, _("Executing \"%s\" failed with status %i\n"),
+			   cmd, WEXITSTATUS(wstatus));
+	return 1;
+    }
+
+    return 0;
 }
