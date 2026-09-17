@@ -390,7 +390,7 @@ static char * getTarSpec(const char *arg)
 	goto exit;
 
     progName = rpmExpand("%{__rpmuncompress}", NULL);
-    if (printOutput(tarFile, progName, arg))
+    if (printOutput(tarFile, progName, arg, 0))
 	goto exit;
 
     for (spec = tryspec; *spec != NULL; spec++) {

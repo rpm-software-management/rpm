@@ -85,7 +85,7 @@ int finishPipe(void)
     return rc;
 }
 
-int printOutput(const char *file, const char *cmd, const char *arg)
+int printOutput(const char *file, const char *cmd, const char *arg, int split)
 {
     pid_t pid;
     int wstatus;
@@ -101,7 +101,10 @@ int printOutput(const char *file, const char *cmd, const char *arg)
 	    close(fd);
 	}
 
-	argvAdd(&argv, cmd);
+	if (split)
+	    argvSplit(&argv, cmd, " ");
+	else
+	    argvAdd(&argv, cmd);
 	argvAdd(&argv, arg);
 
 	execvp(argv[0], argv);
