@@ -368,6 +368,8 @@ static int isSpecFile(const char * specfile)
  */
 static char * getTarSpec(const char *arg)
 {
+    char *progName = NULL;
+    char *tarFile = NULL;
     char *specFile = NULL;
     char *specDir = NULL;
     char *specBase = NULL;
@@ -375,11 +377,20 @@ static char * getTarSpec(const char *arg)
     const char **spec;
     char tarbuf[BUFSIZ];
     int gotspec = 0;
-    FD_t fd = NULL;
+    FD_t fdt = NULL;
+    FD_t fds = NULL;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
+    tarFile = rpmGetPath("%{_specdir}/", "rpm-tar.XXXXXX", NULL);
+    if (!(fdt = rpmMkTemp(tarFile)))
+	goto exit;
+
     specFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
-    if (!(fd = rpmMkTemp(specFile)))
+    if (!(fds = rpmMkTemp(specFile)))
+	goto exit;
+
+    progName = rpmExpand("%{__rpmuncompress}", NULL);
+    if (printOutput(tarFile, progName, arg, 0))
 	goto exit;
 
     for (spec = tryspec; *spec != NULL; spec++) {
@@ -387,8 +398,7 @@ static char * getTarSpec(const char *arg)
 	char *cmd;
 	int specfiles = 0;
 
-	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
-			"%{__tar} xOvof - --wildcards ", *spec,
+	cmd = rpmExpand("%{__tar} xOvof ", tarFile, " --wildcards ", *spec,
 			" 2>&1 > ", specFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
@@ -434,9 +444,15 @@ static char * getTarSpec(const char *arg)
     }
 
 exit:
+    free(progName);
     free(specFile);
     free(specDir);
-    Fclose(fd);
+    if (tarFile) {
+	unlink(tarFile);
+	free(tarFile);
+    }
+    Fclose(fdt);
+    Fclose(fds);
     return specFinal;
 }
 

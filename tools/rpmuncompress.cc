@@ -16,6 +16,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
+#include "cliutils.hh"
 #include "debug.h"
 
 namespace fs = std::filesystem;
@@ -86,15 +87,11 @@ static const struct archiveType_s *getArchiver(const char *fn)
     return archiver;
 }
 
-static char *doUncompress(const char *fn)
+static char *doUncompress(const char *fn, const struct archiveType_s *at)
 {
     char *cmd = NULL;
-    const struct archiveType_s *at = getArchiver(fn);
     if (at) {
-	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
-			at->cmd, " ", at->unpack, NULL);
-	/* path must not be expanded */
-	cmd = rstrscat(&cmd, " ", fn, NULL);
+	cmd = rpmExpand(at->cmd, " ", at->unpack, NULL);
     }
     return cmd;
 }
@@ -162,9 +159,8 @@ afree:
 	return ret;
 }
 
-static char *doUntar(const char *fn)
+static char *doUntar(const char *fn, const struct archiveType_s *at)
 {
-    const struct archiveType_s *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = rpmIsVerbose() ? "-xvvof" : "-xof";
@@ -172,7 +168,7 @@ static char *doUntar(const char *fn)
     char *stripcd = NULL;
     int needtar = 0;
 
-    if ((at = getArchiver(fn)) == NULL)
+    if (at == NULL)
 	goto exit;
 
     needtar = (at->extractable == 0);
@@ -248,6 +244,7 @@ int main(int argc, char *argv[])
     poptContext optCon = NULL;
     const char *arg = NULL;
     char *cmd = NULL;
+    const struct archiveType_s *at = NULL;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 
@@ -256,15 +253,32 @@ int main(int argc, char *argv[])
 	goto exit;
     }
 
-    cmd = extract ? doUntar(arg) : doUncompress(arg);
+    at = getArchiver(arg);
+
+    cmd = extract ? doUntar(arg, at) : doUncompress(arg, at);
     if (cmd) {
 	FILE *inp = NULL;
 
-	if (rpmIsVerbose() || dryrun)
-	    fprintf(stderr, "%s\n", cmd);
+	if (rpmIsVerbose() || dryrun) {
+	    if (extract)
+		fprintf(stderr, "%s\n", cmd);
+	    else
+		fprintf(stderr, "%s%s '%s'\n",
+			(at->setTZ ? "TZ=UTC " : ""), cmd, arg);
+	}
 
 	if (dryrun) {
 	    ec = EXIT_SUCCESS;
+	    goto exit;
+	}
+
+	if (extract == 0) {
+	    if (at->setTZ)
+		setenv("TZ", "UTC", 1);
+	    if (printOutput(NULL, cmd, arg, 1) == 0)
+		ec = EXIT_SUCCESS;
+	    if (at->setTZ)
+		unsetenv("TZ");
 	    goto exit;
 	}
 
