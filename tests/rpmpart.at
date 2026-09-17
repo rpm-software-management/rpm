@@ -1,0 +1,69 @@
+AT_BANNER([rpmpart])
+
+RPMTEST_SETUP([rpmpart basic])
+AT_KEYWORDS([rpmpart])
+
+RPMTEST_CHECK([
+runroot rpmpart
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmpart -s bogus /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmpart -s lead /etc/hostname
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmpart -s lead /data/RPMS/hello-2.0-1.x86_64.rpm | wc -c
+],
+[0],
+[96
+],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([rpmpart outdir])
+AT_KEYWORDS([rpmpart])
+
+RPMTEST_CHECK([
+runroot rpmpart --outdir /tmp/inspect /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot ls /tmp/inspect/ | sort
+],
+[0],
+[hello-2.0-1.x86_64.rpm.lead
+hello-2.0-1.x86_64.rpm.mainheader
+hello-2.0-1.x86_64.rpm.payload
+hello-2.0-1.x86_64.rpm.signature
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmpart -s lead,signature --outdir /tmp/inspect2 /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot ls /tmp/inspect2/ | sort
+],
+[0],
+[hello-2.0-1.x86_64.rpm.lead
+hello-2.0-1.x86_64.rpm.signature
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpmpart --outdir /tmp/inspect3 /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot sh -c 'cat /tmp/inspect3/hello-2.0-1.x86_64.rpm.lead /tmp/inspect3/hello-2.0-1.x86_64.rpm.signature /tmp/inspect3/hello-2.0-1.x86_64.rpm.mainheader /tmp/inspect3/hello-2.0-1.x86_64.rpm.payload | cmp -s /data/RPMS/hello-2.0-1.x86_64.rpm - && echo match'
+],
+[0],
+[match
+],
+[])
+RPMTEST_CLEANUP
