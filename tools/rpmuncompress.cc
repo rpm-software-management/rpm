@@ -45,7 +45,7 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-struct archiveType_s {
+typedef const struct archiveType_s {
     int compressed;
     int extractable;
     const char *cmd;
@@ -53,7 +53,9 @@ struct archiveType_s {
     const char *quiet;
     const char *dest;
     int setTZ;
-} archiveTypes[] = {
+} archiveType;
+
+static archiveType const archiveTypes[] = {
     { COMPRESSED_NOT,	0,	"%{__cat}" ,	"",		"", "", 0 },
     { COMPRESSED_OTHER,	0,	"%{__gzip}",	"-dc",		"", "", 0 },
     { COMPRESSED_BZIP2,	0,	"%{__bzip2}",	"-dc",		"", "", 0 },
@@ -69,13 +71,13 @@ struct archiveType_s {
     { -1,		0,	NULL,		NULL,		NULL, 0 },
 };
 
-static const struct archiveType_s *getArchiver(const char *fn)
+static archiveType *getArchiver(const char *fn)
 {
-    const struct archiveType_s *archiver = NULL;
+    archiveType *archiver = NULL;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
     if (rpmFileIsCompressed(fn, &compressed) == 0) {
-	for (const struct archiveType_s *at = archiveTypes; at->cmd; at++) {
+	for (archiveType *at = archiveTypes; at->cmd; at++) {
 	    if (compressed == at->compressed) {
 		archiver = at;
 		break;
@@ -89,7 +91,7 @@ static const struct archiveType_s *getArchiver(const char *fn)
 static char *doUncompress(const char *fn)
 {
     char *cmd = NULL;
-    const struct archiveType_s *at = getArchiver(fn);
+    archiveType *at = getArchiver(fn);
     if (at) {
 	cmd = rpmExpand(at->setTZ ? "TZ=UTC " : "",
 			at->cmd, " ", at->unpack, NULL);
@@ -164,7 +166,7 @@ afree:
 
 static char *doUntar(const char *fn)
 {
-    const struct archiveType_s *at = NULL;
+    archiveType *at = NULL;
     char *buf = NULL;
     char *tar = NULL;
     const char *taropts = rpmIsVerbose() ? "-xvvof" : "-xof";
