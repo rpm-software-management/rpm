@@ -1,0 +1,11 @@
+AT_BANNER([RPM plugin tests])
+
+RPMTEST_SETUP([[fapolicyd handles a full FIFO]])
+AT_KEYWORDS([[plugins fapolicyd]])
+RPMTEST_CHECK([[
+fapolicydtest
+]],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
