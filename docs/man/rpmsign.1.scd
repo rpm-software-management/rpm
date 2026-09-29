@@ -122,8 +122,9 @@ available:
 	*--key-id* must be explicitly specified when signing.
 
 *%\_openpgp_sign*
-	The OpenPGP implementation to use for signing. Supported values are
-	"gpg" for GnuPG (default and traditional) and "sq" for Sequoia PGP.
+	The OpenPGP implementation to use for signing. Supported values are:
+	- *gpg*: GnuPG (default, only supports OpenPGP v4 signatures)
+	- *sq*: Sequoia-PGP (supports OpenPGP v4 and v6 signatures)
 
 Implementation specific macros:
 
@@ -135,7 +136,7 @@ Implementation specific macros:
 	independent and non-ambiguous *%\_openpgp_sign_id* instead.
 
 *%\_sq_path*
-	The location of your Sequoia configuration if not the default.
+	The location of your Sequoia-PGP configuration if not the default.
 
 # EXAMPLES
 ## Example 1. Basic setup
