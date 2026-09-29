@@ -37,6 +37,7 @@ set(TESTSUITE_AT
 	rpmspec.at
 	rpmvfylevel.at
 	rpmsigdig.at
+	rpmplugins.at
 	rpmpkgfmt.at
 	rpmio.at
 	rpmverify.at
@@ -63,7 +64,7 @@ foreach(at ${TESTSUITE_AT})
 endforeach()
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint readpkgnullts rpmdig
-	      importkey oldtxn)
+	      importkey oldtxn fapolicydtest)
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpm)

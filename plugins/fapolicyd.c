@@ -11,15 +11,19 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
+#define MAX_WRITE_ERROR_LOGS 5
+
 struct fapolicyd_data {
     int fd;
     long changed_files;
+    unsigned int write_error_logs;
     const char * fifo_path;
 };
 
 static struct fapolicyd_data fapolicyd_state = {
     .fd = -1,
     .changed_files = 0,
+    .write_error_logs = 0,
     .fifo_path = "/run/fapolicyd/fapolicyd.fifo",
 };
 
@@ -84,9 +88,15 @@ static rpmRC write_fifo(struct fapolicyd_data* state, const char * str)
 
     while (written < len) {
         if ((n = write(state->fd, str + written, len - written)) < 0) {
-            if (errno == EINTR || errno == EAGAIN)
+            if (errno == EINTR)
                 continue;
-            rpmlog(RPMLOG_DEBUG, "Write: %s -> %s\n", state->fifo_path, strerror(errno));
+
+            /* Let the outer loop back off and reopen on EAGAIN. */
+            if (state->write_error_logs < MAX_WRITE_ERROR_LOGS) {
+                rpmlog(RPMLOG_DEBUG, "Write: %s -> %s\n",
+                       state->fifo_path, strerror(errno));
+                state->write_error_logs++;
+            }
             goto bad;
         }
         written += n;
@@ -148,6 +158,9 @@ static void try_to_write_to_fifo(struct fapolicyd_data* state, const char * str)
 
 static rpmRC fapolicyd_init(rpmPlugin plugin, rpmts ts)
 {
+    /* Limit repeated write errors independently for each transaction. */
+    fapolicyd_state.write_error_logs = 0;
+
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
         goto end;
 
