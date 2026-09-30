@@ -403,6 +403,7 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADSHA512ALT	= 5122, /* s */
     RPMTAG_PAYLOADSHA3_256	= 5123, /* s */
     RPMTAG_PAYLOADSHA3_256ALT	= 5124, /* s */
+    RPMTAG_PAYLOADALIGNMENT	= 5125, /* i */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

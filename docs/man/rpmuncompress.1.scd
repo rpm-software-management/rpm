@@ -8,6 +8,8 @@ RPMUNCOMPRESS(1)
 
 *rpmuncompress* [options] [extract-options] {*-x*|*--extract*} _ARCHIVE_
 
+*rpmuncompress* [options] {*-p*|*--package*} _PACKAGE_
+
 # DESCRIPTION
 *rpmuncompress* is a utility for transparently outputting compressed
 and uncompressed files, and extracting archives.
@@ -24,6 +26,9 @@ _ARCHIVE_
 	A *tar*(1), *zip*(1), CAR or Ruby GEM file. *tar* archives may
 	be compressed.
 
+_PACKAGE_
+	An *rpm*(8) package.
+
 # OPERATIONS
 By default, *rpmuncompress* outputs _FILE_ to standard output similar
 to *cat*(1), but transparently decompressing many popular compression
@@ -33,6 +38,15 @@ formats, similar to *zcat*(1).
 *--extract*
 	Extract the _ARCHIVE_ passed as argument into the current directory,
 	transparently uncompressing *tar*(1) archives if needed.
+
+*-p*,
+*--package*
+	Write the whole _PACKAGE_ to standard output with its payload
+	stored uncompressed instead, preserving the package's signatures
+	and payload digests. This requires a package carrying a digest of
+	the uncompressed payload (any v6 package, or a v4 package built
+	with rpm >= 4.16). Packages cannot be extracted with *--extract*;
+	use *rpm2archive*(1) for that.
 
 # OPTIONS
 *-n*,
@@ -61,7 +75,11 @@ On success, 0 is returned, a nonzero failure code otherwise.
 	Uncompress and extract _myproject-1.0.7rc1.tar.gz_ archive into
 	_myproject_ directory, regardless of it's internal structure.
 
+*rpmuncompress -p foo-1.0-1.x86_64.rpm > foo-raw.rpm*
+	Rewrite _foo-1.0-1.x86_64.rpm_ with its payload stored
+	uncompressed, keeping its signatures valid.
+
 # SEE ALSO
-*rpm-common*(8), *rpmbuild*(1), *popt*(3)
+*rpm-common*(8), *rpm2archive*(1), *rpmbuild*(1), *popt*(3)
 
 *http://www.rpm.org/*

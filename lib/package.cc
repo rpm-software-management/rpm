@@ -7,6 +7,7 @@
 #include <string>
 #include <mutex>
 #include <set>
+#include <vector>
 
 #include <netinet/in.h>
 
@@ -15,9 +16,14 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
+#include <rpm/rpmcrypto.h>
+#include <rpm/rpmarchive.h>
 
 #include "rpmlead.hh"
+#include "signature.hh"
 #include "rpmio_internal.hh"	/* fd digest bits */
+#include "rpmalign.hh"		/* rpmAlignIsValid, rpmAlignUp */
+#include "rpmpayload.hh"
 #include "rpmlog_internal.hh"	/* rpmlogOnce */
 #include "header_internal.hh"	/* XXX headerCheck */
 #include "rpmvs.hh"
@@ -371,5 +377,488 @@ exit:
     return rc;
 }
 
+/* Matches the largest buffer the payload paths already put on the stack;
+ * library code can run on threads with small stacks. */
+#define UNCOMPRESS_BUFSIZE (8*BUFSIZ)
 
+static int distinctRegularFiles(FD_t a, FD_t b)
+{
+    struct stat ast, bst;
 
+    return fdIsPlain(a) && fdIsPlain(b) &&
+	   Ftell(a) >= 0 && Ftell(b) >= 0 &&
+	   fstat(Fileno(a), &ast) == 0 && S_ISREG(ast.st_mode) &&
+	   fstat(Fileno(b), &bst) == 0 && S_ISREG(bst.st_mode) &&
+	   (ast.st_dev != bst.st_dev || ast.st_ino != bst.st_ino);
+}
+
+static int copyBytes(FD_t src, FD_t dst, off_t start, off_t size)
+{
+    char buf[UNCOMPRESS_BUFSIZE];
+
+    if (Fseek(src, start, SEEK_SET) < 0)
+	return -1;
+    while (size > 0) {
+	size_t n = size > (off_t)sizeof(buf) ? sizeof(buf) : (size_t)size;
+	if (Fread(buf, 1, n, src) != (ssize_t)n ||
+	    Fwrite(buf, 1, n, dst) != (ssize_t)n)
+	    return -1;
+	size -= n;
+    }
+    return 0;
+}
+
+/*
+ * Whole-package signatures describe the compressed representation and cannot
+ * be retained. Header-only signatures remain valid because the main header is
+ * copied byte-for-byte. The unsigned (LONG)SIZE and MD5 records are required
+ * in v4 signature headers, so they are kept and recomputed for the new
+ * representation once its extent is known.
+ */
+static Header materializedSignatureHeader(Header sigh)
+{
+    std::vector<rpmTagVal> stale;
+    rpmTagVal tag;
+    int bad = 0;
+    int legacy = 0;
+    int header = 0;
+
+    if (rpmUnwrapSignature(&sigh)) {
+	rpmlog(RPMLOG_ERR, _("cannot unwrap signature header\n"));
+	headerFree(sigh);
+	return NULL;
+    }
+    HeaderIterator hi = headerInitIterator(sigh);
+    while (!bad && (tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
+	switch (tag) {
+	case RPMTAG_HEADERIMAGE:
+	case RPMTAG_HEADERSIGNATURES:
+	case RPMTAG_HEADERIMMUTABLE:
+	case RPMTAG_HEADERREGIONS:
+	case RPMSIGTAG_RESERVEDSPACE:
+	case RPMSIGTAG_BADSHA1_1:
+	case RPMSIGTAG_BADSHA1_2:
+	case RPMTAG_PUBKEYS:
+	case RPMSIGTAG_SHA1:
+	case RPMSIGTAG_SHA256:
+	case RPMSIGTAG_FILESIGNATURES:
+	case RPMSIGTAG_FILESIGNATURELENGTH:
+	case RPMSIGTAG_VERITYSIGNATURES:
+	case RPMSIGTAG_VERITYSIGNATUREALGO:
+	case RPMSIGTAG_SHA3_256:
+	case RPMSIGTAG_RESERVED:
+	/* The archive sizes describe canonical uncompressed cpio and
+	 * remain valid for the materialized representation. */
+	case RPMSIGTAG_PAYLOADSIZE:
+	case RPMSIGTAG_LONGARCHIVESIZE:
+	/* Recomputed for the new representation after writing. */
+	case RPMSIGTAG_SIZE:
+	case RPMSIGTAG_LONGSIZE:
+	case RPMSIGTAG_MD5:
+	    break;
+	case RPMSIGTAG_LEMD5_1:
+	case RPMSIGTAG_LEMD5_2:
+	    stale.push_back(tag);
+	    break;
+	case RPMSIGTAG_PGP:
+	case RPMSIGTAG_GPG:
+	case RPMSIGTAG_PGP5:
+	    legacy = 1;
+	    stale.push_back(tag);
+	    break;
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_OPENPGP:
+	    header = 1;
+	    break;
+	default:
+	    rpmlog(RPMLOG_ERR,
+		   _("unsupported signature header tag %d\n"), tag);
+	    bad = 1;
+	    break;
+	}
+    }
+    headerFreeIterator(hi);
+    if (!bad && legacy && !header) {
+	rpmlog(RPMLOG_ERR,
+	       _("legacy header+payload signature cannot be preserved\n"));
+	bad = 1;
+    }
+    if (bad) {
+	headerFree(sigh);
+	return NULL;
+    }
+    for (auto tag : stale)
+	headerDel(sigh, tag);
+    /* Returned unwrapped; writers wrap a fresh region per write. */
+    return sigh;
+}
+
+/* Write sigh wrapped in a signature region, leaving sigh untouched. */
+static int writeSignatureHeader(FD_t fdo, Header sigh)
+{
+    Header wsigh = headerReload(headerCopy(sigh), RPMTAG_HEADERSIGNATURES);
+    if (wsigh == NULL)
+	return -1;
+    int rc = rpmWriteSignature(fdo, wsigh);
+    headerFree(wsigh);
+    return rc;
+}
+
+/* Copy a canonical uncompressed payload and verify its signed ALT digest. */
+static int copyPayloadAlt(FD_t src, FD_t dst, Header h, rpmVSFlags vsflags)
+{
+    static const struct {
+	rpmTagVal primary;
+	rpmTagVal alt;
+	int algo;
+	rpmVSFlags disable;
+    } digests[] = {
+	{ RPMTAG_PAYLOADSHA3_256, RPMTAG_PAYLOADSHA3_256ALT,
+	  RPM_HASH_SHA3_256,
+	  RPMVSF_NOSHA3_256PAYLOAD },
+	{ RPMTAG_PAYLOADSHA512, RPMTAG_PAYLOADSHA512ALT, RPM_HASH_SHA512,
+	  RPMVSF_NOSHA512PAYLOAD },
+	{ RPMTAG_PAYLOADSHA256, RPMTAG_PAYLOADSHA256ALT, RPM_HASH_SHA256,
+	  RPMVSF_NOSHA256PAYLOAD },
+	{ 0, 0, 0, 0 }
+    };
+    struct digest_s {
+	rpmTagVal alt;
+	std::vector<std::string> expected;
+    };
+    std::vector<digest_s> active;
+    rpm_loff_t size = 0;
+    rpm_loff_t expectedSize = 0;
+    int haveSize = headerIsEntry(h, RPMTAG_PAYLOADSIZEALT);
+    char buf[UNCOMPRESS_BUFSIZE];
+    ssize_t n;
+
+    for (int i = 0; digests[i].alt; i++) {
+	if (vsflags & digests[i].disable)
+	    continue;
+	std::vector<std::string> expected;
+	struct rpmtd_s td;
+
+	if (headerGet(h, digests[i].alt, &td, HEADERGET_MINMEM)) {
+	    while (rpmtdNext(&td) >= 0) {
+		const char *value = rpmtdGetString(&td);
+		if (value == NULL) {
+		    rpmtdFreeData(&td);
+		    return -1;
+		}
+		expected.push_back(value);
+	    }
+	    rpmtdFreeData(&td);
+	}
+	if (expected.empty()) {
+	    if (headerIsEntry(h, digests[i].primary)) {
+		rpmlog(RPMLOG_ERR,
+		       _("source package has no matching ALT payload digest\n"));
+		return -1;
+	    }
+	    continue;
+	}
+	/* The digest contexts are owned and reclaimed by src. */
+	fdInitDigestID(src, digests[i].algo, digests[i].alt, 0);
+	active.push_back({digests[i].alt, expected});
+    }
+    if (active.empty()) {
+	rpmlog(RPMLOG_ERR, _("source package has no usable ALT payload digest\n"));
+	return -1;
+    }
+    if (haveSize)
+	expectedSize = headerGetNumber(h, RPMTAG_PAYLOADSIZEALT);
+
+    while ((n = Fread(buf, 1, sizeof(buf), src)) > 0) {
+	if (haveSize && (size > expectedSize ||
+	    (rpm_loff_t)n > expectedSize - size)) {
+	    rpmlog(RPMLOG_ERR, _("uncompressed payload ALT size mismatch\n"));
+	    return -1;
+	}
+	if (Fwrite(buf, 1, n, dst) != n)
+	    return -1;
+	size += n;
+    }
+    if (n < 0 || Ferror(src) || Ferror(dst))
+	return -1;
+
+    for (const auto &digest : active) {
+	void *data = NULL;
+	fdFiniDigest(src, digest.alt, &data, NULL, 1);
+	if (data == NULL)
+	    return -1;
+	std::string actual((const char *)data);
+	free(data);
+	for (const auto &expected : digest.expected) {
+	    if (strcasecmp(actual.c_str(), expected.c_str())) {
+		rpmlog(RPMLOG_ERR,
+		       _("uncompressed payload ALT digest mismatch\n"));
+		return -1;
+	    }
+	}
+    }
+    if (haveSize && expectedSize != size) {
+	rpmlog(RPMLOG_ERR, _("uncompressed payload ALT size mismatch\n"));
+	return -1;
+    }
+    return 0;
+}
+
+/* Decompress the payload of src into fdo, verifying its ALT digest. */
+static rpmRC copyPayload(rpmts ts, FD_t src, FD_t fdo, Header h,
+			 const struct rpmPayloadInfo *payload)
+{
+    if (Fseek(src, payload->start, SEEK_SET) < 0)
+	return RPMRC_FAIL;
+    std::string rpmio_flags = std::string("r.") + payload->io;
+    /* Fdopen does not close its argument when it cannot find the I/O layer
+     * (e.g. a compressor not built into this librpm), so track the dup. */
+    FD_t dfd = fdDup(Fileno(src));
+    FD_t cfd = dfd ? Fdopen(dfd, rpmio_flags.c_str()) : NULL;
+    if (cfd == NULL || Ferror(cfd)) {
+	rpmlog(RPMLOG_ERR, _("cannot open payload: %s\n"), Fstrerror(cfd));
+	if (cfd)
+	    Fclose(cfd);
+	else if (dfd)
+	    Fclose(dfd);
+	return RPMRC_FAIL;
+    }
+    int rc = copyPayloadAlt(cfd, fdo, h, rpmtsVSFlags(ts));
+    Fclose(cfd);
+    return rc ? RPMRC_FAIL : RPMRC_OK;
+}
+
+/* Digest the byte range [start, end) of the seekable output. */
+static int rangeDigest(FD_t fdo, int algo, off_t start, off_t end,
+		       void **datap, size_t *lenp)
+{
+    DIGEST_CTX ctx = rpmDigestInit(algo, 0);
+    char buf[UNCOMPRESS_BUFSIZE];
+    off_t left = end - start;
+    int rc = -1;
+
+    *datap = NULL;
+    if (ctx == NULL)
+	return -1;
+    if (Fseek(fdo, start, SEEK_SET) < 0)
+	goto exit;
+    while (left > 0) {
+	size_t n = left > (off_t)sizeof(buf) ? sizeof(buf) : (size_t)left;
+	if (Fread(buf, 1, n, fdo) != (ssize_t)n)
+	    goto exit;
+	rpmDigestUpdate(ctx, buf, n);
+	left -= n;
+    }
+    rc = 0;
+
+exit:
+    rpmDigestFinal(ctx, rc ? NULL : datap, lenp, 0);
+    return rc;
+}
+
+/*
+ * The unsigned (LONG)SIZE and MD5 records describe the main header plus
+ * payload extent as stored, so their values are only known once the output
+ * is complete. Recompute them by re-reading the finished output, then rewrite
+ * the signature header in place; only fixed-width values change, so the layout
+ * cannot move.
+ */
+static int patchSignatureHeader(FD_t fdo, Header sigh, off_t outHdrStart,
+				off_t end)
+{
+    uint64_t size = end - outHdrStart;
+    struct rpmtd_s td;
+
+    if (!headerIsEntry(sigh, RPMSIGTAG_SIZE) &&
+	!headerIsEntry(sigh, RPMSIGTAG_LONGSIZE) &&
+	!headerIsEntry(sigh, RPMSIGTAG_MD5))
+	return 0;
+
+    if (headerIsEntry(sigh, RPMSIGTAG_MD5)) {
+	void *md5 = NULL;
+	size_t md5len = 0;
+	if (rangeDigest(fdo, RPM_HASH_MD5, outHdrStart, end, &md5, &md5len) ||
+	    md5 == NULL || md5len != 16) {
+	    rpmlog(RPMLOG_ERR, _("cannot compute package MD5 digest\n"));
+	    free(md5);
+	    return -1;
+	}
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_MD5;
+	td.type = RPM_BIN_TYPE;
+	td.count = md5len;
+	td.data = md5;
+	headerMod(sigh, &td);
+	free(md5);
+    }
+
+    if (headerIsEntry(sigh, RPMSIGTAG_LONGSIZE)) {
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_LONGSIZE;
+	td.type = RPM_INT64_TYPE;
+	td.count = 1;
+	td.data = &size;
+	headerMod(sigh, &td);
+    }
+
+    /*
+     * SIZE and LONGSIZE are mutually exclusive in packages rpm builds, but
+     * recompute SIZE whenever present so a header carrying both is never left
+     * with a stale value.
+     */
+    if (headerIsEntry(sigh, RPMSIGTAG_SIZE)) {
+	if (size <= UINT32_MAX) {
+	    uint32_t size32 = size;
+	    rpmtdReset(&td);
+	    td.tag = RPMSIGTAG_SIZE;
+	    td.type = RPM_INT32_TYPE;
+	    td.count = 1;
+	    td.data = &size32;
+	    headerMod(sigh, &td);
+	} else if (headerIsEntry(sigh, RPMSIGTAG_LONGSIZE)) {
+	    rpmlog(RPMLOG_ERR,
+		   _("package too large for its 32-bit size record\n"));
+	    return -1;
+	} else {
+	    /* Absorb the wider record into the reserve to keep the layout. */
+	    unsigned wantSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+	    headerDel(sigh, RPMSIGTAG_SIZE);
+	    rpmtdReset(&td);
+	    td.tag = RPMSIGTAG_LONGSIZE;
+	    td.type = RPM_INT64_TYPE;
+	    td.count = 1;
+	    td.data = &size;
+	    headerPut(sigh, &td, HEADERPUT_DEFAULT);
+	    for (int i = 0; i < 8; i++) {
+		unsigned curSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+		struct rpmtd_s utd;
+		if (curSize == wantSize)
+		    break;
+		if (!headerGet(sigh, RPMSIGTAG_RESERVEDSPACE, &utd,
+			       HEADERGET_MINMEM) ||
+		    (curSize > wantSize &&
+		     utd.count <= curSize - wantSize))
+		    break;
+		if (curSize > wantSize)
+		    utd.count -= curSize - wantSize;
+		else
+		    utd.count += wantSize - curSize;
+		uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
+		utd.data = zeros;
+		headerMod(sigh, &utd);
+		free(zeros);
+	    }
+	    if (headerSizeof(sigh, HEADER_MAGIC_YES) != wantSize) {
+		rpmlog(RPMLOG_ERR,
+		       _("cannot widen package size record without reserved space\n"));
+		return -1;
+	    }
+	}
+    }
+
+    if (Fseek(fdo, RPMLEAD_SIZE, SEEK_SET) < 0 ||
+	writeSignatureHeader(fdo, sigh) || Ftell(fdo) != outHdrStart) {
+	rpmlog(RPMLOG_ERR, _("unable to update signature header in place\n"));
+	return -1;
+    }
+    return 0;
+}
+
+/* Headers are owned by the caller, which frees them even on failure. */
+static rpmRC uncompressPackage(rpmts ts, FD_t src, FD_t fdo,
+			       Header *hp, Header *sighp)
+{
+    /* Read the source package; leaves it at the payload. */
+    rpmRC rc = rpmReadPackageFile(ts, src, NULL, hp);
+    switch (rc) {
+    case RPMRC_OK:
+    case RPMRC_NOKEY:
+    case RPMRC_NOTTRUSTED:
+	break;
+    default:
+	return rc;
+    }
+    Header h = *hp;
+    off_t payloadStart = Ftell(src);
+    if (payloadStart < 0 || Fseek(src, RPMLEAD_SIZE, SEEK_SET) < 0 ||
+	rpmReadSignature(src, sighp, NULL) != RPMRC_OK)
+	return RPMRC_FAIL;
+    off_t headerStart = Ftell(src);
+    if (headerStart < RPMLEAD_SIZE || headerStart > payloadStart)
+	return RPMRC_FAIL;
+    *sighp = materializedSignatureHeader(*sighp);
+    if (*sighp == NULL)
+	return RPMRC_FAIL;
+
+    /*
+     * Content alignment is an optimization recorded by the build: without it
+     * the payload is materialized with no framing and cannot be cloned from,
+     * only copied.
+     */
+    uint64_t source_align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+    if (!rpmAlignIsValid(source_align))
+	source_align = 1;
+
+    struct rpmPayloadInfo payload;
+    if (Fseek(src, payloadStart, SEEK_SET) < 0 ||
+	rpmPayloadProbe(src, h, &payload))
+	return RPMRC_FAIL;
+
+    /*
+     * The output is caller-owned and unspecified on failure. A caller needing
+     * atomic replacement can materialize to a temporary file and rename it.
+     */
+    if (Fseek(fdo, 0, SEEK_SET) < 0 || ftruncate(Fileno(fdo), 0) ||
+	copyBytes(src, fdo, 0, RPMLEAD_SIZE) ||
+	writeSignatureHeader(fdo, *sighp))
+	return RPMRC_FAIL;
+
+    off_t outHdrStart = Ftell(fdo);
+    if (outHdrStart < 0 ||
+	copyBytes(src, fdo, headerStart, payloadStart - headerStart))
+	return RPMRC_FAIL;
+
+    payloadStart = Ftell(fdo);
+    off_t archiveStart = rpmAlignUp(payloadStart, source_align);
+    if (payloadStart < 0 || archiveStart < payloadStart ||
+	fdWriteZeros(fdo, archiveStart - payloadStart))
+	return RPMRC_FAIL;
+
+    if (copyPayload(ts, src, fdo, h, &payload) != RPMRC_OK || Fflush(fdo))
+	return RPMRC_FAIL;
+
+    off_t end = Ftell(fdo);
+    if (end < 0 || ftruncate(Fileno(fdo), end) ||
+	patchSignatureHeader(fdo, *sighp, outHdrStart, end))
+	return RPMRC_FAIL;
+    /* Patching rewinds to the signature header; leave the output at its end
+     * so Ftell() reports the materialized length. */
+    if (Fseek(fdo, end, SEEK_SET) < 0)
+	return RPMRC_FAIL;
+    return RPMRC_OK;
+}
+
+rpmRC rpmUncompressPackage(rpmts ts, FD_t fdi, FD_t fdo)
+{
+    if (!distinctRegularFiles(fdi, fdo)) {
+	rpmlog(RPMLOG_ERR,
+	       _("package materialization requires distinct unfiltered regular files\n"));
+	return RPMRC_FAIL;
+    }
+    FD_t src = fdDup(Fileno(fdi));
+    if (src == NULL || Fseek(src, 0, SEEK_SET) < 0) {
+	if (src)
+	    Fclose(src);
+	return RPMRC_FAIL;
+    }
+    Header h = NULL;
+    Header sigh = NULL;
+    rpmRC rc = uncompressPackage(ts, src, fdo, &h, &sigh);
+    headerFree(sigh);
+    headerFree(h);
+    /* src shares the file description with fdi; leave fdi at the start. */
+    (void) Fseek(src, 0, SEEK_SET);
+    Fclose(src);
+    return rc;
+}

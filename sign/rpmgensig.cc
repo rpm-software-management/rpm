@@ -28,6 +28,7 @@
 #include <rpm/rpmstring.h>
 #include "rpmio_internal.hh"
 
+#include "rpmalign.hh"
 #include "rpmlead.hh"
 #include "signature.hh"
 #include "rpmmacro_internal.hh"
@@ -521,29 +522,6 @@ exit:
     return rc;
 }
 
-static void unloadImmutableRegion(Header *hdrp, rpmTagVal tag)
-{
-    struct rpmtd_s td;
-    Header oh = NULL;
-
-    if (headerGet(*hdrp, tag, &td, HEADERGET_DEFAULT)) {
-	oh = headerImport(td.data, td.count, HEADERIMPORT_COPY);
-	rpmtdFreeData(&td);
-    } else {
-	/* XXX should we warn if the immutable region is corrupt/missing? */
-	oh = headerLink(*hdrp);
-    }
-
-    if (oh) {
-	/* Perform a copy to eliminate crud from buggy signing tools etc */
-	Header nh = headerCopy(oh);
-	headerFree(*hdrp);
-	*hdrp = headerLink(nh);
-	headerFree(nh);
-	headerFree(oh);
-    }
-}
-
 static rpmRC includeFileSignatures(Header *sigp, Header *hdrp)
 {
 #ifdef WITH_IMAEVM
@@ -736,7 +714,10 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 
     /* Adjust for the region index entry + data getting stripped: 32 bytes */
     origSigSize = headerSizeof(sigh, HEADER_MAGIC_YES) - 32;
-    unloadImmutableRegion(&sigh, RPMTAG_HEADERSIGNATURES);
+    if (rpmUnwrapSignature(&sigh)) {
+	rpmlog(RPMLOG_ERR, _("%s: cannot unwrap signature header\n"), rpm);
+	goto exit;
+    }
 
     if (flags & RPMSIGN_FLAG_IMA) {
 	if (includeFileSignatures(&sigh, &h))
@@ -805,6 +786,44 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    headerMod(sigh, &utd);
 	    free(zeros);
 	    insSig = 1;
+	}
+    }
+
+    /*
+     * A raw payload's outer zero framing is tied to its absolute offset:
+     * readers locate the archive at the next alignment boundary after the
+     * headers. When the package must be rewritten with a resized signature
+     * header, pad the reserve so the payload moves by a multiple of the
+     * alignment and the framing copied from the original stays valid.
+     */
+    if (!insSig) {
+	uint64_t align = headerGetNumber(h, RPMTAG_PAYLOADALIGNMENT);
+	off_t payloadStart = headerStart + headerSizeof(h, HEADER_MAGIC_YES);
+	char pmagic[4] = { 1, 1, 1, 1 };
+
+	if (rpmAlignIsValid(align) &&
+	    Fseek(fd, payloadStart, SEEK_SET) >= 0 &&
+	    Fread(pmagic, 1, sizeof(pmagic), fd) == (ssize_t)sizeof(pmagic) &&
+	    (pmagic[0] == '\0' || memcmp(pmagic, "0707", sizeof(pmagic)) == 0)) {
+	    /* The region reload below adds the index entry + data back: 32 bytes */
+	    unsigned newSize = headerSizeof(sigh, HEADER_MAGIC_YES) + 32;
+	    off_t newHeaderStart = sigStart + newSize + (8 - newSize % 8) % 8;
+	    off_t need = (headerStart - newHeaderStart) % (off_t)align;
+	    if (need < 0)
+		need += align;
+	    if (need) {
+		if (!headerGet(sigh, reserveTag, &utd, HEADERGET_MINMEM)) {
+		    rpmlog(RPMLOG_ERR,
+			_("%s: cannot preserve payload alignment without reserved space\n"),
+			rpm);
+		    goto exit;
+		}
+		utd.count += need;
+		uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
+		utd.data = zeros;
+		headerMod(sigh, &utd);
+		free(zeros);
+	    }
 	}
     }
 
