@@ -423,6 +423,37 @@ runroot rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 ./hello.spec
 ],
 [])
+
+RPMTEST_CHECK([
+runroot ${RPM_CONFIGDIR_PATH}/rpm2cpio.sh /data/RPMS/hlinktest-1.0-1.noarch.rpm | cpio -t --quiet
+],
+[0],
+[./foo
+./foo/copyllo
+./foo/aaaa
+./foo/zzzz
+./foo/hello
+./foo/hello-bar
+./foo/hello-foo
+./foo/hello-world
+],
+[])
+RPMTEST_CLEANUP
+
+# v6 packages use stripped cpio headers, which cpio cannot read.
+RPMTEST_SETUP_RW([rpm2cpio.sh with stripped payload])
+AT_KEYWORDS([rpm2cpio])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_rpmformat 6" \
+	/data/SPECS/hlinktest.spec
+runroot ${RPM_CONFIGDIR_PATH}/rpm2cpio.sh /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+],
+[1],
+[],
+[Unsupported stripped cpio payload in rpm file, use rpm2archive: /build/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
+])
 RPMTEST_CLEANUP
 
 RPMTEST_SETUP([rpm2archive])

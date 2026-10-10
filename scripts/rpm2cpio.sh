@@ -60,5 +60,11 @@ case "$(_dd $offset bs=2 count=1 | tr -d '\0')" in
 	"$(printf '\375\067')") _dd $offset | xzcat   ;; # '\xfd\x37'
 	"$(printf '\135')") _dd $offset | unlzma      ;; # '\x5d\x00'
 	"$(printf '\050\265')") _dd $offset | unzstd  ;; # '\x28\xb5'
+	"$(printf '\060\067')")                          # '\x30\x37'
+		case "$(_dd $offset bs=6 count=1)" in
+			070701|070702) _dd $offset ;;
+			07070X) fatal "Unsupported stripped cpio payload in rpm file, use rpm2archive: $pkg" ;;
+			*) fatal "Unrecognized payload format in rpm file: $pkg" ;;
+		esac ;;
 	*) fatal "Unrecognized payload compression format in rpm file: $pkg" ;;
 esac
