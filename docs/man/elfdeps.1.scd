@@ -19,6 +19,9 @@ for use in RPM dependencies. The main interest areas are *DT_SONAME*,
 *DT_NEEDED* fields of the *SHT_DYNAMIC* section, and symbol versioning
 information in the *SHT_GNU_verdef* and *SHT_GNU_verneed* sections.
 
+The generated dendency string is in a form of _soname(version)(elf class
+marker)_.
+
 *elfdeps* is not normally invoked directly, but doing so can be useful for
 troubleshooting dependency generation and developing new dependency
 generators. The installation directory of *elfdeps* can be determined with
