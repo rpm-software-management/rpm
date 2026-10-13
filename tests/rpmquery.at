@@ -1430,7 +1430,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmgi manifest shell injection])
 AT_KEYWORDS([query cve])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 echo '%(date>gotcha)' > $RPMTEST/manifest.txt
@@ -1451,7 +1450,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmgi CLI path shell injection])
 AT_KEYWORDS([query cve])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 RPMTEST_CHECK([
 runroot rpm -qp "%(touch gotcha)"
