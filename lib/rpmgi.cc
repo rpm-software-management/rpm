@@ -40,7 +40,7 @@ struct rpmgi_s {
 };
 
 /**
- * Open a file after macro expanding path.
+ * Open a file.
  * @todo There are two error messages printed on header, then manifest failures.
  * @param path		file path
  * @param fmode		open mode
@@ -48,15 +48,13 @@ struct rpmgi_s {
  */
 static FD_t rpmgiOpen(const char * path, const char * fmode)
 {
-    char * fn = rpmExpand(path, NULL);
-    FD_t fd = Fopen(fn, fmode);
+    FD_t fd = Fopen(path, fmode);
 
     if (fd == NULL || Ferror(fd)) {
-	rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), path, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	fd = NULL;
     }
-    free(fn);
 
     return fd;
 }
