@@ -769,8 +769,19 @@ AT_SKIP_IF([test -z "${PYTHON}"])
 
 # Startup a http server, serving from /data, for the duration of this
 # test-group. It's visible to other tests running in parallel, though.
+# daemonize returns before the server listens, so wait for the port to accept
+# connections before the first download.
 RPMTEST_CHECK([
 daemonize -p ${HOME}/http.pid -o http.log -- ${PYTHON} -m http.server --bind 127.0.0.1 --directory /data
+${PYTHON} -c '
+import socket, time
+for i in range(100):
+    try:
+        socket.create_connection(("127.0.0.1", 8000)).close()
+        break
+    except OSError:
+        time.sleep(0.1)
+'
 ],
 [0],
 [ignore],
