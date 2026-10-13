@@ -1365,6 +1365,9 @@ exit:
 	td->flags |= RPMTD_ALLOCED;
     }
 
+    if (td->data)
+	td->size = strlen((const char *)td->data) + 1;
+
     return 1;
 }
 

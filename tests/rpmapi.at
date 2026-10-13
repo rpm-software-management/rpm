@@ -29,7 +29,7 @@ imafi ${RPMTEST}/build/RPMS/noarch/simple-1.0-1.noarch.rpm
 flags 0 fc 1
 td size 7
 begin invalid ima
-td size 0
+td size 7
 flags nosignature fc 1
 flags 0 fc 0
 simple
