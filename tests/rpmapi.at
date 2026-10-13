@@ -14,7 +14,6 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([invalid ima])
 AT_KEYWORDS([api rpmfi ima])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 RPMTEST_CHECK([
 runroot rpmbuild -bb --quiet /data/SPECS/simple.spec
 ],
