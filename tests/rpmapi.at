@@ -32,7 +32,6 @@ begin invalid ima
 td size 7
 flags nosignature fc 1
 flags 0 fc 0
-simple
 ],
 [])
 RPMTEST_CLEANUP
