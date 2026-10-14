@@ -12,6 +12,30 @@ readpkgnullts /data/RPMS/hello-2.0-1.x86_64-signed.rpm
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([invalid ima])
+AT_KEYWORDS([api rpmfi ima])
+RPMTEST_CHECK([
+runroot rpmbuild -bb --quiet /data/SPECS/simple.spec
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+imafi ${RPMTEST}/build/RPMS/noarch/simple-1.0-1.noarch.rpm
+],
+[0],
+[simple
+flags 0 fc 1
+td size 7
+begin invalid ima
+td size 7
+flags nosignature fc 1
+flags 0 fc 0
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([keystore API with wrong lock])
 AT_KEYWORDS([api])
 RPMTEST_CHECK([

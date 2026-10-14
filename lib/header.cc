@@ -201,6 +201,7 @@ void hdrblobDigestUpdate(rpmDigestBundle bundle, struct hdrblob_s *blob)
 /* Check tag type matches our definition */
 static int hdrchkTagType(uint32_t tag, uint32_t type)
 {
+    /* Expected type */
     rpmTagType t = rpmTagGetTagType(tag);
     if (t == type)
 	return 0;
@@ -209,9 +210,14 @@ static int hdrchkTagType(uint32_t tag, uint32_t type)
     if (t == RPM_NULL_TYPE)
 	return 0;
 
-    /* Some string tags harmlessly disagree on the exact type */
-    if (rpmTagGetClass(tag) == RPM_STRING_CLASS &&
-	    (rpmTagTypeGetClass(type) == RPM_STRING_CLASS))
+    /* Script prog tags can disagree on the type for compat reasons */
+    if ((t == RPM_STRING_ARRAY_TYPE && type == RPM_STRING_TYPE)) {
+	if (rpmScriptIsProgTag(tag))
+	    return 0;
+    }
+
+    /* Some old packages have string type on i18nstring tags */
+    if (type == RPM_STRING_TYPE && t == RPM_I18NSTRING_TYPE)
 	return 0;
 
     /* Known tag with mismatching type, bad bad bad. */
@@ -1364,6 +1370,9 @@ exit:
 	td->data = xstrdup((const char *)td->data);
 	td->flags |= RPMTD_ALLOCED;
     }
+
+    if (td->data)
+	td->size = strlen((const char *)td->data) + 1;
 
     return 1;
 }

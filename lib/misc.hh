@@ -48,4 +48,6 @@ void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
 		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs);
 
 int rpmIsValidHex(const char *str, size_t slen);
+
+int rpmScriptIsProgTag(rpmTagVal tag);
 #endif	/* H_MISC */

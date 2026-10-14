@@ -542,6 +542,15 @@ static rpmscriptFlags getDefFlags(rpmTagVal scriptTag)
     return findTag(scriptTag)->deflags;
 }
 
+int rpmScriptIsProgTag(rpmTagVal tag)
+{
+    for (const struct scriptInfo_s * si = scriptInfo; si->type; si++) {
+	if (tag == si->progtag && si->sense == 0)
+	    return 1;
+    }
+    return 0;
+}
+
 static const char * tag2sln(rpmTagVal tag)
 {
     return findTag(tag)->desc;

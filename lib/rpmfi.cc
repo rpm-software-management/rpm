@@ -25,6 +25,7 @@
 #include "rpmte_internal.hh"	/* relocations */
 #include "cpio.hh"	/* XXX CPIO_FOO */
 #include "fsm.hh"	/* rpmpsm stuff for now */
+#include "misc.hh"
 #include "rpmug.hh"
 #include "rpmio_internal.hh"   /* fdInit/FiniDigest */
 
@@ -1439,16 +1440,23 @@ err:
  * accessed via offsets to a contiguous binary blob. Empty values
  * are represented by identical consequtive offsets. The offsets array
  * always has one extra element to allow calculating the size of the
- * last element.
+ * last element. Return zero on success.
  */
-static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
-			uint32_t **offsetp)
+static int hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
+		    uint32_t **offsetp, unsigned char **binp)
 {
     struct rpmtd_s td;
     uint8_t *bin = NULL;
     uint32_t *offs = NULL;
+    int rc = 1; /* assume failure */
 
-    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == num) {
+    /* File signature presence is not required */
+    if (!headerGet(h, tag, &td, HEADERGET_MINMEM)) {
+	rc = 0;
+	goto exit;
+    }
+
+    if (rpmtdSize(&td) && rpmtdCount(&td) == num) {
 	const char *s;
 	int i = 0;
 	uint8_t *t = bin = (uint8_t *)xmalloc(((rpmtdSize(&td) / 2) + 1));
@@ -1457,7 +1465,7 @@ static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
 	while ((s = rpmtdNextString(&td))) {
 	    uint32_t slen = strlen(s);
 	    uint32_t len = slen / 2;
-	    if (slen % 2) {
+	    if (!rpmIsValidHex(s, slen)) {
 		bin = _free(bin);
 		offs = _free(offs);
 		goto exit;
@@ -1469,11 +1477,13 @@ static uint8_t *hex2binv(Header h, rpmTagVal tag, rpm_count_t num,
 	}
 	offs[i] = t - bin;
 	*offsetp = offs;
+	rc = 0;
     }
 
 exit:
+    *binp = bin;
     rpmtdFreeData(&td);
-    return bin;
+    return rc;
 }
 
 /* Convert a tag of hex strings to binary presentation */
@@ -1635,8 +1645,10 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     fi->signatures = NULL;
     /* grab hex signatures from header and store in binary format */
     if (!(flags & RPMFI_NOFILESIGNATURES)) {
-	fi->signatures = hex2binv(h, RPMTAG_FILESIGNATURES,
-				 totalfc, &fi->signatureoffs);
+	if (hex2binv(h, RPMTAG_FILESIGNATURES,
+		     totalfc, &fi->signatureoffs, &fi->signatures)) {
+	    goto err;
+	}
     }
 
     fi->veritysigs = NULL;
