@@ -556,13 +556,12 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
     return NULL;
 }
 
-int rpmvsVerify(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int range,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
     int vfylevel = sis->vfylevel;
-    int range = vfylevel ? (RPMSIG_HEADER|RPMSIG_PAYLOAD) : 0;
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/

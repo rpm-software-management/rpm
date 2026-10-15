@@ -636,7 +636,7 @@ static rpmRC checkPkg(FD_t fd, char **msg)
     Fseek(fd, 0, SEEK_SET);
     rc = rpmpkgRead(vs, fd, NULL, NULL, msg);
     if (!rc) {
-	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, msgCb, msg) ?
+	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, RPMSIG_WHOLE, msgCb, msg) ?
 			RPMRC_FAIL : RPMRC_OK;
     }
     Fseek(fd, offset, SEEK_SET);
