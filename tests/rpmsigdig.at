@@ -3303,3 +3303,110 @@ runroot rpmkeys -Kv /data/RPMS/hello-2.0-1.x86_64-signed-mldsa87.rpm
 [])
 
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([payloadless signing])
+AT_KEYWORDS([signature])
+
+RPMTEST_CHECK([
+cat << EOF > ${HOME}/.config/rpm/macros
+%_openpgp_sign sq
+%_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
+%_sq_path ${HOME}/.config/rpm/sq
+EOF
+runroot sq --home ${HOME}/.config/rpm/sq key import /data/keys/rpm.org-rsa-2048-test.secret
+runroot rpmkeys --import /data/keys/rpm.org-rsa-2048-test.pub
+
+
+runroot rpmbuild --quiet -bb /data/SPECS/simple.spec
+cp ${RPMTEST}/build/RPMS/noarch/simple-1.0-1.noarch.rpm ${RPMTEST}/tmp
+runroot rpmsign --delsign /tmp/simple-1.0-1.noarch.rpm
+runroot rpmpart -mp /tmp/simple-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+
+# Normally signing requires payload to succeed
+RPMTEST_CHECK([
+runroot rpmsign --addsign simple-1.0-1.noarch.rpm.metadata
+],
+[1],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpmsign --addsign --nopayload simple-1.0-1.noarch.rpm.metadata
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -Kv simple-1.0-1.noarch.rpm.metadata
+],
+[1],
+[simple-1.0-1.noarch.rpm.metadata:
+    Header OpenPGP V4 RSA/SHA512 signature, key fingerprint: 771b18d3d7baa28734333c424344591e1964c5fc: OK
+    Header SHA3-256 digest: OK
+    Header SHA256 digest: OK
+    Payload SHA3-256 ALT digest: BAD (Expected efc857a45bb087f11e256aa2299d2993c0b9b6e8346377bf663fceade875bd72 != a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a)
+    Payload SHA3-256 digest: BAD (Expected 2c9da1e64ac0d80761d30a8c2202c00d2a5aa6961ce8aa40c54729961734e7d9 != a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a)
+    Payload SHA512 ALT digest: BAD (Expected ebd812ac4577d6e127fc9804159891b8ed8b554304827c6fc1b080349fff7dea5f87a3ffa08b25631c1e1518f58f7f126c3655affcba022ea5dd18e2e51e2fb5 != cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e)
+    Payload SHA512 digest: BAD (Expected 40c6106af58116af1b4fba37e98cfab39a6cbd7f3c51275450d66547b12cfa954052ace12ec30c44609686df371e45db183e30a20cf32a8c5e542d242aea87d3 != cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e)
+    Payload SHA256 ALT digest: BAD (Expected e2ad7f9478c2081484d69127a82df29ad22c040d26e13b2e7832afa67a726937 != e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+    Payload SHA256 digest: BAD (Expected 0dee9cef7ed2b92c3e49bcd0cc068bf10dd8e9bae60e163aaa373cb07ba682cc != e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+],
+[])
+
+RPMTEST_CHECK([
+runroot cat simple-1.0-1.noarch.rpm.metadata simple-1.0-1.noarch.rpm.payload > ${RPMTEST}/simple-1.0-1.noarch.rpm
+runroot rpmkeys -K simple-1.0-1.noarch.rpm
+],
+[0],
+[simple-1.0-1.noarch.rpm: digests signatures OK
+],
+[])
+
+# Without a payload, v3 packages have nothing to verify with
+RPMTEST_CHECK([
+runroot rpmsign --addsign --nopayload /data/RPMS/hello-1.0-1.x86_64.rpm-v3
+],
+[1],
+[],
+[error: failed to verify package /data/RPMS/hello-1.0-1.x86_64.rpm-v3: no verifiable digest available
+])
+
+# Older v4 packages need v3 signatures for full coverage, can't do this either
+RPMTEST_CHECK([
+runroot rpmsign --addsign --nopayload /data/RPMS/hello-1.0-1.i386.rpm
+],
+[1],
+[],
+[error: cannot create v3 signature without payload: /data/RPMS/hello-1.0-1.i386.rpm
+])
+
+# Newer v4 package (with payload digest) but explicit v3 request fails
+RPMTEST_CHECK([
+runroot rpmsign --addsign --rpmv3 --nopayload /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[error: cannot create v3 signature without payload: /data/RPMS/hello-2.0-1.x86_64.rpm
+])
+
+# ...but succeeds by defailt
+RPMTEST_CHECK([
+runroot rpmsign --addsign --nopayload /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot rpmkeys -K /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[0],
+[/data/RPMS/hello-2.0-1.x86_64.rpm: digests signatures OK
+],
+[])
+RPMTEST_CLEANUP

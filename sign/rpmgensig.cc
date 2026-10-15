@@ -627,17 +627,27 @@ static int msgCb(struct rpmsinfo_s *sinfo, void *cbdata)
 }
 
 /* Require valid digests on entire package for signing. */
-static rpmRC checkPkg(FD_t fd, char **msg)
+static rpmRC checkPkg(FD_t fd, char **msg, int flags)
 {
     rpmRC rc;
-    struct rpmvs_s *vs = rpmvsCreate(RPMSIG_DIGEST_TYPE, 0, NULL);
+    rpmVSFlags vsflags = 0;
+    int range = RPMSIG_WHOLE;
+
+    if (flags & RPMSIGN_FLAG_NOPAYLOAD) {
+	vsflags |= RPMVSF_MASK_NOPAYLOAD;
+	range &= ~RPMSIG_PAYLOAD;
+    }
+
+    struct rpmvs_s *vs = rpmvsCreate(RPMSIG_DIGEST_TYPE, vsflags, NULL);
     off_t offset = Ftell(fd);
 
     Fseek(fd, 0, SEEK_SET);
     rc = rpmpkgRead(vs, fd, NULL, NULL, msg);
     if (!rc) {
-	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, RPMSIG_WHOLE, msgCb, msg) ?
+	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, range, msgCb, msg) ?
 			RPMRC_FAIL : RPMRC_OK;
+	if (rc && *msg == NULL)
+	    *msg = xstrdup(_("no verifiable digest available"));
     }
     Fseek(fd, offset, SEEK_SET);
     Fseek(fd, offset, SEEK_SET);
@@ -678,7 +688,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	goto exit;
 
     /* Ensure package is intact before attempting to sign */
-    if ((rc = checkPkg(fd, &msg))) {
+    if ((rc = checkPkg(fd, &msg, flags))) {
 	rpmlog(RPMLOG_ERR, _("failed to verify package %s: %s\n"), rpm, msg);
 	goto exit;
     }
@@ -726,6 +736,12 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	      headerIsEntry(h, RPMTAG_PAYLOADSHA256ALT))) {
 	    flags |= RPMSIGN_FLAG_RPMV3;
 	}
+    }
+
+    if ((flags & RPMSIGN_FLAG_RPMV3) && (flags & RPMSIGN_FLAG_NOPAYLOAD)) {
+	rpmlog(RPMLOG_ERR,
+		_("cannot create v3 signature without payload: %s\n"), rpm);
+	goto exit;
     }
 
     if (headerIsSource(h)) {
