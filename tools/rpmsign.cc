@@ -51,6 +51,9 @@ static struct poptOption signOptsTable[] = {
     { "rpmv6", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_RPMV6,
 	N_("request rpm v6 header signature on v4 packages") },
+    { "nopayload", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
+	&sargs.signflags, RPMSIGN_FLAG_NOPAYLOAD,
+	N_("payloadless signing") },
 #ifdef WITH_IMAEVM
     { "signfiles", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR),
 	&sargs.signflags, RPMSIGN_FLAG_IMA,
