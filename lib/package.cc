@@ -164,7 +164,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	hdrblobDigestUpdate(bundle, &blob);
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, RPMSIG_HEADER,
+		    handleHdrVS, &pkgdata);
 	rpmvsForeach(vs, appendhdrmsg, &pkgdata);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
@@ -330,7 +331,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Actually all verify discovered signatures and digests */
     rc = RPMRC_FAIL;
-    rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+    rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, RPMSIG_HEADER,
+		handleHdrVS, &pkgdata);
     rpmvsForeach(vs, loghdrmsg, &pkgdata);
 
     /* Preserve traditional behavior for now: only failure prevents read */
