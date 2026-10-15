@@ -1400,6 +1400,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i relocatable package 3])
 AT_KEYWORDS([install relocate])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 RPMTEST_USER
 
 runroot rpmbuild --quiet -bb /data/SPECS/rootfs.spec
@@ -1805,6 +1806,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i sysusers])
 AT_KEYWORDS([install build sysusers])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 RPMTEST_CHECK([
 runroot rpmbuild -bb -D "_use_weak_usergroup_deps 1" --quiet /data/SPECS/klang.spec
@@ -1937,6 +1939,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpm -i user/group lookup])
 AT_KEYWORDS([])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 # Symlink to read-only file /etc/authselect/nsswitch.conf
 rm $RPMTEST/etc/nsswitch.conf
@@ -2035,6 +2038,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([install on invalid symlinked directory])
 AT_KEYWORDS([install])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 runroot rpmbuild --quiet -bb \
           /data/SPECS/replacetest.spec
@@ -2055,6 +2059,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([update on invalid symlinked directory])
 AT_KEYWORDS([install update symlink])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 RPMTEST_CHECK([
 for r in 1 2; do
@@ -2095,6 +2100,9 @@ RPMTEST_CLEANUP
 # Leave the fs read-only for a reproducible result
 RPMTEST_SETUP([rpm -U diskspace])
 AT_KEYWORDS([install diskspace])
+# rpm reports a read-only file system as full. The test expects the file
+# system that holds /usr, where the package installs, to be read-only.
+RPMTEST_SKIP_IF([runroot test -w /usr])
 RPMTEST_CHECK([
 
 runroot rpm -U --nodb --test --ignorearch --ignoreos --nodeps --nosignature \
