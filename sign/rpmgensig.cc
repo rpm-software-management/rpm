@@ -797,8 +797,11 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	unsigned newSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	int diff = origSigSize - newSize;
 
-	/* The header doesn't support zero-sized data */
-	if ((diff < 0 && abs(diff) < static_cast<int>(utd.count)) || diff > 0) {
+	/* The header doesn't support zero-sized data. The reserved space is
+	 * resized as bytes, so a package with a reserved space of another
+	 * type is rewritten instead. */
+	if (utd.type == RPM_BIN_TYPE &&
+	    ((diff < 0 && abs(diff) < static_cast<int>(utd.count)) || diff > 0)) {
 	    utd.count += diff;
 	    uint8_t *zeros = (uint8_t *)xcalloc(utd.count, sizeof(*zeros));
 	    utd.data = zeros;
@@ -806,6 +809,7 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 	    free(zeros);
 	    insSig = 1;
 	}
+	rpmtdFreeData(&utd);
     }
 
     /* Reallocate the signature into one contiguous region. */
