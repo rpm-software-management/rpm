@@ -87,17 +87,19 @@ Sourcenevr         | 5120 | string       | Source RPM NEVR
 
 Tag Name          | Value| Type         | Description
 ------------------|------|--------------|------------
-Archivesize       | 1046 | int32        | (Uncompressed) payload size.
+Archivesize       | 1046 | int32        | Uncompressed payload archive size.
 Dirnames          | 1118 | string array | dirname(3) components of contained paths
 Filedigestalgo    | 5011 | int32        | ID of file digest algorithm. If missing, considered `0` for `md5`.
-Longarchivesize   | 271  | int64        | (Uncompressed) payload size when > 4GB.
-Longsize          | 5009 | int64        | Installed package size when > 4GB.
+Longarchivesize   | 271  | int64        | Uncompressed payload archive size when > 4GB, equivalent to `Archivesize`.
+Longsize          | 5009 | int64        | Installed package size (sum of file sizes) when > 4GB, equivalent to `Size`.
 Mimedict          | 5116 | int32        | Dictionary of MIME types, only >= v6.
 Payloadcompressor | 1125 | string       | Payload compressor name (see *rpm-payloadflags*(7))
 Payloadflags      | 1126 | string       | Payload compressor level (see *rpm-payloadflags*(7))
 Payloadformat     | 1124 | string       | Payload format (`cpio`)
+Payloadsize       | 5112 | int64        | Compressed payload size in bytes (v6).
+Payloadsizealt    | 5113 | int64        | Uncompressed payload archive size in bytes (v6); equivalent to (LONG)ARCHIVESIZE.
 Prefixes          | 1098 | string array | Relocatable prefixes (on relocatable packages).
-Size              | 1009 | int32        | Installed package size.
+Size              | 1009 | int32        | Installed package size (sum of file sizes).
 
 ## Per-file information
 
@@ -447,12 +449,15 @@ Filerequire   | 5002 | string array | Per file dependency capabilities required 
 Instfilenames | 5040 | string array | Per file paths installed from the package, calculated from the path triplet and file status info.
 
 
-These tags provide 64bit values regardless of underlying storage size. They return the value of the concrete tag if present or the value of the corresponding  32bit tag as an 64bit value. Always use these to access the sizes. See [Large File support](large_files.md) for details.
+These tags provide 64-bit values regardless of underlying storage size. They return the value of the concrete tag if present, or the corresponding 32-bit tag converted to a 64-bit value. Always use these to access the sizes. See [Large File support](large_files.md) for details.
 
-Longfilesizes | Per file sizes in 64bit format
-Longarchivesize | Archive size in 64bit format
-Longsize | Uncompressed size in 64bit format
-Longsigsize | Header+payload size in 64bit format
+Tag Name         | Description
+-----------------|------------
+Longfilesizes    | Per-file sizes in 64-bit format.
+Longarchivesize  | Uncompressed payload archive size in 64-bit format.
+Longsize         | Installed package size (sum of file sizes) in 64-bit format.
+Longsigsize      | Header plus compressed payload size in 64-bit format.
+
 
 Tag Name              | Value| Type         | Description
 ----------------------|------|--------------|------------
