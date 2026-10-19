@@ -68,6 +68,8 @@ The complete list of tags is documented [here](tags.md).
 
 ## Payload
 
-The Payload is currently a cpio archive, gzipped by default.  The cpio archive
-type used is SVR4 with a CRC checksum.
+The Payload is a cpio archive, gzipped by default.  The cpio archive
+type used is SVR4 without a checksum ("newc", magic bytes `070701`)
+since RPM 2.4.4.  RPM 2.1 to 2.4.3 use SVR4 with a checksum ("crc",
+magic bytes `070702`).
 
