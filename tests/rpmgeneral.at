@@ -425,6 +425,56 @@ runroot rpm2cpio /data/SRPMS/hello-1.0-1.src.rpm | cpio -t --quiet
 [])
 RPMTEST_CLEANUP
 
+# The payload of a package whose header marks b.txt %ghost, so the archive
+# reader skips it before learning its size from the header.
+RPMTEST_SETUP_RW([rpm2archive with unexpected archive member])
+AT_KEYWORDS([rpm2archive])
+RPMTEST_CHECK([
+cat << EOF > ${RPMTEST}/tmp/ghosttest.spec
+Name: ghosttest
+Version: 1.0
+Release: 1
+Summary: Testing payload members that are %ghost in the header
+License: GPL
+BuildArch: noarch
+
+%description
+%{summary}
+
+%install
+mkdir -p %{buildroot}/opt/ghosttest
+for f in a b c; do seq 1 1000 > %{buildroot}/opt/ghosttest/\$f.txt; done
+
+%files
+/opt/ghosttest/a.txt
+%{?_ghost_b:%ghost }/opt/ghosttest/b.txt
+/opt/ghosttest/c.txt
+EOF
+pkg=${RPMTEST}/build/RPMS/noarch/ghosttest-1.0-1.noarch.rpm
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_rpmformat 6" \
+	/tmp/ghosttest.spec
+mv ${pkg} ${RPMTEST}/tmp/a.rpm
+runroot rpmbuild -bb --quiet \
+	--define "_binary_payload w.ufdio" \
+	--define "_rpmformat 6" \
+	--define "_ghost_b 1" \
+	/tmp/ghosttest.spec
+astart=$(LC_ALL=C grep -obaP '07070X' ${RPMTEST}/tmp/a.rpm | head -n 1 | cut -d: -f1)
+bstart=$(LC_ALL=C grep -obaP '07070X' ${pkg} | head -n 1 | cut -d: -f1)
+{
+	head -c ${bstart} ${pkg}
+	tail -c +$((astart + 1)) ${RPMTEST}/tmp/a.rpm
+} > ${RPMTEST}/tmp/spliced.rpm
+runroot timeout 60 rpm2archive -n /tmp/spliced.rpm > /dev/null
+],
+[1],
+[],
+[Error reading payload: cpio: Bad/unreadable  header
+])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([rpm2archive])
 AT_KEYWORDS([basic])
 RPMTEST_CHECK([
