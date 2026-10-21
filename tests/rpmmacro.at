@@ -598,6 +598,28 @@ ls *.gemspec
 [])
 RPMTEST_CLEANUP
 
+# CVE-2026-84838: macro injection (gemfile) via doUntar()
+RPMTEST_SETUP_RW([uncompress 9 (evil)])
+AT_KEYWORDS([build])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+RPMTEST_CHECK([
+cp /usr/bin/true $RPMTEST/usr/bin/gem
+printf 1234567890123 > $RPMTEST/"foobar'; touch gotcha'".gem
+runroot rpmuncompress -x "foobar'; touch gotcha'".gem
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha.gemspec
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
