@@ -25,6 +25,8 @@ runroot rpm -U --define "exitpretrans 1" ${pkgfile1}
 [],
 [error: %pretrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: install skipped
+error: the transaction had 1 scriptlet failure(s):
+error: %pretrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -58,6 +60,8 @@ runroot rpm -U --define "exitpre 1" ${pkgfile1}
 [],
 [error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: install failed
+error: the transaction had 1 scriptlet failure(s):
+error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -90,6 +94,8 @@ runroot rpm -e --define "exitpreun 1" ${pkgname}
 [],
 [error: %preun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: erase failed
+error: the transaction had 1 scriptlet failure(s):
+error: %preun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -107,6 +113,8 @@ runroot rpm -e --define "exitpreuntrans 1" ${pkgname}
 [],
 [error: %preuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 error: scriptfail-1.0-1.noarch: erase skipped
+error: the transaction had 1 scriptlet failure(s):
+error: %preuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -139,6 +147,8 @@ runroot rpm -U --define "exitpost 1" ${pkgfile2}
 [1],
 [],
 [warning: %post(scriptfail-2.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %post(scriptfail-2.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -173,6 +183,8 @@ runroot rpm -U --define "exitposttrans 1" ${pkgfile1}
 [1],
 [],
 [warning: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -207,6 +219,8 @@ runroot rpm -U --define "exitpostun 1" ${pkgfile2}
 [1],
 [],
 [warning: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %postun(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -225,6 +239,8 @@ runroot rpm -U --define "exitpostuntrans 1" ${pkgfile2}
 [1],
 [],
 [warning: %postuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %postuntrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -266,6 +282,60 @@ runroot rpm -q ${pkgname}
 [0],
 [scriptfail-2.0-1.noarch
 ],
+[])
+RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([script failure summary])
+AT_KEYWORDS([script])
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet --define "ver 1.0" -bb /data/SPECS/scriptfail.spec
+
+runroot rpm -U /build/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+
+pkgname="scriptfail"
+pkg1="${pkgname}-1.0-1"
+pkgfile1="/build/RPMS/noarch/${pkg1}.noarch.rpm"
+
+# several failures in one transaction are all repeated at the end
+RPMTEST_CHECK([
+runroot rpm -U --define "exitpost 1" --define "exitposttrans 1" ${pkgfile1}
+],
+[1],
+[],
+[warning: %post(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+warning: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 2 scriptlet failure(s):
+error: %post(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: %posttrans(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+])
+
+RPMTEST_CHECK([
+runroot rpm -e ${pkgname}
+],
+[0],
+[],
+[])
+
+# a failed transaction ends with the summary too
+RPMTEST_CHECK([
+runroot rpm -U --define "exitpre 1" ${pkgfile1}
+],
+[1],
+[],
+[error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: scriptfail-1.0-1.noarch: install failed
+error: the transaction had 1 scriptlet failure(s):
+error: %prein(scriptfail-1.0-1.noarch) scriptlet failed, exit status 1
+])
+
+# a clean transaction logs no summary
+RPMTEST_CHECK([
+runroot rpm -U ${pkgfile1}
+runroot rpm -e ${pkgname}
+],
+[0],
+[],
 [])
 RPMTEST_CLEANUP
 
@@ -430,6 +500,8 @@ runroot rpm -U \
 ],
 [error: %triggerprein(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 error: foo-1.0-1.noarch: install failed
+error: the transaction had 1 scriptlet failure(s):
+error: %triggerprein(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -443,6 +515,8 @@ runroot rpm -U \
 triggers-1.0-1 TRIGGERIN 1 1
 ],
 [warning: %triggerin(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %triggerin(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -455,6 +529,8 @@ runroot rpm -e \
 ],
 [error: %triggerun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 error: foo-1.0-1.noarch: erase failed
+error: the transaction had 1 scriptlet failure(s):
+error: %triggerun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -467,6 +543,8 @@ runroot rpm -e \
 triggers-1.0-1 TRIGGERPOSTUN 1 0
 ],
 [warning: %triggerpostun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %triggerpostun(triggers-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 RPMTEST_CLEANUP
 
@@ -704,6 +782,8 @@ TRANSFILETRIGGERIN
 /usr/share/doc/testdoc/examples/example2
 ],
 [warning: %filetriggerin(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %filetriggerin(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -724,6 +804,8 @@ FILETRIGGERPOSTUN
 TRANSFILETRIGGERPOSTUN
 ],
 [warning: %transfiletriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %transfiletriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -740,6 +822,8 @@ TRANSFILETRIGGERIN
 /usr/share/doc/testdoc/examples/example2
 ],
 [warning: %transfiletriggerin(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %transfiletriggerin(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -760,6 +844,8 @@ FILETRIGGERPOSTUN
 TRANSFILETRIGGERPOSTUN
 ],
 [warning: %transfiletriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %transfiletriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -781,6 +867,8 @@ FILETRIGGERPOSTUN
 TRANSFILETRIGGERPOSTUN
 ],
 [warning: %filetriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %filetriggerun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -802,6 +890,8 @@ FILETRIGGERPOSTUN
 TRANSFILETRIGGERPOSTUN
 ],
 [warning: %filetriggerpostun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %filetriggerpostun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
@@ -823,6 +913,8 @@ FILETRIGGERPOSTUN
 TRANSFILETRIGGERPOSTUN
 ],
 [warning: %transfiletriggerpostun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
+error: the transaction had 1 scriptlet failure(s):
+error: %transfiletriggerpostun(ftrigfail-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 RPMTEST_CLEANUP
 
@@ -1163,6 +1255,8 @@ runroot rpm -U /build/RPMS/noarch/luafork-1.0-1.noarch.rpm
 [],
 [[error: lua script failed: [string "%prein(luafork-1.0-1.noarch)"]:1: posix.fork() is no longer available, use rpm.spawn() or rpm.execute() instead
 error: luafork-1.0-1.noarch: install failed
+error: the transaction had 1 scriptlet failure(s):
+error: %prein(luafork-1.0-1.noarch) scriptlet failed
 ]])
 
 RPMTEST_CLEANUP

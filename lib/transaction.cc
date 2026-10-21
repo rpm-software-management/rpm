@@ -1743,7 +1743,10 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
      * (which is only happens with %prein and %preun scriptlets) or not.
      */
     if (rc != RPMRC_OK) {
+	const char *failmsg = rpmScriptFailMsg(script);
 	ts->scriptError = 1;
+	if (failmsg)
+	    argvAdd(&ts->scriptFails, failmsg);
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
@@ -1907,6 +1910,15 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rc = (nfailed || ts->scriptError) ? -1 : 0;
 
 exit:
+    /* Report the scriptlet failures behind the transaction result */
+    if (ts->scriptFails) {
+	int nfail = argvCount(ts->scriptFails);
+	rpmlog(RPMLOG_ERR, _("the transaction had %d scriptlet failure(s):\n"), nfail);
+	for (ARGV_const_t f = ts->scriptFails; *f; f++)
+	    rpmlog(RPMLOG_ERR, "%s\n", *f);
+	ts->scriptFails = argvFree(ts->scriptFails);
+    }
+
     /* Run post transaction hook for all plugins */
     if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
 	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);

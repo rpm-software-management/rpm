@@ -641,6 +641,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
     ts->installLangs = argvFree(ts->installLangs);
+    ts->scriptFails = argvFree(ts->scriptFails);
 
     ts->plugins = rpmpluginsFree(ts->plugins);
 
