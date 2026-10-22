@@ -507,7 +507,14 @@ An example is shown in an indented block where applicable.
 	```
 
 *VCS:* _TEXT_
-	Upstream source code version control system location.
+	(Public) upstream source code VCS location. Two formats are
+	recommended. The traditional format is _<vcs>_:_<address>_ with
+	_<vcs>_ being the VCS command used (e.g. git, svn, hg, ...)
+	and _<address>_ being the location of the repository (e.g.
+	git:https://github.com/rpm-software-management/rpm.git). The
+	SPDX download location format is also recommended:
+	_<vcs>_+_<transport>_://_<host>_[/_<path>_][@_<revision\_tag\_or\_branch>_]
+	(e.g. git+https://github.com/rpm-software-management/rpm.git@main).
 
 	Properties: Ibs
 
