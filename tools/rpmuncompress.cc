@@ -89,7 +89,7 @@ static archiveType *getArchiver(const char *fn)
     return archiver;
 }
 
-static char *doUncompress(archiveType *at, const char *fn, const char *arg)
+static char *doUncompress(archiveType *at, const char *arg)
 {
     char *cmd = NULL;
     if (at) {
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
 	    sr = singleRoot(arg);
 	cmd = doUntar(at, sr, bn.c_str(), fnarg);
     } else {
-	cmd = doUncompress(at, arg, fnarg);
+	cmd = doUncompress(at, fnarg);
     }
 
     if (cmd) {
@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
 	    char *drycmd = NULL;
 	    rasprintf(&dryarg, "'%s'", arg);
 	    drycmd = extract ? doUntar(at, sr, bn.c_str(), dryarg) :
-			       doUncompress(at, arg, dryarg);
+			       doUncompress(at, dryarg);
 	    fprintf(stderr, "%s\n", drycmd);
 	    free(drycmd);
 	    free(dryarg);
