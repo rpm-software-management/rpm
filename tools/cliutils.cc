@@ -84,10 +84,11 @@ int finishPipe(void)
     return rc;
 }
 
-FILE* rpopen(const char *cmd, const char *arg)
+FILE* rpopen(const char *cmd, const char *arg, ...)
 {
     FILE *stream = NULL;
     ARGV_t argv = NULL;
+    va_list ap;
     int pipefd[2];
     pid_t pid;
 
@@ -98,7 +99,11 @@ FILE* rpopen(const char *cmd, const char *arg)
     argvAdd(&argv, "-c");
     argvAdd(&argv, cmd);
     argvAdd(&argv, "sh");
-    argvAdd(&argv, arg);
+
+    va_start(ap, arg);
+    for (const char *s = arg; s != NULL; s = va_arg(ap, const char *))
+	argvAdd(&argv, s);
+    va_end(ap);
 
     if ((pid = fork()) == 0) {
 	dup2(pipefd[1], STDOUT_FILENO);

@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 	    goto exit;
 	}
 
-	inp = rpopen(cmd, arg);
+	inp = rpopen(cmd, arg, NULL);
 	if (inp) {
 	    int status, c;
 	    while ((c = fgetc(inp)) != EOF)
