@@ -221,7 +221,7 @@ static char *doUntar(archiveType *at, int sr, const char *bn, const char *fn)
 	} else if (at->compressed == COMPRESSED_GEM) {
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 
-	    rasprintf(&buf, "%s %s && %s spec %s --ruby > '%s.gemspec'",
+	    rasprintf(&buf, "%s %s && %s spec %s --ruby > %s.gemspec",
 			zipper, fn, gem, fn, bn);
 
 	    free(gem);
@@ -245,7 +245,8 @@ int main(int argc, char *argv[])
     int ec = EXIT_FAILURE;
     poptContext optCon = NULL;
     const char *arg = NULL;
-    const char *fnarg = "\"$1\"";
+    const char *bnarg = "\"$1\"";
+    const char *fnarg = "\"$2\"";
     fs::path bn;
     char *cmd = NULL;
     archiveType *at = NULL;
@@ -263,7 +264,7 @@ int main(int argc, char *argv[])
     if (extract) {
 	if (dstpath)
 	    sr = singleRoot(arg);
-	cmd = doUntar(at, sr, bn.c_str(), fnarg);
+	cmd = doUntar(at, sr, bnarg, fnarg);
     } else {
 	cmd = doUncompress(at, fnarg);
     }
@@ -272,14 +273,17 @@ int main(int argc, char *argv[])
 	FILE *inp = NULL;
 
 	if (rpmIsVerbose() || dryrun) {
+	    char *drybn = NULL;
 	    char *dryfn = NULL;
 	    char *drycmd = NULL;
+	    rasprintf(&drybn, "'%s'", bn.c_str());
 	    rasprintf(&dryfn, "'%s'", arg);
-	    drycmd = extract ? doUntar(at, sr, bn.c_str(), dryfn) :
+	    drycmd = extract ? doUntar(at, sr, drybn, dryfn) :
 			       doUncompress(at, dryfn);
 	    fprintf(stderr, "%s\n", drycmd);
 	    free(drycmd);
 	    free(dryfn);
+	    free(drybn);
 	}
 
 	if (dryrun) {
@@ -287,7 +291,7 @@ int main(int argc, char *argv[])
 	    goto exit;
 	}
 
-	inp = rpopen(cmd, arg, NULL);
+	inp = rpopen(cmd, bn.c_str(), arg, NULL);
 	if (inp) {
 	    int status, c;
 	    while ((c = fgetc(inp)) != EOF)
