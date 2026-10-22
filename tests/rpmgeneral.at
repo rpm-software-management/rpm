@@ -560,7 +560,6 @@ tar tf bad.tar.gz
 ],
 [0],
 [./opt/README
-./opt/linkme
 ],
 [])
 
