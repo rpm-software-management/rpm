@@ -391,7 +391,7 @@ static char * getTarSpec(const char *arg)
 			"%{__tar} xOvof - --wildcards ", *spec,
 			" 2>&1 > ", specFile, NULL);
 
-	if (!(fp = rpopen(cmd, arg))) {
+	if (!(fp = rpopen(cmd, arg, NULL))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
 	} else {
 	    char *fok;
