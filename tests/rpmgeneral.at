@@ -501,3 +501,66 @@ error: open of https://example.com/foo-0.1-1.noarch.rpm failed: No such file or 
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP_RW([malformed archive])
+AT_SKIP_IF([$PYTHON_DISABLED])
+AT_KEYWORDS([archive files])
+
+# Try to build reproducibly. For this test the actual contents could vary,
+# but the offsets need to remain.
+RPMTEST_CHECK([
+runroot --setenv SOURCE_DATE_EPOCH 1234567890 \
+    rpmbuild --quiet \
+        --define "_rpmdir %{_topdir}/RPMS/${ver}" \
+        --define "optflags -O2 -g" \
+        --define "_target_platform noarch-linux" \
+        --define "_binary_payload w.ufdio" \
+        --define "build_mtime_policy clamp_to_source_date_epoch" \
+        --define "_use_weak_usergroup_deps 0" \
+        --define "_openpgp_autosign_id %{nil}" \
+	-bb /data/SPECS/filetypes.spec
+cp ${RPMTEST}/build/RPMS/noarch/filetypes-1.0-1.noarch.rpm bad.rpm
+],
+[0],
+[],
+[ignore])
+
+RPMPY_CHECK([
+import mmap
+with open('bad.rpm', 'r+b') as f:
+    with mmap.mmap(f.fileno(), 0) as m:
+        for b in range(0x1768, 0x1770):
+            m[b] = 0xff
+        m.flush()
+    f.close()
+],
+[])
+
+RPMTEST_CHECK([
+rpm -qplv --nodigest bad.rpm
+],
+[0],
+[-rw-r--r--    1 root     root                       10 Feb 13  2009 /opt/README
+lrwxrwxrwx    1 root     root     18446744073709551615 Feb 13  2009 /opt/linkme -> myscript.sh
+drwxr-xr-x    2 root     root                        0 Feb 13  2009 /opt/mydir
+-rw-r--r--    1 root     root                       27 Feb 13  2009 /opt/myscript.sh
+],
+[],
+[])
+
+RPMTEST_CHECK([
+rpm2archive bad.rpm > bad.tar.gz
+],
+[1],
+[],
+[])
+
+RPMTEST_CHECK([
+tar tf bad.tar.gz
+],
+[0],
+[./opt/README
+],
+[])
+
+RPMTEST_CLEANUP
