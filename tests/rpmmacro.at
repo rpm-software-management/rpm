@@ -576,6 +576,28 @@ test -f $RPMTEST/gotcha
 [])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP_RW([uncompress 8])
+AT_KEYWORDS([build])
+
+RPMTEST_CHECK([
+cp /usr/bin/true $RPMTEST/usr/bin/gem
+printf 1234567890123 > $RPMTEST/foobar.gem
+runroot rpmuncompress -x foobar.gem
+],
+[],
+[],
+[])
+
+RPMTEST_CHECK([
+cd $RPMTEST
+ls *.gemspec
+],
+[0],
+[foobar.gemspec
+],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
