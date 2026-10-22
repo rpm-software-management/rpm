@@ -164,7 +164,7 @@ afree:
 	return ret;
 }
 
-static char *doUntar(archiveType *at, int sr, const char *bn, const char *arg)
+static char *doUntar(archiveType *at, int sr, const char *bn, const char *fn)
 {
     char *buf = NULL;
     char *tar = NULL;
@@ -217,20 +217,20 @@ static char *doUntar(archiveType *at, int sr, const char *bn, const char *arg)
 			   at->cmd, " ", at->unpack, " ",
 			   rpmIsVerbose() ? "" : at->quiet, NULL);
 	if (needtar) {
-	    rasprintf(&buf, "%s %s %s | %s %s - %s", mkdir, zipper, arg, tar, taropts, stripcd);
+	    rasprintf(&buf, "%s %s %s | %s %s - %s", mkdir, zipper, fn, tar, taropts, stripcd);
 	} else if (at->compressed == COMPRESSED_GEM) {
 	    char *gem = rpmGetPath("%{__gem}", NULL);
 
 	    rasprintf(&buf, "%s %s && %s spec %s --ruby > '%s.gemspec'",
-			zipper, arg, gem, arg, bn);
+			zipper, fn, gem, fn, bn);
 
 	    free(gem);
 	} else {
-	    rasprintf(&buf, "%s%s %s %s", mkdir, zipper, arg, stripcd);
+	    rasprintf(&buf, "%s%s %s %s", mkdir, zipper, fn, stripcd);
 	}
 	free(zipper);
     } else {
-	rasprintf(&buf, "%s %s %s %s %s", mkdir, tar, taropts, arg, stripcd);
+	rasprintf(&buf, "%s %s %s %s %s", mkdir, tar, taropts, fn, stripcd);
     }
 
 exit:
@@ -272,14 +272,14 @@ int main(int argc, char *argv[])
 	FILE *inp = NULL;
 
 	if (rpmIsVerbose() || dryrun) {
-	    char *dryarg = NULL;
+	    char *dryfn = NULL;
 	    char *drycmd = NULL;
-	    rasprintf(&dryarg, "'%s'", arg);
-	    drycmd = extract ? doUntar(at, sr, bn.c_str(), dryarg) :
-			       doUncompress(at, dryarg);
+	    rasprintf(&dryfn, "'%s'", arg);
+	    drycmd = extract ? doUntar(at, sr, bn.c_str(), dryfn) :
+			       doUncompress(at, dryfn);
 	    fprintf(stderr, "%s\n", drycmd);
 	    free(drycmd);
-	    free(dryarg);
+	    free(dryfn);
 	}
 
 	if (dryrun) {
