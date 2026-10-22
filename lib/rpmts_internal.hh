@@ -102,6 +102,7 @@ struct rpmts_s {
 
     time_t overrideTime;	/*!< Time value used when overriding system clock. */
     int scriptError;		/*!< scriptlet error tracking */
+    ARGV_t scriptFails;		/*!< failed scriptlet reports */
 };
 
 /** \ingroup rpmts
