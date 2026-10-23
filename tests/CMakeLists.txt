@@ -65,7 +65,7 @@ foreach(at ${TESTSUITE_AT})
 endforeach()
 
 set(TESTPROGS rpmpgpcheck rpmpgppubkeyfingerprint readpkgnullts rpmdig
-	      importkey oldtxn fapolicydtest imafi td)
+	      importkey oldtxn fapolicydtest imafi td hdr)
 foreach(prg ${TESTPROGS})
 	add_executable(${prg} EXCLUDE_FROM_ALL ${prg}.c)
 	target_link_libraries(${prg} PRIVATE librpm)
