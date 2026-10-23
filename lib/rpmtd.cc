@@ -443,14 +443,24 @@ rpmsid * rpmtdToPool(rpmtd td, rpmstrPool pool)
 {
     rpmsid *sids = NULL;
 
-    if (pool && td) {
+    if (pool && rpmtdClass(td) == RPM_STRING_CLASS) {
 	const char **strings = (const char **)td->data;
+	sids = (rpmsid *)xmalloc(td->count * sizeof(*sids));
 	switch (td->type) {
+	case RPM_STRING_TYPE:
+	    /* Single strings are stored differently */
+	    if (td->count == 1) {
+		sids[0] = rpmstrPoolId(pool, (const char *)td->data, 1);
+		break;
+	    }
+	    /* Otherwise fallthrough to the array case */
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
-	    sids = (rpmsid *)xmalloc(td->count * sizeof(*sids));
 	    for (rpm_count_t i = 0; i < td->count; i++)
 		sids[i] = rpmstrPoolId(pool, strings[i], 1);
+	    break;
+	default:
+	    sids = _free(sids); /* can't happen */
 	    break;
 	}
     }
