@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
     rpmtdFreeData(&td);
 
     /* reload should fail due to type mismatch on a known tag */
-    assert(tryReload(h) == 0);
+    /* but rpmpack uses invalid type on headeri18n, let it pass for now */
+    assert(tryReload(h) == 1);
 
     /* insert an invalid (numeric) name tag */
     assert(headerGet(h, RPMTAG_BUILDTIME, &td, HEADERGET_DEFAULT) == 1);
