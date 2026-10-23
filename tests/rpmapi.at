@@ -116,3 +116,12 @@ librpmsign.so.10.8.0:
 ],
 [])
 RPMTEST_CLEANUP
+
+RPMTEST_SETUP([header API])
+AT_KEYWORDS([api])
+RPMTEST_CHECK([
+hdr],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
