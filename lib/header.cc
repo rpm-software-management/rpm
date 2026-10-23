@@ -210,10 +210,16 @@ static int hdrchkTagType(uint32_t tag, uint32_t type)
     if (t == RPM_NULL_TYPE)
 	return 0;
 
-    /* Script prog tags can disagree on the type for compat reasons */
     if ((t == RPM_STRING_ARRAY_TYPE && type == RPM_STRING_TYPE)) {
+	/* Script prog tags can disagree on the type for compat reasons */
 	if (rpmScriptIsProgTag(tag))
 	    return 0;
+
+	/* Other known anomalies from 3rd party programs etc */
+	switch (tag) {
+	case RPMTAG_HEADERI18NTABLE: /* rpmpack */
+	    return 0;
+	}
     }
 
     /* Some old packages have string type on i18nstring tags */
