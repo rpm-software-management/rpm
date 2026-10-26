@@ -451,10 +451,11 @@ int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 	headerGet(h, RPMTAG_ORIGBASENAMES, &filenames, HEADERGET_ALLOC);
 	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
 	    int spec = (i == specix);
-	    char *fn = rpmGenPath(rootDir,
-				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
-	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
-	    free(fn);
+	    char *dn = rpmGenPath(rootDir,
+				  spec ? "%{_specdir}" : "%{_sourcedir}", NULL);
+	    std::string fn = rpm::join_path( { dn, bn }, false);
+	    free(dn);
+	    headerPutString(h, RPMTAG_OLDFILENAMES, fn.c_str());
 	}
 	rpmtdFreeData(&filenames);
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);

@@ -686,6 +686,36 @@ hello.spec
 RPMTEST_CLEANUP
 
 # ------------------------------
+# CVE-2026-95521: source and spec file names in a source package header
+# must not be macro expanded on install
+RPMTEST_SETUP_RW([rpm -i *.src.rpm (evil)])
+AT_KEYWORDS([install])
+
+RPMTEST_CHECK([
+runroot --setenv RPM_POC_PATH /tmp/gotcha \
+	rpm --define "_topdir /tmp/build" -i /data/SRPMS/CVE-2026-95521.src.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/tmp/gotcha
+],
+[1],
+[],
+[])
+
+RPMTEST_CHECK([
+runroot ls /tmp/build/SOURCES
+],
+[0],
+[%{lua:io.open(os.getenv('RPM_POC_PATH'),'w'):write('gotcha'):close()}.txt
+],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
 # Check if rpm -i *.src.rpm *.rpm works
 RPMTEST_SETUP_RW([rpm -i *.src.rpm *.rpm])
 AT_KEYWORDS([install])
