@@ -64,6 +64,12 @@ FD_t rpmtePayload(rpmte te);
 
 int rpmteProcess(rpmte te, pkgGoal goal, int num);
 
+/* Add a problem without marking the element failed: for problems whose
+ * failure accounting is handled by the caller (eg scriptlet errors) */
+RPM_GNUC_INTERNAL
+void rpmteAddProblemNoMark(rpmte te, rpmProblemType type,
+		     const char *altNEVR, const char *str, uint64_t number);
+
 void rpmteAddProblem(rpmte te, rpmProblemType type,
                      const char *altNEVR, const char *str, uint64_t number);
 
