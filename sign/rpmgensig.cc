@@ -679,7 +679,8 @@ static int rpmSign(const char *rpm, int deleting, int flags)
 
     /* Ensure package is intact before attempting to sign */
     if ((rc = checkPkg(fd, &msg))) {
-	rpmlog(RPMLOG_ERR, "not signing corrupt package %s: %s\n", rpm, msg);
+	rpmlog(RPMLOG_ERR,
+		_("not signing, failed to verify package %s: %s\n"), rpm, msg);
 	goto exit;
     }
 
