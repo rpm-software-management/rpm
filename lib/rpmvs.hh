@@ -10,6 +10,7 @@ enum {
     RPMSIG_HEADER	= (1 << 0),
     RPMSIG_PAYLOAD	= (1 << 1),
 };
+#define RPMSIG_WHOLE	(RPMSIG_HEADER|RPMSIG_PAYLOAD)
 
 struct rpmsinfo_s {
     /* static data */
@@ -83,6 +84,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  *
  * All verifiables (signatures, digests) indicated in the type bitmask are
  * verified, a negative result causes a failure of that type in all modes.
+ * Sometimes we want to verify just the header, sometimes the whole package.
  *
  * Return a bitmask of the failed verifiable types, or zero on success.
  * Success semantics depend on the verification mode specified at rpmvsCreate()
@@ -97,7 +99,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  * get the desired behavior in some cases.
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int type, int range,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

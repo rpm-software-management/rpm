@@ -58,6 +58,15 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	Use key _KEYID_ for signing. Overrides *%\_openpgp_sign_id*
 	configuration.
 
+*--nopayload*
+	Perform payloadless signing. The payload is not read or verified
+	and the user is responsible for its contents.
+
+	Inherently incompatible with RPM v3 (header+payload) signatures.
+
+	Can only be used on packages containing a separate payload digest:
+	either RPM v6 packages or v4 packages built with RPM >= 4.14.
+
 *--rpmv3*
 	Request RPM V3 header+payload signature addition on V4 packages.
 	These signatures are expensive
@@ -160,11 +169,25 @@ _~/.config/rpm/macros_):
 *rpmsign --delsign --delfilesign hello-2.0-1.x64_rpm*
 	Delete all signatures from _hello-2.0-1.x64_rpm_ package.
 
+## Example 3. Payloadless signing
+Extract metadata and payload of a package with *rpmpart*(1), sign the
+metadata and reassemble the parts back to a signed, verifiable rpm.
+Useful for avoiding costly payload transfer if signing happens on a
+separate server.
+
+```
+$ rpmpart -m -p hello-2.0-1.x86_64.rpm
+$ rpmsign --addsign --nopayload hello-2.0-1.x86_64.rpm.metadata
+$ cat hello-2.0-1.x86_64.rpm.metadata hello-2.0-1.x86_64.rpm.payload > hello-2.0-1.x86_64.rpm
+$ rpmkeys -K hello-2.0-1.x64_64.rpm
+```
+
 # EXIT STATUS
 On success, 0 is returned, a nonzero failure code otherwise.
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1)
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1),
+*rpmpart*(1)
 
 *rpmsign --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the
