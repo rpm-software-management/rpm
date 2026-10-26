@@ -288,8 +288,21 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
 
 	ps = rpmtsProblems(ts);
 
-	if (rpmpsNumProblems(ps) > 0 && (eflags || rc > 0))
-	    rpmpsPrint(NULL, ps);
+	if (rpmpsNumProblems(ps) > 0 && (eflags || rc > 0)) {
+	    /* Scriptlet failures are already reported by the transaction
+	     * summary, do not repeat them in this dump */
+	    rpmps fprobs = rpmpsCreate();
+	    rpmpsi psi = rpmpsInitIterator(ps);
+	    rpmProblem prob;
+	    while ((prob = rpmpsiNext(psi)) != NULL) {
+		if (rpmProblemGetType(prob) != RPMPROB_SCRIPTLET_ERROR)
+		    rpmpsAppendProblem(fprobs, prob);
+	    }
+	    rpmpsFreeIterator(psi);
+	    if (rpmpsNumProblems(fprobs) > 0)
+		rpmpsPrint(NULL, fprobs);
+	    rpmpsFree(fprobs);
+	}
 	ps = rpmpsFree(ps);
     }
 

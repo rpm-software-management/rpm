@@ -522,6 +522,9 @@ rpmps rpmtsProblems(rpmts ts)
     }
     rpmtsiFree(pi);
 
+    if (ts->probs != NULL)
+	rpmpsMerge(ps, ts->probs);
+
     /* Return NULL on no problems instead of an empty set */
     if (rpmpsNumProblems(ps) == 0) {
 	ps = rpmpsFree(ps);
@@ -537,6 +540,7 @@ void rpmtsCleanProblems(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteCleanProblems(p);
     rpmtsiFree(pi);
+    ts->probs = rpmpsFree(ts->probs);
 }
 
 void rpmtsClean(rpmts ts)
@@ -643,6 +647,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->installLangs = argvFree(ts->installLangs);
 
     ts->plugins = rpmpluginsFree(ts->plugins);
+    ts->probs = rpmpsFree(ts->probs);
 
     rpmlogReset((uint64_t) ts);
 

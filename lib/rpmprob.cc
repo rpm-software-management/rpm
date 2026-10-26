@@ -163,6 +163,10 @@ char * rpmProblemString(rpmProblem prob)
 	rasprintf(&buf, _("package %s does not verify: %s"),
 			pkgNEVR, prob->str1);
 	break;
+    case RPMPROB_SCRIPTLET_ERROR:
+	/* The problem string carries the full scriptlet failure report */
+	rasprintf(&buf, "%s", str1);
+	break;
     default:
 	rasprintf(&buf,
 		_("unknown error %d encountered while manipulating package %s"),
