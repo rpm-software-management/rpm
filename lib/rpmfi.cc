@@ -2236,13 +2236,11 @@ static int iterReadArchiveNext(rpmfi fi)
 	    if (!(numlinks > 1 && links[numlinks-1] != fx))
 		fsize = rpmfilesFSize(fi->files, fx);
 	} else if (S_ISLNK(mode)) {
-	    /* Skip over symlink target data in payload */
-	    rpm_loff_t lsize = rpmfilesFSize(fi->files, fx);
-	    char *buf = (char *)xmalloc(lsize + 1);
-	    if (rpmcpioRead(fi->archive, buf, lsize) != lsize)
-		rc = RPMERR_READ_FAILED;
-	    /* XXX should we validate the payload matches? */
-	    free(buf);
+	    /* Sanity check symlinks a bit since we easily can */
+	    fsize = rpmfilesFSize(fi->files, fx);
+	    const char *link = rpmfilesFLink(fi->files, fx);
+	    if (link == NULL || fsize != strlen(link))
+		return RPMERR_BAD_HEADER;
 	}
 	rpmcpioSetExpectedFileSize(fi->archive, fsize);
 	rpmfiSetFound(fi, fx);
