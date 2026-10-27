@@ -87,6 +87,16 @@ runroot importkey /data/keys/rpm.org-nistp256-test.pub
 ])
 RPMTEST_CLEANUP
 
+RPMTEST_SETUP([rpmtd API])
+AT_KEYWORDS([api])
+RPMTEST_CHECK([
+td
+],
+[0],
+[],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP([API symbol exports])
 AT_KEYWORDS([api])
 RPMTEST_CHECK([[
