@@ -271,9 +271,9 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	/* name */
 	name = s;
 	while (*s != '\0') s++;
-	while (s > name && risspace(*s)) {
-	    *s-- = '\0';
-	}
+	/* s points at the terminating NUL, so examine the preceding byte */
+	while (s > name && risspace(s[-1]))
+	    *--s = '\0';
 	if (s == name) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
 	    goto exit;
