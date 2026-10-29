@@ -619,6 +619,27 @@ test -f $RPMTEST/gotcha.gemspec
 [])
 RPMTEST_CLEANUP
 
+# The compressor's exit status must reach the caller: rpclose() returns an
+# already extracted exit code, so 128 used to be reported as success.
+RPMTEST_SETUP_RW([uncompress exit status])
+AT_KEYWORDS([macros rpmuncompress])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+cat << EOF > "${RPMTEST}"/tmp/fakegzip
+#!/bin/sh
+exit 128
+EOF
+chmod a+x "${RPMTEST}"/tmp/fakegzip
+
+RPMTEST_CHECK([
+runroot rpmuncompress --define "__gzip /tmp/fakegzip" \
+	/data/SOURCES/hello-2.0.tar.gz
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
 RPMTEST_SETUP_RW([getncpus macro])
 AT_KEYWORDS([macros])
 # skip if nproc not available
