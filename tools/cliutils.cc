@@ -11,6 +11,7 @@
 #include "debug.h"
 
 static pid_t pipeChild = 0;
+static pid_t rpopenChild = 0;
 
 RPM_GNUC_NORETURN
 void argerror(const char * desc)
@@ -108,14 +109,23 @@ FILE* rpopen(const char *cmd, const char *arg, ...)
     if ((pid = fork()) == 0) {
 	dup2(pipefd[1], STDOUT_FILENO);
 	close(pipefd[0]);
+	close(pipefd[1]);
 	execv(argv[0], argv);
 	_exit(EXIT_FAILURE);
     } else if (pid == -1) {
+	close(pipefd[0]);
+	close(pipefd[1]);
 	goto exit;
     }
 
     close(pipefd[1]);
     stream = fdopen(pipefd[0], "r");
+    if (stream == NULL) {
+	close(pipefd[0]);
+	waitpid(pid, NULL, 0);
+    } else {
+	rpopenChild = pid;
+    }
 
 exit:
     argvFree(argv);
@@ -125,14 +135,21 @@ exit:
 int rpclose(FILE *stream)
 {
     int rc = -1;
-    int status;
+    pid_t child = rpopenChild;
 
-    if ((waitpid(-1, &status, 0) == -1) || !WIFEXITED(status))
-	goto exit;
-
-    rc = WEXITSTATUS(status);
-
-exit:
+    rpopenChild = 0;
     fclose(stream);
+
+    if (child > 0) {
+	int status;
+	pid_t reaped;
+
+	do {
+	    reaped = waitpid(child, &status, 0);
+	} while (reaped == -1 && errno == EINTR);
+
+	if (reaped != -1 && WIFEXITED(status))
+	    rc = WEXITSTATUS(status);
+    }
     return rc;
 }
