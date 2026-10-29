@@ -623,7 +623,6 @@ RPMTEST_CLEANUP
 # already extracted exit code, so 128 used to be reported as success.
 RPMTEST_SETUP_RW([uncompress exit status])
 AT_KEYWORDS([macros rpmuncompress])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 cat << EOF > "${RPMTEST}"/tmp/fakegzip
 #!/bin/sh

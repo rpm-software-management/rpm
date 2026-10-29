@@ -293,11 +293,10 @@ int main(int argc, char *argv[])
 
 	inp = rpopen(cmd, bn.c_str(), arg, NULL);
 	if (inp) {
-	    int status, c;
+	    int c;
 	    while ((c = fgetc(inp)) != EOF)
 		fputc(c, stdout);
-	    status = rpclose(inp);
-	    if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+	    if (rpclose(inp) == 0)
 		ec = EXIT_SUCCESS;
 	}
     }
