@@ -54,7 +54,7 @@ RUN dnf -y install \
   fsverity-utils fsverity-utils-devel \
   scdoc \
   scd2html \
-  sequoia-sq \
+  "sequoia-sq < 1.5.0" \
   nss-altfiles \
   gcc \
   gcc-c++ \
