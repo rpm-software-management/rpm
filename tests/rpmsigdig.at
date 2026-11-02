@@ -1849,12 +1849,12 @@ RPMTEST_SKIP_IF([test x$PGP = xdummy])
 RPMTEST_CHECK([
 cat << EOF > ${HOME}/.config/rpm/macros
 %_openpgp_sign sq
-%_openpgp_sign_id 771B18D3D7BAA28734333C424344591E1964C5FC
+%_openpgp_sign_id 036824F0AC60AED6F1A3256F88190469F6D7255E3D8E41C577233AA03E0BB9D3
 %_openpgp_autosign_id %{_openpgp_sign_id}
 EOF
 
 runroot sq key import /data/keys/*.secret
-runroot rpmkeys --import /data/keys/*.pub
+runroot rpmkeys --import /data/keys/*.pub /data/keys/rpm.org-v6-*.asc
 ],
 [0],
 [ignore],
