@@ -28,6 +28,6 @@ int finishPipe(void);
  * $2, and so on.
  */
 FILE *rpopen(const char *cmd, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
-int rpclose(FILE *stream);
+int rpclose(FILE *fp);
 
 #endif /* _CLIUTIL_H */
