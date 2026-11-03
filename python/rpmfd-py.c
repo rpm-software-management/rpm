@@ -119,11 +119,15 @@ static PyObject *rpmfd_open(PyObject *cls, PyObject *args, PyObject *kwds)
 static PyObject *do_close(rpmfdObject *s)
 {
     /* mimic python fileobject: close on closed file is not an error */
-    if (s->fd) {
-	Py_BEGIN_ALLOW_THREADS
-	Fclose(s->fd);
-	Py_END_ALLOW_THREADS
+    FD_t fd = s->fd;
+    if (fd) {
+	/* Claim the descriptor before dropping the GIL. Clearing s->fd only
+	   afterwards lets a concurrent close() see it still set and hand the
+	   same, by then freed, FD_t to Fclose() a second time. */
 	s->fd = NULL;
+	Py_BEGIN_ALLOW_THREADS
+	Fclose(fd);
+	Py_END_ALLOW_THREADS
     }
     Py_RETURN_NONE;
 }
