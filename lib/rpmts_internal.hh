@@ -64,6 +64,8 @@ struct rpmts_s {
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
+    rpmps probs;			/*!< Problems not owned by any element. */
+
     std::unordered_map<dev_t,diskspaceInfo> dsi;
 				/*!< Per filesystem disk/inode usage. */
 

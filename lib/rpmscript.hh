@@ -71,6 +71,8 @@ rpmscriptTypes rpmScriptType(rpmScript script);
 
 rpmscriptFlags rpmScriptFlags(rpmScript script);
 
+const char * rpmScriptFailMsg(rpmScript script);
+
 void rpmScriptSetNextFileFunc(rpmScript script, nextfilefunc func,
 			    void *param);
 

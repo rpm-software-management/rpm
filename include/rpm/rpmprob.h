@@ -51,6 +51,7 @@ typedef enum rpmProblemType_e {
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_OBSOLETES,	/*!< package ... is obsoleted by ... */
     RPMPROB_VERIFY,	/*!< package did not pass verification */
+    RPMPROB_SCRIPTLET_ERROR, /*!< scriptlet in package ... failed: ... */
  } rpmProblemType;
 
 /** \ingroup rpmprob

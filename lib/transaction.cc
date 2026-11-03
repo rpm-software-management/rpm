@@ -1743,7 +1743,24 @@ rpmRC runScript(rpmts ts, rpmte te, Header h, ARGV_const_t prefixes,
      * (which is only happens with %prein and %preun scriptlets) or not.
      */
     if (rc != RPMRC_OK) {
+	const char *failmsg = rpmScriptFailMsg(script);
 	ts->scriptError = 1;
+	if (failmsg) {
+	    if (xte != NULL) {
+		rpmteAddProblemNoMark(te, RPMPROB_SCRIPTLET_ERROR, NULL, failmsg, 0);
+	    } else {
+		/* Trigger scriptlets from the rpmdb have no transaction
+		 * element to attach the problem to: keep it on the
+		 * transaction itself, rpmtsProblems() merges it in */
+		rpmProblem prob = rpmProblemCreate(RPMPROB_SCRIPTLET_ERROR,
+					rpmteNEVRA(te), rpmteKey(te), NULL,
+					failmsg, 0);
+		if (ts->probs == NULL)
+		    ts->probs = rpmpsCreate();
+		rpmpsAppendProblem(ts->probs, prob);
+		rpmProblemFree(prob);
+	    }
+	}
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
@@ -1777,6 +1794,39 @@ static void rpmtsSync(rpmts ts)
     rpmlog(RPMLOG_DEBUG, "syncing all filesystems\n");
     sync();
 #endif
+}
+
+/* Clean away problems found during the check phase, preserving any
+ * scriptlet failures recorded so far (eg %pretrans): those are facts
+ * of the transaction run itself, not check-phase discoveries */
+static void cleanCheckProblems(rpmts ts)
+{
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmps ps = rpmteProblems(p);
+	ARGV_t keep = NULL;
+
+	if (ps != NULL) {
+	    rpmpsi psi = rpmpsInitIterator(ps);
+	    rpmProblem prob;
+	    while ((prob = rpmpsiNext(psi)) != NULL) {
+		if (rpmProblemGetType(prob) == RPMPROB_SCRIPTLET_ERROR)
+		    argvAdd(&keep, rpmProblemGetStr(prob));
+	    }
+	    rpmpsFreeIterator(psi);
+	    rpmpsFree(ps);
+	}
+	rpmteCleanProblems(p);
+	if (keep != NULL) {
+	    ARGV_const_t s;
+	    for (s = keep; *s != NULL; s++)
+		rpmteAddProblemNoMark(p, RPMPROB_SCRIPTLET_ERROR, NULL, *s, 0);
+	    argvFree(keep);
+	}
+    }
+    rpmtsiFree(pi);
 }
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
@@ -1847,15 +1897,29 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Check again for problems (now including file conflicts,  duh */
     tsprobs = rpmtsProblems(ts);
 
-     /* If unfiltered problems exist, free memory and return. */
-    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) || (rpmpsNumProblems(tsprobs))) {
+     /* If unfiltered problems exist, free memory and return.
+      * Scriptlet failures recorded as problems do not count here:
+      * they only fail their own element, not the whole transaction. */
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) {
 	rc = nelem;
 	goto exit;
+    }
+    if (tsprobs != NULL) {
+	rpmpsi psi = rpmpsInitIterator(tsprobs);
+	rpmProblem prob;
+	while ((prob = rpmpsiNext(psi)) != NULL) {
+	    if (rpmProblemGetType(prob) != RPMPROB_SCRIPTLET_ERROR) {
+		rpmpsFreeIterator(psi);
+		rc = nelem;
+		goto exit;
+	    }
+	}
+	rpmpsFreeIterator(psi);
     }
 
     /* Free up memory taken by problem sets */
     tsprobs = rpmpsFree(tsprobs);
-    rpmtsCleanProblems(ts);
+    cleanCheckProblems(ts);
 
     /*
      * Free up the global string pool unless we expect it to be needed
@@ -1907,6 +1971,31 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rc = (nfailed || ts->scriptError) ? -1 : 0;
 
 exit:
+    /* Report the scriptlet failures behind the transaction result,
+     * collected as problems on the transaction elements */
+    rpmps ps = rpmtsProblems(ts);
+    if (ps) {
+	rpmProblem p;
+	rpmpsi psi = rpmpsInitIterator(ps);
+	int nfail = 0;
+	while ((p = rpmpsiNext(psi)) != NULL) {
+	    if (rpmProblemGetType(p) == RPMPROB_SCRIPTLET_ERROR)
+		nfail++;
+	}
+	rpmpsFreeIterator(psi);
+
+	if (nfail) {
+	    rpmlog(RPMLOG_ERR, _("the transaction had %d scriptlet failure(s):\n"), nfail);
+	    psi = rpmpsInitIterator(ps);
+	    while ((p = rpmpsiNext(psi)) != NULL) {
+		if (rpmProblemGetType(p) == RPMPROB_SCRIPTLET_ERROR)
+		    rpmlog(RPMLOG_ERR, "%s\n", rpmProblemGetStr(p));
+	    }
+	    rpmpsFreeIterator(psi);
+	}
+	rpmpsFree(ps);
+    }
+
     /* Run post transaction hook for all plugins */
     if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
 	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);

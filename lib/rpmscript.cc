@@ -10,6 +10,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 #include <rpm/header.h>
 #include <rpm/rpmds.h>
 
@@ -35,6 +36,7 @@ struct rpmScript_s {
     char **args;		/* scriptlet call arguments */
     char *body;			/* script body */
     char *descr;		/* description for logging */
+    char *failmsg;		/* failure report from the last run */
     rpmscriptFlags flags;	/* flags to control operation */
     char *rpmver;		/* builder rpm version */
     int chroot;			/* chrooted script? */
@@ -447,20 +449,23 @@ static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 	   script->descr, (unsigned)pid, (unsigned)reaped, status);
 
     if (reaped < 0) {
-	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 script->descr, pid, reaped, strerror(errno));
+	rasprintf(&script->failmsg, _("%s scriptlet failed, waitpid(%d) rc %d: %s"),
+				   script->descr, pid, reaped, strerror(errno));
     } else if (!WIFEXITED(status) || WEXITSTATUS(status)) {
       	if (WIFSIGNALED(status)) {
-	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
-                   script->descr, WTERMSIG(status));
+	    rasprintf(&script->failmsg, _("%s scriptlet failed, signal %d"),
+				       script->descr, WTERMSIG(status));
 	} else {
-	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
-		   script->descr, WEXITSTATUS(status));
+	    rasprintf(&script->failmsg, _("%s scriptlet failed, exit status %d"),
+				       script->descr, WEXITSTATUS(status));
 	}
     } else {
 	/* if we get this far we're clear */
 	rc = RPMRC_OK;
     }
+
+    if (script->failmsg)
+	rpmlog(lvl, "%s\n", script->failmsg);
 
 exit:
     if (in)
@@ -486,6 +491,10 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 		   ARGV_const_t prefixes, rpmPlugins plugins)
 {
     if (script == NULL) return RPMRC_OK;
+
+    /* Each run starts with a clean failure report */
+    free(script->failmsg);
+    script->failmsg = NULL;
 
     ARGV_t args = NULL;
     rpmlogLvl lvl = (script->flags & RPMSCRIPT_FLAG_CRITICAL) ?
@@ -516,6 +525,10 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     /* Run scriptlet post hook for all plugins */
     rpmpluginsCallScriptletPost(plugins, script->descr, script_type, rc);
+
+    /* Runs that failed without a report of their own get a plain one */
+    if (rc != RPMRC_OK && script->failmsg == NULL)
+	rasprintf(&script->failmsg, _("%s scriptlet failed"), script->descr);
 
     argvFree(args);
 
@@ -745,11 +758,17 @@ rpmScript rpmScriptFree(rpmScript script)
 	free(script->args);
 	free(script->body);
 	free(script->descr);
+	free(script->failmsg);
 	free(script->rpmver);
 	delete script->nextFileFunc;
 	delete script;
     }
     return NULL;
+}
+
+const char * rpmScriptFailMsg(rpmScript script)
+{
+    return (script != NULL) ? script->failmsg : NULL;
 }
 
 rpmTagVal rpmScriptTag(rpmScript script)

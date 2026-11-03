@@ -703,7 +703,7 @@ void rpmteCleanProblems(rpmte te)
 
 static void appendProblem(rpmte te, rpmProblemType type,
 		fnpyKey key, const char * altNEVR,
-		const char * str, uint64_t number)
+		const char * str, uint64_t number, int failed)
 {
     rpmProblem o;
     rpmProblem p = rpmProblemCreate(type, te->NEVRA, key, altNEVR, str, number);
@@ -720,7 +720,8 @@ static void appendProblem(rpmte te, rpmProblemType type,
 	if (te->probs == NULL)
 	    te->probs = rpmpsCreate();
 	rpmpsAppendProblem(te->probs, p);
-	rpmteMarkFailed(te);
+	if (failed)
+	    rpmteMarkFailed(te);
     }
     rpmProblemFree(p);
 }
@@ -729,7 +730,15 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
 		     const char *altNEVR, const char *str, uint64_t number)
 {
     if (te != NULL) {
-	appendProblem(te, type, rpmteKey(te), altNEVR, str, number);
+	appendProblem(te, type, rpmteKey(te), altNEVR, str, number, 1);
+    }
+}
+
+void rpmteAddProblemNoMark(rpmte te, rpmProblemType type,
+		     const char *altNEVR, const char *str, uint64_t number)
+{
+    if (te != NULL) {
+	appendProblem(te, type, rpmteKey(te), altNEVR, str, number, 0);
     }
 }
 
@@ -748,7 +757,7 @@ void rpmteAddDepProblem(rpmte te, const char * altNEVR, rpmds ds,
 	case 'R':	type = RPMPROB_REQUIRES;	break;
 	}
 
-	appendProblem(te, type, key, altNEVR, DNEVR+2, rpmdsInstance(ds));
+	appendProblem(te, type, key, altNEVR, DNEVR+2, rpmdsInstance(ds), 1);
     }
 }
 

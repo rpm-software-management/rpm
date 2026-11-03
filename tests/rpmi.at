@@ -1763,6 +1763,8 @@ runroot rpm -U --define "__systemd_sysusers /bin/false" \
 [],
 [error: %sysusers(deptest-user-1.0-1.noarch) scriptlet failed, exit status 1
 error: deptest-user-1.0-1.noarch: install failed
+error: the transaction had 1 scriptlet failure(s):
+error: %sysusers(deptest-user-1.0-1.noarch) scriptlet failed, exit status 1
 ])
 
 RPMTEST_CHECK([
