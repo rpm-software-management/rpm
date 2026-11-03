@@ -989,6 +989,28 @@ test -f $RPMTEST/gotcha
 [])
 RPMTEST_CLEANUP
 
+# CVE-2026-95521: source and spec file names in a source package header
+# must not be macro expanded by the install rpmbuild --rebuild performs
+RPMTEST_SETUP_RW([rpmbuild --rebuild <srpm> (evil)])
+AT_KEYWORDS([build])
+
+RPMTEST_CHECK([
+runroot --setenv RPM_POC_PATH /tmp/gotcha \
+	rpmbuild --quiet --define "_openpgp_autosign_id %{nil}" \
+	--rebuild /data/SRPMS/CVE-2026-95521.src.rpm
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/tmp/gotcha
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
 # weird filename survival test
 RPMTEST_SETUP_RW([rpmbuild package with weird filenames])
 AT_KEYWORDS([build])
