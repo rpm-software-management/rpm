@@ -4,6 +4,7 @@
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
 #include <rpm/rpmfi.h>
+#include <rpm/rpmarchive.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmio.h>
@@ -273,6 +274,11 @@ static int process_package(rpmts ts, const char * filename)
     if (rc == RPMERR_ITER_END) {
 	rc = 0;
     } else {
+	if (rc < 0) {
+	    char *emsg = rpmfileStrerror(rc);
+	    fprintf(stderr, _("Error reading payload: %s\n"), emsg);
+	    free(emsg);
+	}
 	rc = 1;
     }
 
