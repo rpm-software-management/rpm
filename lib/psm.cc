@@ -426,18 +426,19 @@ exit:
  * @param sense		trigger type
  * @param sourceH	header of trigger source
  * @param trigH		header of triggered package
- * @param arg2
+ * @param arg1		number of instances of the triggered package that are
+ *			installed when the operation completes
+ * @param arg2		number of installed instances of the trigger source
  * @param triggersAlreadyRun
  * @return
  */
 static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
-			Header sourceH, Header trigH, int countCorrection,
+			Header sourceH, Header trigH, int arg1,
 			int arg2, uint8_t * triggersAlreadyRun)
 {
     rpmds trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     struct rpmtd_s pfx;
     const char * sourceName = headerGetString(sourceH, RPMTAG_NAME);
-    const char * triggerName = headerGetString(trigH, RPMTAG_NAME);
     rpmRC rc = RPMRC_OK;
     int i;
 
@@ -461,15 +462,12 @@ static rpmRC handleOneTrigger(rpmts ts, rpmte te, rpmsenseFlags sense,
 
 	tix = rpmdsTi(trigger);
 	if (triggersAlreadyRun == NULL || triggersAlreadyRun[tix] == 0) {
-	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
 	    } else {
 		rpmScript script = rpmScriptFromTriggerTag(trigH,
 			     triggertag(sense), RPMSCRIPT_NORMALTRIGGER, tix);
-		arg1 += countCorrection;
 		rc = runScript(ts, te, trigH, (ARGV_const_t)pfx.data,
 				script, arg1, arg2);
 		if (triggersAlreadyRun != NULL)
@@ -519,8 +517,10 @@ static rpmRC runTriggers(rpmpsm psm, rpmsenseFlags sense)
 
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while ((triggeredH = rpmdbNextIterator(mi)) != NULL) {
+	    const char * triggerName = headerGetString(triggeredH, RPMTAG_NAME);
+	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	    nerrors += handleOneTrigger(ts, NULL, sense, h, triggeredH,
-					0, numPackage, NULL);
+					arg1, numPackage, NULL);
 	}
 	rpmdbFreeIterator(mi);
 	headerFree(h);
@@ -563,7 +563,7 @@ static rpmRC runImmedTriggers(rpmpsm psm, rpmsenseFlags sense)
 	    while ((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		nerrors += handleOneTrigger(psm->ts, psm->te,
 				sense, sourceH, h,
-				psm->countCorrection,
+				psm->scriptArg,
 				rpmdbGetIteratorCount(mi),
 				triggersRun.data());
 	    }
