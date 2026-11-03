@@ -11,6 +11,7 @@
 #include "debug.h"
 
 static pid_t pipeChild = 0;
+static pid_t rpopenChild = 0;
 
 RPM_GNUC_NORETURN
 void argerror(const char * desc)
@@ -86,53 +87,64 @@ int finishPipe(void)
 
 FILE* rpopen(const char *cmd, const char *arg, ...)
 {
-    FILE *stream = NULL;
+    FILE *fp = NULL;
+    int pipefd[2];
     ARGV_t argv = NULL;
     va_list ap;
-    int pipefd[2];
-    pid_t pid;
 
     if (pipe(pipefd) < 0)
-	goto exit;
+	return NULL;
+
+    if ((fp = fdopen(pipefd[0], "r")) == NULL) {
+	close(pipefd[0]);
+	close(pipefd[1]);
+	return NULL;
+    }
 
     argvAdd(&argv, "/bin/sh");
     argvAdd(&argv, "-c");
-    argvAdd(&argv, cmd);
-    argvAdd(&argv, "sh");
+    argvAdd(&argv, "--");
+    argvAdd(&argv, cmd);    /* User command */
+    argvAdd(&argv, "sh");   /* Shell name ($0) */
 
+    /* User positional parameters ($1, $2, ...) */
     va_start(ap, arg);
     for (const char *s = arg; s != NULL; s = va_arg(ap, const char *))
 	argvAdd(&argv, s);
     va_end(ap);
 
-    if ((pid = fork()) == 0) {
+    if ((rpopenChild = fork()) == 0) {
 	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
 	close(pipefd[0]);
 	execv(argv[0], argv);
-	_exit(EXIT_FAILURE);
-    } else if (pid == -1) {
-	goto exit;
+	_exit(127);
+    } else if (rpopenChild == -1) {
+	fclose(fp);
+	fp = NULL;
     }
 
     close(pipefd[1]);
-    stream = fdopen(pipefd[0], "r");
-
-exit:
     argvFree(argv);
-    return stream;
+
+    return fp;
 }
 
-int rpclose(FILE *stream)
+int rpclose(FILE *fp)
 {
-    int rc = -1;
-    int status;
+    int status = -1;
+    pid_t reaped;
 
-    if ((waitpid(-1, &status, 0) == -1) || !WIFEXITED(status))
-	goto exit;
+    if (rpopenChild <= 0)
+	return -1;
 
-    rc = WEXITSTATUS(status);
+    fclose(fp);
+    do {
+	reaped = waitpid(rpopenChild, &status, 0);
+    } while (reaped == -1 && errno == EINTR);
 
-exit:
-    fclose(stream);
-    return rc;
+    if (reaped == -1)
+	return -1;
+
+    return status;
 }
