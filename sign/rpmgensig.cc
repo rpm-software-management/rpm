@@ -650,7 +650,6 @@ static rpmRC checkPkg(FD_t fd, char **msg, int flags)
 	    *msg = xstrdup(_("no verifiable digest available"));
     }
     Fseek(fd, offset, SEEK_SET);
-    Fseek(fd, offset, SEEK_SET);
 
     rpmvsFree(vs);
     return rc;
