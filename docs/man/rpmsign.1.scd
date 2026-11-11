@@ -80,6 +80,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 
 	Has no effect when signing V6 packages.
 
+	Added: 6.0.0
+
 *--rpmv4*
 	Request RPM V4 header signature addition on V6 packages.
 	Useful for making V6 packages signature verifiable
@@ -94,6 +96,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 
 	Has no effect when signing V4 packages.
 
+	Added: 6.0.0
+
 *--rpmv6*
 	Request RPM V6 header signature addition on V4 packages.
 
@@ -102,6 +106,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	added using the same logic as *--rpmv4* on a V6 package.
 
 	Has no effect when signing V6 packages.
+
+	Added: 6.0.0
 
 *--signfiles*
 	Sign package files. The file signing key (RSA private key) must
