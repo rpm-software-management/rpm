@@ -58,6 +58,17 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	Use key _KEYID_ for signing. Overrides *%\_openpgp_sign_id*
 	configuration.
 
+*--nopayload*
+	Perform payloadless signing. The payload is not read or verified
+	and the user is responsible for its contents.
+
+	Inherently incompatible with RPM v3 (header+payload) signatures.
+
+	Can only be used on packages containing a separate payload digest:
+	either RPM v6 packages or v4 packages built with RPM >= 4.14.
+
+	Added: 6.2.0
+
 *--rpmv3*
 	Request RPM V3 header+payload signature addition on V4 packages.
 	These signatures are expensive
@@ -68,6 +79,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	verifiable with rpm < 4.14 or other interoperability reasons.
 
 	Has no effect when signing V6 packages.
+
+	Added: 6.0.0
 
 *--rpmv4*
 	Request RPM V4 header signature addition on V6 packages.
@@ -83,6 +96,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 
 	Has no effect when signing V4 packages.
 
+	Added: 6.0.0
+
 *--rpmv6*
 	Request RPM V6 header signature addition on V4 packages.
 
@@ -91,6 +106,8 @@ See *rpm-common*(8) for the options common to all *rpm* executables.
 	added using the same logic as *--rpmv4* on a V6 package.
 
 	Has no effect when signing V6 packages.
+
+	Added: 6.0.0
 
 *--signfiles*
 	Sign package files. The file signing key (RSA private key) must
@@ -160,11 +177,25 @@ _~/.config/rpm/macros_):
 *rpmsign --delsign --delfilesign hello-2.0-1.x64_rpm*
 	Delete all signatures from _hello-2.0-1.x64_rpm_ package.
 
+## Example 3. Payloadless signing
+Extract metadata and payload of a package with *rpmpart*(1), sign the
+metadata and reassemble the parts back to a signed, verifiable rpm.
+Useful for avoiding costly payload transfer if signing happens on a
+separate server.
+
+```
+$ rpmpart -m -p hello-2.0-1.x86_64.rpm
+$ rpmsign --addsign --nopayload hello-2.0-1.x86_64.rpm.metadata
+$ cat hello-2.0-1.x86_64.rpm.metadata hello-2.0-1.x86_64.rpm.payload > hello-2.0-1.x86_64.rpm
+$ rpmkeys -K hello-2.0-1.x64_64.rpm
+```
+
 # EXIT STATUS
 On success, 0 is returned, a nonzero failure code otherwise.
 
 # SEE ALSO
-*popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1)
+*popt*(3), *rpm*(8), *rpm-common*(8), *rpmkeys*(8), *rpmbuild*(1),
+*rpmpart*(1)
 
 *rpmsign --help* - as rpm supports customizing the options via popt
 aliases it's impossible to guarantee that what's described in the

@@ -21,6 +21,7 @@ enum rpmSignFlags_e {
     RPMSIGN_FLAG_RESIGN		= (1 << 3),
     RPMSIGN_FLAG_RPMV4		= (1 << 4),
     RPMSIGN_FLAG_RPMV6		= (1 << 5),
+    RPMSIGN_FLAG_NOPAYLOAD	= (1 << 6),
 };
 typedef rpmFlags rpmSignFlags;
 
