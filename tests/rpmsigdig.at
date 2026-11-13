@@ -1609,6 +1609,33 @@ runroot rpmkeys -Kv /tmp/hello-2.0-1.x86_64.rpm
 gpgconf --kill gpg-agent
 RPMTEST_CLEANUP
 
+# rpmsign resizes the reserved space of the signature header as bytes. It
+# rewrites a package whose reserved space has another type instead.
+RPMTEST_SETUP_RW([rpmsign --delsign with a reserved space of another type])
+AT_KEYWORDS([rpmsign signature])
+RPMTEST_CHECK([
+pkg=hello-2.0-1.x86_64-signed.rpm
+cp ${RPMTEST}/data/RPMS/${pkg} ${RPMTEST}/tmp/${pkg}
+python3 - ${RPMTEST}/tmp/${pkg} << EOF
+import struct, sys
+p = sys.argv.pop()
+d = bytearray(open(p, 'rb').read())
+il, dl = struct.unpack_from('>II', d, 104)
+for i in range(il):
+    tag, = struct.unpack_from('>I', d, 112 + i * 16)
+    if tag in (999, 1008):
+        struct.pack_into('>I', d, 116 + i * 16, 8)
+open(p, 'wb').write(d)
+EOF
+runroot rpmsign --delsign /tmp/${pkg} &&
+	runroot rpmkeys -K --nosignature /tmp/${pkg}
+],
+[0],
+[/tmp/hello-2.0-1.x86_64-signed.rpm: digests OK
+],
+[])
+RPMTEST_CLEANUP
+
 # Signing test(s) using Sequoia
 RPMTEST_SETUP_RW([rpmsign --addsign sequoia])
 AT_KEYWORDS([rpmsign sequoia signature])
