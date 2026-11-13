@@ -18,8 +18,15 @@ Python3_add_library(_rpm
 	spec-py.c spec-py.h
 )
 
-# Select Python stable ABI
-target_compile_definitions(_rpm PRIVATE Py_LIMITED_API=0x030A0000)
+# Select Python stable ABI. There is no stable ABI these bindings can target
+# on a free-threaded build: before 3.15 the limited API is rejected outright,
+# and the abi3t of 3.15 makes PyObject opaque, which the type structs below
+# are not written for. Build against the full API there.
+if (Python3_SOABI MATCHES "^cpython-[0-9]+t")
+	message(STATUS "Free-threaded Python ${Python3_VERSION}: building _rpm against the full API")
+else()
+	target_compile_definitions(_rpm PRIVATE Py_LIMITED_API=0x030A0000)
+endif()
 
 target_link_libraries(_rpm PRIVATE librpmio librpm librpmbuild librpmsign)
 
