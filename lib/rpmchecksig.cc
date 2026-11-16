@@ -231,7 +231,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
 			    .rc = 0,
     };
     int rc;
-    struct rpmvs_s *vs = rpmvsCreate(vfylevel, flags, keyring);
+    struct rpmvs_s *vs = rpmvsCreate(flags, keyring);
 
     rpmlog(RPMLOG_NOTICE, "%s:%s", fn, vd.verbose ? "\n" : "");
 
@@ -240,7 +240,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
     if (rc)
 	goto exit;
 
-    rc = vd.rc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+    rc = vd.rc = rpmvsVerify(vs, vfylevel, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
 
     rpmvsForeach(vs, lintCb, &vd);
 
