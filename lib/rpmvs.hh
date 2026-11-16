@@ -91,8 +91,22 @@ int rpmvsRange(struct rpmvs_s *vs);
  *   a at least one positive result of each enabled verifiable type,
  *   governing the entire package (header + payload).
  *
+ * One of the complications is that we commonly verify things that aren't
+ * enforced, but even then a positive failure is an error. So we might only
+ * be enforcing signatures, but a bad digest will fail the operation anyhow.
+ * OTOH, a missing digest would not cause a failure in that situation.
+ *
  * To make matters worse, callbacks (need to) modify some results to
  * get the desired behavior in some cases.
+ *
+ * @param sis		verify set handle
+ * @param vfylevel	verification level (aka enforcing mode) bitmask:
+ * 			RPMSIG_DIGEST_TYPE, RPMSIG_SIGNATURE_TYPE or both,
+ * 			zero to disable
+ * @param range		range bitmask to which verify level is applied:
+ * 			RPMSIG_HEADER, RPMSIG_PAYLOAD or both
+ * @param cb		callback function (optional)
+ * @param cbdata	callback userdata (optional)
  */
 RPM_PRIVATE_API
 int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int range,
