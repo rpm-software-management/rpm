@@ -53,7 +53,7 @@ RPM_PRIVATE_API
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_PRIVATE_API
-struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring);
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring);
 
 RPM_PRIVATE_API
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
@@ -97,7 +97,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  * get the desired behavior in some cases.
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int type,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

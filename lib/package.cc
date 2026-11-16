@@ -154,7 +154,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     };
 
     if (hdrblobInit(uh, uc, 0, 0, &blob, msg) == RPMRC_OK) {
-	struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
+	struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
 	rpmDigestBundle bundle = rpmDigestBundleNew();
 
 	rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
@@ -164,7 +164,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	hdrblobDigestUpdate(bundle, &blob);
 	rpmvsFiniRange(vs, RPMSIG_HEADER);
 
-	rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+	rpmvsVerify(vs, 0, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
 	rpmvsForeach(vs, appendhdrmsg, &pkgdata);
 
 	rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
@@ -312,7 +312,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     hdrblob sigblob = NULL;
     rpmVSFlags vsflags = rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    struct rpmvs_s *vs = rpmvsCreate(0, vsflags, keyring);
+    struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
     struct pkgdata_s pkgdata = {
 	.fn = fn ? fn : Fdescr(fd),
 	.msg = NULL,
@@ -330,7 +330,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Actually all verify discovered signatures and digests */
     rc = RPMRC_FAIL;
-    rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
+    rpmvsVerify(vs, 0, RPMSIG_VERIFIABLE_TYPE, handleHdrVS, &pkgdata);
     rpmvsForeach(vs, loghdrmsg, &pkgdata);
 
     /* Preserve traditional behavior for now: only failure prevents read */
