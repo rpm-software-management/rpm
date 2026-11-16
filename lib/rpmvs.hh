@@ -81,9 +81,6 @@ int rpmvsRange(struct rpmvs_s *vs);
  * a peculiar beast at that because of all the legacy compatibility modes
  * it needs to support in addition to the more modern enforcing modes.
  *
- * All verifiables (signatures, digests) indicated in the type bitmask are
- * verified, a negative result causes a failure of that type in all modes.
- *
  * Return a bitmask of the failed verifiable types, or zero on success.
  * Success semantics depend on the verification mode specified at rpmvsCreate()
  * time:
@@ -97,7 +94,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  * get the desired behavior in some cases.
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

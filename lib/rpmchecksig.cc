@@ -240,7 +240,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, int vfylevel, rpmVSFlags flags,
     if (rc)
 	goto exit;
 
-    rc = vd.rc = rpmvsVerify(vs, vfylevel, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+    rc = vd.rc = rpmvsVerify(vs, vfylevel, vfyCb, &vd);
 
     rpmvsForeach(vs, lintCb, &vd);
 
