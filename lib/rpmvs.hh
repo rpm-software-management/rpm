@@ -10,6 +10,7 @@ enum {
     RPMSIG_HEADER	= (1 << 0),
     RPMSIG_PAYLOAD	= (1 << 1),
 };
+#define RPMSIG_WHOLE   (RPMSIG_HEADER|RPMSIG_PAYLOAD)
 
 struct rpmsinfo_s {
     /* static data */
@@ -94,7 +95,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  * get the desired behavior in some cases.
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int vfylevel,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int range,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

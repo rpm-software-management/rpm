@@ -1287,7 +1287,7 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
     }
 
     if (prc == RPMRC_OK)
-	prc = rpmvsVerify(vs, vfylevel, vfyCb, &vd);
+	prc = rpmvsVerify(vs, vfylevel, RPMSIG_WHOLE, vfyCb, &vd);
 
     /* Record verify result */
     if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
