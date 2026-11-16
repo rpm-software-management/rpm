@@ -97,7 +97,7 @@ int rpmvsRange(struct rpmvs_s *vs);
  * get the desired behavior in some cases.
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

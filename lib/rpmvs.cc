@@ -554,7 +554,7 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
     return NULL;
 }
 
-int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
@@ -569,22 +569,20 @@ int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int type,
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
-	if (type & sinfo->type) {
-	    /* Digests in signed header are signature strength */
-	    if (sinfo->wrapped) {
-		if (verified[RPMSIG_SIGNATURE_TYPE] & RPMSIG_HEADER)
-		    sinfo->strength = RPMSIG_SIGNATURE_TYPE;
-	    }
-
-	    if (sinfo->ctx) {
-		rpmVerifySignature(sis->keyring, sinfo);
-		if (sinfo->rc == RPMRC_OK) {
-		    verified[sinfo->type] |= sinfo->range;
-		    verified[sinfo->strength] |= sinfo->range;
-		}
-	    }
-	    range |= sinfo->range;
+	/* Digests in signed header are signature strength */
+	if (sinfo->wrapped) {
+	    if (verified[RPMSIG_SIGNATURE_TYPE] & RPMSIG_HEADER)
+		sinfo->strength = RPMSIG_SIGNATURE_TYPE;
 	}
+
+	if (sinfo->ctx) {
+	    rpmVerifySignature(sis->keyring, sinfo);
+	    if (sinfo->rc == RPMRC_OK) {
+		verified[sinfo->type] |= sinfo->range;
+		verified[sinfo->strength] |= sinfo->range;
+	    }
+	}
+	range |= sinfo->range;
     }
 
     /* Unconditionally reject partially signed packages */

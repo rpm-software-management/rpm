@@ -630,13 +630,13 @@ static int msgCb(struct rpmsinfo_s *sinfo, void *cbdata)
 static rpmRC checkPkg(FD_t fd, char **msg)
 {
     rpmRC rc;
-    struct rpmvs_s *vs = rpmvsCreate(0, NULL);
+    struct rpmvs_s *vs = rpmvsCreate(RPMVSF_MASK_NOSIGNATURES, NULL);
     off_t offset = Ftell(fd);
 
     Fseek(fd, 0, SEEK_SET);
     rc = rpmpkgRead(vs, fd, NULL, NULL, msg);
     if (!rc) {
-	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE, RPMSIG_DIGEST_TYPE,
+	rc = rpmvsVerify(vs, RPMSIG_DIGEST_TYPE,
 			msgCb, msg) ?  RPMRC_FAIL : RPMRC_OK;
     }
     Fseek(fd, offset, SEEK_SET);
