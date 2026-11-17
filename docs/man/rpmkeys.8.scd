@@ -87,7 +87,8 @@ cryptographic algorithms and differing system policies, the RPM package
 verification is a complicated system with many moving parts.
 
 RPM packages contain multiple individual _verifiables_ that cover different
-parts of the package: header, payload or both. There are two _classes_ of
+parts (also known as ranges) of the package: header, payload or both.
+There are two _classes_ of
 verifiables: digests and signatures. Each verifiable may use a different
 cryptographic _algorithm_. A class-level verification result (pass or fail) is
 computed based on the results from its individual verifiables. When a class or
