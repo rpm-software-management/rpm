@@ -127,6 +127,66 @@ runroot rpm --showrc > /dev/null
 RPMTEST_CLEANUP
 
 # ------------------------------
+# Generic x86_64 installation compatibility follows the CPU, even in a 32-bit rpm.
+RPMTEST_SETUP_RW([x86_64 installation compatibility])
+AT_KEYWORDS([basic rpmrc])
+RPMTEST_SKIP_IF([test "$(uname -s)" != Linux])
+RPMTEST_SKIP_IF([! (
+    for flag in lm pni ssse3 sse4_1 sse4_2 popcnt cx16 lahf_lm; do
+        grep '^flags' /proc/cpuinfo | grep -qw "$flag" || exit 1
+    done
+)])
+
+RPMTEST_CHECK([
+mkdir -p ${RPMTEST}/${RPMSYSCONFDIR}
+echo x86_64-Linux > ${RPMTEST}/${RPMSYSCONFDIR}/platform
+runroot rpm --showrc |
+    awk '/^compatible build archs:/ {print}
+         /^compatible archs/ {print index(" " $0 " ", " x86_64_v2 ") != 0}'
+runroot rpm --eval '%{_target_cpu}'
+],
+[0],
+[compatible build archs: x86_64 noarch
+1
+x86_64
+])
+
+RPMTEST_CHECK([
+echo i686-Linux > ${RPMTEST}/${RPMSYSCONFDIR}/platform
+runroot rpm --showrc |
+    awk '/^compatible archs/ {print index($0, "x86_64") != 0}'
+runroot rpm --eval '%{_target_cpu}'
+],
+[0],
+[0
+i386
+])
+RPMTEST_CLEANUP
+
+# ------------------------------
+RPMTEST_SETUP_RW([x86_64 installation compatibility without platform])
+AT_KEYWORDS([basic rpmrc])
+RPMTEST_SKIP_IF([test "$(uname -s)" != Linux])
+RPMTEST_SKIP_IF([test "$(runroot setarch x86_64 uname -m 2>/dev/null)" != x86_64])
+RPMTEST_SKIP_IF([! (
+    for flag in lm pni ssse3 sse4_1 sse4_2 popcnt cx16 lahf_lm; do
+        grep '^flags' /proc/cpuinfo | grep -qw "$flag" || exit 1
+    done
+)])
+
+RPMTEST_CHECK([
+rm -f ${RPMTEST}/${RPMSYSCONFDIR}/platform
+runroot setarch x86_64 rpm --showrc |
+    awk '/^compatible archs/ {print index(" " $0 " ", " x86_64_v2 ") != 0}'
+runroot setarch x86_64 rpm --eval '%{_target_cpu}'
+],
+[0],
+[1
+x86_64
+])
+RPMTEST_CLEANUP
+
+# ------------------------------
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
 RPMTEST_SETUP([rpm --querytags])
