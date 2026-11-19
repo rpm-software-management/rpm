@@ -712,6 +712,52 @@ hello.spec
 RPMTEST_CLEANUP
 
 # ------------------------------
+# CVE-2026-95521: shell injection via source RPM installation
+RPMTEST_SETUP_RW([rpm -i *.src.rpm (evil)])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
+
+BASENAME_OFFSET1=0x1640	    # source name
+BASENAME_OFFSET2=0x1651	    # spec name
+
+# Make sure the BASENAME_OFFSETs are valid
+RPMTEST_CHECK([
+sha256sum /data/SRPMS/hello-1.0-1.src.rpm | awk '{print $1}'
+],
+[ignore],
+[03bf76052925a4b8bff4ad40cf71e354fa7e42cf9a4fdbcc1dd0e90924261dd8
+],
+[])
+
+# Inject macros
+RPMTEST_CHECK([
+cp /data/SRPMS/hello-1.0-1.src.rpm $RPMTEST/foo.src.rpm
+printf "%%(touch gotcha)" | \
+    dd seek=$(($BASENAME_OFFSET1)) conv=notrunc bs=1 of=$RPMTEST/foo.src.rpm
+printf "%%(touch x)" | \
+    dd seek=$(($BASENAME_OFFSET2)) conv=notrunc bs=1 of=$RPMTEST/foo.src.rpm
+],
+[],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+runroot rpm --nodigest -i foo.src.rpm
+],
+[ignore],
+[],
+[ignore])
+
+RPMTEST_CHECK([
+test -f $RPMTEST/gotcha ||
+test -f $RPMTEST/x
+],
+[1],
+[],
+[])
+RPMTEST_CLEANUP
+
+# ------------------------------
 # Various error behavior tests
 #
 RPMTEST_SETUP_RW([rpm -i <nonexistent file>])
