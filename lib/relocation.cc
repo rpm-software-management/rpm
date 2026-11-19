@@ -451,9 +451,13 @@ int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 	headerGet(h, RPMTAG_ORIGBASENAMES, &filenames, HEADERGET_ALLOC);
 	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
 	    int spec = (i == specix);
-	    char *fn = rpmGenPath(rootDir,
-				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
+	    char *fn = NULL;
+	    char *dn = rpmGenPath(rootDir,
+				  spec ? "%{_specdir}" : "%{_sourcedir}",
+				  NULL);
+	    rasprintf(&fn, "%s/%s", dn, bn);
 	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
+	    free(dn);
 	    free(fn);
 	}
 	rpmtdFreeData(&filenames);
