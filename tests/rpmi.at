@@ -715,7 +715,6 @@ RPMTEST_CLEANUP
 # CVE-2026-95521: shell injection via source RPM installation
 RPMTEST_SETUP_RW([rpm -i *.src.rpm (evil)])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 0])
 
 BASENAME_OFFSET1=0x1640	    # source name
 BASENAME_OFFSET2=0x1651	    # spec name
