@@ -672,7 +672,7 @@ exit:
     return rc;
 }
 
-#	if defined(__linux__) && defined(__x86_64__)
+#	if defined(__linux__) && (defined(__x86_64__) || defined(__i386__))
 #           if defined(__has_builtin)
 #               if __has_builtin(__builtin_cpu_supports)
 #                   define HAS_BUILTIN_CPU_SUPPORTS
@@ -1328,7 +1328,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif
 
 #	if defined(__linux__) && defined(__i386__)
-	{
+	if (!rstreq(un.machine, "x86_64")) {
 	    char mclass = (char) (RPMClass() | '0');
 
 	    if ((mclass == '6' && is_athlon()) || mclass == '7')
@@ -1484,6 +1484,19 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
 static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
+#if defined(__linux__) && (defined(__x86_64__) || defined(__i386__))
+    char machine[] = "x86_64_vX";
+
+    /* Detect installation capabilities without changing the build target. */
+    if (ctx->currTables[type] == RPM_MACHTABLE_INSTARCH &&
+	name && rstreq(name, "x86_64")) {
+	int level = get_x86_64_level();
+	if (level > 1) {
+	    machine[8] = '0' + level;
+	    name = machine;
+	}
+    }
+#endif
     machFindEquivs(ctx->tables[ctx->currTables[type]].cache,
 		   ctx->tables[ctx->currTables[type]].equiv,
 		   name);
