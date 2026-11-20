@@ -10,6 +10,7 @@ enum {
     RPMSIG_HEADER	= (1 << 0),
     RPMSIG_PAYLOAD	= (1 << 1),
 };
+#define RPMSIG_WHOLE   (RPMSIG_HEADER|RPMSIG_PAYLOAD)
 
 struct rpmsinfo_s {
     /* static data */
@@ -53,7 +54,7 @@ RPM_PRIVATE_API
 char *rpmsinfoMsg(struct rpmsinfo_s *sinfo);
 
 RPM_PRIVATE_API
-struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring);
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring);
 
 RPM_PRIVATE_API
 void rpmvsInit(struct rpmvs_s *vs, hdrblob blob, rpmDigestBundle bundle);
@@ -93,11 +94,25 @@ int rpmvsRange(struct rpmvs_s *vs);
  *   a at least one positive result of each enabled verifiable type,
  *   governing the entire package (header + payload).
  *
+ * One of the complications is that we commonly verify things that aren't
+ * enforced, but even then a positive failure is an error. So we might only
+ * be enforcing signatures, but a bad digest will fail the operation anyhow.
+ * OTOH, a missing digest would not cause a failure in that situation.
+ *
  * To make matters worse, callbacks (need to) modify some results to
  * get the desired behavior in some cases.
+ *
+ * @param sis		verify set handle
+ * @param vfylevel	verification level (aka enforcing mode) bitmask:
+ * 			RPMSIG_DIGEST_TYPE, RPMSIG_SIGNATURE_TYPE or both,
+ * 			zero to disable
+ * @param vfyrange	range bitmask to which verify level is applied:
+ * 			RPMSIG_HEADER, RPMSIG_PAYLOAD or both
+ * @param cb		callback function (optional)
+ * @param cbdata	callback userdata (optional)
  */
 RPM_PRIVATE_API
-int rpmvsVerify(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int vfyrange,
                        rpmsinfoCb cb, void *cbdata);
 
 RPM_PRIVATE_API

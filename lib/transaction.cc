@@ -1287,7 +1287,7 @@ static int verifyPackage(rpmts ts, rpmte p, struct rpmvs_s *vs, int vfylevel)
     }
 
     if (prc == RPMRC_OK)
-	prc = rpmvsVerify(vs, RPMSIG_VERIFIABLE_TYPE, vfyCb, &vd);
+	prc = rpmvsVerify(vs, vfylevel, RPMSIG_WHOLE, vfyCb, &vd);
 
     /* Record verify result */
     if (vd.type[RPMSIG_SIGNATURE_TYPE] == RPMRC_OK)
@@ -1323,7 +1323,7 @@ static int verifyPackageFiles(rpmts ts, rpm_loff_t total)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED))) {
 	int vfylevel = rpmteVfyLevel(p);
-	struct rpmvs_s *vs = rpmvsCreate(vfylevel, vsflags, keyring);
+	struct rpmvs_s *vs = rpmvsCreate(vsflags, keyring);
 	rpmtsNotify(ts, p, RPMCALLBACK_VERIFY_PROGRESS, oc++, total);
 	verifyPackage(ts, p, vs, vfylevel);
 	rpmvsFree(vs);

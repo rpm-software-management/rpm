@@ -16,7 +16,6 @@ struct rpmvs_s {
     rpmVSFlags vsflags;
     rpmDigestBundle bundle;
     rpmKeyring keyring;
-    int vfylevel;
 };
 
 struct vfytag_s {
@@ -423,12 +422,11 @@ void rpmvsAppendTag(struct rpmvs_s *vs, hdrblob blob, rpmTagVal tag)
     }
 }
 
-struct rpmvs_s *rpmvsCreate(int vfylevel, rpmVSFlags vsflags, rpmKeyring keyring)
+struct rpmvs_s *rpmvsCreate(rpmVSFlags vsflags, rpmKeyring keyring)
 {
     struct rpmvs_s *sis = new rpmvs_s {};
     sis->vsflags = vsflags;
     sis->keyring = rpmKeyringLink(keyring);
-    sis->vfylevel = vfylevel;
 
     return sis;
 }
@@ -556,13 +554,11 @@ static const struct rpmsinfo_s *getAlt(const struct rpmvs_s *vs, const struct rp
     return NULL;
 }
 
-int rpmvsVerify(struct rpmvs_s *sis, int type,
+int rpmvsVerify(struct rpmvs_s *sis, int vfylevel, int range,
 		       rpmsinfoCb cb, void *cbdata)
 {
     int failed = 0;
     int cont = 1;
-    int vfylevel = sis->vfylevel;
-    int range = vfylevel ? (RPMSIG_HEADER|RPMSIG_PAYLOAD) : 0;
     int verified[3] = { 0, 0, 0 };
 
     /* sort for consistency and rough "better comes first" semantics*/
@@ -572,21 +568,18 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
     for (int i = 0; i < sis->nsigs && cont; i++) {
 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
 
-	if (type & sinfo->type) {
-	    /* Digests in signed header are signature strength */
-	    if (sinfo->wrapped) {
-		if (verified[RPMSIG_SIGNATURE_TYPE] & RPMSIG_HEADER)
-		    sinfo->strength = RPMSIG_SIGNATURE_TYPE;
-	    }
+	/* Digests in signed header are signature strength */
+	if (sinfo->wrapped) {
+	    if (verified[RPMSIG_SIGNATURE_TYPE] & RPMSIG_HEADER)
+		sinfo->strength = RPMSIG_SIGNATURE_TYPE;
+	}
 
-	    if (sinfo->ctx) {
-		rpmVerifySignature(sis->keyring, sinfo);
-		if (sinfo->rc == RPMRC_OK) {
-		    verified[sinfo->type] |= sinfo->range;
-		    verified[sinfo->strength] |= sinfo->range;
-		}
+	if (sinfo->ctx) {
+	    rpmVerifySignature(sis->keyring, sinfo);
+	    if (sinfo->rc == RPMRC_OK) {
+		verified[sinfo->type] |= sinfo->range;
+		verified[sinfo->strength] |= sinfo->range;
 	    }
-	    range |= sinfo->range;
 	}
     }
 
