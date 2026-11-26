@@ -574,6 +574,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild --build-in-place 1])
 AT_KEYWORDS([build])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 RPMTEST_CHECK([
 runroot tar xf /data/SOURCES/hello-2.0.tar.gz
@@ -636,6 +637,7 @@ RPMTEST_CLEANUP
 
 RPMTEST_SETUP_RW([rpmbuild --build-in-place --noprep])
 AT_KEYWORDS([build])
+RPMTEST_SKIP_IF([$CHOWN_DISABLED])
 
 RPMTEST_CHECK([
 runroot tar xf /data/SOURCES/hello-2.0.tar.gz

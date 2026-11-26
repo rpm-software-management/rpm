@@ -56,6 +56,15 @@ if mknod foodev c 123 123 2>/dev/null; then
 else
    MKNOD_DISABLED=true
 fi
+# An unprivileged user namespace maps only one user and group ID. Files cannot
+# be chowned to other IDs, and commands cannot switch to them.
+touch fooown
+if chown 12345:12345 fooown 2>/dev/null; then
+   CHOWN_DISABLED=false
+else
+   CHOWN_DISABLED=true
+fi
+rm -f fooown
 
 # Manage lightweight Bubblewrap containers on top of OverlayFS
 snapshot()
