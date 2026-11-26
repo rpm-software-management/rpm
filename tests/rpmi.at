@@ -257,7 +257,7 @@ AT_KEYWORDS([install])
 pkg="hello-2.0-1.x86_64.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
-   conv=notrunc bs=1 seek=7777 count=6 2> /dev/null
+   conv=notrunc bs=1 seek=7160 count=6 2> /dev/null
 
 RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -277,7 +277,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ],
 [1],
 [],
-[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != bea903609dceac36e1f26a983c493c98064d320fdfeb423034ed63d649b2c8dc)
+[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 7b33059d5b3f8fb0dc8061dc6dbcc6e9e9f72eec6e7bc5eaf992901583a49fad)
 ])
 
 RPMTEST_CHECK([
@@ -418,7 +418,7 @@ RPMTEST_SKIP_IF([test x$PGP = xdummy])
 pkg="hello-2.0-1.x86_64-signed.rpm"
 cp "${RPMTEST}"/data/RPMS/${pkg} "${RPMTEST}"/tmp/${pkg}
 dd if=/dev/zero of="${RPMTEST}"/tmp/${pkg} \
-   conv=notrunc bs=1 seek=7711 count=6 2> /dev/null
+   conv=notrunc bs=1 seek=7160 count=6 2> /dev/null
 
 RPMTEST_CHECK([
 runroot rpm -U --ignorearch --ignoreos --nodeps \
@@ -478,7 +478,7 @@ runroot rpm -U --ignorearch --ignoreos --nodeps \
 ],
 [1],
 [],
-[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 3129d507d00b1dc60745d9637010b5d82059ebeff2318b2db75b26272b823586)
+[	package hello-2.0-1.x86_64 does not verify: Payload SHA256 digest: BAD (Expected 84a7338287bf19715c4eed0243f5cdb447eeb0ade37b2af718d4060aefca2f7c != 7b33059d5b3f8fb0dc8061dc6dbcc6e9e9f72eec6e7bc5eaf992901583a49fad)
 ])
 
 RPMTEST_CHECK([
