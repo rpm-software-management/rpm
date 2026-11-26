@@ -743,6 +743,18 @@ static int longfilesizesTag(Header h, rpmtd td, headerGetFlags hgflags)
 
 static int longarchivesizeTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
+    struct rpmtd_s payloadsizealt;
+
+    // v6 stores the authoritative uncompressed payload size here.
+    if (headerGet(h, RPMTAG_PAYLOADSIZEALT, &payloadsizealt, HEADERGET_ALLOC)) {
+        // same approach as get64()
+        td->type = payloadsizealt.type;
+        td->count = payloadsizealt.count;
+        td->flags = payloadsizealt.flags;
+        td->data = payloadsizealt.data;
+        return 1;
+    }
+
     return get64(h, td, RPMTAG_LONGARCHIVESIZE, RPMTAG_ARCHIVESIZE);
 }
 

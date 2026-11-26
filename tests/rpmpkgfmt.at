@@ -81,6 +81,15 @@ rpm -qp --qf "%{rpmformat}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noar
 [])
 
 RPMTEST_CHECK([
+pkg=${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
+test "$(rpm -qp --qf "%{LONGARCHIVESIZE}" "$pkg")" = \
+     "$(rpm -qp --qf "%{PAYLOADSIZEALT}" "$pkg")"
+],
+[0],
+[],
+[])
+
+RPMTEST_CHECK([
 rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/SRPMS/attrtest-1.0-1.src.rpm
 rpm -qp --qf "%{sigmd5}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
 rpm -qp --qf "%{sourcesigmd5}\n" ${RPMTEST}/build/RPMS/6/noarch/attrtest-1.0-1.noarch.rpm
