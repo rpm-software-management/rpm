@@ -397,7 +397,7 @@ runroot rpm -U /build/RPMS/noarch/triggers-1.0-1.noarch.rpm
 runroot rpm -e triggers
 ],
 [0],
-[triggers-1.0-1 TRIGGERPREIN 0 1
+[triggers-1.0-1 TRIGGERPREIN 1 1
 triggers-1.0-1 TRIGGERIN 1 1
 triggers-1.0-1 TRIGGERUN 0 1
 ],
@@ -524,9 +524,18 @@ RPMTEST_CHECK([
 runroot rpm -U /build/RPMS/noarch/triggers-1.0-2.noarch.rpm
 ],
 [0],
-[triggers-1.0-2 TRIGGERPREIN 1 1
+[triggers-1.0-2 TRIGGERPREIN 2 1
 triggers-1.0-2 TRIGGERIN 2 1
 triggers-1.0-1 TRIGGERUN 1 1
+],
+[])
+
+RPMTEST_CHECK([
+runroot rpm -i --replacepkgs /build/RPMS/noarch/triggers-1.0-2.noarch.rpm
+],
+[0],
+[triggers-1.0-2 TRIGGERPREIN 2 1
+triggers-1.0-2 TRIGGERIN 2 1
 ],
 [])
 
