@@ -353,6 +353,13 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         return RPMERR_READ_FAILED;
     }
 
+    /* A stripped header has no size field, and rpmcpioSetExpectedFileSize()
+     * sets fileend after the header is read. When the reader skips a member
+     * before that, for example a %ghost file in the payload, fileend is
+     * smaller than offset. */
+    if (cpio->fileend < cpio->offset)
+	return RPMERR_BAD_HEADER;
+
     /* Move to next file */
     if (cpio->fileend != cpio->offset) {
         /* XXX try using Fseek() - which is currently broken */
