@@ -261,18 +261,19 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	}
 	lastTime = time;
 
-	/* skip space to the name */
+	/* name */
+	/* skip leading spaces before the name */
 	SKIPSPACE(s);
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
 	    goto exit;
 	}
 
-	/* name */
 	name = s;
+	/* remove trailing spaces, working backwards from the trailing null byte */
 	while (*s != '\0') s++;
-	while (s > name && risspace(*s)) {
-	    *s-- = '\0';
+	while (s > name && risspace(s[-1])) {
+	    *--s = '\0';
 	}
 	if (s == name) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
